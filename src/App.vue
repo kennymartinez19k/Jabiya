@@ -9,7 +9,7 @@
           <ion-card-title>Look at this view!</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          Although, it does look fairly cold 
+          Although, it does look fairly cold llll
         </ion-card-content>
       </ion-card>
     </ion-content>
