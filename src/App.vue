@@ -1,31 +1,58 @@
 <template>
-  <ion-app>
-    <app-header/>
-    <ion-content>
-      <ion-card>
-        <img src="https://images.unsplash.com/photo-1552394459-917cbbffbc84?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"/>
-        <ion-card-header>
-          <ion-card-subtitle>Isn't it great?</ion-card-subtitle>
-          <ion-card-title>Look at this view!</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          Although, it does look fairly cold llll
-        </ion-card-content>
-      </ion-card>
-    </ion-content>
-  </ion-app>
+  <app-header v-if="current"/>
+  <router-view class="view-header" :class="{view: current}"/>
+
 </template>
-
 <script>
-
 import AppHeader from './views/AppHeader.vue'
+import { mapGetters } from 'vuex'
+
 export default {
   components:{
     AppHeader
   },
-  name: 'app',
+  computed:{
+    ...mapGetters([
+        'current'
+    ])
+},
 }
 </script>
-
 <style>
+
+#app {
+  font-size: 12px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  height: 100vh;
+  font-size: 12px;
+}
+.uk-button-purple{
+  background: #2a307c;
+  color: #fff;
+}
+.uk-button-orange{
+  background: #bf6121;
+  color: #fff;
+}
+.view{
+  height: 89vh !important;
+}
+.view-header{
+  height: 98vh;
+}
+html body{
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+
+}
+
+#nav {
+  padding: 10px;
+
+}
 </style>

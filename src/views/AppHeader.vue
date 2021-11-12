@@ -1,201 +1,85 @@
 <template>
-  <ion-toolbar>
-    <ion-title>Title Only</ion-title>
-  </ion-toolbar>
+  <nav class="uk-navbar uk-navbar-container">
+    <div class="uk-navbar-left">
+        <a class="uk-navbar-toggle" style="min-height: 60px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
+        <h4 class="uk-margin-remove">{{this.titlePage.menuName}}</h4>
+<div id="offcanvas-overlay" uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar uk-padding-remove">
 
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Back Button</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-title size="small">Small Title above a Default Title</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-title>Default Title</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
-      </ion-button>
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="primary">
-      <ion-button color="secondary">
-        <ion-icon slot="icon-only" :ios="ellipsisHorizontal" :md="ellipsisVertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Default Buttons</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button fill="solid">
-        <ion-icon slot="start" :icon="person-circle"></ion-icon>
-        Contact
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Solid Buttons</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button fill="solid" color="secondary">
-        Help
-        <ion-icon slot="end" :icon="help-circle"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button fill="outline">
-        <ion-icon slot="start" :icon="star"></ion-icon>
-        Star
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Outline Buttons</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button color="danger" fill="outline">
-        Edit
-        <ion-icon slot="end" :icon="create"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button>
-        Account
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="primary">
-      <ion-button color="danger">
-        Edit
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Text Only Buttons</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button auto-hide="false"></ion-menu-button>
-
-    </ion-buttons>
-    <ion-buttons slot="secondary">
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="star"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Left side menu toggle</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="primary">
-      <ion-button @click="clickedStar()">
-        <ion-icon slot="icon-only" :icon="star"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Right side menu toggle</ion-title>
-    <ion-buttons slot="end">
-      <ion-menu-button auto-hide="false"></ion-menu-button>
-
-    </ion-buttons>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="primary">
-      <ion-button @click="clickedSearch()">
-        <ion-icon slot="icon-only" :icon="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-searchbar placeholder="Search Favorites"></ion-searchbar>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-segment value="all">
-      <ion-segment-button value="all">
-        All
-      </ion-segment-button>
-      <ion-segment-button value="favorites">
-        Favorites
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-
-  <ion-toolbar color="secondary">
-    <ion-buttons slot="secondary">
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
-      </ion-button>
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="primary">
-      <ion-button color="primary">
-        <ion-icon slot="icon-only" :ios="ellipsisHorizontal" :md="ellipsisVertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Secondary Toolbar</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar color="dark">
-    <ion-buttons slot="secondary">
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
-      </ion-button>
-      <ion-button>
-        <ion-icon slot="icon-only" :icon="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="primary">
-      <ion-button color="danger">
-        <ion-icon slot="icon-only" :ios="ellipsisHorizontal" :md="ellipsisVertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Dark Toolbar</ion-title>
-  </ion-toolbar>
+        <div class="info-user">
+            <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
+            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">Chofer 11</h4>
+            <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
+        </div>
+        <ul class="uk-list nav-opt uk-list-divider">
+            <li @click="setCurrentPage({menuName: 'Carga de ordenes',componentName: 'home'})">Cargar / Descargar vehiculo</li>
+            <li @click="setCurrentPage({menuName: 'Lista de ordenes',componentName: 'orders'})">Entrega de Ordenes</li>
+            <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Seleccione un idioma</li>
+            <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Cerrar sesión</li>
+            <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Version app</li>
+        </ul>
+    </div>
+</div>
+    </div>
+</nav>
 </template>
 
 <script>
-import { 
-  IonButton, 
-  IonButtons, 
-  IonIcon,
-  IonTitle, 
-  IonToolbar
-} from '@ionic/vue';
-import { 
-  ellipsisHorizontal,
-  ellipsisVertical, 
-  helpCircle, 
-  personCircle, 
-  search, 
-  star
-} from 'ionicons/icons';
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  components: {
-    IonButton, 
-    IonButtons, 
-    IonIcon,
-    IonTitle, 
-    IonToolbar
-  },
-  setup() {
-    return {
-      ellipsisHorizontal,
-      ellipsisVertical, 
-      helpCircle, 
-      personCircle, 
-      search, 
-      star
+import Uikit from 'uikit'
+import {mapGetters} from 'vuex'
+export default {
+computed:{
+    ...mapGetters([
+        "current"
+    ]),
+    titlePage(){
+        return this.current
     }
-  }
-});
+},
+data() {
+    return {
+
+    }
+},
+methods:{
+    openMenu(){
+      Uikit.offcanvas('#offcanvas-overlay').show();  
+    },
+    setCurrentPage(val) {
+        this.$store.commit('setCurrent', val)
+        this.$router.push({ name: val.componentName }).catch(() => {})
+        Uikit.offcanvas('#offcanvas-overlay').hide();
+    },
+}
+}
 </script>
+
+<style scoped>
+*{
+    color: #fff
+}
+li{
+    padding: 20px !important;
+    color: rgb(0, 0, 0) !important;
+    text-align: initial;
+    margin: 0px !important;
+}
+.uk-list-divider>li:nth-child(n+2) {
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0
+}
+.uk-offcanvas-bar{
+    background: #fff;
+    width: 250px
+}
+.info-user{
+    box-sizing: border-box;
+    background: #2a307c;
+    padding: 20px;
+    width: 100%;
+    height: 30%;
+}
+.uk-navbar-container{
+    background: #2a307c;
+}
+</style>
