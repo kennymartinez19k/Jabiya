@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <app-header/>
+    <!-- <app-header/> -->
     <ion-content>
       <ion-card>
         <img src="https://images.unsplash.com/photo-1552394459-917cbbffbc84?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"/>
@@ -18,11 +18,8 @@
 
 <script>
 
-import AppHeader from './views/AppHeader.vue'
+// import AppHeader from './views/AppHeader.vue'
 export default {
-  components:{
-    AppHeader
-  },
   name: 'app',
 }
 </script>
