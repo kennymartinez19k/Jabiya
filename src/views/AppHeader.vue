@@ -38,11 +38,12 @@ computed:{
 },
 data() {
     return {
-
+        positionSticky: false
     }
 },
 methods:{
     openMenu(){
+      this.positionSticky = true
       Uikit.offcanvas('#offcanvas-overlay').show();  
     },
     setCurrentPage(val) {
@@ -58,6 +59,7 @@ methods:{
 *{
     color: #fff
 }
+
 li{
     padding: 20px !important;
     color: rgb(0, 0, 0) !important;
