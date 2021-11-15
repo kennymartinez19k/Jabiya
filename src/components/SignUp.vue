@@ -25,7 +25,7 @@
                 <label class="terms uk-text-light"><input v-model="signUpLogin.terms" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Aceptar terminos y condiciones</label>
             </div>
             
-            <button class="uk-button uk-width-1-1 uk-button-purple uk-text-white" style="margin-top: 15px" @click="go">Registrarse</button>
+            <button class="uk-button uk-width-1-1 uk-button-purple uk-text-white" style="margin-top: 15px" @click="go">Registrese</button>
         </form>
 </template>
 

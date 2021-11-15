@@ -1,5 +1,5 @@
 <template>
-  <app-header v-if="current"/>
+  <app-header v-if="current" />
   <router-view class="view-header" :class="{view: current}"/>
 
 </template>
@@ -30,8 +30,16 @@ export default {
   height: 100vh;
   font-size: 12px;
 }
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  padding: 5px;
+  border: 2px solid #564caf;
+}
 .uk-button-purple{
   background: #2a307c;
+  border-radius: 5px;
   color: #fff;
 }
 .uk-button-orange{
