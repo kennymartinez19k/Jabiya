@@ -4,7 +4,7 @@
       <div class="uk-card-header" style="padding-top: 5px !important">
         <div class="uk-width-expand uk-flex uk-flex-center">
           <p class="uk-text-meta uk-margin-remove-top date">
-            <time datetime="2016-04-01T19:00">Hoy</time>
+            <time datetime="2016-04-01T19:00" class="uk-text-bold">Hoy</time>
           </p>
         </div>
       </div>
@@ -33,97 +33,10 @@
             <div >
             <span>{{orden.hour}}</span>
             <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" icon="truck-moving" />
+              <font-awesome-icon class="icon-load" :style="[orden.icon]" icon="truck-moving" />
             </div>
           </div>
-            <button class="uk-button uk-button-purple" @click="setOpen(true)">{{orden.btnAction}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="uk-card uk-card-default uk-width-1-2@m container">
-      <div class="uk-card-header" style="padding: 5px 0px 10px !important">
-        <div class="uk-width-expand uk-flex uk-flex-center">
-          <p class="uk-text-meta uk-margin-remove-top date">
-            <time datetime="2016-04-01T19:00">Ayer</time>
-          </p>
-        </div>
-      </div>
-      <div>
-        <div
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        >
-          <div class="uk-text-left info-user">
-            <p><strong> Estado: </strong><span>Asignada</span></p>
-            <p><strong>Cliente: </strong> <span>Juan Perez</span></p>
-            <p><strong>No. de Orden(es): </strong><span>2</span></p>
-            <p><strong>Zona: </strong><span>Rep. de Colombia</span></p>
-          </div>
-          <div class="btn">
-            <div >
-            <span>10:00 AM</span>
-            <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" icon="truck-moving" />
-            </div>
-          </div>
-            <button class="uk-button uk-button-purple" @click="setOpe(true)">Cargar Vehiculo</button>
-          </div>
-        </div>
-        <div
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        >
-          <div class="uk-text-left info-user">
-            <p><strong> Estado: </strong><span>Despacho aprobado</span></p>
-            <p><strong>Cliente: </strong> <span>Juan Perez</span></p>
-            <p><strong>No. de Orden(es): </strong><span>2</span></p>
-            <p><strong>Zona: </strong><span>Rep. de Colombia</span></p>
-          </div>
-          <div class="btn">
-            <div>
-            <span>10:00 AM</span>
-            <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" icon="truck-moving" />
-            </div>
-          </div>
-            <button class="uk-button uk-button-purple">Comenzar Entrega(s)</button>
-          </div>
-        </div>
-        <div
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        >
-          <div class="uk-text-left info-user">
-            <p><strong> Estado: </strong><span>En Ruta</span></p>
-            <p><strong>Cliente: </strong> <span>Juan Perez</span></p>
-            <p><strong>No. de Orden(es): </strong><span>2</span></p>
-            <p><strong>Zona: </strong><span>Rep. de Colombia</span></p>
-          </div>
-          <div class="btn">
-            <div>
-            <span>10:00 AM</span>
-            <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" icon="truck-moving" />
-            </div>
-          </div>
-            <button class="uk-button uk-button-purple">Continuar Entrega(s)</button>
-          </div>
-        </div>
-        <div
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        >
-          <div class="uk-text-left info-user">
-            <p><strong> Estado: </strong><span>Entregada</span></p>
-            <p><strong>Cliente: </strong> <span>Juan Perez</span></p>
-            <p><strong>No. de Orden(es): </strong><span>2</span></p>
-            <p><strong>Zona: </strong><span>Rep. de Colombia</span></p>
-          </div>
-          <div class="btn">
-            <div>
-            <span>10:00 AM</span>
-            <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" icon="truck-moving" />
-            </div>
-          </div>
-            <button class="uk-button uk-button-purple">Ver Orden(es)</button>
+            <button class="uk-button uk-button-purple" @click="orden.action">{{orden.btnAction}}</button>
           </div>
         </div>
       </div>
@@ -171,37 +84,46 @@ export default {
           client: 'Juan Perez',
           numberOfOrden: 2,
           zone: 'Rep. de colombia',
-          btnAction: 'Cargar Vehiculo'
+          btnAction: 'Cargar Vehiculo',
+          icon: 'color: #1f7a18',
+          action: () => {
+            this.$router.push({ name: "orders" }).catch(() => {})
+          }
         },
-        // {
-        //   hour: '12:00 PM',
-        //   status: 'Entregada',
-        //   client: 'Maria Hernandez',
-        //   numberOfOrden: 1,
-        //   zone: 'Respaldo Rodeo',
-        //   btnAction: 'Ver Orden(es)'
-        // },{
-        //   hour: '10:00 AM',
-        //   status: 'En Ruta',
-        //   client: 'Juan Perez',
-        //   numberOfOrden: 2,
-        //   zone: 'Rep. de colombia',
-        //   btnAction: 'Continuar Entrega(s)'
-        // },{
-        //   hour: '10:00 AM',
-        //   status: 'Despacho Aprobado',
-        //   client: 'Juan Perez',
-        //   numberOfOrden: 2,
-        //   zone: 'Rep. de colombia',
-        //   btnAction: 'Comenzar Entrega(s)'
-        // },{
-        //   hour: '10:00 AM',
-        //   status: 'Asignada',
-        //   client: 'Juan Perez',
-        //   numberOfOrden: 2,
-        //   zone: 'Rep. de colombia',
-        //   btnAction: 'Cargar Vehiculo'
-        // },
+        {
+          hour: '12:00 PM',
+          status: 'Entregada',
+          client: 'Maria Hernandez',
+          numberOfOrden: 1,
+          zone: 'Respaldo Rodeo',
+          btnAction: 'Ver Orden(es)',
+          icon: 'color: #000000',
+          action: () => {
+            this.$router.push({ name: "orders" }).catch(() => {})
+          }
+        },{
+          hour: '10:00 AM',
+          status: 'En Ruta',
+          client: 'Juan Perez',
+          numberOfOrden: 2,
+          zone: 'Rep. de colombia',
+          btnAction: 'Continuar Entrega(s)',
+          icon: 'color: #a7a7a7',
+          action: () => {
+            this.$router.push({ name: "orders" }).catch(() => {})
+          }
+        },{
+          hour: '10:00 AM',
+          status: 'Despacho Aprobado',
+          client: 'Juan Perez',
+          numberOfOrden: 2,
+          zone: 'Rep. de colombia',
+          btnAction: 'Comenzar Entrega(s)',
+          icon: 'color: #c39108',
+          action: () => {
+            this.$router.push({ name: "orders" }).catch(() => {})
+          }
+        },
       ],
       loads: [
         { hours: "10:00 - 10:30", status: "Delivered" },
