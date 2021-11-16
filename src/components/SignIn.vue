@@ -1,6 +1,7 @@
 <template>
-<ion-progress-bar type="indeterminate"></ion-progress-bar>
         <BackButton/>
+  <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
+
     <div class="uk-flex uk-flex-center uk-flex-wrap container">
         <form class="uk-card uk-card-default uk-padding-remove uk-card-large uk-card-body uk-width-1-3@s" style="padding: 40px 20px !important; min-width: 400px">
             <img class="logo" src="../assets/logo.png" alt="">
@@ -25,17 +26,17 @@
 
 <script>
 import BackButton from '../components/Buttons/BackButton.vue'
-import { IonProgressBar } from '@ionic/vue';
+import Loading from 'vue-loading-overlay';
 
 
 export default {
 components:{
     BackButton,
-    IonProgressBar
+    Loading
 },
 data() {
     return {
-        d: null,
+        loaded: false,
         signInLogin:{
             email: '',
             password: '',
@@ -46,8 +47,12 @@ data() {
 methods:{
     changeRoute(path){
         if (path == 'home') {
-           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) 
-             this.$router.push({ name: path }).catch(() => {})
+           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' )
+            this.loaded = true
+            setTimeout(()=> {
+                this.$router.push({ name: path }).catch(() => {})
+                this.loaded = false
+            }, 3000) 
         } else {
          this.$router.push({ name: path }).catch(() => {})
         }

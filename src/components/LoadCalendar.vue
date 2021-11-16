@@ -112,6 +112,18 @@ export default {
           action: () => {
             this.$router.push({ name: "orders" }).catch(() => {})
           }
+        },
+        {
+          hour: '10:00 AM',
+          status: 'En Ruta',
+          client: 'Juan Perez',
+          numberOfOrden: 2,
+          zone: 'Rep. de colombia',
+          btnAction: 'Continuar Entrega(s)',
+          icon: 'color: #a7a7a7',
+          action: () => {
+            this.$router.push({ name: "orders" }).catch(() => {})
+          }
         },{
           hour: '10:00 AM',
           status: 'Despacho Aprobado',
