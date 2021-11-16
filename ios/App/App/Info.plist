@@ -21,9 +21,9 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>( Privacy - Location Always Usage Description)</string>
+	<string>(Privacy - Location Always Usage Description)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>( Privacy - Location When In Use Usage Description)</string>
+	<string>(Privacy - Location When In Use Usage Description)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
