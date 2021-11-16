@@ -1,11 +1,15 @@
 <template>
   <div>
       <button class="uk-button" @click="scan">scan</button>
+      <button class="uk-button" @click="location">location</button>
+      <h1>{{location1?.timestamp}} wer</h1>
   </div>
 </template>
 
 <script>
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { Geolocation } from '@capacitor/geolocation';
+
 
 export default {
 
@@ -13,11 +17,25 @@ export default {
     return {
       camera: 'auto',
       result: null,
-      showScanConfirmation: false
+      showScanConfirmation: false,
+      location1: {
+        latitude: null,
+        longitude: null,
+      }
     }
   },
 
   methods: {
+    async location () {
+      
+      const coordinates = await Geolocation.getCurrentPosition();
+      this.location1 = coordinates
+      console.log('Current position:', coordinates);
+
+      
+    },
+
+
     async scan() {
         BarcodeScanner.hideBackground(); // make background of WebView transparent
 
