@@ -60,6 +60,9 @@ export default {
   methods:{
     setOpe (val) {
       this.loaded = val
+      setTimeout(()=>{
+        this.loaded= false
+      }, 2000)
     }
   },
   mounted() {
@@ -110,7 +113,8 @@ export default {
           btnAction: 'Continuar Entrega(s)',
           icon: 'color: #a7a7a7',
           action: () => {
-            this.$router.push({ name: "orders" }).catch(() => {})
+            this.setOpe(true)
+            // this.$router.push({ name: "orders" }).catch(() => {})
           }
         },
         {
@@ -122,7 +126,8 @@ export default {
           btnAction: 'Continuar Entrega(s)',
           icon: 'color: #a7a7a7',
           action: () => {
-            this.$router.push({ name: "orders" }).catch(() => {})
+            this.setOpen(true)
+            // this.$router.push({ name: "orders" }).catch(() => {})
           }
         },{
           hour: '10:00 AM',

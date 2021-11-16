@@ -47,12 +47,10 @@ data() {
 methods:{
     changeRoute(path){
         if (path == 'home') {
-           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' )
+           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) {
             this.loaded = true
-            setTimeout(()=> {
-                this.$router.push({ name: path }).catch(() => {})
-                this.loaded = false
-            }, 3000) 
+            this.$router.push({ name: path }).catch(() => {})
+        }
         } else {
          this.$router.push({ name: path }).catch(() => {})
         }
