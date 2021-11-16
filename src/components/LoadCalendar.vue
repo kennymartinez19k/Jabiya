@@ -19,24 +19,24 @@
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
       <div>
         <div
-          v-for="orden in userOrden"
-          :key="orden"
+          v-for="load in userOrden"
+          :key="load"
           class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         >
           <div class="uk-text-left info-user">
-            <p><strong> Estado: </strong><span>{{orden.status}}</span></p>
-            <p><strong>Cliente: </strong> <span>{{orden.client}}</span></p>
-            <p><strong>No. de Orden(es): </strong>{{orden.numberOfOrden}}<span>2</span></p>
-            <p><strong>Zona: </strong><span>{{orden.zone}}</span></p>
+            <p><strong> Estado: </strong><span>{{load.status}}</span></p>
+            <p><strong>Cliente: </strong> <span>{{load.client}}</span></p>
+            <p><strong>No. de load(es): </strong>{{load.numberOfOrden}}<span>2</span></p>
+            <p><strong>Zona: </strong><span>{{load.zone}}</span></p>
           </div>
           <div class="btn">
             <div >
-            <span>{{orden.hour}}</span>
+            <span>{{load.hour}}</span>
             <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" :style="[orden.icon]" icon="truck-moving" />
+              <font-awesome-icon class="icon-load" :style="[load.icon]" icon="truck-moving" />
             </div>
           </div>
-            <button class="uk-button uk-button-purple" @click="orden.action">{{orden.btnAction}}</button>
+            <button class="uk-button uk-button-purple" @click="load.action">{{load.btnAction}}</button>
           </div>
         </div>
       </div>
@@ -201,9 +201,7 @@ export default {
   padding: 0px 5px !important;
   font-size: 12px;
 }
-p {
-  margin: 4px 0px;
-}
+
 .date {
   background: #2535ff21;
   color: #000;

@@ -2,13 +2,12 @@
   <div>
       <button class="uk-button" @click="scan">scan</button>
       <p>{{result}}</p>
-      <button @click="this.checkPermission">permiso</button>
-      <p>{{this.checkPermission}}</p>
   </div>
 </template>
 
 <script>
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import {mapGetters} from 'vuex'
 
 export default {
 
@@ -19,21 +18,44 @@ export default {
       showScanConfirmation: false
     }
   },
+  computed:{
+    ...mapGetters([
+      'orderScan'
+    ])
+  },
+  mounted(){
+    if(this.orderScan) {
+      console.log(this.orderScan)
+      this.scanOrder()
+    }
+  },
 
   methods: {
-    async scan() {
+    //     async location () {
+    //     alert('papaeeeeeeeeeeeeeeeep')
+    //     try {
+    //       const geo = await Geolocation.getCurrentPosition();
+    //       this.location1.latitude = geo.coords.latitude
+    //       this.location1.longitude = geo.coords.longitude
+    //       // this.successCallback ( this.location1)
+    //         console.log('Current position:', this.location1);
+    //     } catch (e) {
+    //       console.log('Current position:', this.location1);
+    //       alert('papap' + e.toString() + ' ' + e.message)
+    //       alert('papap' + this.location1?.timestamp)
+    //     }
+    // }, 
+    async scanOrder() {
         if(await this.checkPermission()){
-          BarcodeScanner.hideBackground(); // make background of WebView transparent
+          BarcodeScanner.hideBackground(); 
   
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
 
           if (result.hasContent) {
               this.result = result.content
-              this.stopScan() // log the raw scanned content
+              this.stopScan()
           }
         }
-
-        // if the result has content
     },
     async stopScan(){
         BarcodeScanner.showBackground();
@@ -49,37 +71,6 @@ export default {
       }
 
       return false;
-    },
-    async onInit (promise) {
-      try {
-        await promise
-      } catch (e) {
-        console.error(e)
-      } finally {
-        this.showScanConfirmation = this.camera === "off"
-      }
-    },
-
-    async onDecode (content) {
-      this.result = content
-
-      this.pause()
-      await this.timeout(500)
-      this.unpause()
-    },
-
-    unpause () {
-      this.camera = 'auto'
-    },
-
-    pause () {
-      this.camera = 'off'
-    },
-
-    timeout (ms) {
-      return new Promise(resolve => {
-        window.setTimeout(resolve, ms)
-      })
     }
   }
 }

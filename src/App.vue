@@ -30,6 +30,9 @@ export default {
   height: 100vh;
   font-size: 12px;
 }
+p {
+  margin: 4px 0px;
+}
 .sticky {
   position: -webkit-sticky;
   position: sticky;
@@ -58,9 +61,18 @@ html body{
   margin: 0;
 
 }
-
+strong{
+  font-size: 13px !important;
+}
+.btn-button{
+  font-size: 10px !important
+}
 #nav {
   padding: 10px;
 
+}
+.cnt {
+  height: 100%;
+  overflow: scroll;
 }
 </style>
