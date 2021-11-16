@@ -1,6 +1,7 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
       <div>
+          <ion-button @click="getBarcode" fill="solid">Barcode</ion-button>
           <div class="uk-child-width-1-2@s uk-grid-match" uk-grid>
               <div>
                 <div class="uk-card uk-card-default uk-card-hover uk-card-body uk-text-bold uk-text-left">
@@ -108,6 +109,8 @@
 
 <script>
 import SlideUnlock from "vue-slide-unlock"
+import {IonButton} from '@ionic/vue'
+import { BarcodeScanner } from "@ionic-native/barcode-scanner";
 export default {
     data(){
         return{
@@ -115,11 +118,23 @@ export default {
         }
     },
     components: {
-        SlideUnlock
+        SlideUnlock,
+        IonButton,
     },
      mounted(){
         this.$store.commit('setCurrent', {menuName: 'Lista de ordenes',componentName: 'orders'},)
     },
+    methods:{
+        async getBarcode () {
+                const data = await BarcodeScanner.scan();
+                console.log(`Barcode data: ${data.text}`);
+                // BarcodeScanner.hideBackground(); // make background of WebView transparent
+
+                // const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+
+                // console.log(result); // log the raw scanned content
+            },
+    }
 
 }
 </script>
@@ -135,5 +150,11 @@ export default {
 .cnt {
   height: 100%;
   overflow: scroll;
+}
+.slide{
+    position: fixed;
+    width: 96% !important;
+    bottom: 5px;
+    height: 40px;
 }
 </style>
