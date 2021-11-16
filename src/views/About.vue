@@ -1,6 +1,8 @@
 <template>
   <div>
       <button class="uk-button" @click="scan">scan</button>
+      <button class="uk-button" @click="location">location</button>
+      <h1>{{location1}} wer</h1>
       <p>{{result}}</p>
   </div>
 </template>
@@ -8,6 +10,8 @@
 <script>
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import {mapGetters} from 'vuex'
+import { Geolocation } from '@capacitor/geolocation';
+
 
 export default {
 
@@ -15,7 +19,11 @@ export default {
     return {
       camera: 'auto',
       result: null,
-      showScanConfirmation: false
+      showScanConfirmation: false,
+      location1: {
+        latitude: null,
+        longitude: null,
+      }
     }
   },
   computed:{
@@ -30,22 +38,24 @@ export default {
     }
   },
 
-  methods: {
-    //     async location () {
-    //     alert('papaeeeeeeeeeeeeeeeep')
-    //     try {
-    //       const geo = await Geolocation.getCurrentPosition();
-    //       this.location1.latitude = geo.coords.latitude
-    //       this.location1.longitude = geo.coords.longitude
-    //       // this.successCallback ( this.location1)
-    //         console.log('Current position:', this.location1);
-    //     } catch (e) {
-    //       console.log('Current position:', this.location1);
-    //       alert('papap' + e.toString() + ' ' + e.message)
-    //       alert('papap' + this.location1?.timestamp)
-    //     }
-    // }, 
-    async scanOrder() {
+methods: {
+      async location () {
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          this.location1.latitude = geo.coords.latitude
+          this.location1.longitude = geo.coords.longitude
+            console.log('Current position:', this.location1);
+        } catch (e) {
+          if (e.code === 1 || e.message === "location disabled") {
+            alert("Debe activar la localización.")
+          } else {
+            alert("Error inesperado. Favor contactese con el Administrador.")
+          }
+          console.log(e)
+        }
+    }, 
+
+    async scan() {
         if(await this.checkPermission()){
           BarcodeScanner.hideBackground(); 
   
@@ -73,6 +83,7 @@ export default {
       return false;
     }
   }
+
 }
 </script>
 
