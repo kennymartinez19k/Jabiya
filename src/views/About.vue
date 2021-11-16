@@ -1,6 +1,8 @@
 <template>
   <div>
       <button class="uk-button" @click="scan">scan</button>
+      <button class="uk-button" @click="location">location</button>
+      <h1>{{location1}} wer</h1>
       <p>{{result}}</p>
       <button @click="this.checkPermission">permiso</button>
       <p>{{this.checkPermission}}</p>
@@ -9,6 +11,8 @@
 
 <script>
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { Geolocation } from '@capacitor/geolocation';
+
 
 export default {
 
@@ -16,11 +20,31 @@ export default {
     return {
       camera: 'auto',
       result: null,
-      showScanConfirmation: false
+      showScanConfirmation: false,
+      location1: {
+        latitude: null,
+        longitude: null,
+      }
     }
   },
 
-  methods: {
+methods: {
+      async location () {
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          this.location1.latitude = geo.coords.latitude
+          this.location1.longitude = geo.coords.longitude
+            console.log('Current position:', this.location1);
+        } catch (e) {
+          if (e.code === 1 || e.message === "location disabled") {
+            alert("Debe activar la localización.")
+          } else {
+            alert("Error inesperado. Favor contactese con el Administrador.")
+          }
+          console.log(e)
+        }
+    }, 
+
     async scan() {
         if(await this.checkPermission()){
           BarcodeScanner.hideBackground(); // make background of WebView transparent
@@ -49,39 +73,9 @@ export default {
       }
 
       return false;
-    },
-    async onInit (promise) {
-      try {
-        await promise
-      } catch (e) {
-        console.error(e)
-      } finally {
-        this.showScanConfirmation = this.camera === "off"
-      }
-    },
-
-    async onDecode (content) {
-      this.result = content
-
-      this.pause()
-      await this.timeout(500)
-      this.unpause()
-    },
-
-    unpause () {
-      this.camera = 'auto'
-    },
-
-    pause () {
-      this.camera = 'off'
-    },
-
-    timeout (ms) {
-      return new Promise(resolve => {
-        window.setTimeout(resolve, ms)
-      })
     }
   }
+
 }
 </script>
 
