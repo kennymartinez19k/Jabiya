@@ -46,7 +46,7 @@ p {
   color: #fff;
 }
 button{
-  border-radius: 5px;
+  border-radius: 5px !important
 }
 .uk-button-orange{
   background: #bf6121;
