@@ -4,13 +4,12 @@
       <button class="uk-button" @click="location">location</button>
       <h1>{{location1}} wer</h1>
       <p>{{result}}</p>
-      <button @click="this.checkPermission">permiso</button>
-      <p>{{this.checkPermission}}</p>
   </div>
 </template>
 
 <script>
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import {mapGetters} from 'vuex'
 import { Geolocation } from '@capacitor/geolocation';
 
 
@@ -25,6 +24,17 @@ export default {
         latitude: null,
         longitude: null,
       }
+    }
+  },
+  computed:{
+    ...mapGetters([
+      'orderScan'
+    ])
+  },
+  mounted(){
+    if(this.orderScan) {
+      console.log(this.orderScan)
+      this.scanOrder()
     }
   },
 
@@ -47,17 +57,15 @@ methods: {
 
     async scan() {
         if(await this.checkPermission()){
-          BarcodeScanner.hideBackground(); // make background of WebView transparent
+          BarcodeScanner.hideBackground(); 
   
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
 
           if (result.hasContent) {
               this.result = result.content
-              this.stopScan() // log the raw scanned content
+              this.stopScan()
           }
         }
-
-        // if the result has content
     },
     async stopScan(){
         BarcodeScanner.showBackground();

@@ -19,24 +19,24 @@
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
       <div>
         <div
-          v-for="orden in userOrden"
-          :key="orden"
+          v-for="load in userOrden"
+          :key="load"
           class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         >
           <div class="uk-text-left info-user">
-            <p><strong> Estado: </strong><span>{{orden.status}}</span></p>
-            <p><strong>Cliente: </strong> <span>{{orden.client}}</span></p>
-            <p><strong>No. de Orden(es): </strong>{{orden.numberOfOrden}}<span>2</span></p>
-            <p><strong>Zona: </strong><span>{{orden.zone}}</span></p>
+            <p><strong> Estado: </strong><span>{{load.status}}</span></p>
+            <p><strong>Cliente: </strong> <span>{{load.client}}</span></p>
+            <p><strong>No. de load(es): </strong>{{load.numberOfOrden}}<span>2</span></p>
+            <p><strong>Zona: </strong><span>{{load.zone}}</span></p>
           </div>
           <div class="btn">
             <div >
-            <span>{{orden.hour}}</span>
+            <span>{{load.hour}}</span>
             <div style="margin-top: 1px">
-              <font-awesome-icon class="icon-load" :style="[orden.icon]" icon="truck-moving" />
+              <font-awesome-icon class="icon-load" :style="[load.icon]" icon="truck-moving" />
             </div>
           </div>
-            <button class="uk-button uk-button-purple" @click="orden.action">{{orden.btnAction}}</button>
+            <button class="uk-button uk-button-purple" @click="load.action">{{load.btnAction}}</button>
           </div>
         </div>
       </div>
@@ -50,26 +50,13 @@ import { IonLoading } from '@ionic/vue'
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
-  components:{
-    IonLoading,
-    Loading
-  },
-  props: {
-    timeout: { type: Number, default: 1000 },
-  },
-  methods:{
-    setOpe (val) {
-      this.loaded = val
-      setTimeout(()=>{
-        this.loaded= false
-      }, 2000)
-    }
-  },
   mounted() {
     this.$store.commit("setCurrent", {
       menuName: "Carga de ordenes",
       componentName: "home",
     });
+    var a = [17,17, 18, 30, 10, 50, 10, 18, 17]
+    this.carga(a)
   },
   setup(){
     const isOpenRef = ref(false);
@@ -80,6 +67,7 @@ export default {
   data() {
     return {
       loaded: false,
+      array: [],
       userOrden: [
         {
           hour: '10:00 Am',
@@ -129,7 +117,8 @@ export default {
             this.setOpen(true)
             // this.$router.push({ name: "orders" }).catch(() => {})
           }
-        },{
+        },
+        {
           hour: '10:00 AM',
           status: 'Despacho Aprobado',
           client: 'Juan Perez',
@@ -176,7 +165,44 @@ export default {
       ],
     };
   },
-};
+  components:{
+    IonLoading,
+    Loading
+  },
+  props: {
+    timeout: { type: Number, default: 1000 },
+  },
+  methods:{
+    setOpe (val) {
+      this.loaded = val
+      setTimeout(()=>{
+        this.loaded= false
+      }, 2000)
+    },
+    carga(value){
+    
+    for(var i = 0; i < value.length; i++){
+    var b = value.filter((x)=>{
+        return x == value[i]
+    })
+
+    if(this.array){
+    this.array.forEach(x => {
+    if (x !== b){
+        this.array.push(b)
+    }
+    }
+    )
+    }
+    if (!this.array){
+    this.array.push(b)
+    }
+    }
+    console.log(this.array)
+  },
+  
+}
+}
 </script>
 
 <style scoped>
@@ -201,9 +227,7 @@ export default {
   padding: 0px 5px !important;
   font-size: 12px;
 }
-p {
-  margin: 4px 0px;
-}
+
 .date {
   background: #2535ff21;
   color: #000;
