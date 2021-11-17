@@ -50,26 +50,13 @@ import { IonLoading } from '@ionic/vue'
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
-  components:{
-    IonLoading,
-    Loading
-  },
-  props: {
-    timeout: { type: Number, default: 1000 },
-  },
-  methods:{
-    setOpe (val) {
-      this.loaded = val
-      setTimeout(()=>{
-        this.loaded= false
-      }, 2000)
-    }
-  },
   mounted() {
     this.$store.commit("setCurrent", {
       menuName: "Carga de ordenes",
       componentName: "home",
     });
+    var a = [17,17, 18, 30, 10, 50, 10, 18, 17]
+    this.carga(a)
   },
   setup(){
     const isOpenRef = ref(false);
@@ -80,6 +67,7 @@ export default {
   data() {
     return {
       loaded: false,
+      array: [],
       userOrden: [
         {
           hour: '10:00 Am',
@@ -129,7 +117,8 @@ export default {
             this.setOpen(true)
             // this.$router.push({ name: "orders" }).catch(() => {})
           }
-        },{
+        },
+        {
           hour: '10:00 AM',
           status: 'Despacho Aprobado',
           client: 'Juan Perez',
@@ -176,7 +165,44 @@ export default {
       ],
     };
   },
-};
+  components:{
+    IonLoading,
+    Loading
+  },
+  props: {
+    timeout: { type: Number, default: 1000 },
+  },
+  methods:{
+    setOpe (val) {
+      this.loaded = val
+      setTimeout(()=>{
+        this.loaded= false
+      }, 2000)
+    },
+    carga(value){
+    
+    for(var i = 0; i < value.length; i++){
+    var b = value.filter((x)=>{
+        return x == value[i]
+    })
+
+    if(this.array){
+    this.array.forEach(x => {
+    if (x !== b){
+        this.array.push(b)
+    }
+    }
+    )
+    }
+    if (!this.array){
+    this.array.push(b)
+    }
+    }
+    console.log(this.array)
+  },
+  
+}
+}
 </script>
 
 <style scoped>

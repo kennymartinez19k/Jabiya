@@ -42,8 +42,11 @@ p {
 }
 .uk-button-purple{
   background: #2a307c;
-  border-radius: 5px;
+
   color: #fff;
+}
+button{
+  border-radius: 5px;
 }
 .uk-button-orange{
   background: #bf6121;
