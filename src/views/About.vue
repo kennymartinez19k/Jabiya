@@ -3,6 +3,7 @@
       <button class="uk-button" @click="scan">scan</button>
       <button class="uk-button" @click="location">location</button>
       <h1>{{location1}} wer</h1>
+      <p>{{orderScan}}</p>
       <p>{{result}}</p>
   </div>
 </template>
@@ -32,57 +33,61 @@ export default {
     ])
   },
   mounted(){
-    if(this.orderScan) {
-      console.log(this.orderScan)
-      this.scanOrder()
-    }
-  },
-
-methods: {
-      async location () {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location1.latitude = geo.coords.latitude
-          this.location1.longitude = geo.coords.longitude
-            console.log('Current position:', this.location1);
-        } catch (e) {
-          if (e.code === 1 || e.message === "location disabled") {
-            alert("Debe activar la localización.")
-          } else {
-            alert("Error inesperado. Favor contactese con el Administrador.")
-          }
-          console.log(e)
-        }
-    }, 
-
-    async scan() {
-        if(await this.checkPermission()){
-          BarcodeScanner.hideBackground(); 
-  
-          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-
-          if (result.hasContent) {
-              this.result = result.content
-              this.stopScan()
-          }
-        }
+    this.scanAll()
     },
-    async stopScan(){
-        BarcodeScanner.showBackground();
-        BarcodeScanner.stopScan();
-    },
-    async checkPermission() {
-      // check or request permission
-      const status = await BarcodeScanner.checkPermission({ force: true });
+    methods: {
+          scanAll(){
+            this.orderScan.forEach(x => {
+            this.scanOrDen()
+            alert('x')
+              console.log(x)
+            });
+          },
+          async location () {
+            try {
+              const geo = await Geolocation.getCurrentPosition();
+              this.location1.latitude = geo.coords.latitude
+              this.location1.longitude = geo.coords.longitude
+                console.log('Current position:', this.location1);
+            } catch (e) {
+              if (e.code === 1 || e.message === "location disabled") {
+                alert("Debe activar la localización.")
+              } else {
+                alert("Error inesperado. Favor contactese con el Administrador.")
+              }
+              console.log(e)
+            }
+        }, 
 
-      if (status.granted) {
-        // the user granted permission
-        return true;
+        async scanOrder() {
+            if(await this.checkPermission()){
+              BarcodeScanner.hideBackground(); 
+      
+              const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+
+              if (result.hasContent) {
+                  this.result = result.content
+                  this.stopScan()
+              }
+            }
+            
+        },
+        async stopScan(){
+            BarcodeScanner.showBackground();
+            BarcodeScanner.stopScan();
+        },
+        async checkPermission() {
+          // check or request permission
+          const status = await BarcodeScanner.checkPermission({ force: true });
+
+          if (status.granted) {
+            // the user granted permission
+            return true;
+          }
+
+          return false;
+        }
       }
-
-      return false;
-    }
-  }
 
 }
 </script>

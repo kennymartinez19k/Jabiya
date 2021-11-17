@@ -36,7 +36,7 @@
         class="slide"
         text="Escaneo Corrido"
         success-text="success"
-        @completed="complete()"
+        @completed="complete(orders)"
         textSize="10px"
     />
   </div>
@@ -110,6 +110,9 @@ export default {
     //       alert('papap' + this.location1?.timestamp)
     //     }
     // }, 
+    complete(val){
+      this.scan(val)
+    },
     scan(val){
         this.$store.commit('scanOrder', val )
         this.$router.push({ name: 'about' }).catch(() => {})

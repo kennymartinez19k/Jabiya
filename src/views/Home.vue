@@ -1,14 +1,14 @@
 <template>
   <div>
-      <load-calendar />
+      <load-of-orders />
   </div>
 </template>
 
 <script>
-import LoadCalendar from '../components/LoadCalendar.vue'
+import LoadOfOrders from '../components/LoadOfOrders.vue'
 export default {
  components: {
-     LoadCalendar,
+     LoadOfOrders,
  },
 
   methods: {
