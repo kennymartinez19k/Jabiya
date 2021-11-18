@@ -1,25 +1,26 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
       <div class="uk-card uk-card-default uk-width-1-2@m container">
-
       <div>
         <div
           v-for="order in orders"
           :key="order"
           class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         >
-          <div class="uk-text-left info-user">
-            <p><strong>Cliente: </strong> <span>{{order.client}}</span></p>
-            <p><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
-            <p><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>
-            <p><strong>Direccion: </strong><span>{{order.address}}</span></p>
+          <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+            <div class="btn uk-flex">
+              <span>
+                <img src="../assets/parcel.png" alt="">
+                <div>Escanear</div>
+              </span>
           </div>
-          <div class="btn">
-              <div><strong>{{order.timeToWait}}</strong></div>
-              <div>
-                <button class="uk-button uk-button-purple btn-button" @click="scan(order)" style="padding: 0px 15px">Escanear</button>
-              </div>
+            <p class="uk-width-1-2"><strong>Cliente: </strong> <span>{{order.client}}</span></p>
+            <p class="uk-width-1-2"><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
+            <p class="uk-width-1-2"><strong>Direccion: </strong><span>{{order.address}}</span></p>
+            <p class="uk-width-1-2"><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>
+          `
           </div>
+          
         </div>
       </div>
     </div>
@@ -177,10 +178,13 @@ export default {
     bottom: 5px;
     height: 40px;
 }
+
 .btn{
-    height: 80px;
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
+    width: 100%;
+}
+.btn img{
+  width: 100px
 }
 </style>
