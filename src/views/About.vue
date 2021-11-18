@@ -1,10 +1,10 @@
 <template>
   <div>
-      <button class="uk-button" @click="scan">scan</button>
+      <button class="uk-button" @click="scanOrder">scan</button>
       <button class="uk-button" @click="location">location</button>
-      <h1>{{location1}} wer</h1>
-      <p>{{orderScan}}</p>
-      <p>{{result}}</p>
+      <h1>{{location1}}</h1>
+      <!-- <p>{{orderScan}}</p>
+      <p>{{result}}</p> -->
   </div>
 </template>
 

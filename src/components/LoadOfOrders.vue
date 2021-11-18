@@ -40,9 +40,9 @@ export default {
     
     return {
       dateLoad: [
-      'Mañana',
+      'Ayer',
       'Hoy',
-      'Ayer'
+      'Mañana'
     ],
       loaded: false,
       userOrden: [ 
