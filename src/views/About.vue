@@ -1,13 +1,10 @@
 <template>
   <div>
-    <a href="#" class="rainbow-button" alt="Button"></a>
-    <button class="uk-button" @click="scanOrder">scan</button>
-    <button class="uk-button" @click="location">location</button>
-    <h1>{{ location1 }} wer</h1>
-    <p>{{ result }}</p>
-    <a class="button" href="#">Click me!</a>
-<button type="submit" class="button">Click me!</button>
-    
+      <button class="uk-button" @click="scanOrder">scan</button>
+      <button class="uk-button" @click="location">location</button>
+      <h1>{{location1}}</h1>
+      <!-- <p>{{orderScan}}</p>
+      <p>{{result}}</p> -->
   </div>
 </template>
 

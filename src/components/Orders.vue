@@ -1,29 +1,39 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
-      <div class="uk-card uk-card-default uk-width-1-2@m container">
-      <div>
-        <div
-          v-for="order in orders"
-          :key="order"
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        >
-          <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-            <div class="btn uk-flex">
-              <span>
-                <img src="../assets/parcel.png" alt="">
-                <div>Escanear</div>
-              </span>
+       <div class="uk-flex load">
+              <img src="../assets/img/truk1.png" alt="Truk" class="truk" >
+              <div class="uk-text-left">
+                    <p><strong> Estado: </strong><span>{{load?.status}}</span></p>
+                    <p><strong>Cliente: </strong> <span>{{load?.client}}</span></p>
+                    <p><strong>No. de load(es): </strong>{{load?.numberOfOrden}}<span>2</span></p>
+                    <p><strong>Zona: </strong><span>{{load?.zone}}</span></p>
+                    <button class="uk-button-transparent " style="padding: 5px 15px;">Ver Rutas</button>
+              </div> 
           </div>
-            <p class="uk-width-1-2"><strong>Cliente: </strong> <span>{{order.client}}</span></p>
-            <p class="uk-width-1-2"><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
-            <p class="uk-width-1-2"><strong>Direccion: </strong><span>{{order.address}}</span></p>
-            <p class="uk-width-1-2"><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>
-          `
-          </div>
-          
+      <div class="uk-card uk-card-default uk-margin-remove uk-width-1-2@m container">
+        <div class="uk-margin-large-bottom">
+            <div
+            v-for="order in orders"
+            :key="order"
+            class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+            >
+            <div class="uk-text-left info-user" style="width: 60%">
+                <p><strong>Cliente: </strong> <span>{{order.client}}</span></p>
+                <p><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
+                <p><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>
+                <p><strong>Direccion: </strong><span>{{order.address}}</span></p>
+                <div><strong>{{order.timeToWait}}</strong></div>
+            </div>
+            <div class="btn">
+                <img src="../assets/img/box.jpeg" alt="Box" class="box" >
+                <div>
+                    <button class="uk-button uk-button-transparent btn-button" @click="scan(order)" style="padding: 0px 15px">Escanear</button>
+                </div>
+            </div>
+              <font-awesome-icon class=""  icon="circle" />
+            </div>
         </div>
       </div>
-    </div>
     
         <slide-unlock
         ref="vueslideunlock"
@@ -44,13 +54,19 @@
 </template>
 
 <script>
+// import {} from '../assets/img/truk1.png'
+import { mapGetters } from 'vuex'
 import SlideUnlock from "vue-slide-unlock"
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 export default {
+       components: {
+        SlideUnlock,
+    },
     data(){
         return{
             result: null,
             completed: 'background-color: #2a307c !important',
+            load: null,
             orders:[
                 {
                     numberOfOrders: 1223,
@@ -90,11 +106,14 @@ export default {
             ]
         }
     },
-    components: {
-        SlideUnlock,
+    computed: {
+        ...mapGetters([
+            'loadStore'
+        ])
     },
      mounted(){
         this.$store.commit('setCurrent', {menuName: 'Lista de ordenes',componentName: 'orders'},)
+        this.load = this.loadStore
     },
     methods: {
     //     async location () {
@@ -178,7 +197,14 @@ export default {
     bottom: 5px;
     height: 40px;
 }
-
+.load {
+     position:sticky;
+    top: -1px;
+    z-index: 2;
+    margin: 0px;
+    padding: 0px;
+    background-color: rgb(252, 249, 249);
+}
 .btn{
     display: flex;
     justify-content: space-between;
@@ -186,5 +212,20 @@ export default {
 }
 .btn img{
   width: 100px
+}
+
+.box {
+ width: 58px;
+ margin: 0px 8px 8px;
+}
+.truk {
+    width: 48%;
+    margin: 0px 8px 8px;
+    display: flex;
+    flex-direction: initial;
+    transform: scaleX(-1);
+}
+.uk-button-transparent:hover {
+ background-color: darkgray;
 }
 </style>

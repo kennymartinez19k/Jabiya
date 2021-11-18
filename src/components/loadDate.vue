@@ -53,7 +53,15 @@ export default {
     props:{
         userOrden: Array,
         date: String
-    }
+    },
+    methods: {
+      setload (valueOrder) {
+      this.$store.commit('setloadStore', valueOrder)
+      console.log(valueOrder, 'valueo')
+       this.$router.push({ name: "orders" }).catch(() => {})
+
+      }
+    },
 
 }
 </script>
