@@ -12,7 +12,7 @@
             <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage({menuName: 'Carga de ordenes',componentName: 'home'})">Cargar / Descargar vehiculo</li>
+            <li @click="setCurrentPage({menuName: 'Carga de Ordenes',componentName: 'home'})">Cargar / Descargar vehiculo</li>
             <li @click="setCurrentPage({menuName: 'Lista de ordenes',componentName: 'orders'})">Entrega de Ordenes</li>
             <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Seleccione un idioma</li>
             <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Cerrar sesión</li>

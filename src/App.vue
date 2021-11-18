@@ -19,10 +19,9 @@ export default {
 }
 </script>
 <style>
-
 #app {
   font-size: 12px;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -44,6 +43,11 @@ p {
   background: #2a307c;
 
   color: #fff;
+}
+.uk-button-transparent{
+  color: #1f1f1f;
+    background: white;
+    border: 1px solid;
 }
 button{
   border-radius: 5px !important
