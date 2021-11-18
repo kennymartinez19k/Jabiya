@@ -78,4 +78,10 @@ strong{
   height: 100%;
   overflow: scroll;
 }
+.uk-button-transparent{
+  color: #1f1f1f;
+    background: white;
+    border: 1px solid;
+    border: 1px solid #4a4a4a;
+}
 </style>

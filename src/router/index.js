@@ -5,6 +5,7 @@ import SignIn from '../components/SignIn.vue'
 import SignUp from '../components/SignUp.vue'
 import About from '../views/About.vue'
 import Orders from '../components/Orders.vue'
+import DeliveryActions from '../components/DeliveryActions.vue'
 const routes = [
   {
     path: '/',
@@ -30,6 +31,11 @@ const routes = [
     path: '/orders',
     name: 'orders',
     component: Orders
+  },
+  {
+    path: '/delivery-actions',
+    name: 'DeliveryActions',
+    component: DeliveryActions
   },
   {
     path: '/about',
