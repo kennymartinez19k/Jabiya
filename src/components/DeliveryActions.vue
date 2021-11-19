@@ -5,16 +5,16 @@
             <h3 class="uk-card-title">Acciones</h3>
            <div class="uk-flex">
                 <div class="uk-flex uk-flex-column">
-                 <font-awesome-icon class=""  icon="circle" />
+                 <font-awesome-icon class="circle"  icon="circle" />
                 <img src="../assets/img/qr.png" class="qr" alt="">
             </div>
                <div class="uk-flex uk-flex-column">
                  <font-awesome-icon class=""  icon="circle" />
-                <img src="../assets/img/qr.png" class="qr" alt="">
+                <img src="../assets/img/cam.png" class="qr" alt="">
             </div>
                <div class="uk-flex uk-flex-column">
                  <font-awesome-icon class=""  icon="circle" />
-                <img src="../assets/img/qr.png" class="qr" alt="">
+                <img src="../assets/img/firma.png" class="qr" alt="">
             </div>
            </div>
            
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import {} from '../assets/img/qr.png'
+import {} from '../assets/img/cam.png'
 export default {
     name: 'DeliveryActions'
 
@@ -34,6 +34,9 @@ export default {
 <style>
 .qr {
     width: 60%; 
+}
+.circle {
+ background-color: rgb(25, 189, 33);
 }
 
 </style>
