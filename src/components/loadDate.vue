@@ -19,10 +19,7 @@
             'onWay':load.status == 'En Ruta', 'dispatch': load.status == 'Despacho Aprobado'
           }"
         >
-          <div 
-            class="uk-text-left info-user" 
-            >
-            
+          <div class="uk-text-left info-user">
             <p ><strong> Estado: </strong><span>{{load.status}}</span></p>
             <p><strong>Cliente: </strong> <span>{{load.client}}</span></p>
             <p><strong>No. de Orden(es): </strong>{{load.numberOfOrden}}<span>2</span></p>
@@ -40,7 +37,7 @@
               
             </div>
           </div>
-            <button class="uk-button uk-button-purple" @click="load.action">{{load.btnAction}}</button>
+            <button class="uk-button uk-button-purple" @click="load.action,setload(load)">{{load.btnAction}}</button>
           </div>
         </div>
       </div>
