@@ -5,9 +5,7 @@
             <img src="../assets/img/truck.png" class="truck" alt="Camion">
           </span>
             <div class="uk-text-left uk-fle-middle">
-            <p><strong>Cliente: </strong> <span>{{load?.client}}</span></p>
-            <p><strong>No. de Orden(es): </strong>{{load?.numberOfOrden}}<span>2</span></p>
-              <button class="uk-button uk-button-transparent">Ver Ruta</button>
+            
           </div>
         </div>
         <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
@@ -32,9 +30,26 @@
                   <!-- <div class="uk-width-1-2 uk-flex uk-flex-between">
                     <button class="uk-button uk-button-transparent"><font-awesome-icon icon="qrcode"/> Escanear</button>
                 </div> -->
-                    <button class="uk-button uk-button-default uk-width-1-1 btn-scan" style="margin-top: 10px">Escanear Orden
-                      <img src="../assets/parcel.png" class="img-scan" alt="">
-                    </button>
+                <div class="uk-flex uk-width-1-1 uk-flex-between" style="margin-top: 10px">
+                  <div class="uk-flex uk-flex-column uk-width-1-2" >
+                    <img src="../assets/map.png" class="img-scan" alt="">
+                    <span>Ver Ruta</span>
+                  </div>
+                  <div class="uk-flex uk-flex-column uk-width-1-2">
+                    <img src="../assets/parcel.png" class="img-scan" style="margin: 0px 20px" alt="">
+                      <span>Escanear Orden</span>
+                  </div>
+                </div>
+
+                    <!-- <button class="uk-button uk-button-default uk-width-1-1 btn-scan" style="margin-top: 10px">
+                      
+                      <div>
+                        <img src="../assets/parcel.png" class="img-scan" alt="">
+                        <span></span>
+
+                      </div>
+                        
+                    </button> -->
                     
               </div>
             </div>
@@ -228,7 +243,7 @@ export default {
 .truck {
   max-width: 100%;
   transform: scaleX(-1);
-  width: 100%;
+  width: 70px;
   display: flex;
 }
 .stiky {
