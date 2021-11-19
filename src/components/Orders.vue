@@ -22,11 +22,11 @@
             <p class="uk-width-1-1"><strong>Direccion: </strong><span>{{order.address}}</span></p>
             <p class="uk-width-1-2"><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
             <p class="uk-width-1-2"><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>
-          <!-- <div class="uk-width-1-1 uk-flex uk-flex-center">
-            <button class="uk-button uk-button-transparent">Escanear</button>
-          </div> -->
           </div>
-          
+          <div class="uk-flex uk-flex-column">
+            <img src="../assets/parcel.png" alt="">
+            <span>Escanear</span>
+          </div>
   
         </div>
       </div>
