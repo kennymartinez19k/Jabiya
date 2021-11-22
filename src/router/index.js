@@ -34,7 +34,7 @@ const routes = [
   },
   {
     path: '/delivery-actions',
-    name: 'DeliveryActions',
+    name: 'deliveryActions',
     component: DeliveryActions
   },
   {
