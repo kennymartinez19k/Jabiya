@@ -1,14 +1,14 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
-         <div class="uk-flex stiky uk-flex-around uk-margin-remove uk-padding-remove">
-          <span class="truckSpan">
-            <img src="../assets/img/truck.png" class="truck" alt="Camion">
-          </span>
-            <div class="uk-text-left uk-fle-middle">
-            <p><strong>Cliente: </strong> <span>{{load?.client}}</span></p>
-            <p><strong>No. de Orden(es): </strong>{{load?.numberOfOrden}}<span>2</span></p>
-              <button class="uk-button uk-button-transparent">Ver Ruta</button>
-          </div>
+         <div class="uk-flex stiky uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
+            <div style="font-size: 16px; font-weight: 500; color: #3c3c3c">
+              <p class="uk-width-1-1 uk-flex"><span></span><span>Carga {{load?.status}}</span></p>
+              <p class="uk-width-1-1 uk-flex"><span>Chofer: Juan Perez</span></p>
+            </div>
+          <img v-if="load?.status == 'Asignada'" src="../assets/truckGreen.png" class="icon-load" alt="">
+              <img v-if="load?.status == 'Entregada'" src="../assets/truckDefault.png" class="icon-load" alt="">
+              <img v-if="load?.status == 'En Ruta'" src="../assets/truckBlack.png" class="icon-load" alt="">
+              <img v-if="load?.status == 'Despacho Aprobado'" src="../assets/truckOrange.png" class="icon-load" alt="">
         </div>
         <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
             <div
@@ -23,7 +23,7 @@
                         <p style="font-size: 16px !important; font-weight: 600" class="uk-width-1-1"><span>{{order.client}}</span></p>
                       </div>
                       <span>
-                        <img src="../assets/package.png" alt="">
+                        <img src="../assets/box.png" alt="">
                       </span>
                   </div>
                     <p class="uk-width-1-1"><strong>Direccion: </strong><span>{{order.address}}</span></p>
@@ -32,9 +32,29 @@
                   <!-- <div class="uk-width-1-2 uk-flex uk-flex-between">
                     <button class="uk-button uk-button-transparent"><font-awesome-icon icon="qrcode"/> Escanear</button>
                 </div> -->
-                    <button class="uk-button uk-button-default uk-width-1-1 btn-scan" style="margin-top: 10px">Escanear Orden
-                      <img src="../assets/parcel.png" class="img-scan" alt="">
-                    </button>
+                <div class="uk-flex uk-width-1-1 uk-flex-between" style="margin-top: 10px">
+                  <div class="uk-width-1-2" >
+                    <div class="uk-flex-column" style="align-items: center; display: inline-flex;">
+                      <img src="../assets/map.png" class="img-scan" alt="">
+                      <span>Ver Ruta</span>
+                    </div>
+                  </div>
+                  <div class=" uk-width-1-2">
+                    <div class="uk-flex-column" style="align-items: center; display:inline-flex;">
+                      <img src="../assets/parcel.png" class="img-scan " alt="">
+                        <span>Escanear Orden</span>
+                    </div>
+                    </div>
+                </div>
+                    <!-- <button class="uk-button uk-button-default uk-width-1-1 btn-scan" style="margin-top: 10px">
+                      
+                      <div>
+                        <img src="../assets/parcel.png" class="img-scan" alt="">
+                        <span></span>
+
+                      </div>
+                        
+                    </button> -->
                     
               </div>
             </div>
@@ -66,6 +86,7 @@ import { mapGetters } from 'vuex';
 export default {
     data(){
         return{
+            status: null,
             result: null,
             load: null,
             completed: 'background-color: #2a307c !important',
@@ -74,32 +95,32 @@ export default {
                     numberOfOrders: 1223,
                     numberOfBox: 2,
                     client: 'Juan Martinez Soto',
-                    address: 'Sto Dgo Este, Alma Rosa 2da calle abreu #17',
+                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17',
                     timeToWait: '2020-01-23'
                 },{
                     numberOfOrders: 1223,
                     numberOfBox: 2,
                     client: 'Maria Lisbeth Alcantara Rodriguez',
-                    address: 'Sto Dgo Este, Alma Rosa 2da calle abreu #17' ,
+                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
                     timeToWait: '2020-01-23'
                 },
                 {
                     numberOfOrders: 1223,
                     numberOfBox: 2,
                     client: 'Albert Perez',
-                    address: 'Sto Dgo Este, Alma Rosa 2da calle abreu #17' ,
+                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
                     timeToWait: '2020-01-23'
                 },{
                     numberOfOrders: 1223,
                     numberOfBox: 2,
                     client: 'Jose Abreu Pichardo',
-                    address: 'Sto Dgo Este, Alma Rosa 2da calle abreu #17' ,
+                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
                     timeToWait: '2020-01-23'
                 },{
                     numberOfOrders: 1223,
                     numberOfBox: 2,
                     client: 'Juan Jose Garcia',
-                    address: 'Sto Dgo Este, Alma Rosa 2da calle abreu #17' ,
+                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
                     timeToWait: '2020-01-23'
                 },
 
@@ -161,6 +182,7 @@ export default {
     async checkPermission() {
       // check or request permission
       const status = await BarcodeScanner.checkPermission({ force: true });
+      this.status = status
 
       if (status.granted) {
         // the user granted permission
@@ -211,7 +233,7 @@ export default {
   width: 20px;
     position: relative;
     top: -2px;
-  margin-left: 3px;
+  margin-left: 5px;
 }
 
 .scan-code img{
@@ -223,24 +245,28 @@ export default {
 
 .truckSpan {
   max-width: 100%;
-  width: 32%;
 }
 .truck {
   max-width: 100%;
-  transform: scaleX(-1);
-  width: 100%;
+  /* transform: scaleX(-1); */
+  width: 70px;
   display: flex;
 }
 .stiky {
     position: sticky;
     top: 0px;
     z-index: 2;
-
-    background-color: rgb(244, 247, 250);
+    padding: 0px 24px !important;
+    background-color: #fff
 }
 
 .img-scan{
       width: 39px
+}
+.icon-load{
+  width: 20%;
+  margin-left: 20px
+
 }
 .btn-scan{
   margin-top: 12px;

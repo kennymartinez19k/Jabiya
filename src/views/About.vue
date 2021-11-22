@@ -18,6 +18,7 @@ export default {
     return {
       camera: "auto",
       result: null,
+      status: null,
       orders: [],
       showScanConfirmation: false,
       location1: {
@@ -71,6 +72,7 @@ export default {
     async checkPermission() {
       // check or request permission
       const status = await BarcodeScanner.checkPermission({ force: true });
+      this.status = status
 
       if (status.granted) {
         // the user granted permission
