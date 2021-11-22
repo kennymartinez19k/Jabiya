@@ -24,10 +24,10 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
   mounted() {
-    // this.$store.commit("setCurrent", {
-    //   menuName: "Carga de Ordenes",
-    //   componentName: "home",
-    // });
+    this.$store.commit("setCurrent", {
+      menuName: "Carga de Ordenes",
+      componentName: "home",
+    });
     
   },
   setup(){
