@@ -1,27 +1,11 @@
 <template>
   <div class="uk-container">
-          <div>
- 
-      </div>
-      <div class="uk-flex ">
-          <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+      <div>
+          <div class="uk-card uk-card-default uk-card-hover uk-card-body" style="z-index: 0; padding: 15px 0px !important">
             <h3 class="uk-card-title">Acciones</h3>
-           <div class="uk-flex">
-                <div class="uk-flex uk-flex-column" @click="getShow('scan')">
-                 <font-awesome-icon class="circle"  icon="circle" />
-                <img src="../assets/img/qr.png" class="qr" alt="">
-            </div>
-               <div class="uk-flex uk-flex-column"  @click="getShow('cam')">
-                 <font-awesome-icon class=""  icon="circle" />
-                <img src="../assets/img/cam.png" class="qr" alt="">
-            </div>
-               <div class="uk-flex uk-flex-column"  @click="getShow('firma')">
-                 <font-awesome-icon class=""  icon="circle" />
-                <img src="../assets/img/firma.png" class="qr" alt="">
-            </div>
-           </div>
-           
-           </div>
+              <timeline :step="step"/>
+            <button class="uk-button uk-button-primary uk-margin" @click="step++">Siguiente</button>
+           </div> 
       </div>
       <div class="uk-flex">
         <h1 v-if="show === 'scan'">{{result}}</h1>
@@ -38,11 +22,13 @@
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner"
 import { mapGetters } from "vuex"
+import Timeline from '../components/timeline.vue'
 import { Camera, CameraResultType } from '@capacitor/camera'
 import {} from '../assets/img/cam.png'
 export default {
     name: 'DeliveryActions',
      components: {
+        Timeline
     },
     data () {
       return{
@@ -51,6 +37,7 @@ export default {
         result: null,
         cont: null,
         imagiElement: [],
+        step: 0
       }
     },
     computed: {
@@ -158,5 +145,4 @@ export default {
 .circle {
  background-color: rgb(25, 189, 33);
 }
-
 </style>

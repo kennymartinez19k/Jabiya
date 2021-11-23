@@ -108,7 +108,7 @@ p{
 .btn{
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
   margin-left: 10px;
   min-width: 125px;
 
