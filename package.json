@@ -31,6 +31,7 @@
     "vue-loading-overlay": "^4.0.4",
     "vue-router": "^4.0.12",
     "vue-slide-unlock": "^0.3.0",
+    "vue-step-progress": "^0.3.4",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

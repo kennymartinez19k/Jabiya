@@ -1,33 +1,32 @@
 <template>
   <div class="uk-container">
-      <div class="uk-flex ">
-          <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+      <div>
+          <div class="uk-card uk-card-default uk-card-hover uk-card-body" style="z-index: 0; padding: 15px 0px !important">
             <h3 class="uk-card-title">Acciones</h3>
-           <div class="uk-flex">
-                <div class="uk-flex uk-flex-column">
-                 <font-awesome-icon class="circle"  icon="circle" />
-                <img src="../assets/img/qr.png" class="qr" alt="">
-            </div>
-               <div class="uk-flex uk-flex-column">
-                 <font-awesome-icon class=""  icon="circle" />
-                <img src="../assets/img/cam.png" class="qr" alt="">
-            </div>
-               <div class="uk-flex uk-flex-column">
-                 <font-awesome-icon class=""  icon="circle" />
-                <img src="../assets/img/firma.png" class="qr" alt="">
-            </div>
-           </div>
-           
-           </div>
+              <timeline :step="step"/>
+            <button class="uk-button uk-button-primary uk-margin" @click="step++">Siguiente</button>
+           </div> 
       </div>
   </div>
 </template>
 
 <script>
-import {} from '../assets/img/cam.png'
-export default {
-    name: 'DeliveryActions'
-
+import { mapGetters } from 'vuex'
+import Timeline from '../components/timeline.vue'
+export default{
+  components:{
+    Timeline
+  },
+  computed:{
+    ...mapGetters([
+      ''
+    ])
+  },
+  data(){
+    return{
+      step: 0
+    }
+  }
 }
 </script>
 
@@ -38,5 +37,4 @@ export default {
 .circle {
  background-color: rgb(25, 189, 33);
 }
-
 </style>

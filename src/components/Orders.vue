@@ -1,14 +1,17 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
-         <div class="uk-flex stiky uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
+         <div class="uk-flex stiky uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
             <div style="font-size: 16px; font-weight: 500; color: #3c3c3c">
-              <p class="uk-width-1-1 uk-flex"><span></span><span>Carga {{load?.status}}</span></p>
-              <p class="uk-width-1-1 uk-flex"><span>Chofer: Juan Perez</span></p>
+              <p class="uk-width-1-1 uk-flex"><span><span>Cliente</span> {{load?.client}}</span></p>
+              <p class="uk-width-1-1 uk-flex"><span><span></span> {{load?.client}}</span></p>
             </div>
-          <img v-if="load?.status == 'Asignada'" src="../assets/truckGreen.png" class="icon-load" alt="">
+            <div style="width: 25%">
+              <span class="status">Carga {{load?.status}}</span>
+              <img v-if="load?.status == 'Asignada'" src="../assets/truckGreen.png" class="icon-load" alt="">
               <img v-if="load?.status == 'Entregada'" src="../assets/truckDefault.png" class="icon-load" alt="">
               <img v-if="load?.status == 'En Ruta'" src="../assets/truckBlack.png" class="icon-load" alt="">
               <img v-if="load?.status == 'Despacho Aprobado'" src="../assets/truckOrange.png" class="icon-load" alt="">
+            </div>
         </div>
         <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
             <div
@@ -40,21 +43,12 @@
                     </div>
                   </div>
                   <div class=" uk-width-1-2">
-                    <div class="uk-flex-column" style="align-items: center; display:inline-flex;">
+                    <div class="uk-flex-column" @click="scan(order)" style="align-items: center; display:inline-flex;">
                       <img src="../assets/parcel.png" class="img-scan " alt="">
                         <span>Escanear Orden</span>
                     </div>
                     </div>
                 </div>
-                    <!-- <button class="uk-button uk-button-default uk-width-1-1 btn-scan" style="margin-top: 10px">
-                      
-                      <div>
-                        <img src="../assets/parcel.png" class="img-scan" alt="">
-                        <span></span>
-
-                      </div>
-                        
-                    </button> -->
                     
               </div>
             </div>
@@ -161,7 +155,7 @@ export default {
     },
     scan(val){
         this.$store.commit('scanOrder', val )
-        this.$router.push({ name: 'about' }).catch(() => {})
+        this.$router.push({ name: 'deliveryActions' }).catch(() => {})
     },
     async scanOrder() {
         if(await this.checkPermission()){
@@ -223,7 +217,11 @@ export default {
     bottom: 5px;
     height: 40px;
 }
-
+.status{
+  color: green;
+  font-weight: 500;
+  font-size: 14px;
+}
 .btn{
     display: flex;
     align-items: baseline;
@@ -248,7 +246,7 @@ export default {
 }
 .truck {
   max-width: 100%;
-  /* transform: scaleX(-1); */
+  transform: scaleX(-1);
   width: 70px;
   display: flex;
 }
@@ -264,8 +262,9 @@ export default {
       width: 39px
 }
 .icon-load{
-  width: 20%;
-  margin-left: 20px
+  width: 75%;
+  margin-right: 20px;
+  transform: scaleX(-1);
 
 }
 .btn-scan{
