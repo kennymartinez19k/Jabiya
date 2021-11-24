@@ -25,7 +25,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
   mounted() {
     this.$store.commit("setCurrent", {
-      menuName: "Carga de Ordenes",
+      menuName: "Tus Cargas",
       componentName: "home",
     });
     
@@ -50,7 +50,7 @@ export default {
           hour: '10:00 Am',
           status: 'Asignada',
           client: 'Juan Perez',
-          numberOfOrden: 2,
+          numberOfOrden: 2177,
           zone: 'Rep. de colombia',
           btnAction: 'Cargar Vehiculo',
           icon: 'color: #1f7a18',
@@ -62,7 +62,7 @@ export default {
           hour: '12:00 PM',
           status: 'Entregada',
           client: 'Maria Hernandez',
-          numberOfOrden: 1,
+          numberOfOrden: 1883,
           zone: 'Respaldo Rodeo',
           btnAction: 'Ver Orden(es)',
           icon: 'color: #000000',
@@ -73,7 +73,7 @@ export default {
           hour: '10:00 AM',
           status: 'En Ruta',
           client: 'Juan Perez',
-          numberOfOrden: 2,
+          numberOfOrden: 2238,
           zone: 'Rep. de colombia',
           btnAction: 'Continuar Entrega(s)',
           icon: 'color: #a7a7a7',
@@ -86,7 +86,7 @@ export default {
           hour: '10:00 AM',
           status: 'En Ruta',
           client: 'Juan Perez',
-          numberOfOrden: 2,
+          numberOfOrden: 2833,
           zone: 'Rep. de colombia',
           btnAction: 'Continuar Entrega(s)',
           icon: 'color: #a7a7a7',
@@ -99,7 +99,7 @@ export default {
           hour: '10:00 AM',
           status: 'Despacho Aprobado',
           client: 'Juan Perez',
-          numberOfOrden: 2,
+          numberOfOrden: 2993,
           zone: 'Rep. de colombia',
           btnAction: 'Comenzar Entrega(s)',
           icon: 'color: #c39108',
