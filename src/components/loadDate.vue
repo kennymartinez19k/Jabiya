@@ -79,7 +79,7 @@
             </div>
             <button
               class="uk-button uk-button-purple"
-              @click="load.action, setload(load)"
+              @click="setLoad(load)"
             >
               {{ load.btnAction }}
             </button>
@@ -101,8 +101,6 @@ export default {
       this.$store.commit("setloadStore", valueOrder);
       console.log(valueOrder, "valueo");
       
-      // this.$router.push({ name: "orders" }).catch(() => {});
-   
       switch (valueOrder?.status) {
         case 'Entregada':
          this.setDelivered()

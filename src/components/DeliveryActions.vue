@@ -11,18 +11,23 @@
               Si
             </h6>
             <h4 class="">Acciones</h4>
-              <timeline :step="step" :exception="exception"/>
-            <button class="uk-button uk-button-primary uk-margin" @click="step++">Siguiente</button>
+              <timeline :step="step" :exception="exception" @action="getShow($event)"/>
+            <!-- <button class="uk-button uk-button-primary uk-margin" @click="step++">Siguiente</button> -->
            </div> 
       </div>
       <div v-if="show" class="uk-flex">
         <h1 >{{result}}</h1>
-        <h1>
+        <!-- <h1>
           <div class="uk-width-1">
              <img v-for="src in imagiElement" :key="src"  class="uk-padding" style="max-width: 30%" :src="src" alt="">
           </div>
-        </h1>
-        <h1 >Firma</h1>
+        </h1> -->
+       <div v-if="show === 'camera'">
+         <camera-actions></camera-actions>
+       </div>
+        <div v-if="show === 'firm'">
+           <signature-action></signature-action>
+        </div>
       </div>
   </div>
 </template>
@@ -32,11 +37,15 @@ import { BarcodeScanner } from "@capacitor-community/barcode-scanner"
 import { mapGetters } from "vuex"
 import timeline from '../components/timeline.vue'
 import { Camera, CameraResultType } from '@capacitor/camera'
+import SignatureAction from '../components/actions/SignatureAction.vue'
+import CameraActions from '../components/actions/CameraActions.vue'
 // import {} from '../assets/img/cam.png'
 export default {
     name: 'DeliveryActions',
      components: {
-        timeline
+        timeline,
+        SignatureAction,
+        CameraActions
     },
     data () {
       return{
@@ -45,7 +54,7 @@ export default {
         result: null,
         cont: null,
         imagiElement: [],
-        step: 0,
+        step: 1,
         exception: false
       }
     },
@@ -67,7 +76,7 @@ export default {
         if (value === 'scan') {
           this.scanOrder(this.orders)
         } else if (value === 'camera' && this.imagiElement.length <= 6) {
-          this.getCam()
+          // this.getCam()
         }
       },
        async scanOrder() {
