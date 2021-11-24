@@ -32,6 +32,9 @@ export default {
 p {
   margin: 4px 0px;
 }
+h5{
+   color: #5c5c5c !important
+}
 .sticky {
   position: -webkit-sticky;
   position: sticky;

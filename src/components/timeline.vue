@@ -6,12 +6,13 @@
                 <div><img src="../assets/img/qr.png" alt="" srcset=""></div>
                 <div :class="{disabled: step < 1}"></div>
             </li>
-            <li id="2" class="stepTwo">
+            <li id="2" :class="stepTwo">
                 <div class="info active"><font-awesome-icon icon="check"/></div>
                 <div><img src="../assets/img/cam.png" alt="" srcset=""></div>
                 <div :class="{disabled: step < 2}"></div>
             </li>
-             <li id="3" class="stepThree">
+      
+             <li id="4" class="stepThree">
                 <div class="info"><font-awesome-icon icon="check"/> </div>
                 <div><img src="../assets/img/firma.png" alt="" srcset=""></div>
                 <div :class="{disabled: step < 3}"></div>
@@ -23,7 +24,8 @@
 <script>
 export default {
 props:{
-    step: Number
+    step: Number,
+    exception: Boolean
 },
 data(){
     return{
@@ -58,6 +60,12 @@ img{
 .progressbar li{
   float: left;
   width: 33%;
+  position: relative;
+  text-align: center;
+}
+.stepTwo{
+  float: left;
+  width: 25% !important;
   position: relative;
   text-align: center;
 }
