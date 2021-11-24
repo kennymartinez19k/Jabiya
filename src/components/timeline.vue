@@ -1,18 +1,17 @@
 <template>
  <div class="container">
           <ul class="progressbar">
-            <li id="1" class="stepOne">
+            <li id="1" class="stepOne"  @click="getShow('scan')">
                 <div class="info active"><font-awesome-icon icon="check"/> </div>
                 <div><img src="../assets/img/qr.png" alt="" srcset=""></div>
                 <div :class="{disabled: step < 1}"></div>
             </li>
-            <li id="2" :class="stepTwo">
+            <li id="2" class="stepTwo" :class="{'uk-disabled': disabled === 2}" @click="getShow('camera')">
                 <div class="info active"><font-awesome-icon icon="check"/></div>
                 <div><img src="../assets/img/cam.png" alt="" srcset=""></div>
                 <div :class="{disabled: step < 2}"></div>
             </li>
-      
-             <li id="4" class="stepThree">
+             <li id="3" class="stepThree" :class="{'uk-disabled': disabled === 3}" @click="getShow('firm')">
                 <div class="info"><font-awesome-icon icon="check"/> </div>
                 <div><img src="../assets/img/firma.png" alt="" srcset=""></div>
                 <div :class="{disabled: step < 3}"></div>
@@ -38,7 +37,12 @@ watch:{
        stepCurrent.classList.add('active')
        this.stepCurrent++
     }
-}
+},
+ methods: {
+     getShow(value) {
+         this.$emit('action', value)
+      },
+  }
 }
 </script>
 
