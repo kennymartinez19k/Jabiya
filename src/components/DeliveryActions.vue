@@ -3,18 +3,18 @@
       <div>
           <div class="uk-card uk-card-default uk-card-hover uk-card-body" style="z-index: 0; padding: 15px 0px !important">
             <h3 class="uk-card-title">Acciones</h3>
-              <timeline :step="step"/>
+              <timeline :step="step" @action="getShow($event)"/>
             <button class="uk-button uk-button-primary uk-margin" @click="step++">Siguiente</button>
            </div> 
       </div>
-      <div class="uk-flex">
-        <h1 v-if="show === 'scan'">{{result}}</h1>
-        <h1  v-if="show === 'cam'">
-          <div class="uk-width-1 ">
-             <img v-for="src in imagiElement" :key="src"  class="" style="max-width: 30%" :src="src" alt="">
+      <div v-if="show" class="uk-flex">
+        <h1 >{{result}}</h1>
+        <h1>
+          <div class="uk-width-1">
+             <img v-for="src in imagiElement" :key="src"  class="uk-padding" style="max-width: 30%" :src="src" alt="">
           </div>
         </h1>
-        <h1  v-if="show === 'firma'">Firma</h1>
+        <h1 >Firma</h1>
       </div>
   </div>
 </template>
@@ -22,13 +22,13 @@
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner"
 import { mapGetters } from "vuex"
-import Timeline from '../components/timeline.vue'
+import timeline from '../components/timeline.vue'
 import { Camera, CameraResultType } from '@capacitor/camera'
-import {} from '../assets/img/cam.png'
+// import {} from '../assets/img/cam.png'
 export default {
     name: 'DeliveryActions',
      components: {
-        Timeline
+        timeline
     },
     data () {
       return{
@@ -41,18 +41,22 @@ export default {
       }
     },
     computed: {
-    ...mapGetters(["orderScan"]),
+    ...mapGetters([
+      "orderScan",
+    ]),
   },
   mounted() {
     this.orders = this.orderScan
     
   },
+
     methods: {
       getShow(value) {
         this.show = value
+        // this.step++
         if (value === 'scan') {
           this.scanOrder(this.orders)
-        } else if (value === 'cam' && this.imagiElement.length <= 6) {
+        } else if (value === 'camera' && this.imagiElement.length <= 6) {
           this.getCam()
         }
       },
@@ -98,7 +102,7 @@ export default {
          
           var imageUrl = imagi[0].webPath;
           this.imagiElement[this.cont] = imageUrl;
- console.log(imagi.webPath, 'imagi.webPath')
+          console.log(imagi, 'imagi.webPath')
         if (imagi === 1) {
         // this.getPickImages()
         }          

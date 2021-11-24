@@ -22,6 +22,7 @@
     "@ionic-native/core": "^5.36.0",
     "@ionic/core": "^5.8.5",
     "@ionic/vue": "^5.8.5",
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
