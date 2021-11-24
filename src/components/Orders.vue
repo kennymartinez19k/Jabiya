@@ -1,11 +1,14 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
-         <div class="uk-flex stiky uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
-            <div style="font-size: 16px; font-weight: 500; color: #3c3c3c">
-              <p class="uk-width-1-1 uk-flex"><span><span>Cliente</span> {{load?.client}}</span></p>
-              <p class="uk-width-1-1 uk-flex"><span><span></span> {{load?.client}}</span></p>
+    <div class="stiky">
+          <h5 class="uk-text-center uk-margin-remove" style="margin-bottom: 10px !important"><strong>ILS 11/23/2021 1:30PM Gate 01</strong></h5>
+         <div class="uk-flex uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
+            
+            <div style="font-size: 14px; font-weight: 500;">
+              <p class="uk-width-1-1 uk-flex"><strong style="font-size: 14px !important;">Shipper:</strong><span>&nbsp; {{load?.client}}</span></p>
+              <p class="uk-width-1-1 uk-flex"><strong style="font-size: 14px !important ;">Zona:</strong><span>&nbsp; {{load?.zone}}</span></p>
             </div>
-            <div style="width: 25%">
+            <div class="info-header">
               <span class="status">Carga {{load?.status}}</span>
               <img v-if="load?.status == 'Asignada'" src="../assets/truckGreen.png" class="icon-load" alt="">
               <img v-if="load?.status == 'Entregada'" src="../assets/truckDefault.png" class="icon-load" alt="">
@@ -13,6 +16,7 @@
               <img v-if="load?.status == 'Despacho Aprobado'" src="../assets/truckOrange.png" class="icon-load" alt="">
             </div>
         </div>
+    </div>
         <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
             <div
               v-for="order in orders"
@@ -21,39 +25,24 @@
             >
               <div class="uk-text-left info-user uk-flex uk-flex-wrap">
                   <div class="btn uk-flex">
-                      
-                      <div class="uk-flex uk-flex-column uk-text-center">
+                      <div class="uk-flex uk-flex-column uk-text-left">
                         <p style="font-size: 16px !important; font-weight: 600" class="uk-width-1-1"><span>{{order.client}}</span></p>
                       </div>
-                      <span>
-                        <img src="../assets/box.png" alt="">
-                      </span>
-                  </div>
-                    <p class="uk-width-1-1"><strong>Direccion: </strong><span>{{order.address}}</span></p>
-                    <p class="uk-width-1-2"><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
-                    <p class="uk-width-1-2"><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>
-                  <!-- <div class="uk-width-1-2 uk-flex uk-flex-between">
-                    <button class="uk-button uk-button-transparent"><font-awesome-icon icon="qrcode"/> Escanear</button>
-                </div> -->
-                <div class="uk-flex uk-width-1-1 uk-flex-between" style="margin-top: 10px">
-                  <div class="uk-width-1-2" >
-                    <div class="uk-flex-column" style="align-items: center; display: inline-flex;">
-                      <img src="../assets/map.png" class="img-scan" alt="">
-                      <span>Ver Ruta</span>
-                    </div>
-                  </div>
-                  <div class=" uk-width-1-2">
+                      <div style="min-width: 85px; margin: 0px 10px">
                     <div class="uk-flex-column" @click="scan(order)" style="align-items: center; display:inline-flex;">
                       <img src="../assets/parcel.png" class="img-scan " alt="">
                         <span>Escanear Orden</span>
                     </div>
                     </div>
-                </div>
-                    
+                  </div>
+                    <p class="uk-width-1-1"><strong>Direccion: </strong><span>{{order.address}}</span></p>
+                    <p class="uk-width-1-2"><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
+                    <p class="uk-width-1-2"><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>            
               </div>
             </div>
          </div>
-    
+        <div class="slide-div">
+
         <slide-unlock
         ref="vueslideunlock"
         :auto-width="true"
@@ -69,6 +58,7 @@
         @completed="complete(orders)"
         textSize="10px"
     />
+        </div>
   </div>
 </template>
 
@@ -132,7 +122,7 @@ export default {
      ])
     },
      mounted(){
-        this.$store.commit('setCurrent', {menuName: 'Lista de ordenes',componentName: 'orders'},)
+        this.$store.commit('setCurrent', {menuName: 'Cargar Vehiculo',componentName: 'orders'},)
         this.load = this.loadStore
     },
     methods: {
@@ -196,8 +186,12 @@ export default {
 .slide .slideunlock.is-complete .slideunlock-progressbar {
     background-color: #2a307c;
 }
-.slide:first-child{
-    background-color: #2a307c;
+.slide-div{
+  background: #ffffff !important;
+    height: 80px;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
 }
 .cnt {
   height: 100%;
@@ -220,15 +214,17 @@ export default {
 .status{
   color: green;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
 }
 .btn{
     display: flex;
     align-items: baseline;
     width: 100%;
+    margin-bottom: 5px;
+    justify-content: space-between;
 }
 .btn img{
-  width: 20px;
+  width: 30px;
     position: relative;
     top: -2px;
   margin-left: 5px;
@@ -252,17 +248,19 @@ export default {
 }
 .stiky {
     position: sticky;
+    color: #000 !important;
     top: 0px;
     z-index: 2;
-    padding: 0px 24px !important;
-    background-color: #fff
+    padding: 5px 24px !important;
+    background-color: rgb(248 248 248);
+    box-shadow: 1px 0px 5px #898989;
 }
 
 .img-scan{
       width: 39px
 }
 .icon-load{
-  width: 75%;
+  width: 35%;
   margin-right: 20px;
   transform: scaleX(-1);
 
@@ -276,4 +274,11 @@ box-shadow: 0px -0.5px 3px #000;
   background: #2a307c;
 }
 
+.info-header{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+}
 </style>

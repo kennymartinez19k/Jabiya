@@ -22,27 +22,27 @@
 
 <script>
 export default {
-  props:{
-      step: Number
-  },
-  data(){
-      return{
-          stepCurrent: 0
-      }
-  },
-  watch:{
-      step: function (newVal) {
-        var stepCurrent =  document.getElementById(`${newVal}`)
-        stepCurrent.classList.add('active')
-        this.stepCurrent++
-      }
-  },
-  methods: {
+props:{
+    step: Number,
+    exception: Boolean
+},
+data(){
+    return{
+        stepCurrent: 0
+    }
+},
+watch:{
+    step: function (newVal) {
+       var stepCurrent =  document.getElementById(`${newVal}`)
+       stepCurrent.classList.add('active')
+       this.stepCurrent++
+    }
+},
+ methods: {
      getShow(value) {
          this.$emit('action', value)
       },
   }
-
 }
 </script>
 
@@ -64,6 +64,12 @@ img{
 .progressbar li{
   float: left;
   width: 33%;
+  position: relative;
+  text-align: center;
+}
+.stepTwo{
+  float: left;
+  width: 25% !important;
   position: relative;
   text-align: center;
 }

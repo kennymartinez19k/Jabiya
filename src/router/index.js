@@ -1,22 +1,16 @@
-import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
-import Login from "../views/Login.vue";
-import SignIn from "../components/SignIn.vue";
-import SignUp from "../components/SignUp.vue";
-import About from "../views/About.vue";
-import Orders from "../components/Orders.vue";
-import DeliveryActions from "../components/DeliveryActions.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/Home.vue'
+import SignIn from '../components/SignIn.vue'
+import SignUp from '../components/SignUp.vue'
+import About from '../views/About.vue'
+import Orders from '../components/Orders.vue'
+import DeliveryActions from '../components/DeliveryActions.vue'
 import DeliveryRoutes from "../components/DeliveryRoutes.vue";
 const routes = [
   {
-    path: "/",
-    name: "Login",
-    component: Login,
-  },
-  {
-    path: "/sign-in",
-    name: "sign-in",
-    component: SignIn,
+    path: '/',
+    name: 'sign-in',
+    component: SignIn 
   },
   {
     path: "/sign-up",
