@@ -1,23 +1,26 @@
 <template>
   <div>
-    <div class="uk-card uk-card-default uk-card-body uk-padding-remove firm">
-      <VueSignaturePad
-        width="100%"
-        height="150px"
-        ref="signaturePad"
-        :options="{ onBegin, onEnd }"
-      />
-    </div>
+    <VueSignaturePad
+      class="firm"
+      width="100%"
+      height="150px"
+      ref="signaturePad"
+      :options="{ onBegin, onEnd }"
+    />
 
     <div class="uk-flex uk-flex-between uk-margin-small-top">
-      <button class="uk-button uk-button-primary" @click="save">Guardar</button>
-      <button class="uk-button uk-button-secondary" @click="undo">
+      <button class="uk-button uk-button-primary btn" @click="save">
+        Guardar
+      </button>
+      <button class="uk-button uk-button-secondary btn" @click="undo">
         Deshacer
       </button>
     </div>
   </div>
 </template>
 <script>
+import UIkit from "uikit";
+
 export default {
   name: "SignatureAction",
   data() {
@@ -34,6 +37,8 @@ export default {
       console.log(isEmpty);
       console.log(data);
       this.firm = data;
+      this.$emit("digitalSignature", this.firm);
+      UIkit.modal("#modal_button").hide();
     },
     onBegin() {
       console.log("=== Begin ===");
@@ -47,6 +52,8 @@ export default {
 <style scoped>
 .firm {
   border: 2.5px solid #000;
-  margin: 15px 0px !important;
+}
+.btn {
+  padding: 0 5px;
 }
 </style>
