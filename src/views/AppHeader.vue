@@ -2,7 +2,7 @@
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
         <a class="uk-navbar-toggle" style="min-height: 60px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
-        <h4 class="uk-margin-remove">{{this.titlePage.menuName}}</h4>
+        <h5 class="uk-margin-remove">{{this.titlePage.menuName}}</h5>
 <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar uk-padding-remove">
 
@@ -56,7 +56,7 @@ methods:{
 
 <style scoped>
 *{
-    color: #fff
+    color: #fff !important
 }
 
 li{
