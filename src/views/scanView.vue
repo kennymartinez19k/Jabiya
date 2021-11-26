@@ -109,18 +109,6 @@ export default {
 }
 
 
-/* 
-body {
-  margin:0;
-  background-color:#191919;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:Helvetica,Sans-serif;
-} */
-
-
 
 
 </style>

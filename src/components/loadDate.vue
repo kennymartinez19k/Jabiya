@@ -22,12 +22,11 @@
           dispatch: load.status == 'Despacho Aprobado',
         }"
       >
-      <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
-            <strong>ILS 11/23/2021 1:30PM Gate 01</strong>
-          </h5>
+        <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
+          <strong>ILS 11/23/2021 1:30PM Gate 01</strong>
+        </h5>
         <div class="uk-flex uk-flex-between">
           <div class="uk-text-left info-user">
-            
             <p>
               <strong> Estado: </strong><span>{{ load.status }}</span>
             </p>
@@ -35,8 +34,8 @@
               <strong>Cliente: </strong> <span>{{ load.client }}</span>
             </p>
             <p>
-              <strong>No. de Orden(es): </strong><span>{{ load.numberOfOrden
-              }}</span>
+              <strong>No. de Orden(es): </strong
+              ><span>{{ load.numberOfOrden }}</span>
             </p>
             <p>
               <strong>Zona: </strong><span>{{ load.zone }}</span>
@@ -72,10 +71,7 @@
                 />
               </div>
             </div>
-            <button
-              class="uk-button uk-button-purple"
-              @click="setLoad(load)"
-            >
+            <button class="uk-button uk-button-purple" @click="setLoad(load)">
               {{ load.btnAction }}
             </button>
           </div>
@@ -96,32 +92,32 @@ export default {
       this.$store.commit("setloadStore", valueOrder);
       console.log(valueOrder, "valueo");
       switch (valueOrder?.status) {
-        case 'Entregada':
-         this.setDelivered()
-         break;
-        case 'Asignada':
-         this.setAsigned()
-         break;
-        case 'En Ruta':
-         this.setOnWay()
-         break;
-        case 'Despacho Aprobado':
-         this.setDispached()
-         break;
+        case "Entregada":
+          this.setDelivered();
+          break;
+        case "Asignada":
+          this.setAsigned();
+          break;
+        case "En Ruta":
+          this.setOnWay();
+          break;
+        case "Despacho Aprobado":
+          this.setDispached();
+          break;
       }
     },
-    setAsigned () {
+    setAsigned() {
       this.$router.push({ name: "orders" }).catch(() => {});
     },
-     setDelivered () {
+    setDelivered() {
       this.$router.push({ name: "orders" }).catch(() => {});
     },
-     setOnWay () {
+    setOnWay() {
       this.$router.push({ name: "delivery-routes" }).catch(() => {});
     },
-     setDispached () {
+    setDispached() {
       this.$router.push({ name: "orders" }).catch(() => {});
-    }
+    },
   },
 };
 </script>
@@ -232,8 +228,6 @@ body {
   box-shadow: 0px 0.5px 3px #236f00;
 }
 
-
-
 .dispatch {
   color: #000;
 }
@@ -243,7 +237,6 @@ body {
   background: #c58002;
   font-weight: 700;
   -webkit-animation: onWays 800ms infinite;
-
 }
 @-webkit-keyframes onWays {
   0% {
