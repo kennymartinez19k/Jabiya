@@ -2,9 +2,10 @@
   <div>
       <button class="uk-button" @click="scanOrder">scan</button>
       <button class="uk-button" @click="location">location</button>
+      <button class="uk-button" @click="result = true">location</button>
+
       <h1>{{location1}}</h1>
-      <!-- <p>{{orderScan}}</p>
-      <p>{{result}}</p> -->
+      <p>{{result}}</p>
   </div>
 </template>
 
@@ -27,12 +28,21 @@ export default {
       },
     };
   },
+  watch:{
+    result: function(newVal){
+      if (newVal == true){
+        this.orderScan.completed = true
+        this.$store.commit("scanOrder", this.orderScan);
+        this.$router.push({ name: "orders" }).catch(() => {});
+
+      }
+    }
+  },
   computed: {
     ...mapGetters(["orderScan"]),
   },
   mounted() {
     this.orders = this.orderScan
-    this.scanOrder(this.orders)
   },
   methods: {
 

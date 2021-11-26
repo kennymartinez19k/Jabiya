@@ -18,10 +18,12 @@
             </li>
           </ul>
       </div>
+      
 </template>
 
 <script>
 export default {
+
 props:{
     step: Number,
     exception: Boolean

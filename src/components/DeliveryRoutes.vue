@@ -1,47 +1,21 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
-    <div
-      class="
-        uk-flex
-        stiky
-        uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove"
-      style="align-items: center"
-    >
-      <div style="font-size: 16px; font-weight: 500; color: #3c3c3c">
-        <p class="uk-width-1-1 uk-flex">
-          <span><span>Cliente</span> {{ load?.client }}</span>
-        </p>
-        <p class="uk-width-1-1 uk-flex">
-          <span><span></span> {{ load?.client }}</span>
-        </p>
-      </div>
-      <div style="width: 25%">
-        <span class="status">Carga {{ load?.status }}</span>
-        <img
-          v-if="load?.status == 'Asignada'"
-          src="../assets/truckGreen.png"
-          class="icon-load"
-          alt=""
-        />
-        <img
-          v-if="load?.status == 'Entregada'"
-          src="../assets/truckDefault.png"
-          class="icon-load"
-          alt=""
-        />
-        <img
-          v-if="load?.status == 'En Ruta'"
-          src="../assets/truckBlack.png"
-          class="icon-load"
-          alt=""
-        />
-        <img
-          v-if="load?.status == 'Despacho Aprobado'"
-          src="../assets/truckOrange.png"
-          class="icon-load"
-          alt=""
-        />
-      </div>
+    <div class="stiky">
+          <h5 class="uk-text-center uk-margin-remove" style="margin-bottom: 5px !important"><strong>ILS 11/23/2021 1:30PM Gate 01</strong></h5>
+         <div class="uk-flex uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
+            
+            <div style="font-size: 13px; font-weight: 500;">
+              <p class="uk-width-1-1 uk-flex"><strong >Shipper:</strong><span>&nbsp; {{load?.client}}</span></p>
+              <p class="uk-width-1-1 uk-flex"><strong>Zona de Destino:</strong><span>&nbsp; {{load?.zone}}</span></p>
+            </div>
+            <div class="info-header">
+              <span class="status">Carga {{load?.status}}</span>
+              <img v-if="load?.status == 'Asignada'" src="../assets/truckGreen.png" class="icon-load" alt="">
+              <img v-if="load?.status == 'Entregada'" src="../assets/truckDefault.png" class="icon-load" alt="">
+              <img v-if="load?.status == 'En Ruta'" src="../assets/truckBlue.png" class="icon-load" alt="">
+              <img v-if="load?.status == 'Despacho Aprobado'" src="../assets/truckOrange.png" class="icon-load" alt="">
+            </div>
+        </div>
     </div>
     <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
       <div
@@ -298,21 +272,16 @@ export default {
   width: 70px;
   display: flex;
 }
-.stiky {
-  position: sticky;
-  top: 0px;
-  z-index: 2;
-  padding: 0px 24px !important;
-  background-color: #fff;
-}
+
 
 .img-scan {
   width: 39px;
 }
-.icon-load {
-  width: 75%;
+.icon-load{
+  width: 35%;
   margin-right: 20px;
   transform: scaleX(-1);
+
 }
 .btn-scan {
   margin-top: 12px;
@@ -321,5 +290,25 @@ export default {
   color: #fff;
   padding: 3px;
   background: #2a307c;
+}
+.stiky {
+    color: #000 !important;
+    top: 0px;
+    z-index: 2;
+    padding: 5px 10px !important;
+    background-color: rgb(248 248 248);
+    box-shadow: 1px 0px 5px #898989;
+}
+.info-header{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+}
+.status{
+  color: green;
+  font-weight: 500;
+  font-size: 12px;
 }
 </style>

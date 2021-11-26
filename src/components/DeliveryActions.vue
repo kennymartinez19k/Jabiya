@@ -11,7 +11,7 @@
               Si
             </h6>
             <h4 class="">Acciones</h4>
-              <timeline :step="step" :exception="exception"/>
+              <timeline :step="step" :exception="exception" @action="getShow($event)"/>
             <button class="uk-button uk-button-primary uk-margin" @click="step++">Siguiente</button>
            </div> 
       </div>
@@ -24,6 +24,8 @@
         </h1>
         <h1 >Firma</h1>
       </div>
+      
+        <div id="reader" width="600px"></div>
   </div>
 </template>
 
@@ -36,10 +38,11 @@ import { Camera, CameraResultType } from '@capacitor/camera'
 export default {
     name: 'DeliveryActions',
      components: {
-        timeline
+        timeline,
     },
     data () {
       return{
+        condition: false,
         show: null,
         orders: null,
         result: null,
@@ -65,6 +68,7 @@ export default {
         this.show = value
         // this.step++
         if (value === 'scan') {
+
           this.scanOrder(this.orders)
         } else if (value === 'camera' && this.imagiElement.length <= 6) {
           this.getCam()
@@ -146,6 +150,16 @@ export default {
           console.log(error, 'aaaaaaaaaaaa')
         }
       
+      },
+
+      onScanSuccess(decodedText, decodedResult) {
+        // handle the scanned code as you like, for example:
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+      },
+       onScanFailure(error) {
+        // handle scan failure, usually better to ignore and keep scanning.
+        // for example:
+        console.warn(`Code scan error = ${error}`);
       }
 
     }
