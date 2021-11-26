@@ -1,49 +1,104 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between cnt">
     <div class="stiky">
-          <h5 class="uk-text-center uk-margin-remove" style="margin-bottom: 10px !important"><strong>ILS 11/23/2021 1:30PM Gate 01</strong></h5>
-         <div class="uk-flex uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove" style="align-items: center">
-            
-            <div style="font-size: 14px; font-weight: 500;">
-              <p class="uk-width-1-1 uk-flex"><strong style="font-size: 14px !important;">Shipper:</strong><span>&nbsp; {{load?.client}}</span></p>
-              <p class="uk-width-1-1 uk-flex"><strong style="font-size: 14px !important ;">Zona:</strong><span>&nbsp; {{load?.zone}}</span></p>
-            </div>
-            <div class="info-header">
-              <span class="status">Carga {{load?.status}}</span>
-              <img v-if="load?.status == 'Asignada'" src="../assets/truckGreen.png" class="icon-load" alt="">
-              <img v-if="load?.status == 'Entregada'" src="../assets/truckDefault.png" class="icon-load" alt="">
-              <img v-if="load?.status == 'En Ruta'" src="../assets/truckBlack.png" class="icon-load" alt="">
-              <img v-if="load?.status == 'Despacho Aprobado'" src="../assets/truckOrange.png" class="icon-load" alt="">
-            </div>
+      <h5
+        class="uk-text-center uk-margin-remove"
+        style="margin-bottom: 10px !important"
+      >
+        <strong>ILS 11/23/2021 1:30PM Gate 01</strong>
+      </h5>
+      <div
+        class="
+          uk-flex
+          uk-flex
+          uk-flex-between
+          uk-flex-left
+          uk-margin-remove
+          uk-padding-remove
+        "
+        style="align-items: center"
+      >
+        <div style="font-size: 14px; font-weight: 500">
+          <p class="uk-width-1-1 uk-flex">
+            <strong style="font-size: 14px !important">Shipper:</strong
+            ><span>&nbsp; {{ load?.client }}</span>
+          </p>
+          <p class="uk-width-1-1 uk-flex">
+            <strong style="font-size: 14px !important ">Zona:</strong
+            ><span>&nbsp; {{ load?.zone }}</span>
+          </p>
         </div>
+        <div class="info-header">
+          <span class="status">Carga {{ load?.status }}</span>
+          <img
+            v-if="load?.status == 'Asignada'"
+            src="../assets/truckGreen.png"
+            class="icon-load"
+            alt=""
+          />
+          <img
+            v-if="load?.status == 'Entregada'"
+            src="../assets/truckDefault.png"
+            class="icon-load"
+            alt=""
+          />
+          <img
+            v-if="load?.status == 'En Ruta'"
+            src="../assets/truckBlack.png"
+            class="icon-load"
+            alt=""
+          />
+          <img
+            v-if="load?.status == 'Despacho Aprobado'"
+            src="../assets/truckOrange.png"
+            class="icon-load"
+            alt=""
+          />
+        </div>
+      </div>
     </div>
-        <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
-            <div
-              v-for="order in orders"
-              :key="order"
-              class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-            >
-              <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-                  <div class="btn uk-flex">
-                      <div class="uk-flex uk-flex-column uk-text-left">
-                        <p style="font-size: 16px !important; font-weight: 600" class="uk-width-1-1"><span>{{order.client}}</span></p>
-                      </div>
-                      <div style="min-width: 85px; margin: 0px 10px">
-                    <div class="uk-flex-column" @click="scan(order)" style="align-items: center; display:inline-flex;">
-                      <img src="../assets/parcel.png" class="img-scan " alt="">
-                        <span>Escanear Orden</span>
-                    </div>
-                    </div>
-                  </div>
-                    <p class="uk-width-1-1"><strong>Direccion: </strong><span>{{order.address}}</span></p>
-                    <p class="uk-width-1-2"><strong> No. de Orden: </strong><span>{{order.numberOfOrders}}</span></p>
-                    <p class="uk-width-1-2"><strong>No. de Cajas: </strong>{{order.numberOfBox}}<span></span></p>            
+    <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
+      <div
+        v-for="order in orders"
+        :key="order"
+        class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+      >
+        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+          <div class="btn uk-flex">
+            <div class="uk-flex uk-flex-column uk-text-left">
+              <p
+                style="font-size: 16px !important; font-weight: 600"
+                class="uk-width-1-1"
+              >
+                <span>{{ order.client }}</span>
+              </p>
+            </div>
+            <div style="min-width: 85px; margin: 0px 10px">
+              <div
+                class="uk-flex-column"
+                @click="scan(order)"
+                style="align-items: center; display: inline-flex"
+              >
+                <img src="../assets/parcel.png" class="img-scan" alt="" />
+                <span>Escanear Orden</span>
               </div>
             </div>
-         </div>
-        <div class="slide-div">
-
-        <slide-unlock
+          </div>
+          <p class="uk-width-1-1">
+            <strong>Direccion: </strong><span>{{ order.address }}</span>
+          </p>
+          <p class="uk-width-1-2">
+            <strong> No. de Orden: </strong
+            ><span>{{ order.numberOfOrders }}</span>
+          </p>
+          <p class="uk-width-1-2">
+            <strong>No. de Cajas: </strong>{{ order.numberOfBox }}<span></span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-div">
+      <slide-unlock
         ref="vueslideunlock"
         :auto-width="true"
         :circle="true"
@@ -57,75 +112,76 @@
         success-text="success"
         @completed="complete(orders)"
         textSize="10px"
-    />
-        </div>
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import {} from '../assets/img/truk1.png'
-import SlideUnlock from "vue-slide-unlock"
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
-import { mapGetters } from 'vuex';
+import {} from "../assets/img/truk1.png";
+import SlideUnlock from "vue-slide-unlock";
+import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+import { mapGetters } from "vuex";
 export default {
-    data(){
-        return{
-            status: null,
-            result: null,
-            load: null,
-            completed: 'background-color: #2a307c !important',
-            orders:[
-                {
-                    numberOfOrders: 1223,
-                    numberOfBox: 2,
-                    client: 'Juan Martinez Soto',
-                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17',
-                    timeToWait: '2020-01-23'
-                },{
-                    numberOfOrders: 1223,
-                    numberOfBox: 2,
-                    client: 'Maria Lisbeth Alcantara Rodriguez',
-                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
-                    timeToWait: '2020-01-23'
-                },
-                {
-                    numberOfOrders: 1223,
-                    numberOfBox: 2,
-                    client: 'Albert Perez',
-                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
-                    timeToWait: '2020-01-23'
-                },{
-                    numberOfOrders: 1223,
-                    numberOfBox: 2,
-                    client: 'Jose Abreu Pichardo',
-                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
-                    timeToWait: '2020-01-23'
-                },{
-                    numberOfOrders: 1223,
-                    numberOfBox: 2,
-                    client: 'Juan Jose Garcia',
-                    address: 'Sto Dgo Este, Alma Rosa calle abreu #17' ,
-                    timeToWait: '2020-01-23'
-                },
-
-    
-                
-            ]
-        }
-    },
-    components: {
-        SlideUnlock,
-    },
-    computed: {
-     ...mapGetters([
-       'loadStore'
-     ])
-    },
-     mounted(){
-        this.$store.commit('setCurrent', {menuName: 'Cargar Vehiculo',componentName: 'orders'},)
-        this.load = this.loadStore
-    },
-    methods: {
+  data() {
+    return {
+      status: null,
+      result: null,
+      load: null,
+      completed: "background-color: #2a307c !important",
+      orders: [
+        {
+          numberOfOrders: 1223,
+          numberOfBox: 2,
+          client: "Juan Martinez Soto",
+          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+        },
+        {
+          numberOfOrders: 1223,
+          numberOfBox: 2,
+          client: "Maria Lisbeth Alcantara Rodriguez",
+          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+        },
+        {
+          numberOfOrders: 1223,
+          numberOfBox: 2,
+          client: "Albert Perez",
+          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+        },
+        {
+          numberOfOrders: 1223,
+          numberOfBox: 2,
+          client: "Jose Abreu Pichardo",
+          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+        },
+        {
+          numberOfOrders: 1223,
+          numberOfBox: 2,
+          client: "Juan Jose Garcia",
+          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+        },
+      ],
+    };
+  },
+  components: {
+    SlideUnlock,
+  },
+  computed: {
+    ...mapGetters(["loadStore"]),
+  },
+  mounted() {
+    this.$store.commit("setCurrent", {
+      menuName: "Cargar Vehiculo",
+      componentName: "orders",
+    });
+    this.load = this.loadStore;
+  },
+  methods: {
     //     async location () {
     //     alert('papaeeeeeeeeeeeeeeeep')
     //     try {
@@ -139,34 +195,34 @@ export default {
     //       alert('papap' + e.toString() + ' ' + e.message)
     //       alert('papap' + this.location1?.timestamp)
     //     }
-    // }, 
-    complete(val){
-      this.scan(val)
+    // },
+    complete(val) {
+      this.scan(val);
     },
-    scan(val){
-        this.$store.commit('scanOrder', val )
-        this.$router.push({ name: 'deliveryActions' }).catch(() => {})
+    scan(val) {
+      this.$store.commit("scanOrder", val);
+      this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     async scanOrder() {
-        if(await this.checkPermission()){
-          BarcodeScanner.hideBackground(); 
-  
-          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+      if (await this.checkPermission()) {
+        BarcodeScanner.hideBackground();
 
-          if (result.hasContent) {
-              this.result = result.content
-              this.stopScan()
-          }
+        const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+
+        if (result.hasContent) {
+          this.result = result.content;
+          this.stopScan();
         }
+      }
     },
-    async stopScan(){
-        BarcodeScanner.showBackground();
-        BarcodeScanner.stopScan();
+    async stopScan() {
+      BarcodeScanner.showBackground();
+      BarcodeScanner.stopScan();
     },
     async checkPermission() {
       // check or request permission
       const status = await BarcodeScanner.checkPermission({ force: true });
-      this.status = status
+      this.status = status;
 
       if (status.granted) {
         // the user granted permission
@@ -174,67 +230,64 @@ export default {
       }
 
       return false;
-    }
-  }
-
-
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
-
 .slide .slideunlock.is-complete .slideunlock-progressbar {
-    background-color: #2a307c;
+  background-color: #2a307c;
 }
-.slide-div{
+.slide-div {
   background: #ffffff !important;
-    height: 80px;
-    width: 100%;
-    position: absolute;
-    bottom: 0px;
+  height: 80px;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
 }
 .cnt {
   height: 100%;
   overflow: scroll;
 }
-.uk-card{
+.uk-card {
   padding: 20px 10px;
 }
-.uk-card-body{
+.uk-card-body {
   margin-bottom: 10px;
   align-items: center;
   padding: 16px 15px;
 }
-.slide{
-    position: fixed;
-    width: 97% !important;
-    bottom: 5px;
-    height: 40px;
+.slide {
+  position: fixed;
+  width: 97% !important;
+  bottom: 5px;
+  height: 40px;
 }
-.status{
+.status {
   color: green;
   font-weight: 500;
   font-size: 12px;
 }
-.btn{
-    display: flex;
-    align-items: baseline;
-    width: 100%;
-    margin-bottom: 5px;
-    justify-content: space-between;
+.btn {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  margin-bottom: 5px;
+  justify-content: space-between;
 }
-.btn img{
+.btn img {
   width: 30px;
-    position: relative;
-    top: -2px;
+  position: relative;
+  top: -2px;
   margin-left: 5px;
 }
 
-.scan-code img{
-      width: 28px;
-    position: relative;
-    top: -2px;
-    left: 4px;
+.scan-code img {
+  width: 28px;
+  position: relative;
+  top: -2px;
+  left: 4px;
 }
 
 .truckSpan {
@@ -247,38 +300,36 @@ export default {
   display: flex;
 }
 .stiky {
-    position: sticky;
-    color: #000 !important;
-    top: 0px;
-    z-index: 2;
-    padding: 5px 24px !important;
-    background-color: rgb(248 248 248);
-    box-shadow: 1px 0px 5px #898989;
+  position: sticky;
+  color: #000 !important;
+  top: 0px;
+  z-index: 2;
+  padding: 5px 24px !important;
+  background-color: rgb(248 248 248);
+  box-shadow: 1px 0px 5px #898989;
 }
 
-.img-scan{
-      width: 39px
+.img-scan {
+  width: 39px;
 }
-.icon-load{
+.icon-load {
   width: 35%;
   margin-right: 20px;
   transform: scaleX(-1);
-
 }
-.btn-scan{
+.btn-scan {
   margin-top: 12px;
-box-shadow: 0px -0.5px 3px #000;
-    border: 0px;
-    color: #fff;
-    padding: 3px;
+  box-shadow: 0px -0.5px 3px #000;
+  border: 0px;
+  color: #fff;
+  padding: 3px;
   background: #2a307c;
 }
 
-.info-header{
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-
+.info-header {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 </style>

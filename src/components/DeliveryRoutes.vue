@@ -4,7 +4,8 @@
       class="
         uk-flex
         stiky
-        uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove"
+        uk-flex uk-flex-between uk-flex-left uk-margin-remove uk-padding-remove
+      "
       style="align-items: center"
     >
       <div style="font-size: 16px; font-weight: 500; color: #3c3c3c">
