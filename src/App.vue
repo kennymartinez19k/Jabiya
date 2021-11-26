@@ -35,6 +35,9 @@ p {
 h5{
    color: #5c5c5c !important
 }
+.uk-text-gray{
+  color: #666666;
+}
 .sticky {
   position: -webkit-sticky;
   position: sticky;

@@ -195,7 +195,7 @@ export default {
   },
   mounted() {
     this.$store.commit("setCurrent", {
-      menuName: "Lista de ordenes",
+      menuName: "Entrega de ordenes",
       componentName: "orders",
     });
     this.load = this.loadStore;
