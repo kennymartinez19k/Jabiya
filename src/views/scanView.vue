@@ -1,10 +1,6 @@
 <template>
   <div>
       <button class="uk-button" @click="scanOrder">scan</button>
-      <button class="uk-button" @click="location">location</button>
-      <button class="uk-button" @click="result = true">location</button>
-
-      <h1>{{location1}}</h1>
       <p>{{result}}</p>
   </div>
 </template>
@@ -43,6 +39,7 @@ export default {
   },
   mounted() {
     this.orders = this.orderScan
+    this.scanOrder()
   },
   methods: {
 

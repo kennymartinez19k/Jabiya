@@ -48,6 +48,7 @@ export default {
       stepCurrent: 0,
     };
   },
+  
   methods: {
     getShow(value) {
       this.$emit("action", value);
@@ -69,23 +70,21 @@ export default {
   background: #ffffffc4;
 }
 img {
-  width: 50%;
+  width: 45%;
 }
 .progressbar li {
   float: left;
-  width: 33%;
+  width: 30%;
   position: relative;
   text-align: center;
 }
-.stepTwo {
-  float: left;
-  width: 25% !important;
-  position: relative;
-  text-align: center;
-}
+
 ul {
   list-style: none;
   padding: 0px;
+  margin: 0px auto;
+  display: flex;
+    justify-content: center;
 }
 .progressbar li:before {
   content: "";

@@ -1,12 +1,10 @@
 <template>
-  <div class="uk-container">
-    <div>
+  <div class="uk-container uk-flex uk-flex-column">
       <div
-        class="uk-card uk-card-default uk-card-hover uk-card-body"
+        class="cont uk-card uk-card-default uk-card-hover uk-card-body"
         style="z-index: 0; padding: 15px 0px !important"
       >
-        <h6 class="">Entrega de Orden No. {{ loadStore.numberOfOrden }}</h6>
-        <h6 class="exception">
+        <strong class="exception">
           Hubo Alguna Excepcion? No
           <div class="onoffswitch">
             <input
@@ -20,8 +18,8 @@
             <label class="onoffswitch-label" for="myonoffswitch"></label>
           </div>
           Si
-        </h6>
-        <h4 class="">Acciones</h4>
+        </strong>
+        <h4 class="uk-text-gray">Acciones</h4>
         <timeline
           :step="step"
           :exception="exception"
@@ -31,10 +29,11 @@
           @action="getShow($event)"
         />
       </div>
-    </div>
-    <div v-if="show">
+    <div class="result-info">
       <div class="uk-text-left">
-        <h3>{{ resultScan }}ww</h3>
+        <p>{{ resultScan }}</p>
+      dewdew
+
       </div>
       <div class="uk-flex uk-flex-row">
         <div
@@ -103,6 +102,11 @@ export default {
   },
   mounted() {
     this.orders = this.orderScan;
+    this.getShow('scan')
+    this.$store.commit("setCurrent", {
+      menuName: `Entrega de Orden No. ${ this.loadStore?.numberOfOrden }`,
+      componentName: "deliveryActions",
+    });
   },
 
   methods: {
@@ -150,7 +154,7 @@ export default {
       this.getCheckPermissions();
       const ele = await Camera.getPhoto({
         quality: 90,
-        allowEditing: true,
+        allowEditing: false,
         limit: 3,
         resultType: CameraResultType.Base64,
       });
@@ -197,7 +201,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .qr {
   width: 60%;
 }
@@ -261,5 +265,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+.uk-container{
+      flex-direction: column-reverse;
+    justify-content: space-between;
+    margin: 0px -16px;
+}
+.result-info{
+  overflow: scroll;
+  padding: 0px 10px;
 }
 </style>
