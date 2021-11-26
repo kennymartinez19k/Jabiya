@@ -34,7 +34,7 @@
     </div>
     <div v-if="show">
       <div class="uk-text-left">
-        <h3>{{ resultScan }}ww</h3>
+        <h3>{{ resultScan }}</h3>
       </div>
       <div class="uk-flex uk-flex-row">
         <div
