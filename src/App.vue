@@ -73,6 +73,7 @@ html body{
 }
 strong{
   font-size: 13px !important;
+  font-weight: 600 !important;
 }
 .btn-button{
   font-size: 10px !important

@@ -1,23 +1,19 @@
 <template>
   <div class="cnt">
     <ion-loading
-      :is-open="isOpenRef"
-      cssClass="my-custom-class"
-      message="Por favor Espere..."
-      :duration="timeout"
-      @didDismiss="setOpen(false)"
-    >
-    </ion-loading>
-    <Loading
-      :active="loaded"
-      color="rgb(86, 76, 175)"
-      loader="spinner"
-      :width="65"
-      background-color="rgba(252, 252, 252, 0.7)"
-    ></Loading>
-    <div v-for="date in dateLoad" :key="date">
-      <load-date :userOrden="userOrden" :date="date" />
-    </div>
+    :is-open="isOpenRef"
+    cssClass="my-custom-class"
+    message="Por favor Espere..."
+    :duration="timeout"
+    @didDismiss="setOpen(false)"
+  >
+  </ion-loading>
+  <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
+  
+  <div v-for="date in dateLoad" :id="date" :key="date">
+    <load-date :userOrden="userOrden" :date="date"/>
+  </div>
+    
   </div>
 </template>
 
@@ -33,6 +29,7 @@ export default {
       menuName: "Tus Cargas",
       componentName: "home",
     });
+    window.location.href = '#Hoy'
   },
   setup() {
     const isOpenRef = ref(false);
@@ -53,9 +50,6 @@ export default {
           zone: "Rep. de colombia",
           btnAction: "Cargar Vehiculo",
           icon: "color: #1f7a18",
-          action: () => {
-            this.$router.push({ name: "orders" }).catch(() => {});
-          },
         },
         {
           hour: "12:00 PM",
@@ -65,9 +59,6 @@ export default {
           zone: "Respaldo Rodeo",
           btnAction: "Ver Orden(es)",
           icon: "color: #000000",
-          action: () => {
-            this.$router.push({ name: "orders" }).catch(() => {});
-          },
         },
         {
           hour: "10:00 AM",
@@ -77,10 +68,6 @@ export default {
           zone: "Rep. de colombia",
           btnAction: "Continuar Entrega(s)",
           icon: "color: #a7a7a7",
-          action: () => {
-            this.setOpe(true);
-            // this.$router.push({ name: "orders" }).catch(() => {})
-          },
         },
         {
           hour: "10:00 AM",
@@ -90,10 +77,6 @@ export default {
           zone: "Rep. de colombia",
           btnAction: "Continuar Entrega(s)",
           icon: "color: #a7a7a7",
-          action: () => {
-            this.setOpen(true);
-            // this.$router.push({ name: "orders" }).catch(() => {})
-          },
         },
         {
           hour: "10:00 AM",
@@ -103,9 +86,6 @@ export default {
           zone: "Rep. de colombia",
           btnAction: "Comenzar Entrega(s)",
           icon: "color: #c39108",
-          action: () => {
-            this.$router.push({ name: "orders" }).catch(() => {});
-          },
         },
       ],
     };

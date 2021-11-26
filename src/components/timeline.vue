@@ -48,17 +48,8 @@ export default {
       stepCurrent: 0,
     };
   },
-  watch: {
-    // step: function (newVal) {
-    //    var stepCurrent =  document.getElementById(`${newVal}`)
-    //    stepCurrent.classList.add('active')
-    //    console.log(stepCurrent, 'dddddddd')
-    //    this.stepCurrent++
-    // }
-  },
   methods: {
     getShow(value) {
-      console.log("11111112233");
       this.$emit("action", value);
     },
   },

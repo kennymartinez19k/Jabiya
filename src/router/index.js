@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import SignIn from '../components/SignIn.vue'
 import SignUp from '../components/SignUp.vue'
-import About from '../views/About.vue'
+import scanView from '../views/scanView.vue'
 import Orders from '../components/Orders.vue'
 import DeliveryActions from '../components/DeliveryActions.vue'
 import DeliveryRoutes from "../components/DeliveryRoutes.vue";
@@ -38,9 +38,9 @@ const routes = [
     component: DeliveryRoutes,
   },
   {
-    path: "/about",
-    name: "about",
-    component: About,
+    path: "/scan-order",
+    name: "scan-order",
+    component: scanView,
   },
 ];
 
