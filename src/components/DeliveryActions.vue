@@ -32,8 +32,6 @@
     <div class="result-info">
       <div class="uk-text-left">
         <p>{{ resultScan }}</p>
-      dewdew
-
       </div>
       <div class="uk-flex uk-flex-row">
         <div

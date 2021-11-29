@@ -202,7 +202,6 @@ export default {
   },
   methods: {
         async location () {
-        alert('papaeeeeeeeeeeeeeeeep')
         try {
           const geo = await Geolocation.getCurrentPosition();
           this.location1.latitude = geo.coords.latitude
@@ -211,8 +210,7 @@ export default {
             console.log('Current position:', this.location1);
         } catch (e) {
           console.log('Current position:', this.location1);
-          alert('papap' + e.toString() + ' ' + e.message)
-          alert('papap' + this.location1?.timestamp)
+        
         }
     },
     complete(val) {
