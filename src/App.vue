@@ -58,12 +58,16 @@ h5{
 button{
   border-radius: 5px !important
 }
+.uk-button-red{
+  background: #be1515;
+  color: #fff
+}
 .uk-button-orange{
   background: #bf6121;
   color: #fff;
 }
 .view{
-  height: 89vh !important;
+  height: 91vh !important;
 }
 .view-header{
   height: 98vh;
