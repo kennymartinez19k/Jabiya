@@ -131,7 +131,7 @@
         class="slide"
         text="Escaneo Corrido"
         success-text="success"
-        @completed="complete(orders)"
+        @completed="scan(orders)"
         textSize="10px"
       />
     </div>
@@ -252,9 +252,9 @@ export default {
     this.orderObj();
   },
   methods: {
-    complete(val) {
-      this.scan(val);
-    },
+    // complete(val) {
+    //   this.scan(val);
+    // },
     orderObj() {
       this.orders.sort((a) => {
         if (a.completed == true) {
@@ -265,7 +265,13 @@ export default {
       });
     },
     scan(val) {
-      this.$store.commit("scanOrder", val);
+       let orderScan = []
+      if (val.length) {
+        orderScan = val
+      } else {
+        orderScan.push(val)
+      }
+      this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
     completedOrden() {
