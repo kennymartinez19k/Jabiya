@@ -86,9 +86,6 @@
           <p class="uk-width-1-2">
             <strong>No. de Cajas: </strong>{{ order.numberOfBox }}<span></span>
           </p>
-          <!-- <div class="uk-width-1-2 uk-flex uk-flex-between">
-                    <button class="uk-button uk-button-transparent"><font-awesome-icon icon="qrcode"/> Escanear</button>
-                </div> -->
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
             style="margin-top: 10px"
