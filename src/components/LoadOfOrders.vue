@@ -9,7 +9,6 @@
   >
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
-  
   <div v-for="date in dateLoad" :id="date" :key="date">
     <load-date :userOrden="userOrden" :date="date"/>
   </div>
@@ -25,10 +24,6 @@ import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 export default {
   mounted() {
-    this.$store.commit("setCurrent", {
-      menuName: "Tus Cargas",
-      componentName: "home",
-    });
     window.location.href = '#Hoy'
   },
   setup() {

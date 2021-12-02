@@ -245,11 +245,9 @@ export default {
       await BarcodeScanner.stopScan();
     },
     async checkPermission() {
-      // check or request permission
       const status = await BarcodeScanner.checkPermission({ force: true });
 
       if (status.granted) {
-        // the user granted permission
         return true;
       }
 

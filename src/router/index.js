@@ -5,7 +5,8 @@ import SignUp from '../components/SignUp.vue'
 import scanView from '../views/scanView.vue'
 import Orders from '../components/Orders.vue'
 import DeliveryActions from '../components/DeliveryActions.vue'
-import DeliveryRoutes from "../components/DeliveryRoutes.vue";
+import DeliveryRoutes from "../views/DeliveryRoutes.vue";
+import DirectAccess from '../views/DirectAccess.vue'
 const routes = [
   {
     path: '/',
@@ -42,6 +43,11 @@ const routes = [
     name: "scan-order",
     component: scanView,
   },
+  {
+    path: "/direct",
+    name: "direct-access",
+    component: DirectAccess,
+  }
 ];
 
 const router = createRouter({

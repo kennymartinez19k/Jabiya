@@ -143,6 +143,7 @@ import {} from "../assets/img/truk1.png";
 import SlideUnlock from "vue-slide-unlock";
 import { mapGetters } from "vuex";
 export default {
+  alias: 'Cargar Vehiculo',
   data() {
     return {
       status: null,
@@ -183,30 +184,6 @@ export default {
           completed: false,
         },
         {
-          numberOfOrders: 7532,
-          numberOfBox: 2,
-          client: "Juan Jose Garcia",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 1243,
-          numberOfBox: 2,
-          client: "Juan Martinez Soto",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 5214,
-          numberOfBox: 2,
-          client: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
           numberOfOrders: 3753,
           numberOfBox: 2,
           client: "Albert Perez",
@@ -240,12 +217,8 @@ export default {
     ...mapGetters(["loadStore", "orderScan"]),
   },
   mounted() {
-    this.$store.commit("setCurrent", {
-      menuName: "Cargar Vehiculo",
-      componentName: "orders",
-    });
     this.load = this.loadStore;
-
+    
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -265,7 +238,7 @@ export default {
       });
     },
     scan(val) {
-       let orderScan = []
+      let orderScan = []
       if (val.length) {
         orderScan = val
       } else {
