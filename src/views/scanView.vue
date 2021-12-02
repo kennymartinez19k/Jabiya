@@ -136,11 +136,6 @@ export default {
   computed: {
     ...mapGetters(["orderScan", "loadStore"]),
   },
-  watch:{
-    aproveOrden: function(newVal){
-      alert(newVal)
-    }
-  },
   mounted() {
     this.orders = this.orderScan;
     this.scanOrder();
