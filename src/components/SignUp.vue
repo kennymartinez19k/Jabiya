@@ -54,7 +54,7 @@ components: {
   },
   methods: {
     go(){
-        this.$router.push({ name: 'home' }).catch(() => {})
+        this.$router.push({ name: 'direct-access' }).catch(() => {})
     }  
   },
 }

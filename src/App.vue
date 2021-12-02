@@ -1,20 +1,38 @@
 <template>
-  <app-header v-if="current" />
-  <router-view class="view-header" :class="{view: current}"/>
+  <app-header v-if="!currentPage" :nameComponent="currentName"/>
+  <router-view class="view-header" :class="{view: !currentPage}"/>
 
 </template>
 <script>
 import AppHeader from './views/AppHeader.vue'
-import { mapGetters } from 'vuex'
 
 export default {
+  data(){
+    return{
+      noHead: [
+        'sign-in',
+        'sign-up',
+        'direct-access'
+      ]
+    }
+  },
   components:{
     AppHeader
   },
+  watch:{
+    $route: function(){
+      console.log(this.$route)
+    }
+  },
   computed:{
-    ...mapGetters([
-        'current'
-    ])
+    currentPage: function() {
+      return this.noHead.some(x => x == this.$route.name)
+    },
+    currentName: function() {
+      if(!this.currentPage) return this.$route.matched[0]?.components?.default?.alias
+      else return ''
+    },
+
 },
 }
 </script>

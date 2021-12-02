@@ -15,10 +15,10 @@
                 <input class="uk-input uk-form-width-medium" v-model="signInLogin.password" type="password" style="width: 100%" placeholder="Contraseña" required>
             </div>
             <div class="uk-margin uk-flex uk-flex-between">
-                <label class="terms uk-text-light"><input v-model="signInLogin.rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Guardar contraseña</label>
+                <label class="terms uk-text-light"><input v-model="signInLogin.rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
                 <a href="">Olvide mi contraseña</a>
             </div>
-            <button class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute('home')" style="margin-top: 15px">Iniciar sesión</button>
+            <button class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute('direct-access')" style="margin-top: 15px">Iniciar sesión</button>
             <span style="display: block; margin-top: 10px">Aun No tiene cuenta? <a @click="changeRoute('sign-up')">Registrese</a></span>
         </form>
     </div>
@@ -46,7 +46,7 @@ data() {
 },
 methods:{
     changeRoute(path){
-        if (path == 'home') {
+        if (path == 'direct-access') {
            if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) {
             this.loaded = true
             this.$router.push({ name: path }).catch(() => {})
