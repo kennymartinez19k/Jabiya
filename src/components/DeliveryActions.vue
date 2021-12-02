@@ -4,7 +4,7 @@
         class="cont uk-card uk-card-default uk-card-hover uk-card-body"
         style="z-index: 0; padding: 15px 0px !important"
       >
-        <strong class="exception">
+        <strong class="exception uk-padding-small">
           Hubo Alguna Excepcion? No
           <div class="onoffswitch">
             <input
@@ -19,13 +19,11 @@
           </div>
           Si
         </strong>
-        <h4 class="uk-text-gray">Acciones</h4>
         <timeline
           :step="step"
           :exception="exception"
           :resultScan="resultScan"
           :imagiElement="imagiElement"
-          :digitalFirm="firm"
           @action="getShow($event)"
         />
       </div>
@@ -58,14 +56,7 @@
           alt="Fima Digital"
         />
       </div>
-      <div id="modal_button" uk-modal>
-        <div class="uk-modal-dialog uk-modal-body">
-          <span class="uk-modal-title uk-padding-remove">Firme Aqui</span>
-          <signature-action
-            @digitalSignature="firm = $event"
-          ></signature-action>
-        </div>
-      </div>
+    
     </div>
   </div>
 </template>
@@ -75,13 +66,11 @@ import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
 import timeline from "../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import SignatureAction from "../components/actions/SignatureAction.vue";
 import UIkit from "uikit";
 export default {
   name: "DeliveryActions",
   components: {
     timeline,
-    SignatureAction,
   },
   data() {
     return {
@@ -93,10 +82,92 @@ export default {
       step: 0,
       exception: false,
       firm: null,
+      ordersScan: [
+        {
+          numberOfOrders: 1234,
+          numberOfBox: 2,
+          client: "Juan Martinez Soto",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 1223,
+          numberOfBox: 2,
+          client: "Maria Lisbeth Alcantara Rodriguez",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 3321,
+          numberOfBox: 2,
+          client: "Albert Perez",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 4324,
+          numberOfBox: 2,
+          client: "Jose Abreu Pichardo",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 7532,
+          numberOfBox: 2,
+          client: "Juan Jose Garcia",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 1243,
+          numberOfBox: 2,
+          client: "Juan Martinez Soto",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 5214,
+          numberOfBox: 2,
+          client: "Maria Lisbeth Alcantara Rodriguez",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 3753,
+          numberOfBox: 2,
+          client: "Albert Perez",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 1027,
+          numberOfBox: 2,
+          client: "Jose Abreu Pichardo",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+        {
+          numberOfOrders: 9120,
+          numberOfBox: 2,
+          client: "Juan Jose Garcia",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+        },
+      ],
     };
   },
   computed: {
-    ...mapGetters(["orderScan", "loadStore"]),
+    ...mapGetters(["orderScan", "loadStore", "exceptionStore", "digitalFirmStore",]),
   },
   mounted() {
     this.orders = this.orderScan;
@@ -106,30 +177,67 @@ export default {
       componentName: "deliveryActions",
     });
   },
+   watch: {
+    digitalFirmStore: {
+      handler: function (newVal) {
+        if (newVal !== null) {
+          this.firm = newVal;
+        }
+      },
+    },
+    
+   },
 
   methods: {
     getShow(value) {
       this.show = value;
 
       if (value === "scan") {
-        this.scanOrder(this.orders);
+        this.scanOrder(this.ordersScan);
       } else if (value === "camera" && this.imagiElement.length <= 6) {
         this.getCam();
       } else if (value === "firm") {
+        this.serieA = value
         this.step++;
         UIkit.modal("#modal_button").show();
       }
     },
-    async scanOrder() {
+   async scanOrder(orders) {
       if (await this.checkPermission()) {
         BarcodeScanner.hideBackground();
         const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
 
+        let verify = await this.verificacion(orders, result)
+    
         if (result.hasContent) {
-          this.resultScan = result.content;
-          await this.stopScan();
-          this.step++;
+          if (verify) {
+
+            this.resultScan = result.content;
+            await this.stopScan();
+            this.step++;
+          } else if (!verify) {
+
+            console.log('no esta en la lista')
+          }
         }
+
+
+      }
+
+    },
+
+    verificacion(orders, result) {
+      // alert(this.orderScan[0]?.numberOfOrders, 'hola mundo')
+      for (let i = 0; i < orders.length; i++) {
+        // alert(i, 'for')
+        if (i?.numberOfOrders === result.content.numberOfOrders) {
+          // alert(i, 'true')
+
+          return true
+        } 
+        // else {
+        //   // alert(i, 'else')
+        // }
       }
     },
     async stopScan() {

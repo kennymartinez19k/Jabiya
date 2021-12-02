@@ -105,7 +105,7 @@ export default {
         BarcodeScanner.hideBackground();
         const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
         if (result.hasContent) {
-          if (result.hasContent == this.orderScan.numberOfOrders) {
+          if (result.hasContent.numberOfOrders == this.orderScan.numberOfOrders) {
             this.aproveOrden = 2;
             this.orderScan.completed = true;
             this.$store.commit("scanOrder", this.orderScan);

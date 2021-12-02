@@ -1,5 +1,28 @@
 <template>
   <div class="container">
+
+    
+    <div v-if="serieA === 'firm'" class="uk-padding-small">
+      <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
+    </div>
+
+    <div v-if="showException && exception" class="uk-padding-small">
+      <textarea
+        class="uk-textarea"
+        rows="3"
+        placeholder="Digite la exepción"
+        v-model="textException"
+      ></textarea>
+      <div class="uk-margin-small-top uk-flex uk-flex-right">
+        <button
+          type="button"
+          class="uk-button uk-button-primary"
+          @click="setException()"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
     <ul class="progressbar">
       <li
         class="stepOne"
@@ -22,6 +45,26 @@
         <div :class="{ disabled: step < 1 }"></div>
       </li>
       <li
+        v-if="exception"
+        :class="{
+          'uk-disabled': (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length !== 3),
+          active:
+            resultScan !== null &&
+            imagiElement.length === 3 &&
+            textException !== null && showException === false,
+        }"
+        @click="getShow('exception')"
+      >
+        <div class="info active"><font-awesome-icon icon="check" /></div>
+        <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
+        <div
+          :class="{
+            disabled: (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length !== 3),
+          }"
+        ></div>
+      </li>
+
+      <li
         class="stepThree"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('firm')"
@@ -31,27 +74,73 @@
         <div :class="{ disabled: step < 2 }"></div>
       </li>
     </ul>
+
   </div>
 </template>
 
 <script>
+import SignatureAction from "../components/actions/SignatureAction.vue";
+import UIkit from "uikit";
 export default {
+  components: {
+    SignatureAction,
+  },
+  watch: {
+    digitalFirm: {
+      handler: function (newVal) {
+        if (newVal !== null) {
+          this.serieA = null;
+          this.$store.commit("setDigitalFirm", this.digitalFirm);
+        }
+      },
+    },
+
+    exception: {
+      handler: function (newVal) {
+        if (newVal === false) {
+          this.textException = null;
+        }
+      },
+    },
+  },
   props: {
     step: Number,
     exception: Boolean,
     resultScan: String,
     imagiElement: Array,
-    digitalFirm: String,
+    // digitalFirm: String,
   },
   data() {
     return {
       stepCurrent: 0,
+      textException: null,
+      showException: null,
+      serieA: null,
+      digitalFirm: null
+
     };
   },
-  
+  computed: {},
+
   methods: {
     getShow(value) {
       this.$emit("action", value);
+
+      if (value === "exception") {
+        this.showException = true;
+      }
+      if (value === "firm") {
+        this.serieA = value;
+      }
+    },
+    resetTextException() {
+      // UIkit.toggle("#toggle-usage").hide();
+      UIkit.modal("#modal-sections").hide();
+      this.textException = null;
+    },
+    setException() {
+      this.showException = false;
+      this.$store.commit("setTextException", this.textException);
     },
   },
 };
@@ -84,7 +173,7 @@ ul {
   padding: 0px;
   margin: 0px auto;
   display: flex;
-    justify-content: center;
+  justify-content: center;
 }
 .progressbar li:before {
   content: "";

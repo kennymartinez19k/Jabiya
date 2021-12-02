@@ -19,7 +19,7 @@
   </div>
 </template>
 <script>
-import UIkit from "uikit";
+// import UIkit from "uikit";
 
 export default {
   name: "SignatureAction",
@@ -38,7 +38,7 @@ export default {
       console.log(data);
       this.firm = data;
       this.$emit("digitalSignature", this.firm);
-      UIkit.modal("#modal_button").hide();
+      // UIkit.modal("#modal_button").hide();
     },
     onBegin() {
       console.log("=== Begin ===");
