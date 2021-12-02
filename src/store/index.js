@@ -8,7 +8,8 @@ const storeModule = {
       ...currentPage.state,
       ...loads.state,
       ...timelineStore.state,
-      scanOrder: null
+      scanOrder: null,
+      allOrders: [],
     }
   ),
   mutations: {
@@ -17,7 +18,11 @@ const storeModule = {
     ...timelineStore.mutations,
     scanOrder(state, val){
       state.scanOrder = val
-    }
+    },
+    setAllOrders(state, val){
+      state.orders = val
+    },
+    
   },
   actions: {
     ...currentPage.actions,
@@ -28,7 +33,8 @@ const storeModule = {
     ...currentPage.getters,
     ...loads.getters,
     ...timelineStore.getters,
-    orderScan : state => state.scanOrder
+    orderScan : state => state.scanOrder,
+    allOrders: state => state.orders
   }
 }
 
