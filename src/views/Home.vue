@@ -7,6 +7,7 @@
 <script>
 import LoadOfOrders from '../components/LoadOfOrders.vue'
 export default {
+  alias: 'Tus Cargas',
  components: {
      LoadOfOrders,
  },

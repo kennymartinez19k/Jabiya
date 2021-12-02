@@ -12,6 +12,8 @@ import { IonicVue } from "@ionic/vue";
 import StepProgress from "vue-step-progress";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import "@ionic/core/css/ionic.bundle.css";
+
+// inject vue barcode scanner
 library.add(fas);
 const store = createStore({ ...storeModule });
 createApp(App)

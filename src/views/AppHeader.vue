@@ -2,7 +2,7 @@
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
         <a class="uk-navbar-toggle" style="min-height: 60px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
-        <h5 class="uk-margin-remove">{{this.titlePage.menuName}}</h5>
+        <h5 class="uk-margin-remove">{{titlePage}}</h5>
 <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar uk-padding-remove">
 
@@ -12,10 +12,10 @@
             <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage({menuName: 'Tus Cargas',componentName: 'home'})">Tus Cargas</li>
-            <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Seleccione el idioma</li>
-            <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Cerrar sesión</li>
-            <li @click="setCurrentPage({menuName: 'En proceso',componentName: 'about'})">Version app</li>
+            <li @click="setCurrentPage('home')">Tus Cargas</li>
+            <li @click="setCurrentPage('about')">Seleccione el idioma</li>
+            <li @click="setCurrentPage('about')">Cerrar sesión</li>
+            <li @click="setCurrentPage('about')">Version app</li>
         </ul>
     </div>
 </div>
@@ -25,14 +25,17 @@
 
 <script>
 import Uikit from 'uikit'
-import {mapGetters} from 'vuex'
 export default {
+    props:{
+        nameComponent: String
+    },
 computed:{
-    ...mapGetters([
-        "current"
-    ]),
+    
     titlePage(){
-        return this.current
+        if(this.nameComponent){
+            return this.nameComponent
+        }
+        return ''
     }
 },
 data() {
@@ -46,8 +49,7 @@ methods:{
       Uikit.offcanvas('#offcanvas-overlay').show();  
     },
     setCurrentPage(val) {
-        this.$store.commit('setCurrent', val)
-        this.$router.push({ name: val.componentName }).catch(() => {})
+        this.$router.push({ name: val}).catch(() => {})
         Uikit.offcanvas('#offcanvas-overlay').hide();
     },
 }

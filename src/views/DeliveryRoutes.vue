@@ -142,6 +142,7 @@ import { Geolocation } from "@capacitor/geolocation";
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
 export default {
+  alias: 'Entregar Ordenes',
   data() {
     return {
       status: null,
