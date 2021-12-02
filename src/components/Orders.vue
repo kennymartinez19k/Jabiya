@@ -158,6 +158,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 08:22')
         },
         {
           numberOfOrders: 1223,
@@ -166,6 +167,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 10:00')
         },
         {
           numberOfOrders: 3321,
@@ -174,6 +176,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 12:00')
         },
         {
           numberOfOrders: 4324,
@@ -182,6 +185,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 14:00')
         },
         {
           numberOfOrders: 3753,
@@ -190,6 +194,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 16:22')
         },
         {
           numberOfOrders: 1027,
@@ -198,6 +203,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 18:22')
         },
         {
           numberOfOrders: 9120,
@@ -206,6 +212,7 @@ export default {
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
+          hour: new Date('2020-12-02, 20:22')
         },
       ],
     };
@@ -218,16 +225,12 @@ export default {
   },
   mounted() {
     this.load = this.loadStore;
-    
     if (this.orderScan) {
       this.completedOrden();
     }
     this.orderObj();
   },
   methods: {
-    // complete(val) {
-    //   this.scan(val);
-    // },
     orderObj() {
       this.orders.sort((a) => {
         if (a.completed == true) {

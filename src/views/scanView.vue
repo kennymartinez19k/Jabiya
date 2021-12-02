@@ -13,38 +13,34 @@
       >
         <div style="font-size: 13px; font-weight: 500">
           <p class="uk-width-1-1 uk-flex">
-            <strong>Shipper:</strong><span>&nbsp; {{ loadStore?.client }}</span>
+            <strong>Shipper:</strong><span>&nbsp; {{ loads?.client }}</span>
           </p>
           <p class="uk-width-1-1 uk-flex">
             <strong>Zona de Destino:</strong
-            ><span>&nbsp; {{ loadStore?.zone }}</span>
+            ><span>&nbsp; {{ loads?.zone }}</span>
           </p>
         </div>
         <div class="info-header">
-          <span class="status">Carga {{ loadStore?.status }}</span>
+          <span class="status">Carga {{ loads?.status }}</span>
           <img
-            v-if="loadStore?.status == 'Asignada'"
+            v-if="loads?.status == 'Asignada'"
             src="../assets/truckGreen.png"
             class="icon-load"
-            alt=""
           />
           <img
-            v-if="loadStore?.status == 'Entregada'"
+            v-if="loads?.status == 'Entregada'"
             src="../assets/truckDefault.png"
             class="icon-load"
-            alt=""
           />
           <img
-            v-if="loadStore?.status == 'En Ruta'"
+            v-if="loads?.status == 'En Ruta'"
             src="../assets/truckBlue.png"
             class="icon-load"
-            alt=""
           />
           <img
-            v-if="loadStore?.status == 'Despacho Aprobado'"
+            v-if="loads?.status == 'Despacho Aprobado'"
             src="../assets/truckOrange.png"
             class="icon-load"
-            alt=""
           />
         </div>
       </div>
@@ -126,6 +122,7 @@ export default {
       aproveOrden: 1,
       cont: 0,
       orders: [],
+      loads: [],
       showScanConfirmation: false,
       location1: {
         latitude: null,
@@ -134,10 +131,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["orderScan", "loadStore"]),
+    ...mapGetters(["orderScan", "loadStore", "allOrders", "allLoads"]),
   },
   mounted() {
-    this.orders = this.orderScan;
+    if(this.orderScan){
+      this.orders = this.orderScan;
+      this.loads = this.loadStore
+    }else{
+      let cont = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 12:00') && x.hour <= new Date('2020-12-02, 14:00'))
+      this.orders = cont
+    }
     this.scanOrder();
   },
   methods: {
@@ -188,7 +191,6 @@ export default {
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });
       this.status = status;
-
       if (status.granted) {
         return true;
       }
