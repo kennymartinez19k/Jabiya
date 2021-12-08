@@ -123,7 +123,7 @@
       :width="400"
       :height="40"
       :completedBg="completed"
-      class="slide"
+      class="slide insertImagi"
       text="Escaneo Corrido"
       success-text="success"
       @completed="complete(orders)"
@@ -274,6 +274,7 @@ export default {
   width: 97% !important;
   bottom: 5px;
   height: 40px;
+  --su-size-text: 18px;
 }
 .status {
   color: green;
@@ -343,5 +344,11 @@ export default {
   color: green;
   font-weight: 500;
   font-size: 12px;
+}
+.insertImagi {
+  background-image: url('../assets/parcel.png');
+    background-size: 25px 25px;
+    background-repeat: no-repeat;
+    background-position: 85%
 }
 </style>

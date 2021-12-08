@@ -128,7 +128,7 @@
         :width="400"
         :height="40"
         :completedBg="completed"
-        class="slide"
+        class="slide insertImagi"
         text="Escaneo Corrido"
         success-text="success"
         @completed="scan(orders)"
@@ -293,6 +293,7 @@ p {
   width: 97% !important;
   bottom: 5px;
   height: 40px;
+  --su-size-text: 18px;
 }
 .status {
   color: green;
@@ -366,5 +367,11 @@ p {
 }
 .ordenCompleted {
   background: rgba(233, 255, 233, 0.6);
+}
+.insertImagi {
+  background-image: url('../assets/parcel.png');
+    background-size: 25px 25px;
+    background-repeat: no-repeat;
+    background-position: 85%
 }
 </style>

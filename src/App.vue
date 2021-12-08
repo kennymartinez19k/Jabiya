@@ -12,7 +12,8 @@ export default {
       noHead: [
         'sign-in',
         'sign-up',
-        'direct-access'
+        'direct-access',
+        'recover-password'
       ]
     }
   },
