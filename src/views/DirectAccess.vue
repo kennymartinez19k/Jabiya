@@ -1,7 +1,7 @@
 <template>
   <div>
       <ul class="container uk-flex uk-flex-wrap">
-          <h5 class="uk-margin-top uk-width-1-1">Clickee la Acción que Desea Realizar</h5>
+          <h5 class="title uk-margin-top uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
                 <p><strong>Tus Cargas</strong></p>
@@ -164,6 +164,9 @@ export default {
 .action{
     margin: 15px 0px 40px;
     padding: 10px;
+}
+.title{
+  margin: 20px 10px;
 }
 .action img{
     width: 40%;

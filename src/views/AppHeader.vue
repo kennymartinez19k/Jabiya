@@ -1,11 +1,12 @@
 <template>
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
-        <a class="uk-navbar-toggle" style="min-height: 60px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
-        <h5 class="uk-margin-remove">{{titlePage}}</h5>
-<div id="offcanvas-overlay" uk-offcanvas="overlay: true">
+            <font-awesome-icon icon="home" @click="setCurrentPage('direct-access')" style="font-size: 20px; margin: 0px 15px"/>
+            <h6 class="uk-margin-remove" style="margin: 0px 10px !important">{{titlePage}}</h6>
+            <a  class="uk-navbar-toggle" style="min-height: 60px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
+    <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar uk-padding-remove">
-
+            <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
         <div class="info-user">
             <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
             <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">Chofer 11</h4>
@@ -14,7 +15,7 @@
         <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Cargas</li>
             <li @click="setCurrentPage('about')">Seleccione el idioma</li>
-            <li @click="setCurrentPage('about')">Cerrar sesión</li>
+            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
             <li @click="setCurrentPage('about')">Version app</li>
         </ul>
     </div>
@@ -48,9 +49,14 @@ methods:{
       this.positionSticky = true
       Uikit.offcanvas('#offcanvas-overlay').show();  
     },
+    hideMenu(){
+        this.positionSticky = false
+        Uikit.offcanvas('#offcanvas-overlay').hide();
+    },
     setCurrentPage(val) {
         this.$router.push({ name: val}).catch(() => {})
-        Uikit.offcanvas('#offcanvas-overlay').hide();
+        this.hideMenu()
+        
     },
 }
 }
@@ -84,5 +90,16 @@ li{
 }
 .uk-navbar-container{
     background: #2a307c;
+}
+.uk-navbar-left{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    height: 55px;
+}
+.close-navbar{
+    width: 25px;
+    right: 5px;
+    top: 10px;
 }
 </style>
