@@ -31,25 +31,25 @@
           <span class="status">Carga {{ load?.status }}</span>
           <img
             v-if="load?.status == 'Asignada'"
-            src="../assets/truckGreen.png"
+            src="../assets/asigned.png"
             class="icon-load"
             alt=""
           />
           <img
             v-if="load?.status == 'Entregada'"
-            src="../assets/truckDefault.png"
+            src="../assets/delivery.png"
             class="icon-load"
             alt=""
           />
           <img
             v-if="load?.status == 'En Ruta'"
-            src="../assets/truckBlue.png"
+            src="../assets/road.png"
             class="icon-load"
             alt=""
           />
           <img
             v-if="load?.status == 'Despacho Aprobado'"
-            src="../assets/truckOrange.png"
+            src="../assets/warehouse.png"
             class="icon-load"
             alt=""
           />
@@ -113,7 +113,7 @@
         </div>
       </div>
     </div>
-
+  <div class="slide-div">
     <slide-unlock
       ref="vueslideunlock"
       :auto-width="true"
@@ -130,10 +130,10 @@
       textSize="10px"
     />
   </div>
+  </div>
 </template>
 
 <script>
-import {} from "../assets/img/truk1.png";
 import SlideUnlock from "vue-slide-unlock";
 import { Geolocation } from "@capacitor/geolocation";
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
@@ -192,10 +192,6 @@ export default {
     ...mapGetters(["loadStore"]),
   },
   mounted() {
-    this.$store.commit("setCurrent", {
-      menuName: "Entrega de ordenes",
-      componentName: "orders",
-    });
     this.load = this.loadStore;
   },
   methods: {
@@ -223,7 +219,7 @@ export default {
         BarcodeScanner.hideBackground();
 
         const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-
+        
         if (result.hasContent) {
           this.result = result.content;
           this.stopScan();
@@ -251,12 +247,6 @@ export default {
 </script>
 
 <style scoped>
-.slide .slideunlock.is-complete .slideunlock-progressbar {
-  background-color: #2a307c;
-}
-.slide:first-child {
-  background-color: #2a307c;
-}
 .cnt {
   height: 100%;
   overflow: scroll;
@@ -274,6 +264,13 @@ export default {
   width: 97% !important;
   bottom: 5px;
   height: 40px;
+}
+.slide-div {
+  background: #ffffff !important;
+  height: 70px;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
 }
 .status {
   color: green;

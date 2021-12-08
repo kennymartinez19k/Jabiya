@@ -1,5 +1,6 @@
 <template>
   <div class="cnt">
+   
     <ion-loading
     :is-open="isOpenRef"
     cssClass="my-custom-class"
@@ -11,8 +12,7 @@
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   <div v-for="date in dateLoad" :id="date" :key="date">
     <load-date :userOrden="userOrden" :date="date"/>
-  </div>
-    
+  </div>    
   </div>
 </template>
 
@@ -21,10 +21,13 @@ import LoadDate from "./loadDate.vue";
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import Loading from "vue-loading-overlay";
+import moment from 'moment'
+import 'moment/locale/es'
 import "vue-loading-overlay/dist/vue-loading.css";
 export default {
   mounted() {
     window.location.href = '#Hoy'
+    moment.locale('es')
   },
   setup() {
     const isOpenRef = ref(false);
@@ -34,7 +37,6 @@ export default {
   },
   data() {
     return {
-      dateLoad: ["Ayer", "Hoy", "Mañana"],
       loaded: false,
       userOrden: [
         {
@@ -85,6 +87,22 @@ export default {
       ],
     };
   },
+  computed:{
+    dateLoad: function () {
+      return [this.yesterdayLoad, this.todayLoad, this.tomorrowLoad]
+    },
+    yesterdayLoad: () => {
+      var date = new Date().setDate(new Date().getDate() -1 )
+      return moment(new Date(date)).format('ll')
+    },
+    todayLoad: () => {
+      return 'Hoy'
+    },
+    tomorrowLoad: () => {
+      var date = new Date().setDate(new Date().getDate() +1 )
+      return moment(new Date(date)).format('ll') 
+    }
+  },
   components: {
     IonLoading,
     Loading,
@@ -108,85 +126,5 @@ export default {
 .cnt {
   height: 100%;
   overflow: scroll;
-}
-body {
-  background: black;
-}
-.button {
-  background-color: #004a7f;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: Arial;
-  font-size: 20px;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  -webkit-animation: glowing 1500ms infinite;
-  -moz-animation: glowing 1500ms infinite;
-  -o-animation: glowing 1500ms infinite;
-  animation: glowing 1500ms infinite;
-}
-@-webkit-keyframes glowing {
-  0% {
-    background-color: #b20000;
-    -webkit-box-shadow: 0 0 3px #b20000;
-  }
-  50% {
-    background-color: #ff0000;
-    -webkit-box-shadow: 0 0 40px #ff0000;
-  }
-  100% {
-    background-color: #b20000;
-    -webkit-box-shadow: 0 0 3px #b20000;
-  }
-}
-
-@-moz-keyframes glowing {
-  0% {
-    background-color: #b20000;
-    -moz-box-shadow: 0 0 3px #b20000;
-  }
-  50% {
-    background-color: #ff0000;
-    -moz-box-shadow: 0 0 40px #ff0000;
-  }
-  100% {
-    background-color: #b20000;
-    -moz-box-shadow: 0 0 3px #b20000;
-  }
-}
-
-@-o-keyframes glowing {
-  0% {
-    background-color: #b20000;
-    box-shadow: 0 0 3px #b20000;
-  }
-  50% {
-    background-color: #ff0000;
-    box-shadow: 0 0 40px #ff0000;
-  }
-  100% {
-    background-color: #b20000;
-    box-shadow: 0 0 3px #b20000;
-  }
-}
-
-@keyframes glowing {
-  0% {
-    background-color: #b20000;
-    box-shadow: 0 0 3px #b20000;
-  }
-  50% {
-    background-color: #ff0000;
-    box-shadow: 0 0 40px #ff0000;
-  }
-  100% {
-    background-color: #b20000;
-    box-shadow: 0 0 3px #b20000;
-  }
 }
 </style>

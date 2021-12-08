@@ -1,9 +1,9 @@
 <template>
   <div class="uk-card uk-card-default uk-width-1-2@m container">
-    <div class="uk-card-header" style="padding: 5px 30px !important">
+    <div class="uk-card-header" style="padding: 5px 30px !important; border: none">
       <div class="uk-width-expand uk-flex uk-flex-center">
         <p class="uk-text-meta uk-margin-remove-top date">
-          <time datetime="2016-04-01T19:00" class="uk-text-bold">{{
+          <time datetime="2016-04-01T19:00" class="uk-text-bold uk-text-uppercase" style="font-size: 12px">{{
             date
           }}</time>
         </p>
@@ -47,31 +47,31 @@
               <div style="margin-top: 1px">
                 <img
                   v-if="load.status == 'Asignada'"
-                  src="../assets/truckGreen.png"
+                  src="../assets/asigned.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
                   v-if="load.status == 'Entregada'"
-                  src="../assets/truckDefault.png"
+                  src="../assets/delivery.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
                   v-if="load.status == 'En Ruta'"
-                  src="../assets/truckBlue.png"
+                  src="../assets/road.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
                   v-if="load.status == 'Despacho Aprobado'"
-                  src="../assets/truckOrange.png"
+                  src="../assets/warehouse.png"
                   class="icon-load"
                   alt=""
                 />
               </div>
             </div>
-            <button class="uk-button uk-button-purple" @click="setLoad(load)">
+            <button class="uk-button " @click="setLoad(load)">
               {{ load.btnAction }}
             </button>
           </div>
@@ -148,11 +148,11 @@ p {
   background: #2535ff21;
   color: #000;
   border-radius: 5px;
-  padding: 1px 8px;
+  padding: 1px 10px;
 }
 .icon-load {
   width: 60px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 .check-load {
   position: absolute;
@@ -177,12 +177,10 @@ button {
   color: rgb(73 73 73);
 }
 .asigned button {
-  color: white;
-  background: #008700 !important;
+  color:green;
   border: 1px solid #009b08;
   font-weight: 700;
   box-shadow: 0px 0.5px 2px;
-
   -webkit-border-radius: 10px;
   border-radius: 10px;
   display: inline-block;
@@ -200,7 +198,7 @@ body {
   }
   50% {
     background-color: transparent;
-    -webkit-box-shadow: 0 0 8px #025a11;
+    -webkit-box-shadow: 0 0 5px #025a11;
   }
   100% {
     background-color: transparent;
@@ -212,9 +210,10 @@ body {
   color: rgb(130, 127, 127) !important;
 }
 .delivered button {
-  box-shadow: 0px 0.5px 3px #424242;
   background: #ffffff;
-  color: #252525;
+  color: rgb(73, 73, 73);
+  border: 1px solid rgb(136, 136, 136);
+  /* color: #252525; */
   font-weight: 700;
 }
 .onWay {
@@ -222,10 +221,10 @@ body {
 }
 
 .onWay button {
-  color: #ffffff;
+  color: green;
+  background: #fff;
   font-weight: 700;
-  background: #008700 !important;
-  box-shadow: 0px 0.5px 3px #236f00;
+  border: 1px solid #3c6e3c;
 }
 
 .dispatch {
@@ -233,8 +232,9 @@ body {
 }
 .dispatch button {
   box-shadow: 0px 0.5px 3px #c58002;
-  color: #fff;
-  background: #c58002;
+  color: #af7202;
+  background: #ffffff;
+  border: 1px solid #ccc;
   font-weight: 700;
   -webkit-animation: onWays 800ms infinite;
 }
@@ -243,7 +243,7 @@ body {
     -webkit-box-shadow: 0 0 1px #c58002;
   }
   50% {
-    -webkit-box-shadow: 0 0 8px #a06800;
+    -webkit-box-shadow: 0 0 5px #a06800;
   }
   100% {
     -webkit-box-shadow: 0 0 0px #d38a02;
