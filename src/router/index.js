@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import SignIn from '../components/SignIn.vue'
-import SignUp from '../components/SignUp.vue'
-import scanView from '../views/scanView.vue'
-import Orders from '../components/Orders.vue'
-import DeliveryActions from '../components/DeliveryActions.vue'
+import SignIn from '../views/SignIn.vue'
+import LoadScan from '../views/LoadScan.vue'
+import Orders from '../views/Orders.vue'
+import DeliveryActions from '../views/DeliveryActions.vue'
 import DeliveryRoutes from "../views/DeliveryRoutes.vue";
 import DirectAccess from '../views/DirectAccess.vue'
 import RecoverPassword from '../components/RecoverPassword.vue'
@@ -18,11 +17,6 @@ const routes = [
     path: "/recover",
     name: "recover-password",
     component: RecoverPassword,
-  },
-  {
-    path: "/sign-up",
-    name: "sign-up",
-    component: SignUp,
   },
   {
     path: "/home",
@@ -47,7 +41,7 @@ const routes = [
   {
     path: "/scan-order",
     name: "scan-order",
-    component: scanView,
+    component: LoadScan,
   },
   {
     path: "/direct",
