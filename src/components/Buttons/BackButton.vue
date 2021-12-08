@@ -1,5 +1,7 @@
 <template>
-    <span @click="goBack()" uk-icon="icon: reply"></span><strong></strong>
+    <span @click="goBack()" uk-icon="icon: arrow-left"></span><strong></strong>
+<!-- <span uk-icon="icon:  arrow-left"></span> -->
+
 </template>
 
 <script>
