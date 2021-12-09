@@ -123,7 +123,7 @@
       :width="400"
       :height="40"
       :completedBg="completed"
-      class="slide insertImagi"
+      class="slide box-slide"
       text="Escaneo Corrido"
       success-text="success"
       @completed="complete(orders)"
@@ -148,39 +148,67 @@ export default {
       completed: "background-color: #2a307c !important",
       orders: [
         {
-          numberOfOrders: 1223,
+          numberOfOrders: 1234,
           numberOfBox: 2,
           client: "Juan Martinez Soto",
-          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
+          completed: false,
+          hour: new Date('2020-12-02, 08:00')
         },
         {
           numberOfOrders: 1223,
           numberOfBox: 2,
           client: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
+          completed: true,
+          hour: new Date('2020-12-02, 10:00')
         },
         {
-          numberOfOrders: 1223,
+          numberOfOrders: 3321,
           numberOfBox: 2,
           client: "Albert Perez",
-          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
+          completed: false,
+          hour: new Date('2020-12-02, 12:00')
         },
         {
-          numberOfOrders: 1223,
+          numberOfOrders: 4324,
           numberOfBox: 2,
           client: "Jose Abreu Pichardo",
-          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
+          completed: false,
+          hour: new Date('2020-12-02, 14:00')
         },
         {
-          numberOfOrders: 1223,
+          numberOfOrders: 3753,
+          numberOfBox: 2,
+          client: "Albert Perez",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+          hour: new Date('2020-12-02, 16:22')
+        },
+        {
+          numberOfOrders: 1027,
+          numberOfBox: 2,
+          client: "Jose Abreu Pichardo",
+          address: "Alma Rosa calle abreu #17",
+          timeToWait: "2020-01-23",
+          completed: false,
+          hour: new Date('2020-12-02, 18:22')
+        },
+        {
+          numberOfOrders: 9120,
           numberOfBox: 2,
           client: "Juan Jose Garcia",
-          address: "Sto Dgo Este, Alma Rosa calle abreu #17",
+          address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
+          completed: false,
+          hour: new Date('2020-12-02, 20:22')
         },
       ],
     };
@@ -211,7 +239,13 @@ export default {
       this.scan(val);
     },
     scan(val) {
-      this.$store.commit("scanOrder", val);
+      let orderScan = []
+      if (val.length) {
+        orderScan = val
+      } else {
+        orderScan.push(val)
+      }
+      this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     async scanOrder() {
@@ -342,10 +376,10 @@ export default {
   font-weight: 500;
   font-size: 12px;
 }
-.insertImagi {
+.box-slide {
   background-image: url('../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-position: 85%
+    background-position: 80%
 }
 </style>
