@@ -2,7 +2,7 @@
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
             <font-awesome-icon icon="home" @click="setCurrentPage('direct-access')" style="font-size: 20px; margin: 0px 15px"/>
-            <h6 class="uk-margin-remove" style="margin: 0px 10px !important">{{titlePage}}</h6>
+            <h6 class="uk-margin-remove" style="font-size: 14px; margin: 0px 10px !important">{{titlePage}}</h6>
             <a  class="uk-navbar-toggle" style="min-height: 60px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
     <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar uk-padding-remove">
@@ -94,6 +94,7 @@ li{
 .uk-navbar-left{
     width: 100%;
     display: flex;
+    flex-wrap: nowrap;
     justify-content: space-between;
     height: 55px;
 }

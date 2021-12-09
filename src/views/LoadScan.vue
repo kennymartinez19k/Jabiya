@@ -222,7 +222,7 @@ export default {
         setTimeout(() => {
           this.checkOrder = false
           if (this.orders.every(x => x.completed == true)){
-          this.statusOrders = 'start'
+          this.statusOrders = 'approve'
         } else this.scanOrder()
         }, 1000)
 

@@ -1,6 +1,6 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
-  <router-view class="view-header" :class="{view: !currentPage}"/>
+  <router-view class="view-header" @deliveryActions="setName($event)" :class="{view: !currentPage}"/>
 
 </template>
 <script>
@@ -14,7 +14,8 @@ export default {
         'sign-up',
         'direct-access',
         'recover-password'
-      ]
+      ],
+      nameActionDelivery: null
     }
   },
   components:{
@@ -23,18 +24,28 @@ export default {
   watch:{
     $route: function(){
       console.log(this.$route)
+      this.nameActionDelivery = null
     }
   },
   computed:{
+    
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)
     },
     currentName: function() {
-      if(!this.currentPage) return this.$route.matched[0]?.components?.default?.alias
-      else return ''
+      if(!this.currentPage){
+        if(this.nameActionDelivery) return this.nameActionDelivery
+        else return this.$route.matched[0]?.components?.default?.alias
+      }
+      return ''
     },
 
 },
+methods:{
+  setName(val){
+    this.nameActionDelivery = val
+  }
+}
 }
 </script>
 <style>
@@ -89,7 +100,8 @@ button{
   height: 91vh !important;
 }
 .view-header{
-  height: 98vh;
+  height: 100vh;
+  background: #fff;
 }
 html body{
   height: 100vh;

@@ -1,62 +1,116 @@
 <template>
-  <div class="uk-container uk-flex uk-flex-column">
+  <div class="uk-container uk-flex uk-flex-column uk-flex-between">
+    <div class="stiky">
       <div
-        class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-        style="z-index: 0; padding: 15px 0px !important"
+        class="
+          uk-flex
+          uk-flex
+          uk-flex-between
+          uk-flex-left
+          uk-margin-remove
+          uk-padding-remove
+        "
+        style="align-items: center"
       >
-        <strong class="exception uk-padding-small">
-          Hubo Alguna Excepcion? No
-          <div class="onoffswitch">
-            <input
-              type="checkbox"
-              v-model="exception"
-              name="onoffswitch"
-              class="onoffswitch-checkbox"
-              id="myonoffswitch"
-              tabindex="0"
-            />
-            <label class="onoffswitch-label" for="myonoffswitch"></label>
-          </div>
-          Si
-        </strong>
-        <timeline
-          :step="step"
-          :exception="exception"
-          :resultScan="resultScan"
-          :imagiElement="imagiElement"
-          @action="getShow($event)"
-        />
-      </div>
-    <div class="result-info">
-      <div class="uk-text-left">
-        <p>{{ resultScan }}</p>
-      </div>
-      <div class="uk-flex uk-flex-row">
-        <div
-          v-for="src in imagiElement"
-          :key="src"
-          class="uk-margin-small-right"
-        >
+        <div style="font-size: 13px; font-weight: 500">
+          <p class="uk-width-1-1 uk-flex">
+            <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
+          </p>
+          <p class="uk-width-1-1 uk-flex">
+            <strong>Zona de Destino:</strong
+            ><span>&nbsp; {{ load?.zone }}</span>
+          </p>
+        </div>
+        <div class="info-header">
+          <span class="status">Carga {{ load?.status }}</span>
           <img
-            style="
-              width: 100px;
-              min-height: 100px;
-              max-height: 100px;
-              border: 1px solid #000;
-            "
-            :src="src"
-            alt="Red dot"
+            v-if="load?.status == 'Asignada'"
+            src="../assets/asigned.png"
+            class="icon-load"
+            alt=""
+          />
+          <img
+            v-if="load?.status == 'Entregada'"
+            src="../assets/delivery.png"
+            class="icon-load"
+            alt=""
+          />
+          <img
+            v-if="load?.status == 'En Ruta'"
+            src="../assets/road.png"
+            class="icon-load"
+            alt=""
+          />
+          <img
+            v-if="load?.status == 'Despacho Aprobado'"
+            src="../assets/warehouse.png"
+            class="icon-load"
+            alt=""
           />
         </div>
       </div>
-      <div class="uk-margin uk-flex">
-        <img
-          style="width: 47%; height: 100px; border: 1px solid #000"
-          :src="firm"
-          alt="Fima Digital"
-        />
-      </div>
-    
+    </div>
+    <div class="result-info">
+      <ul
+        v-if="!resultScan"
+        class="uk-list uk-list-divider"
+        style="list-style: none"
+      >
+        <li
+          v-for="orden in orders"
+          :key="orden"
+          class="article uk-card uk-card-default uk-card-body"
+        >
+          <div>
+            <p class="uk-width-1-1" style="font-weight: 600">
+              <font-awesome-icon
+                icon="map-marker-alt"
+                style="font-size: 14px; color: green"
+              />&nbsp;<strong>{{ orden.address }}</strong>
+            </p>
+            <strong>No. de Orden: &nbsp; {{ orden.numberOfOrders }}</strong>
+          </div>
+          <div class="uk-flex uk-flex-column" style="align-items: center">
+            <font-awesome-icon
+              icon="check-circle"
+              style="font-size: 20px; color: green"
+            />
+            <span style="color: green; font-weight: 500">Entregada</span>
+          </div>
+
+          <div class="uk-flex" style="margin-top: 10px" >
+              <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
+              <img class="img-result" :src="firm" alt="Fima Digital" />
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="cont uk-card uk-card-default uk-card-hover uk-card-body"
+      style="z-index: 0; padding: 15px 0px !important"
+    >
+      <strong class="exception uk-padding-small">
+        Hubo Alguna Excepcion? No
+        <div class="onoffswitch">
+          <input
+            type="checkbox"
+            v-model="exception"
+            name="onoffswitch"
+            class="onoffswitch-checkbox"
+            id="myonoffswitch"
+            tabindex="0"
+          />
+          <label class="onoffswitch-label" for="myonoffswitch"></label>
+        </div>
+        Si
+      </strong>
+      <timeline
+        :step="step"
+        :exception="exception"
+        :resultScan="resultScan"
+        :imagiElement="imagiElement"
+        @action="getShow($event)"
+      />
     </div>
   </div>
 </template>
@@ -64,9 +118,9 @@
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
+import { Vibration } from "@ionic-native/vibration";
 import timeline from "../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import UIkit from "uikit";
 export default {
   name: "DeliveryActions",
   components: {
@@ -78,106 +132,34 @@ export default {
       orders: null,
       resultScan: null,
       cont: 0,
+      load: null,
       imagiElement: [],
       step: 0,
       exception: false,
       firm: null,
-      ordersScan: [
-        {
-          numberOfOrders: 1234,
-          numberOfBox: 2,
-          client: "Juan Martinez Soto",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 1223,
-          numberOfBox: 2,
-          client: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 3321,
-          numberOfBox: 2,
-          client: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 4324,
-          numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 7532,
-          numberOfBox: 2,
-          client: "Juan Jose Garcia",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 1243,
-          numberOfBox: 2,
-          client: "Juan Martinez Soto",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 5214,
-          numberOfBox: 2,
-          client: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 3753,
-          numberOfBox: 2,
-          client: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 1027,
-          numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-        {
-          numberOfOrders: 9120,
-          numberOfBox: 2,
-          client: "Juan Jose Garcia",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-        },
-      ],
     };
   },
   computed: {
-    ...mapGetters(["orderScan", "loadStore", "exceptionStore", "digitalFirmStore",]),
+    ...mapGetters([
+      "orderScan",
+      "loadStore",
+      "exceptionStore",
+      "digitalFirmStore",
+    ]),
   },
   mounted() {
     this.orders = this.orderScan;
-    this.getShow('scan')
-    this.$store.commit("setCurrent", {
-      menuName: `Entrega de Orden No. ${ this.loadStore?.numberOfOrden }`,
-      componentName: "deliveryActions",
-    });
+    this.load = this.loadStore;
+    this.getShow("scan");
+    if (this.orderScan.length > 1) {
+      this.$emit("deliveryActions", `Entrega de Ordenes`);
+    } else if (this.orderScan.length == 1)
+      this.$emit(
+        "deliveryActions",
+        `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
+      );
   },
-   watch: {
+  watch: {
     digitalFirmStore: {
       handler: function (newVal) {
         if (newVal !== null) {
@@ -185,60 +167,48 @@ export default {
         }
       },
     },
-    
-   },
+  },
 
   methods: {
     getShow(value) {
       this.show = value;
-
       if (value === "scan") {
-        this.scanOrder(this.ordersScan);
+        this.scanOrder();
       } else if (value === "camera" && this.imagiElement.length <= 6) {
         this.getCam();
       } else if (value === "firm") {
-        this.serieA = value
+        this.serieA = value;
         this.step++;
-        UIkit.modal("#modal_button").show();
       }
     },
-   async scanOrder(orders) {
-      if (await this.checkPermission()) {
-        BarcodeScanner.hideBackground();
-        const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+    async scanOrder() {
+              this.step++;
+      
 
-        let verify = await this.verificacion(orders, result)
-    
-        if (result.hasContent) {
-          if (verify) {
-
-            this.resultScan = result.content;
-            await this.stopScan();
-            this.step++;
-          } else if (!verify) {
-
-            console.log('no esta en la lista')
+        if (await this.checkPermission()) {
+          BarcodeScanner.hideBackground();
+          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+          if (result.hasContent) {
+            BarcodeScanner.hideBackground();
+            var OrderElement = this.ordersScan.findIndex(x => x.numberOfOrders == result.content)
+            if (OrderElement > -1) {
+              console.log(OrderElement)
+            } else if (OrderElement ){
+              Vibration.vibrate(1000);
+              setTimeout(() => {
+                  this.scanOrder()
+              }, 1000)
+            }
           }
         }
+      },
 
-
-      }
-
-    },
-
-    verificacion(orders, result) {
-      // alert(this.orderScan[0]?.numberOfOrders, 'hola mundo')
-      for (let i = 0; i < orders.length; i++) {
-        // alert(i, 'for')
-        if (i?.numberOfOrders === result.content.numberOfOrders) {
-          // alert(i, 'true')
-
-          return true
-        } 
-        // else {
-        //   // alert(i, 'else')
-        // }
-      }
+      verificacion(orders, result) {
+        for (let i = 0; i < orders.length; i++) {
+          if (i?.numberOfOrders === result.content.numberOfOrders) {
+            return true
+          }
+        }
     },
     async stopScan() {
       await BarcodeScanner.showBackground();
@@ -372,13 +342,54 @@ export default {
   font-size: 14px;
   font-weight: 600;
 }
-.uk-container{
-      flex-direction: column-reverse;
-    justify-content: space-between;
-    margin: 0px -16px;
+.uk-container {
+  margin: 0px -16px;
 }
-.result-info{
+.result-info {
   overflow: scroll;
   padding: 0px 10px;
+  height: 54vh;
+}
+.stiky {
+  color: #000 !important;
+  top: 0px;
+  z-index: 2;
+  padding: 5px 10px !important;
+  background-color: rgb(248 248 248);
+  box-shadow: 1px 0px 5px #898989;
+}
+.info-header {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.icon-load {
+  width: 40%;
+  margin-right: 20px;
+}
+.article {
+  text-align: initial;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  width: 100%;
+  background: #fefffe;
+  color: rgb(0, 0, 0);
+  box-shadow: 0px 1.2px 1px #ccc;
+  border-radius: 10px;
+  border: 1px solid #efefef;
+  margin: 10px 0px;
+}
+li::before {
+  content: none;
+}
+.img-result {
+  width: 21%;
+  height: 60px;
+  margin-right: 5px;
+  border: 1px solid #000;
 }
 </style>
