@@ -148,7 +148,6 @@ export default {
         DeliveredOrders(val){
             this.$store.commit('setAllOrders', this.orders)
             this.$store.commit('setAllLoads', this.userLoads)
-
             this.$router.push({name: val})
         }
     },
@@ -160,6 +159,7 @@ export default {
 .container{
     list-style: none;
     padding: 10px 0px;
+    background: #fff;
 }
 .action{
     margin: 15px 0px 40px;

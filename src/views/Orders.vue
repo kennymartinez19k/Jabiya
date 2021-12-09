@@ -141,7 +141,8 @@
 import SlideUnlock from "vue-slide-unlock";
 import { mapGetters } from "vuex";
 export default {
-  alias: 'Cargar Vehiculo',
+  alias: `Cargar Vehiculo`,
+  name: `cargarrr`,
   data() {
     return {
       status: null,
@@ -374,6 +375,6 @@ p {
   background-image: url('../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-position: 85%
+    background-position: 80%
 }
 </style>
