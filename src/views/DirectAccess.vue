@@ -1,6 +1,6 @@
 <template>
-  <div>
-      <ul class="container uk-flex uk-flex-wrap">
+  <div class="container">
+      <ul class=" uk-flex uk-flex-wrap">
           <h5 class="title uk-margin-top uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
@@ -16,7 +16,7 @@
           </li>
           <li class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
-                <p><strong>Reconciliacion con Almacén</strong></p>
+                <p><strong>Reconciliación con Almacén</strong></p>
           </li>
       </ul>
   </div>
@@ -157,9 +157,12 @@ export default {
 
 <style scoped>
 .container{
-    list-style: none;
-    padding: 10px 0px;
-    background: #fff;
+  background: #fff;
+  height: 100vh;
+}
+ul {
+  list-style: none;
+  padding: 10px 0px;
 }
 .action{
     margin: 15px 0px 40px;

@@ -87,8 +87,10 @@ export default {
     userOrden: Array,
     date: String,
   },
+  
   methods: {
-    setLoad(valueOrder) {
+    async setLoad(valueOrder) {
+    // await this.getLoads()
       this.$store.commit("setloadStore", valueOrder);
       console.log(valueOrder, "valueo");
       switch (valueOrder?.status) {
@@ -118,6 +120,15 @@ export default {
     setDispached() {
       this.$router.push({ name: "orders" }).catch(() => {});
     },
+
+    async getLoads () {
+            console.log( 'ddddddddddddd')
+
+          const categories = await this.$services.loadsServices.getLoads()
+
+            console.log(categories, 'ddddddddddddd')
+
+    }
   },
 };
 </script>

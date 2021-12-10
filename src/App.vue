@@ -97,11 +97,11 @@ button{
   color: #fff;
 }
 .view{
-  height: 91vh !important;
+  height: 92vh !important;
 }
 .view-header{
-  height: 100vh;
-  background: #fff;
+  height: 100%;
+  /* background: #fff; */
 }
 html body{
   height: 100vh;

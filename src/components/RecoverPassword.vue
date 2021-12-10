@@ -1,6 +1,6 @@
 <template>
   <BackButton />
-  <div class="">
+  <div class="cnt">
     <div class="uk-flex uk-flex-center uk-flex-wrap container">
       <form
         class="
@@ -142,13 +142,16 @@ export default {
 }
 
 .place::placeholder {
-     /* font-family: "Font Awesome 5 Free"; 
-    font-weight: 900;  */
     background-image: url('../assets/img/movil.webp');
     background-size: 15px 15px;
     background-repeat: no-repeat;
     background-position: right center;
 
+}
+.cnt {
+  overflow: scroll;
+  width: 100%;
+  height: 500px;
 }
 @media screen and (max-width: 639px) {
   .logo {

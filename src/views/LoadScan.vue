@@ -101,10 +101,7 @@
         <ul class="box-orden" v-if="statusOrders !== 'approve'">
           <li v-for="orden in orders" :key="orden" 
               :class="{completedOrden: orden.completed}" style="">&nbsp;</li>
-              <li v-for="orden in orders" :key="orden" 
-              :class="{completedOrden: orden.completed}" style="">&nbsp;</li>
-              <li v-for="orden in orders" :key="orden" 
-              :class="{completedOrden: orden.completed}" style="">&nbsp;</li>
+           
         </ul>
       </div>
     </div>
