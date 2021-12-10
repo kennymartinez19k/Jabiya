@@ -79,8 +79,10 @@ template {
      scroll-behavior: smooth;
 }
 .cnt {
-  height: 100%;
+  /* height: 100%; */
   overflow: scroll;
+  width: 100%;
+  height: 500px;
 }
 @media screen and (max-width: 639px){
     .logo{

@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-container uk-flex uk-flex-column uk-flex-between">
+  <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
       <div
         class="
@@ -52,7 +52,7 @@
     </div>
     <div class="result-info">
       <ul
-        v-if="!resultScan"
+        v-if="resultScan"
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
@@ -87,7 +87,7 @@
     </div>
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 15px 0px !important"
+      style="z-index: 0; padding: 15px 0px  !important;"
     >
       <strong class="exception uk-padding-small">
         Hubo Alguna Excepcion? No
@@ -190,6 +190,8 @@ export default {
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
           if (result.hasContent) {
             BarcodeScanner.hideBackground();
+              this.resultScan = result
+
             var OrderElement = this.ordersScan.findIndex(x => x.numberOfOrders == result.content)
             if (OrderElement > -1) {
               console.log(OrderElement)
@@ -344,11 +346,16 @@ export default {
 }
 .uk-container {
   margin: 0px -16px;
+
+}
+.backg {
+    background-color: rgb(255, 255, 255);
+
 }
 .result-info {
   overflow: scroll;
   padding: 0px 10px;
-  height: 54vh;
+  height: 100vh;
 }
 .stiky {
   color: #000 !important;
@@ -382,6 +389,7 @@ export default {
   border-radius: 10px;
   border: 1px solid #efefef;
   margin: 10px 0px;
+  z-index: 3;
 }
 li::before {
   content: none;
@@ -392,4 +400,5 @@ li::before {
   margin-right: 5px;
   border: 1px solid #000;
 }
+
 </style>

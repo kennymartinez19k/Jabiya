@@ -1,5 +1,6 @@
 import axios from 'axios'
 import EjemploService from './EjemploService'
+import LoadsServices from './LoadsServices'
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
@@ -9,4 +10,5 @@ const axiosInstance = axios.create({
 
 export default {
     ejemploService: new EjemploService(axiosInstance),
+    loadsServices: new LoadsServices(axiosInstance),
 }
