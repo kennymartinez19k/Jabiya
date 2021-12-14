@@ -1,12 +1,12 @@
 <template>
-  <div class="uk-flex uk-flex-column uk-flex-between cnt">
+  <div class="uk-flex uk-flex-between cnt">
     <div class="stiky">
-      <h5
+      <span
         class="uk-text-center uk-margin-remove"
-        style="margin-bottom: 5px !important"
+        style="margin-bottom: 5px !important; font-weight: 400"
       >
-        <strong>ILS 11/23/2021 1:30PM Gate 01</strong>
-      </h5>
+        ILS 11/23/2021 1:30PM Gate 01
+      </span>
       <div
         class="
           uk-flex
@@ -18,16 +18,16 @@
         "
         style="align-items: center"
       >
-        <div style="font-size: 13px; font-weight: 500">
-          <p class="uk-width-1-1 uk-flex">
+        <div style="font-size: 13px; font-weight: 300; width: 100%" class="uk-flex">
+          <p class="uk-width-1-1">
             <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
           </p>
-          <p class="uk-width-1-1 uk-flex">
-            <strong>Zona de Destino:</strong
-            ><span>&nbsp; {{ load?.zone }}</span>
+          <p class="uk-width-1-1">
+            <strong class="uk-block">Destino:</strong>
+            <span>&nbsp; {{ load?.zone }}</span>
           </p>
         </div>
-        <div class="info-header">
+        <!-- <div class="info-header">
           <span class="status">Carga {{ load?.status }}</span>
           <img
             v-if="load?.status == 'Asignada'"
@@ -53,7 +53,7 @@
             class="icon-load"
             alt=""
           />
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
@@ -308,7 +308,6 @@ export default {
   bottom: 0px;
 }
 .status {
-  color: green;
   font-weight: 500;
   font-size: 14px;
 }
@@ -358,11 +357,12 @@ export default {
   background: #2a307c;
 }
 .stiky {
-  color: #000 !important;
-  top: 0px;
+  color: rgb(255, 255, 255) !important;
   z-index: 2;
-  padding: 5px 10px !important;
-  background-color: rgb(248 248 248);
+  padding: 0px 10px 4px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: start;
   box-shadow: 1px 0px 5px #898989;
 }
 .info-header {
@@ -372,8 +372,7 @@ export default {
   align-items: flex-end;
 }
 .status {
-  color: green;
-  font-weight: 500;
+  font-weight: 300;
   font-size: 12px;
 }
 .box-slide {

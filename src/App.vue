@@ -1,7 +1,6 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
   <router-view class="view-header" @deliveryActions="setName($event)" :class="{view: !currentPage}"/>
-
 </template>
 <script>
 import AppHeader from './views/AppHeader.vue'
@@ -9,42 +8,42 @@ import AppHeader from './views/AppHeader.vue'
 export default {
   data(){
     return{
+      stopScan:  false,
       noHead: [
         'sign-in',
         'sign-up',
         'direct-access',
         'recover-password'
       ],
-      nameActionDelivery: null
+      nameOrder: null
     }
   },
   components:{
     AppHeader
   },
   watch:{
-    $route: function(){
-      console.log(this.$route)
-      this.nameActionDelivery = null
-    }
+    $route: function(newVal){
+      console.log(newVal.name)
+    },
   },
   computed:{
-    
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)
     },
     currentName: function() {
       if(!this.currentPage){
-        if(this.nameActionDelivery) return this.nameActionDelivery
-        else return this.$route.matched[0]?.components?.default?.alias
+        var Route = this.$route.matched[0]?.components?.default?.alias
+        if(Route) return Route
+        else return this.nameOrder
       }
       return ''
     },
-
 },
 methods:{
   setName(val){
-    this.nameActionDelivery = val
-  }
+    this.nameOrder = val
+    console.log(this.nameOrder)
+  },
 }
 }
 </script>
@@ -119,6 +118,9 @@ strong{
 #nav {
   padding: 10px;
 
+}
+.font-weight-medium{
+  font-weight: 500 !important;
 }
 .cnt {
   height: 100%;

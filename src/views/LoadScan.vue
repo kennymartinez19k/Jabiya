@@ -11,38 +11,16 @@
         "
         style="align-items: center"
       >
-        <div style="font-size: 13px; font-weight: 500">
+        <div style="font-weight: 500">
           <p class="uk-width-1-1 uk-flex">
-            <strong>Shipper:</strong><span>&nbsp; {{ loads?.client }}</span>
+            <strong>Shipper:</strong><span>&nbsp; {{ loads?.shipper }}</span>
           </p>
           <p class="uk-width-1-1 uk-flex">
-            <strong>Zona de Destino:</strong
-            ><span>&nbsp; {{ loads?.zone }}</span>
+            <strong>Destino:</strong
+            ><span>&nbsp; {{ loads?.shipperZone }}</span>
           </p>
         </div>
-        <div class="info-header">
-          <span class="status">Carga {{ loads?.status }}</span>
-          <img
-            v-if="loads?.status == 'Asignada'"
-            src="../assets/asigned.png"
-            class="icon-load"
-          />
-          <img
-            v-if="loads?.status == 'Entregada'"
-            src="../assets/delivery.png"
-            class="icon-load"
-          />
-          <img
-            v-if="loads?.status == 'En Ruta'"
-            src="../assets/road.png"
-            class="icon-load"
-          />
-          <img
-            v-if="loads?.status == 'Despacho Aprobado'"
-            src="../assets/warehouse.png"
-            class="icon-load"
-          />
-        </div>
+        
       </div>
     </div>
   <div class="container">
@@ -86,10 +64,10 @@
               <div>
                 <p class="uk-width-1-1" style="font-weight: 600">
                 <font-awesome-icon icon="map-marker-alt" style="font-size: 14px; color: green" />&nbsp;<strong>{{
-                  orden.address
+                  orden.zone.name
                 }}</strong>
               </p>
-              <strong>No. de Orden: &nbsp; {{orden.numberOfOrders}}</strong>
+              <strong>No. de Orden: &nbsp; {{orden.order_num}}</strong>
               </div>
               <div class="uk-flex uk-flex-column" style="align-items: center">
                 <font-awesome-icon icon="check-circle" style="font-size: 20px; color: green"/>
@@ -115,7 +93,7 @@ import { Vibration } from "@ionic-native/vibration";
 import { Geolocation } from "@capacitor/geolocation";
 
 export default {
-  alias: 'ILS 11/23/2021 1:30PM Gate 01',
+
   data() {
     return {
       checkOrder: false,
@@ -131,9 +109,8 @@ export default {
       },
     };
   },
-
   computed: {
-    ...mapGetters(["orderScan", "loadStore", "allOrders", "allLoads"]),
+    ...mapGetters(["orderScan", "loadStore", "allOrders", "allLoads", 'loads']),
     completedOrder: function(){
       if(this.orders.every(x => x.completed == true)){
         return 'TODAS LAS ORDENES HAN SIDO CARGADAS'
@@ -141,10 +118,20 @@ export default {
       else{
         return 'LA ORDEN HA SIDO CARGADA'
       }
+    },
+  },
+  watch:{
+    $route: function(newVal){
+      if (newVal){
+        this.stopScan()
+      }
     }
   },
   mounted() {
+    this.stop = this.stopScanner
     if(this.orderScan){
+      BarcodeScanner.prepare();
+      console.log(this.loadStore)
       this.orders = this.orderScan;
       this.loads = this.loadStore
     }else{
@@ -158,6 +145,7 @@ export default {
     }
     this.scanOrder();
   },
+
   methods: {
     async location() {
       try {
@@ -181,7 +169,7 @@ export default {
         const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
         if (result.hasContent) {
           BarcodeScanner.hideBackground();
-          var OrderElement = this.orders.findIndex(x => x.numberOfOrders == result.content)
+          var OrderElement = this.orders.findIndex(x => x.order_num == result.content)
           if (OrderElement > -1) {
             this.verifiedElement(OrderElement)
           } else if (OrderElement ){
@@ -203,15 +191,17 @@ export default {
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });
-      this.status = status;
       if (status.granted) {
-        return true;
+        this.status = true;
+        return true
       }
-      return false;
+      this.status = false;
+      return false
     },
     changeRoute(val){
       this.$router.push({ name: val }).catch(() => {});
     },
+    
     verifiedElement(val){
         this.checkOrder = true
         this.orders[val].completed = true
@@ -284,7 +274,7 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  height: 62vh;
+  height: 63vh;
   overflow: scroll;
   align-items: center;
 }
@@ -311,11 +301,12 @@ export default {
     margin: 1px
 }
 .stiky {
-  color: #000 !important;
+  color: rgb(255, 255, 255) !important;
   top: 0px;
   z-index: 2;
+  font-size: 12px;
   padding: 5px 10px !important;
-  background-color: rgb(248 248 248);
+  background-color: rgb(42 48 124);
   border-bottom: 1px solid #ccc;
 }
 .info-header {

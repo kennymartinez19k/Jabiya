@@ -1,12 +1,11 @@
 <template>
-  <div class="uk-flex uk-flex-column uk-flex-between cnt">
+  <div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
-      <h5
-        class="uk-text-center uk-margin-remove"
-        style="margin-bottom: 5px !important"
+      <span
+        style="margin-bottom: 5px !important; font-weight: 500"
       >
-        <strong>ILS 11/23/2021 1:30PM Gate 01</strong>
-      </h5>
+        {{load?.loadNumber}}
+      </span>
       <div
         class="
           uk-flex
@@ -16,47 +15,25 @@
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center"
+        style="align-items: center;"
       >
-        <div style="font-size: 13px; font-weight: 500">
-          <p class="uk-width-1-1 uk-flex">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
+        <div style=" width: 100%" class="uk-flex">
+          <p class="uk-width-1-1">
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>
+            
           </p>
-          <p class="uk-width-1-1 uk-flex">
-            <strong>Zona de Destino:</strong
-            ><span>&nbsp; {{ load?.zone }}</span>
+          <div></div>
+          <p class="uk-width-1-1">
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
+          
+          
         </div>
-        <div class="info-header">
-          <span class="status">Carga {{ load?.status }}</span>
-          <img
-            v-if="load?.status == 'Asignada'"
-            src="../assets/asigned.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Entregada'"
-            src="../assets/delivery.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'En Ruta'"
-            src="../assets/road.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Despacho Aprobado'"
-            src="../assets/warehouse.png"
-            class="icon-load"
-            alt=""
-          />
-        </div>
+        
       </div>
     </div>
-    <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
+    <div class="uk-padding-small uk-width-1-2@m uk-margin-medium-bottom">
       <div
         v-for="order in orders"
         :key="order"
@@ -82,28 +59,28 @@
                 />
               </span>
               <p
-                style="font-size: 13px !important; font-weight: 700"
+                style="!important; font-weight: 500"
                 class="uk-width-1-1"
               >
-                <span>{{ order.client }}</span>
+                <span>{{ order.client_name }}</span>
               </p>
             </div>
           </div>
-          <p class="uk-width-1-2">
-            <strong>Orden: </strong><span>{{ order.numberOfOrders }}</span>
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
-          <p class="uk-width-1-2">
-            <strong>Cajas: </strong>{{ order.numberOfBox }}<span></span>
+          <p class="">
+            <span class="font-weight-medium">Cajas: </span>{{ order.numberOfBox }}<span></span>
           </p>
           <p class="uk-width-1-1">
             <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>{{
-              order.address
+              order.zone.name
             }}</span>
           </p>
         </div>
         <div
           class="uk-flex uk-flex-column"
-          style="min-width: 90px; margin-left: 7px; align-items: flex-end"
+          style="min-width: 83px; margin-left: 7px; align-items: flex-end"
         >
           <div
             class="uk-flex uk-flex-column"
@@ -149,81 +126,19 @@ export default {
       result: null,
       load: null,
       completed: "background-color: #2a307c !important",
-      orders: [
-        {
-          numberOfOrders: 1234,
-          numberOfBox: 2,
-          client: "Juan Martinez Soto",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 08:00')
-        },
-        {
-          numberOfOrders: 1223,
-          numberOfBox: 2,
-          client: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: true,
-          hour: new Date('2020-12-02, 10:00')
-        },
-        {
-          numberOfOrders: 3321,
-          numberOfBox: 2,
-          client: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 12:00')
-        },
-        {
-          numberOfOrders: 4324,
-          numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 14:00')
-        },
-        {
-          numberOfOrders: 3753,
-          numberOfBox: 2,
-          client: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 16:22')
-        },
-        {
-          numberOfOrders: 1027,
-          numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 18:22')
-        },
-        {
-          numberOfOrders: 9120,
-          numberOfBox: 2,
-          client: "Juan Jose Garcia",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 20:22')
-        },
-      ],
+      orders: null
     };
   },
   components: {
     SlideUnlock,
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan"]),
+    ...mapGetters(["loadStore", "orderScan", 'loads']),
   },
   mounted() {
     this.load = this.loadStore;
+    this.orders = this.loadStore.orders
+    console.log(this.loadStore)
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -247,6 +162,7 @@ export default {
         orderScan.push(val)
       }
       this.$store.commit("scanOrder", orderScan);
+      this.$emit("deliveryActions", `Entrega de Orden No. ${this.orderScan[0]?.order_num}`);
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
     completedOrden() {
@@ -301,8 +217,6 @@ p {
   --su-size-text: 18px;
 }
 .status {
-  color: green;
-  font-weight: 500;
   font-size: 12px;
 }
 .btn {
@@ -333,12 +247,15 @@ p {
   width: 70px;
   display: flex;
 }
+
 .stiky {
-  color: #000 !important;
-  top: 0px;
+  color: rgb(255, 255, 255) !important;
   z-index: 2;
+  font-size: 12px !important;
   padding: 5px 10px !important;
-  background-color: rgb(248 248 248);
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: start;
   box-shadow: 1px 0px 5px #898989;
 }
 
