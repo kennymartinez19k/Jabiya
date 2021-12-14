@@ -3,7 +3,7 @@
     <div class="uk-navbar-left">
             <font-awesome-icon icon="home" @click="setCurrentPage('direct-access')" style="font-size: 20px; margin: 0px 15px"/>
             <h6 class="uk-margin-remove" style="font-size: 14px; margin: 0px 10px !important">{{titlePage}}</h6>
-            <a  class="uk-navbar-toggle" style="min-height: 60px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
+            <a  class="uk-navbar-toggle" style="min-height: 55px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
     <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar uk-padding-remove">
             <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
@@ -31,13 +31,13 @@ export default {
         nameComponent: String
     },
 computed:{
-    
     titlePage(){
-        if(this.nameComponent){
             return this.nameComponent
-        }
-        return ''
     }
+},
+mounted(){
+    if (this.nameComponent) this.titlePage = this.nameComponent
+    else ''
 },
 data() {
     return {
@@ -96,7 +96,7 @@ li{
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
-    height: 55px;
+    height: 58px;
 }
 .close-navbar{
     width: 25px;

@@ -9,11 +9,17 @@
 
             <div class="uk-margin uk-text-left">
                <label class="uk-text-emphasis" for="mobile">Teléfono</label>
-                <input class="uk-input uk-form-width-medium place" v-model="signInLogin.mobile" type="number" style="width: 100%" placeholder="(809) ___ - ____ " required>
+               <div class="uk-input uk-flex form-login" style="align-items: center">
+                <input class="uk-form-width-medium formLogin" v-model="signInLogin.mobile" type="number" placeholder="(809) ___ - ____ " required>
+                <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
+               </div>
             </div>
             <div class="uk-margin uk-text-left">
                 <label class="uk-text-emphasis" for="companyData">Contraseña</label>
-                <input class="uk-input uk-form-width-medium" v-model="signInLogin.password" type="password" style="width: 100%" placeholder="Contraseña" required>
+                <div class="uk-input uk-flex form-login" style="align-items: center">
+                    <input  class="uk-form-width-medium" v-model="signInLogin.password" :type="type" style="width: 100%" placeholder="Contraseña" required>
+                    <font-awesome-icon :icon="iconType" @click="showPassword" style="font-size: 15px"/>
+                </div>
             </div>
             <div class="uk-margin uk-flex uk-flex-between">
                 <label class="terms uk-text-light"><input v-model="signInLogin.rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
@@ -35,6 +41,8 @@ components:{
 data() {
     return {
         loaded: false,
+        type: 'password',
+        iconType: 'eye',
         signInLogin:{
             mobile: '',
             password: '',
@@ -52,18 +60,26 @@ methods:{
         } else {
          this.$router.push({ name: path }).catch(() => {})
         }
+    },
+    showPassword(){
+        if (this.type === 'password') {
+        this.type = 'text'
+        this.iconType = 'eye-slash'
+        } else {
+        this.type = 'password'
+        this.iconType = 'eye'
+      }
     }
 }
 }
 </script>
 
 <style scoped>
-.place::placeholder {
-    background-image: url('../assets/img/movil.webp');
-    background-size: 15px 15px;
+.place{
+    background-image: url(/img/call.5b440c14.png);
+    background-position: 96%;
+    background-size: 15px;
     background-repeat: no-repeat;
-    background-position: right center;
-
 }
 .show-link {
     color: #de871c;
@@ -79,7 +95,6 @@ template {
      scroll-behavior: smooth;
 }
 .cnt {
-  /* height: 100%; */
   overflow: scroll;
   width: 100%;
   height: 500px;
@@ -95,6 +110,20 @@ template {
     min-width: 100px !important;
     box-shadow: 0px 0px 0px #000 !important;
 }
+}
+.form-login input{
+    width: 100%;
+    height: 30px;
+    border: 0px;
+}
+.form-login input:focus-visible {
+    border: 0px;
+    outline: none;
+}
+.uk-input:focus{
+    outline: 0 !important;
+    background-color: #fff;
+    color: #666;
 }
 
 </style>

@@ -16,14 +16,14 @@
         :key="load"
         class="uk-card uk-card-default uk-card-body"
         :class="{
-          asigned: load.status == 'Asignada',
-          delivered: load.status == 'Entregada',
-          onWay: load.status == 'En Ruta',
-          dispatch: load.status == 'Despacho Aprobado',
+          asigned: load.status == 'Driver Assigned',
+          delivered: load.status == 'Delivered',
+          onWay: load.status == 'Driver Arrival',
+          dispatch: load.status == 'Dispatched',
         }"
       >
         <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
-          <strong>ILS 11/23/2021 1:30PM Gate 01</strong>
+          <strong>{{load.loadNumber}}</strong>
         </h5>
         <div class="uk-flex uk-flex-between">
           <div class="uk-text-left info-user">
@@ -31,14 +31,14 @@
               <strong> Estado: </strong><span>{{ load.status }}</span>
             </p>
             <p>
-              <strong>Cliente: </strong> <span>{{ load.client }}</span>
+              <strong>Cliente: </strong> <span>{{ load.shipper }}</span>
             </p>
             <p>
               <strong>No. de Orden(es): </strong
-              ><span>{{ load.numberOfOrden }}</span>
+              ><span>{{ load.noOfOrders }}</span>
             </p>
             <p>
-              <strong>Zona: </strong><span>{{ load.zone }}</span>
+              <strong>Zona: </strong><span>{{ load.shipperZone }}</span>
             </p>
           </div>
           <div class="btn">
@@ -46,25 +46,25 @@
                 
               <div style="margin-top: 1px">
                 <img
-                  v-if="load.status == 'Asignada'"
+                  v-if="load.status == 'Driver Assigned'"
                   src="../assets/asigned.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'Entregada'"
+                  v-if="load.status == 'Delivered'"
                   src="../assets/delivery.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'En Ruta'"
+                  v-if="load.status == 'Driver Arrival'"
                   src="../assets/road.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'Despacho Aprobado'"
+                  v-if="load.status == 'Dispatched'"
                   src="../assets/warehouse.png"
                   class="icon-load"
                   alt=""
@@ -72,7 +72,11 @@
               </div>
             </div>
             <button class="uk-button " @click="setLoad(load)">
-              {{ load.btnAction }}
+              <span v-if="load.status == 'Driver Assigned'">Cargar Vehiculo</span>
+              <span v-if="load.status == 'Delivered'">Ver Ordenes</span>
+              <span v-if="load.status == 'Driver Arrival'"></span>
+              <span v-if="load.status == 'Dispatched'">Cargar Vehic</span>
+
             </button>
           </div>
         </div>
@@ -87,48 +91,27 @@ export default {
     userOrden: Array,
     date: String,
   },
-  
+  data(){
+    return{
+      loads: []
+    }
+  },
+  mounted(){
+    this.loads = this.userOrden
+  },
   methods: {
     async setLoad(valueOrder) {
-    // await this.getLoads()
       this.$store.commit("setloadStore", valueOrder);
-      console.log(valueOrder, "valueo");
-      switch (valueOrder?.status) {
-        case "Entregada":
-          this.setDelivered();
-          break;
-        case "Asignada":
-          this.setAsigned();
-          break;
-        case "En Ruta":
-          this.setOnWay();
-          break;
-        case "Despacho Aprobado":
-          this.setDispached();
-          break;
-      }
-    },
-    setAsigned() {
-      this.$router.push({ name: "orders" }).catch(() => {});
-    },
-    setDelivered() {
-      this.$router.push({ name: "orders" }).catch(() => {});
-    },
-    setOnWay() {
-      this.$router.push({ name: "delivery-routes" }).catch(() => {});
-    },
-    setDispached() {
-      this.$router.push({ name: "orders" }).catch(() => {});
-    },
+      if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
+      if(valueOrder?.status == 'Delivered') this.changeRoute('orders');
+      if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
+      if(valueOrder?.status == 'Dispatched') this.changeRoute('orders');
 
-    async getLoads () {
-            console.log( 'ddddddddddddd')
-
-          const categories = await this.$services.loadsServices.getLoads()
-
-            console.log(categories, 'ddddddddddddd')
-
-    }
+    },
+    changeRoute(path) {
+      this.$router.push({ name: path }).catch(() => {});
+    },
+  
   },
 };
 </script>
@@ -143,6 +126,7 @@ p {
 .uk-card-body {
   border-radius: 2px;
   margin-bottom: 15px;
+  border: 0.1px solid #e5e5e5;
   align-items: center;
   padding: 16px 10px;
 }
