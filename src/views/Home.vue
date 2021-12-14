@@ -1,15 +1,15 @@
 <template>
   <div>
-      <load-of-orders />
+      <loads />
   </div>
 </template>
 
 <script>
-import LoadOfOrders from '../components/LoadOfOrders.vue'
+import Loads from '../components/Loads.vue'
 export default {
   alias: 'Tus Cargas',
  components: {
-     LoadOfOrders,
+     Loads,
  },
 
   methods: {

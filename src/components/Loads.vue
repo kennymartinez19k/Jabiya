@@ -11,7 +11,7 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   <div v-for="date in dateLoad" :id="date" :key="date">
-    <load-date :userOrden="userOrden" :date="date"/>
+    <load-date :userOrden="loads" :date="date"/>
   </div>    
   </div>
 </template>
@@ -24,16 +24,19 @@ import Loading from "vue-loading-overlay";
 import moment from 'moment'
 import 'moment/locale/es'
 import "vue-loading-overlay/dist/vue-loading.css";
+import { mapGetters } from 'vuex';
 export default {
-  mounted() {
-    window.location.href = '#Hoy'
-    moment.locale('es')
-  },
+  
   setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
 
     return { isOpenRef, setOpen };
+  },
+  mounted(){
+    window.location.href = '#Hoy'
+    moment.locale('es')
+    console.log(this.loads)
   },
   data() {
     return {
@@ -88,20 +91,21 @@ export default {
     };
   },
   computed:{
+    ...mapGetters([
+      'loads'
+    ]),
     dateLoad: function () {
-      return [this.yesterdayLoad, this.todayLoad, this.tomorrowLoad]
+      var yesterday = new Date().setDate(new Date().getDate() -1 )
+      yesterday = moment(new Date(yesterday)).format('ll')
+
+      var today = 'Hoy'
+
+      var tomorrow = new Date().setDate(new Date().getDate() +1 )
+      tomorrow = moment(new Date(tomorrow)).format('ll') 
+
+      return [yesterday, today, tomorrow]
+
     },
-    yesterdayLoad: () => {
-      var date = new Date().setDate(new Date().getDate() -1 )
-      return moment(new Date(date)).format('ll')
-    },
-    todayLoad: () => {
-      return 'Hoy'
-    },
-    tomorrowLoad: () => {
-      var date = new Date().setDate(new Date().getDate() +1 )
-      return moment(new Date(date)).format('ll') 
-    }
   },
   components: {
     IonLoading,

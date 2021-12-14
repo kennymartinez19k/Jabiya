@@ -141,16 +141,19 @@ export default {
       ],
     };
   },
-    methods: {
-        changeRoute(val){
-            this.$router.push({name: val})
-        },
-        DeliveredOrders(val){
-            this.$store.commit('setAllOrders', this.orders)
-            this.$store.commit('setAllLoads', this.userLoads)
-            this.$router.push({name: val})
-        }
+  async mounted(){
+    await this.$store.dispatch('changeDateLoads', 'd')
+  },
+  methods: {
+    changeRoute(val){
+      this.$router.push({name: val})
     },
+    DeliveredOrders(val){
+      this.$store.commit('setAllOrders', this.orders)
+      this.$store.commit('setAllLoads', this.userLoads)
+      this.$router.push({name: val})
+    }
+  },
 
 }
 </script>

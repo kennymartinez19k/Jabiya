@@ -12,7 +12,7 @@
         "
         style="align-items: center"
       >
-        <div style="font-size: 13px; font-weight: 500">
+        <div class="font-weight-medium">
           <p class="uk-width-1-1 uk-flex">
             <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
           </p>
@@ -75,7 +75,7 @@
               icon="check-circle"
               style="font-size: 20px; color: green"
             />
-            <span style="color: green; font-weight: 500">Entregada</span>
+            <span class="font-weight-medium" style="color: green">Entregada</span>
           </div>
 
           <div class="uk-flex" style="margin-top: 10px" >

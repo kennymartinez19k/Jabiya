@@ -1,7 +1,9 @@
+import services from '../services'
 const Loads = {
     state: {
       load: {},
-      allLoads: []
+      allLoads: [],
+      loads: []
     },
     mutations: {
         setloadStore (state, load) {
@@ -10,15 +12,28 @@ const Loads = {
         setAllLoads(state, val){
           state.allLoads = val
         },
+        chargeLoads(state, val){
+          state.loads = val
+        }
         
     },
   
     actions: {
+      async changeDateLoads({commit}, d){
+        if(d){
+          console.log('Success')
+
+        }
+        const loads = await services.loadsServices.getLoads()
+        console.log(loads)
+        commit('chargeLoads', loads)
+      }
     },
   
     getters: {
       loadStore: state => state.load,
-      allLoads: state => state.allLoads
+      allLoads: state => state.allLoads,
+      loads: state => state.loads
     }
   
   }
