@@ -10,7 +10,7 @@
             <div class="uk-margin uk-text-left">
                <label class="uk-text-emphasis" for="mobile">Teléfono</label>
                <div class="uk-input uk-flex form-login" style="align-items: center">
-                <input class="uk-form-width-medium formLogin" v-model="signInLogin.mobile" type="number" placeholder="(809) ___ - ____ " required>
+                <input class="uk-form-width-medium formLogin" v-model="signInLogin.mobile" type="number" placeholder="___  ___ - ____ " required>
                 <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
                </div>
             </div>
@@ -29,7 +29,7 @@
         </form>
     </div>
 </template>
-
+ 
 <script>
 import Loading from 'vue-loading-overlay';
 
