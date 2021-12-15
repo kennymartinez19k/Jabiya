@@ -1,7 +1,7 @@
 <template>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
 
-    <div class="uk-flex uk-flex-end uk-flex-column uk-flex-wrap container cnt">
+    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap container cnt">
         <form class="uk-card uk-card-default uk-padding-remove uk-card-large uk-card-body uk-width-1-3@s" style="padding: 0px 20px !important; min-width: 400px">
             <img class="logo" src="../assets/logo.png" alt="">
             <h4 class="uk-text-light">Entrar a su cuenta</h4>
@@ -10,7 +10,7 @@
             <div class="uk-margin uk-text-left">
                <label class="uk-text-emphasis" for="mobile">Teléfono</label>
                <div class="uk-input uk-flex form-login" style="align-items: center">
-                <input class="uk-form-width-medium formLogin" v-model="signInLogin.mobile" type="number" placeholder="___  ___ - ____ " required>
+                <input class="uk-form-width-medium formLogin" v-model="signInLogin.mobile" type="number" placeholder="(999) 000-0000" required>
                 <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
                </div>
             </div>
@@ -91,13 +91,13 @@ methods:{
     font-size: 14px;
     
 }
-template {
+/* template {
      scroll-behavior: smooth;
-}
+} */
 .cnt {
   overflow: scroll;
   width: 100%;
-  height: 75vh;
+  height: 13cm;
 }
 @media screen and (max-width: 639px){
     .logo{
@@ -121,6 +121,10 @@ template {
     outline: 0 !important;
     background-color: #fff;
     color: #666;
+    border: 1px solid red;
+}
+.form-login{
+    border: 1px solid #b1b1b1;
 }
 
 </style>

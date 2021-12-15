@@ -67,7 +67,7 @@
       <div v-if="statusOrders == 'reject'">
           <font-awesome-icon icon="ban" class="ban" />
       </div>
-      <div v-if="statusOrders == 'approve'" id="list-completed" style="width: 95%; padding: 20px">
+      <div v-if="statusOrders == 'approve'" id="list-completed" style="width: 95%; padding: 15px 0px">
         <ul class="uk-list uk-list-divider" style="list-style: none">
           <li v-for="orden in orders" :key="orden" class="article uk-card uk-card-default uk-card-body">
               <div>
@@ -249,8 +249,9 @@ p{
 .cont {
   box-shadow: 0px 0px 7px !important;
   height: 19vh;
-      position: absolute;
-    bottom: 0px;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -305,7 +306,7 @@ p{
   padding: 0px;
   width: 90%;
   flex-wrap: wrap;
-  margin-bottom: 5px !important
+  margin-bottom: 10px !important
 }
 .box-orden li{
     width: 25px;
@@ -315,9 +316,9 @@ p{
 .stiky {
   color: rgb(255, 255, 255) !important;
   z-index: 2;
-  border-top: 1px solid #b8b8b8;
+  border-top: 1px solid #313575;
   font-size: 12px !important;
-  padding: 5px 10px 2px !important;
+  padding: 7px 10px 5px !important;
  background: #2a307c;
  font-weight: 300 !important;
  text-align: start;

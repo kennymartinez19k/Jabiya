@@ -359,7 +359,7 @@ export default {
 .stiky {
   color: rgb(255, 255, 255) !important;
   z-index: 2;
-  padding: 0px 10px 4px !important;
+  padding: 7px 10px 4px !important;
  background: #2a307c;
  font-weight: 300 !important;
  text-align: start;

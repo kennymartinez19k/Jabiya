@@ -1,7 +1,6 @@
 <template>
   <BackButton />
-  <div class="cnt">
-    <div class="uk-flex uk-flex-center uk-flex-wrap container">
+    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap container cont">
       <form
         class="
           uk-card
@@ -11,7 +10,7 @@
           uk-card-body
           uk-width-1-3@s
         "
-        style="padding: 40px 20px !important; min-width: 400px"
+        style="padding: 0px 20px !important; min-width: 400px"
       >
         <img class="logo" src="../assets/logo.png" alt="" />
         <h4 class="uk-text-light">Has Olvidado tu Contraseña</h4>
@@ -47,19 +46,18 @@
             required
             placeholder="Compañía de Trasporte"
           />
-        </div>
-      </form>
-      <div class="uk-width-1-1 uk-padding-small">
-        <button
+          <button
           class="
           uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
+          style="margin: 25px 0px"
           uk-toggle="target: #modal-example"
           :class="{'disabled-button': (showMobile === true && showCompany === true) || (showMobile === false && showCompany === true)  || (showMobile === true && showCompany === false)}"
           :disabled="(showMobile === true && showCompany === true) || (showMobile === false && showCompany === true)  || (showMobile === true && showCompany === false)"
         >
           Enviar
         </button>
-      </div>
+        </div>
+      </form>
       <div id="modal-example" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
           <h4>Las Instrucciones han sido enviadas a tu WhatsApp</h4>
@@ -80,7 +78,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -149,7 +146,7 @@ export default {
 
 }
 .cnt {
-  overflow: scroll;
+  /* overflow: scroll; */
   width: 100%;
   height: 500px;
 }
@@ -165,5 +162,8 @@ export default {
     min-width: 100px !important;
     box-shadow: 0px 0px 0px #000 !important;
   }
+}
+.cont{
+  height: 70vh;
 }
 </style>

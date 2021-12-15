@@ -156,11 +156,12 @@ export default {
       let orderScan = []
       if (val.length) {
         orderScan = val
+        this.$emit("deliveryActions", 'Escaneo Corrido');
       } else {
+        this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
       this.$store.commit("scanOrder", orderScan);
-      this.$emit("deliveryActions", `Orden No: ${this.orderScan[0]?.order_num}`);
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
     completedOrden() {
@@ -249,15 +250,14 @@ p {
 .stiky {
   color: rgb(255, 255, 255) !important;
   z-index: 2;
-  border-top: 1px solid #b8b8b8;
+    border-top: 1px solid #313575;
   font-size: 12px !important;
-  padding: 5px 10px 2px !important;
+  padding: 7px 10px 5px !important;
  background: #2a307c;
  font-weight: 300 !important;
  text-align: start;
   box-shadow: 1px 0px 5px #898989;
 }
-
 .img-scan {
   width: 39px;
 }
