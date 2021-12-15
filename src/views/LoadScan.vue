@@ -1,5 +1,10 @@
 <template>
   <div class="stiky">
+      <span
+        style="margin-bottom: 5px !important; font-weight: 500"
+      >
+        {{load?.loadNumber}}
+      </span>
       <div
         class="
           uk-flex
@@ -9,16 +14,20 @@
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center"
+        style="align-items: center;"
       >
-        <div style="font-weight: 500">
-          <p class="uk-width-1-1 uk-flex">
-            <strong>Shipper:</strong><span>&nbsp; {{ loads?.shipper }}</span>
+        <div style=" width: 100%" class="uk-flex uk-flex-wrap">
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>
+            
           </p>
-          <p class="uk-width-1-1 uk-flex">
-            <strong>Destino:</strong
-            ><span>&nbsp; {{ loads?.shipperZone }}</span>
+          <div></div>
+          <p>
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
+          
+          
         </div>
         
       </div>
@@ -101,7 +110,7 @@ export default {
       statusOrders: 'start',
       cont: 0,
       orders: [],
-      loads: [],
+      load: [],
       showScanConfirmation: false,
       location1: {
         latitude: null,
@@ -110,7 +119,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["orderScan", "loadStore", "allOrders", "allLoads", 'loads']),
+    ...mapGetters(["orderScan", "loadStore", "allOrders", "allLoads"]),
     completedOrder: function(){
       if(this.orders.every(x => x.completed == true)){
         return 'TODAS LAS ORDENES HAN SIDO CARGADAS'
@@ -128,18 +137,17 @@ export default {
     }
   },
   mounted() {
-    this.stop = this.stopScanner
     if(this.orderScan){
       BarcodeScanner.prepare();
       console.log(this.loadStore)
       this.orders = this.orderScan;
-      this.loads = this.loadStore
+      this.load = this.loadStore
     }else{
       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
       this.allLoads.forEach(el => {
         if(el.status == 'Asignada'){
-          this.loads = el
-          console.log(this.loads)
+          this.load = el
+          console.log(this.load)
         }
       });
     }
@@ -219,6 +227,9 @@ export default {
 </script>
 
 <style scoped>
+p{
+  margin: 2px 0px !important
+}
 .scan-confirmation {
   position: absolute;
   width: 100%;
@@ -234,11 +245,12 @@ export default {
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-between;
-  margin: 0px -16px;
 }
 .cont {
   box-shadow: 0px 0px 7px !important;
   height: 19vh;
+      position: absolute;
+    bottom: 0px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -291,9 +303,9 @@ export default {
   list-style: none;
   display: flex;
   padding: 0px;
-  width: 80%;
+  width: 90%;
   flex-wrap: wrap;
-  margin: 15px 0px
+  margin-bottom: 5px !important
 }
 .box-orden li{
     width: 25px;
@@ -302,12 +314,14 @@ export default {
 }
 .stiky {
   color: rgb(255, 255, 255) !important;
-  top: 0px;
   z-index: 2;
-  font-size: 12px;
-  padding: 5px 10px !important;
-  background-color: rgb(42 48 124);
-  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #b8b8b8;
+  font-size: 12px !important;
+  padding: 5px 10px 2px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: start;
+  box-shadow: 1px 0px 5px #898989;
 }
 .info-header {
   width: 30%;

@@ -12,11 +12,11 @@
         "
         style="align-items: center"
       >
-        <div class="font-weight-medium">
-          <p class="uk-width-1-1 uk-flex">
+        <div class="font-weight-medium uk-flex" style="width: 100%">
+          <p style="margin-right: 10px !important">
             <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
           </p>
-          <p class="uk-width-1-1 uk-flex">
+          <p>
             <strong>Zona de Destino:</strong
             ><span>&nbsp; {{ load?.zone }}</span>
           </p>
@@ -361,7 +361,7 @@ export default {
   color: #000 !important;
   top: 0px;
   z-index: 2;
-  padding: 5px 10px !important;
+  padding: 0px 10px 2px !important;
   background-color: rgb(248 248 248);
   box-shadow: 1px 0px 5px #898989;
 }

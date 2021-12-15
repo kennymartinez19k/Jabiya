@@ -67,13 +67,7 @@ h5{
 .uk-text-gray{
   color: #666666;
 }
-.sticky {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  padding: 5px;
-  border: 2px solid #564caf;
-}
+
 .uk-button-purple{
   background: #2a307c;
 

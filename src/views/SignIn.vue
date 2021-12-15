@@ -1,8 +1,8 @@
 <template>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
 
-    <div class="uk-flex uk-flex-center uk-flex-wrap container cnt">
-        <form class="uk-card uk-card-default uk-padding-remove uk-card-large uk-card-body uk-width-1-3@s" style="padding: 40px 20px !important; min-width: 400px">
+    <div class="uk-flex uk-flex-end uk-flex-column uk-flex-wrap container cnt">
+        <form class="uk-card uk-card-default uk-padding-remove uk-card-large uk-card-body uk-width-1-3@s" style="padding: 0px 20px !important; min-width: 400px">
             <img class="logo" src="../assets/logo.png" alt="">
             <h4 class="uk-text-light">Entrar a su cuenta</h4>
             <span class="uk-text-muted" style="margin-bottom: 30px; display: block">Ingrese su número de móvil y contraseña y presione iniciar seción para ingresar a su cuenta</span>
@@ -97,14 +97,11 @@ template {
 .cnt {
   overflow: scroll;
   width: 100%;
-  height: 500px;
+  height: 75vh;
 }
 @media screen and (max-width: 639px){
     .logo{
       max-width: 23%;
-}
-.container{
-    /* height: 55vh; */
 }
 .uk-card-body{
     min-width: 100px !important;

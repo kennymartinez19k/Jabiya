@@ -18,11 +18,11 @@
         "
         style="align-items: center"
       >
-        <div style="font-size: 13px; font-weight: 300; width: 100%" class="uk-flex">
-          <p class="uk-width-1-1">
+        <div style="width: 100%" class="uk-flex uk-flex-wrap">
+          <p style="margin-right: 10px !important">
             <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
           </p>
-          <p class="uk-width-1-1">
+          <p>
             <strong class="uk-block">Destino:</strong>
             <span>&nbsp; {{ load?.zone }}</span>
           </p>
