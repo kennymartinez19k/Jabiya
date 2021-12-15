@@ -12,11 +12,11 @@
         "
         style="align-items: center"
       >
-        <div class="font-weight-medium">
-          <p class="uk-width-1-1 uk-flex">
+        <div class="font-weight-medium uk-flex" style="width: 100%">
+          <p style="margin-right: 10px !important">
             <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
           </p>
-          <p class="uk-width-1-1 uk-flex">
+          <p>
             <strong>Zona de Destino:</strong
             ><span>&nbsp; {{ load?.zone }}</span>
           </p>
@@ -153,11 +153,12 @@ export default {
     this.getShow("scan");
     if (this.orderScan.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
-    } else if (this.orderScan.length == 1)
+    } else if (this.orderScan.length == 1) {
       this.$emit(
         "deliveryActions",
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
+    }
   },
   watch: {
     digitalFirmStore: {
@@ -258,7 +259,7 @@ export default {
     },
 
     async getCheckPermissions() {
-      const permissions = Camera.checkPermissions("prompt-with-rationale");
+      const permissions = Camera.checkPermissions(['prompt' | 'prompt-with-rationale' | 'granted' | 'denied']);
       console.log(permissions);
       this.getRequestPermissions();
     },
@@ -361,7 +362,7 @@ export default {
   color: #000 !important;
   top: 0px;
   z-index: 2;
-  padding: 5px 10px !important;
+  padding: 7px 10px 5px !important;
   background-color: rgb(248 248 248);
   box-shadow: 1px 0px 5px #898989;
 }

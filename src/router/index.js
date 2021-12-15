@@ -6,7 +6,7 @@ import Orders from '../views/Orders.vue'
 import DeliveryActions from '../views/DeliveryActions.vue'
 import DeliveryRoutes from "../views/DeliveryRoutes.vue";
 import DirectAccess from '../views/DirectAccess.vue'
-import RecoverPassword from '../components/RecoverPassword.vue'
+import RecoverPassword from '../views/RecoverPassword.vue'
 const routes = [
   {
     path: '/',
