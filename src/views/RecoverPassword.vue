@@ -18,20 +18,21 @@
           >Ingrese su número de teléfono móvil y la compañía a la que pertenece,
           para recuperar su contraseña.
         </span>
-
         <div class="uk-margin uk-text-left">
           <label class="uk-text-emphasis" for="mobile">Teléfono</label>
-          <input
-            id="mobile"
-            class="uk-input place"
-            type="number"
-            v-model="accountRecovery.mobile"
-            :minlength="10"
-            :maxlength="11"
-            pattern="[A-Z]{3}[0-9]{4}"
-            required
-            placeholder="(___) ___ -____ "
-          />
+          <div class="uk-input uk-flex form-login" style="align-items: center">
+                <input 
+                  class="uk-form-width-medium"
+                  type="number"
+                  placeholder="(999) 000-0000"
+                  v-model="accountRecovery.mobile"
+                  :minlength="10"
+                  :maxlength="11"
+                  pattern="[A-Z]{3}[0-9]{4}"
+                  required
+                >
+                <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
+               </div>
         </div>
 
         <div class="uk-margin uk-text-left">
@@ -40,7 +41,7 @@
           >
           <input
             id="companyData"
-            class="uk-input"
+            class="uk-input form-login"
             type="text"
             v-model="accountRecovery.companyData"
             required
@@ -165,5 +166,17 @@ export default {
 }
 .cont{
   height: 70vh;
+}
+.form-login{
+    border: 1px solid #b1b1b1;
+}
+.form-login input{
+    width: 100%;
+    height: 30px;
+    border: 0px;
+}
+.form-login input:focus-visible {
+    border: 0px;
+    outline: none;
 }
 </style>
