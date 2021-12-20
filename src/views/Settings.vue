@@ -18,7 +18,7 @@
           </ion-toolbar>
         </ion-header>
         <ion-content fullscreen class="ion-padding">
-            <label class="item" for="check">
+            <label class="item" uk-tooltip="Seleccione una opción" for="check">
                 <h6 >Escaneo Automatico</h6>
                 <!-- <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox"> -->
                 <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">

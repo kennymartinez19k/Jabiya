@@ -6,10 +6,10 @@ import SingInServices from './SingInServices'
 
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
+  // headers: {
+  //   'Content-Type': 'application/json',
 
-  }
+  // }
 })
 
 

@@ -30,7 +30,7 @@
             alt=""
           />
           <img
-            v-if="load?.status == 'Driver Arrival'"
+            v-if="load?.status == 'Entregada'"
             src="../assets/delivery.png"
             class="icon-load"
             alt=""
@@ -90,6 +90,9 @@
       style="z-index: 0; padding: 15px 0px  !important;"
     >
       <strong class="exception uk-padding-small">
+        Si <pre>{{resultScan?.content}} fff</pre>
+        Si <pre>{{mira}} fff</pre>
+
         Hubo Alguna Excepcion? No
         <div class="onoffswitch">
           <input
@@ -137,6 +140,7 @@ export default {
       step: 0,
       exception: false,
       firm: null,
+      mira: 'null22'
     };
   },
   computed: {
@@ -183,21 +187,34 @@ export default {
       }
     },
     async scanOrder() {
-              this.step++;
       
 
         if (await this.checkPermission()) {
           BarcodeScanner.hideBackground();
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
           if (result.hasContent) {
+              this.step++;
+
             BarcodeScanner.hideBackground();
               this.resultScan = result
-
-            var OrderElement = this.ordersScan.findIndex(x => x.numberOfOrders == result.content)
-            if (OrderElement > -1) {
+            alert(result.content, 'result')
+            console.log(result.content, 'result')
+            var OrderElement = null
+            this.ordersScan.forEach((x) =>  { if(x.numberOfOrders === result.content) { 
+              alert(x, 'OrderElement') 
+            OrderElement = true} })
+            // var OrderElement = this.ordersScan.findIndex((x) => x.numberOfOrders === result.content)
+            alert(OrderElement, 'OrderElement')
+            if (OrderElement) {
+              this.mira = 'jojojojojo'
               console.log(OrderElement)
-            } else if (OrderElement ){
+            alert(OrderElement, 'OrderElement')
+
+            } else if (!OrderElement){
+              this.mira = 'nooooooooooooo'
               Vibration.vibrate(1000);
+            alert('noooooooooo')
+
               setTimeout(() => {
                   this.scanOrder()
               }, 1000)

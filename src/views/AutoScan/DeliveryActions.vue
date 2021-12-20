@@ -179,7 +179,7 @@ export default {
 
       verificacion(orders, result) {
         for (let i = 0; i < orders.length; i++) {
-          if (i?.numberOfOrders === result.content.numberOfOrders) {
+          if (i?.numberOfOrders === result.content) {
             return true
           }
         }
