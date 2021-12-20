@@ -54,15 +54,27 @@ data() {
 },
 methods:{
     async changeRoute(path){
-        if (path == 'direct-access') {
-           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) {   
-              this.loaded = true
-            const result = await this.getSignInLogin()
-            if(result) this.$router.push({ name: "settings" }).catch(() => {})
+        try {
+            if (path == 'direct-access') {
+
+                if(this.login.email !== '' && this.login.password !== '' ) {   
+                this.loaded = true
+                this.AutoLogin.email = this.login.email
+                this.AutoLogin.password = this.login.password
+
+                const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
+                this.loaded = false
+
+                if(resultLogin) this.$router.push({ name: "settings" }).catch(() => {})
+            }
+            } else {
+              this.$router.push({ name: "settings" }).catch(() => {})
+            }
+        } catch (error) {
+              this.loaded = false
+            alert(error)
         }
-        } else {
-         this.$router.push({ name: "settings" }).catch(() => {})
-        }
+          
     },
     showPassword(){
         if (this.type === 'password') {
@@ -73,16 +85,14 @@ methods:{
         this.iconType = 'eye'
       }
     },
-   async getSignInLogin () {
-       this.loaded = true
-       this.AutoLogin.email = this.login.email
-       this.AutoLogin.password = this.login.password
+//    async getSignInLogin () {
+//        this.AutoLogin.email = this.login.email
+//        this.AutoLogin.password = this.login.password
 
-        const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
-        console.log(resultLogin, 'login')
-       this.loaded = false
-        return resultLogin
-    }
+//         const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
+//         console.log(resultLogin, 'login')
+//         return resultLogin
+//     }
 }
 }
 </script>
