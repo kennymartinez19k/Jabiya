@@ -7,31 +7,30 @@
             <span class="uk-text-muted" style="margin-bottom: 30px; display: block">Ingrese su número de móvil y contraseña y presione iniciar seción para ingresar a su cuenta</span>
 
             <div class="uk-margin uk-text-left">
-               <label class="uk-text-emphasis" for="mobile">Email</label>
+               <label class="uk-text-emphasis" for="email">Email</label>
                <div class="uk-input uk-flex form-login" style="align-items: center">
-                <input class="uk-form-width-medium formLogin" v-model="signInLogin.email" type="email" placeholder="Example@email.com" required>
-                <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
+                <input class="uk-form-width-medium formLogin" v-model="login.email" type="email" placeholder="ejemplo@email.com" required>
+                <font-awesome-icon icon="envelope" style="font-size: 15px"/>
                </div>
             </div>
             <div class="uk-margin uk-text-left">
                 <label class="uk-text-emphasis" for="companyData">Contraseña</label>
                 <div class="uk-input uk-flex form-login" style="align-items: center">
-                    <input  class="uk-form-width-medium" v-model="signInLogin.password" :type="type" style="width: 100%" placeholder="Contraseña" required>
+                    <input  class="uk-form-width-medium" v-model="login.password" :type="type" style="width: 100%" placeholder="Contraseña" required>
                     <font-awesome-icon :icon="iconType" @click="showPassword" style="font-size: 15px"/>
                 </div>
             </div>
             <div class="uk-margin uk-flex uk-flex-between">
-                <label class="terms uk-text-light"><input v-model="rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
+                <label class="terms uk-text-light"><input v-model="login.rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
                 <router-link to="/recover" class="show-link">¿Olvidaste tu contraseña?</router-link>
             </div>
-            <button class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute()" type="button" style="margin-top: 15px">Iniciar sesión</button>
+            <button type="button" class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute()" style="margin-top: 15px">Iniciar sesión</button>
         </form>
     </div>
 </template>
  
 <script>
 import Loading from 'vue-loading-overlay';
-import axios from 'axios'
 export default {
 components:{
     Loading,
@@ -41,23 +40,41 @@ data() {
         loaded: false,
         type: 'password',
         iconType: 'eye',
-        signInLogin:{
-            email: '',
-            password: '', 
+        login:{
+            email: 'admin@flai.com.do',
+            password: '1',
+            rememberPassword: false    
         },
-        rememberPassword: false   
+         AutoLogin : {
+            "email": "",
+            "password": '',
+       }
+
     }
 },
 methods:{
     async changeRoute(path){
-        if (path == 'direct-access') {
-           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) {   
-            const result = await axios.post('http://preprod.flai.com.do:8756/exo/authenticate', this.signInLogin)
-            if(result) this.$router.push({ name: "settings" }).catch(() => {})
+        try {
+            if (path == 'direct-access') {
+
+                if(this.login.email !== '' && this.login.password !== '' ) {   
+                this.loaded = true
+                this.AutoLogin.email = this.login.email
+                this.AutoLogin.password = this.login.password
+
+                const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
+                this.loaded = false
+
+                if(resultLogin) this.$router.push({ name: "settings" }).catch(() => {})
+            }
+            } else {
+              this.$router.push({ name: "settings" }).catch(() => {})
+            }
+        } catch (error) {
+              this.loaded = false
+            alert(error)
         }
-        } else {
-         this.$router.push({ name: "settings" }).catch(() => {})
-        }
+          
     },
     showPassword(){
         if (this.type === 'password') {
@@ -67,7 +84,15 @@ methods:{
         this.type = 'password'
         this.iconType = 'eye'
       }
-    }
+    },
+//    async getSignInLogin () {
+//        this.AutoLogin.email = this.login.email
+//        this.AutoLogin.password = this.login.password
+
+//         const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
+//         console.log(resultLogin, 'login')
+//         return resultLogin
+//     }
 }
 }
 </script>

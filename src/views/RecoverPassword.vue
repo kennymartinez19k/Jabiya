@@ -19,19 +19,16 @@
           para recuperar su contraseña.
         </span>
         <div class="uk-margin uk-text-left">
-          <label class="uk-text-emphasis" for="mobile">Teléfono</label>
+          <label class="uk-text-emphasis" for="email">Teléfono</label>
           <div class="uk-input uk-flex form-login" style="align-items: center">
                 <input 
                   class="uk-form-width-medium"
-                  type="number"
-                  placeholder="(999) 000-0000"
-                  v-model="accountRecovery.mobile"
-                  :minlength="10"
-                  :maxlength="11"
-                  pattern="[A-Z]{3}[0-9]{4}"
+                  type="email"
+                  placeholder="ejemplo@email.com"
+                  v-model="accountRecovery.email"
                   required
                 >
-                <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
+                <font-awesome-icon icon="envelope" style="font-size: 15px"/>
                </div>
         </div>
 
@@ -51,7 +48,8 @@
           class="
           uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
           style="margin: 25px 0px"
-          uk-toggle="target: #modal-example"
+          type="button"
+          uk-toggle="target: #recover-password"
           :class="{'disabled-button': (showMobile === true && showCompany === true) || (showMobile === false && showCompany === true)  || (showMobile === true && showCompany === false)}"
           :disabled="(showMobile === true && showCompany === true) || (showMobile === false && showCompany === true)  || (showMobile === true && showCompany === false)"
         >
@@ -59,7 +57,7 @@
         </button>
         </div>
       </form>
-      <div id="modal-example" uk-modal>
+      <div id="recover-password" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
           <h4>Las Instrucciones han sido enviadas a tu WhatsApp</h4>
           <p style="font-size: 12px">
@@ -78,12 +76,14 @@
           </p>
         </div>
       </div>
+
+
     </div>
 </template>
 
 <script>
 import BackButton from "../components/Buttons/BackButton.vue";
-import {} from '../assets/img/qr.png'
+// import {} from '../assets/img/qr.png'
 export default {
   components: {
     BackButton,
@@ -91,7 +91,7 @@ export default {
   data() {
     return {
       accountRecovery: {
-        mobile: null,
+        email: null,
         companyData: null,
       },
       showCompany: true,
@@ -99,28 +99,27 @@ export default {
     };
   },
   watch: {
-    'accountRecovery.mobile': async function (newVal) {
+    'accountRecovery.email': async function (newVal) {
+      
         if (newVal === '') {
-                this.accountRecovery.mobile = null
-
+                this.accountRecovery.email = null
         }
         if (newVal !== null) {
                 this.showMobile = false
         } else {
                 this.showMobile = true
-
         }
     },
-    'accountRecovery.companyData': async function (newVal) {
-          if (newVal === '') {
+    'accountRecovery.companyData': async function (newVal, oldVal) {
+          if (newVal === '' && newVal !== oldVal) {
                 this.accountRecovery.companyData = null
 
         }
-         if (newVal !== null) {
+         if (newVal !== null && newVal.lenght !== oldVal) {
+          //  alert('sssssssssssssss')
                 this.showCompany = false
             } else {
                 this.showCompany = true
-
         }
     }
 
