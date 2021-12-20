@@ -56,7 +56,7 @@
         </div> -->
       </div>
     </div>
-    <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom">
+    <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom allScreen">
       <div
         v-for="order in orders"
         :key="order"
@@ -69,7 +69,7 @@
                 style="font-size: 16px !important; font-weight: 600"
                 class="uk-width-1-1"
               >
-                <span>{{ order.client }}</span>
+                <span>{{ order.client_name }}</span>
               </p>
             </div>
             <span>
@@ -77,11 +77,11 @@
             </span>
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order.address }}</span>
+            <strong>Dirección: </strong><span>{{ order.zone_name }}</span>
           </p>
           <p class="uk-width-1-2">
             <strong> No. de Orden: </strong
-            ><span>{{ order.numberOfOrders }}</span>
+            ><span>{{ order.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
             <strong>No. de Cajas: </strong>{{ order.numberOfBox }}<span></span>
@@ -222,6 +222,7 @@ export default {
   },
   mounted() {
     this.load = this.loadStore;
+    this.orders = this.loadStore.orders
   },
   methods: {
         async location () {
@@ -380,5 +381,9 @@ export default {
     background-size: 25px 25px;
     background-repeat: no-repeat;
     background-position: 80%
+}
+.allScreen{
+  height: 80vh;
+  overflow: scroll;
 }
 </style>

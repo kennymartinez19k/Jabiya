@@ -71,10 +71,10 @@
         <ul class="uk-list uk-list-divider" style="list-style: none">
           <li v-for="orden in orders" :key="orden" class="article uk-card uk-card-default uk-card-body">
               <div>
-                <p><strong>No. de Orden:</strong> &nbsp;  {{orden.order_num}}</p>
+                <p><strong>No. de Orden:</strong> &nbsp;  {{orden.numberOfOrders}}</p>
                 <p class="uk-width-1-1">
                 Destino: &nbsp;<span>{{
-                  orden.zone.name
+                  orden.zone_name
                 }}</span>
               </p>
               </div>
@@ -107,7 +107,7 @@ export default {
     return {
       checkOrder: false,
       camera: "auto",
-      statusOrders: 'start',
+      statusOrders: 'aprovve',
       cont: 0,
       orders: [],
       load: [],
@@ -137,6 +137,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.orderScan)
     if(this.orderScan){
       BarcodeScanner.prepare();
       console.log(this.loadStore)
@@ -153,6 +154,7 @@ export default {
         }
       });
     }
+    console.log(this.orders)
     this.scanOrder();
   },
 

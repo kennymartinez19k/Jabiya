@@ -4,6 +4,7 @@
       <p
         style=" font-size: 13px; !important; font-weight: 500"
       >
+      Numero de Carga
         {{load?.loadNumber}}
       </p>
       <div
@@ -184,10 +185,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan", 'loads']),
+    ...mapGetters(["loadStore", "orderScan", "loads", "allLoads"]),
   },
   mounted() {
-    this.load = this.loadStore;
+    if(this.loadStore){
+      this.load = this.loadStore
+    }
+    this.allLoads.forEach(el => {
+        if(el.status == 'Asignada'){
+          this.load = el
+          console.log(this.load)
+        }
+      });
     this.orders = this.ordersProof
     console.log(this.loadStore)
     if (this.orderScan) {

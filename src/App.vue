@@ -13,6 +13,7 @@ export default {
       noHead: [
         'sign-in',
         'sign-up',
+        'settings',
         'direct-access',
         'recover-password'
       ],
@@ -98,6 +99,7 @@ button{
 }
 .view-header{
   height: 100%;
+  overflow: scroll;
   /* background: #fff; */
 }
 html body{

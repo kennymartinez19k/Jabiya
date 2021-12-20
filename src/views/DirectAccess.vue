@@ -11,7 +11,7 @@
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
           
-          <li class="action uk-width-1-2" @click="DeliveredOrders('delivery-actions-auto')">
+          <li class="action uk-width-1-2" @click="DeliveredOrders('deliveryActions')">
               <img src="../assets/boxes.png" alt="">
                 <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
           </li>
@@ -36,11 +36,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mapGetters } from 'vuex';
 export default {
     data() {
     return {
+      load: null,
       orders: [
         {
           numberOfOrders: 1234,
@@ -106,6 +106,7 @@ export default {
           hour: new Date('2020-12-02, 20:22')
         },
       ],
+      Loads: null,
       userLoads: [
         {
           date: new Date(),
@@ -162,32 +163,39 @@ export default {
     ])
   },
   async mounted(){
-    await this.$store.dispatch('changeDateLoads')
-
-    let cookieinfo = "connect.sid=s%3ABR94OXNkBmkRIThnYWMc1H5PZ_2djah5.gFYxhod25z18n9Gte%2B4gj7XtNP8HDDcrr6ZWkWFWqRU; Path=/; Expires=Sat, 18 Dec 2021 03:06:07 GMT; HttpOnly"
-    try{
-      const result = await axios.get("http://preprod.flai.com.do:8756/exo/loads", {
-        withCredentials: true,
-        headers:{
-           "Access-Control-Allow-Origin": "*",
-           Cookie: cookieinfo
-        }})
-      console.log(result)
-    }
-    catch(err){
-      console.log(err)
-    }
+    this.call()
   },
 
-  
   methods: {
-    changeRoute(val){
-      
-      this.$router.push({name: val})
+    async call(){
+      var axios = require('axios');
+      var data = JSON.stringify({
+        "email": "admin@flai.com.do",
+        "password": "1"
+      });
+      var config = {
+        method: 'get',
+        url: 'http://preprod.flai.com.do:8756/exo/loads/',
+        credentials: "same-origin",
+        headers: { 
+          'Content-Type': 'application/json', 
+          auth: 'connect.sid=s%3AX8cHDJxicKpzDVtA2UA7LaXfwz0W8ccU.Ke%2BXlwN8xN4mFW%2FpEEZTDy%2FXzNd44oIViAPkE4f9hV0; Path=/; Expires=Tue, 21 Dec 2021 06:09:19 GMT; HttpOnly'
+        },
+        data : data
+      };
+      try{
+        const result = await axios(config)
+        this.Loads = result.data
+        console.log(this.Loads)
+      }
+      catch(error){
+        console.log(error)
+      }
     },
-    DeliveredOrders(val){
+    
+    changeRoute(val){
       this.$store.commit('setAllOrders', this.orders)
-      this.$store.commit('setAllLoads', this.userLoads)
+      this.$store.commit('setAllLoads', this.Loads)
       this.$router.push({name: val})
     }
   },

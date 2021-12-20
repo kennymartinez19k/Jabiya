@@ -50,7 +50,7 @@
                 
               <div style="margin-top: 1px">
                 <img
-                  v-if="load.status == 'Driver Assigned'"
+                  v-if="load.status ==  'Driver Assigned'"
                   src="../assets/asigned.png"
                   class="icon-load"
                   alt=""
@@ -117,9 +117,9 @@ export default {
       if(this.settings.AutoScan){
         if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders-auto-scan');
       } else if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
-      if(valueOrder?.status == 'Delivered') this.changeRoute('orders');
+      if(valueOrder?.status == 'Delivered') this.changeRoute('');
       if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
-      if(valueOrder?.status == 'Dispatched') this.changeRoute('orders');
+      if(valueOrder?.status == 'Dispatched') this.changeRoute('');
 
     },
     changeRoute(path) {
