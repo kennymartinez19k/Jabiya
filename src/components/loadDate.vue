@@ -50,7 +50,7 @@
                 
               <div style="margin-top: 1px">
                 <img
-                  v-if="load.status == 'Driver Assigned'"
+                  v-if="load.status ==  'Driver Assigned'"
                   src="../assets/asigned.png"
                   class="icon-load"
                   alt=""

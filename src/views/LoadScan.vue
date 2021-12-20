@@ -60,7 +60,6 @@
         class="allScreen"
         :class="{checkScreen: checkOrder, banScreen: statusOrders == 'reject', finishCheck: statusOrders == 'approve'}"
       >
-
       <div></div>
       <div v-if="checkOrder">
         <div  :class="{animationCheck: checkOrder}" class="check-all-Screen"></div>
@@ -75,7 +74,7 @@
                 <p><strong>No. de Orden:</strong> &nbsp;  {{orden.numberOfOrders}}</p>
                 <p class="uk-width-1-1">
                 Destino: &nbsp;<span>{{
-                  orden.address
+                  orden.zone_name
                 }}</span>
               </p>
               </div>
