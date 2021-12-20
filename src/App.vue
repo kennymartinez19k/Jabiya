@@ -116,10 +116,10 @@ strong{
 .font-weight-medium{
   font-weight: 500 !important;
 }
-.cnt {
+/* .cnt {
   height: 100%;
   overflow: scroll;
-}
+} */
 .uk-button-transparent{
   color: #1f1f1f;
     background: white;

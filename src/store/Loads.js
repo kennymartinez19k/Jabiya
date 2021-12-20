@@ -24,7 +24,7 @@ const Loads = {
           console.log('Success')
 
         }
-        const loads = await services.loadsServices.getLoads()
+        const loads = await services.loadsServices.getLoads(services.loadsServices.getHeaders ())
         console.log(loads)
         commit('chargeLoads', loads)
       }
