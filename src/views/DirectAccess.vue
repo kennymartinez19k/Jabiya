@@ -15,11 +15,11 @@
               <img src="../assets/boxes.png" alt="">
                 <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute('')">
+          <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
                 <p class="name-action"><strong>Procesar Factura</strong> </p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute()">
+          <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
                 <p class="name-action"><strong>Reconciliación con Almacén</strong></p>
           </li>

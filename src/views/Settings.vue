@@ -1,5 +1,6 @@
 <template>
   <div>
+
       <ion-app>
       <div class="ion-page">
         <ion-header translucent class="header">
@@ -9,7 +10,7 @@
               <h6>Configuracion</h6>
             </ion-col>
             <ion-col class="uk-text-right" >
-                <h5 ><a @click="saveSettings()">Guardar</a></h5>
+                <h5 ><button type="button" class="uk-button uk-button-primary " :disabled="settings.AutoScan === null" @click="saveSettings()">Guardar</button></h5>
             </ion-col>
           </ion-row>
             
@@ -19,8 +20,12 @@
         <ion-content fullscreen class="ion-padding">
             <label class="item" for="check">
                 <h6 >Escaneo Automatico</h6>
-                <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox">
-            </label>
+                <!-- <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox"> -->
+                <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+            <label>Si<input class="uk-radio" type="radio" :value="true" name="radio2" v-model="settings.AutoScan"></label>
+            <label>No<input class="uk-radio" type="radio" :value="false" name="radio2" v-model="settings.AutoScan"></label>
+        </div>
+            </label>    
         </ion-content>
       </div>
     </ion-app>
@@ -32,7 +37,7 @@ export default {
     data(){
         return{
             settings:{
-                AutoScan: false
+                AutoScan: null
             }
         }
     },
@@ -55,7 +60,7 @@ export default {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #ccc;
-    align-items: center;
+    align-items: baseline;
 }
 .header{
     box-shadow: 0px 0px 2px;
@@ -64,5 +69,14 @@ export default {
 }
 .checkBox{
     transform: scale(1.5);
+}
+label {
+    padding-right: 1rem;
+}
+input {
+    margin-left: 0.5rem;
+}
+button{
+ padding: 0px 2.5px;
 }
 </style>
