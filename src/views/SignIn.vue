@@ -1,16 +1,15 @@
 <template>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
-
-    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap container cnt">
+    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
         <form class="uk-card uk-card-default uk-padding-remove uk-card-large uk-card-body uk-width-1-3@s" style="padding: 0px 20px !important; min-width: 400px">
             <img class="logo" src="../assets/logo.png" alt="">
             <h4 class="uk-text-light">Entrar a su cuenta</h4>
             <span class="uk-text-muted" style="margin-bottom: 30px; display: block">Ingrese su número de móvil y contraseña y presione iniciar seción para ingresar a su cuenta</span>
 
             <div class="uk-margin uk-text-left">
-               <label class="uk-text-emphasis" for="mobile">Teléfono</label>
+               <label class="uk-text-emphasis" for="mobile">Email</label>
                <div class="uk-input uk-flex form-login" style="align-items: center">
-                <input class="uk-form-width-medium formLogin" v-model="signInLogin.mobile" type="number" placeholder="(999) 000-0000" required>
+                <input class="uk-form-width-medium formLogin" v-model="signInLogin.email" type="email" placeholder="Example@email.com" required>
                 <font-awesome-icon icon="mobile-alt" style="font-size: 15px"/>
                </div>
             </div>
@@ -22,21 +21,20 @@
                 </div>
             </div>
             <div class="uk-margin uk-flex uk-flex-between">
-                <label class="terms uk-text-light"><input v-model="signInLogin.rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
+                <label class="terms uk-text-light"><input v-model="rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
                 <router-link to="/recover" class="show-link">¿Olvidaste tu contraseña?</router-link>
             </div>
-            <button class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute('direct-access')" style="margin-top: 15px">Iniciar sesión</button>
+            <button class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute()" type="button" style="margin-top: 15px">Iniciar sesión</button>
         </form>
     </div>
 </template>
  
 <script>
 import Loading from 'vue-loading-overlay';
-
-
+import axios from 'axios'
 export default {
 components:{
-    Loading
+    Loading,
 },
 data() {
     return {
@@ -44,21 +42,21 @@ data() {
         type: 'password',
         iconType: 'eye',
         signInLogin:{
-            mobile: '',
-            password: '',
-            rememberPassword: false    
-        }
+            email: '',
+            password: '', 
+        },
+        rememberPassword: false   
     }
 },
 methods:{
-    changeRoute(path){
+    async changeRoute(path){
         if (path == 'direct-access') {
-           if(this.signInLogin.mobile !== '' && this.signInLogin.password !== '' ) {
-            this.loaded = true
-            this.$router.push({ name: path }).catch(() => {})
+           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) {   
+            const result = await axios.post('http://preprod.flai.com.do:8756/exo/authenticate', this.signInLogin)
+            if(result) this.$router.push({ name: "settings" }).catch(() => {})
         }
         } else {
-         this.$router.push({ name: path }).catch(() => {})
+         this.$router.push({ name: "settings" }).catch(() => {})
         }
     },
     showPassword(){
@@ -91,9 +89,7 @@ methods:{
     font-size: 14px;
     
 }
-/* template {
-     scroll-behavior: smooth;
-} */
+
 .cnt {
   overflow: scroll;
   width: 100%;
