@@ -1,87 +1,93 @@
 <template>
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
+      <p
+        style=" font-size: 13px; !important; font-weight: 500"
+      >
+        {{load?.loadNumber}}
+      </p>
       <div
         class="
           uk-flex
           uk-flex
-          uk-flex-between
+          uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center"
+        style="align-items: center;"
       >
-        <div class="font-weight-medium uk-flex" style="width: 100%">
+        <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
           </p>
+          <div></div>
           <p>
-            <strong>Zona de Destino:</strong
-            ><span>&nbsp; {{ load?.zone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
+          
+          
         </div>
-        <div class="info-header">
-          <span class="status">Carga {{ load?.status }}</span>
-          <img
-            v-if="load?.status == 'Asignada'"
-            src="../../assets/asigned.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Entregada'"
-            src="../../assets/delivery.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'En Ruta'"
-            src="../../assets/road.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Despacho Aprobado'"
-            src="../../assets/warehouse.png"
-            class="icon-load"
-            alt=""
-          />
-        </div>
+        
       </div>
     </div>
-    <div class="result-info">
+    <div 
+      class="result-info"
+      v-if="resultScan"
+      >
       <ul
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
-        <li
-          v-for="orden in orders"
-          :key="orden"
-          class="article uk-card uk-card-default uk-card-body"
-        >
-          <div>
-            <p class="uk-width-1-1" style="font-weight: 600">
-              <font-awesome-icon
-                icon="map-marker-alt"
-                style="font-size: 14px; color: green"
-              />&nbsp;<strong>{{ orden.address }}</strong>
-            </p>
-            <strong>No. de Orden: &nbsp; {{ orden.numberOfOrders }}</strong>
+      <div
+        v-for="order in orders"
+        :key="order"
+        class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+      >
+        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+          <div class="btn uk-flex">
+            <div class="uk-flex uk-flex-column uk-text-center">
+              <p
+                style="font-size: 16px !important; font-weight: 600"
+                class="uk-width-1-1"
+              >
+                <span>{{ order?.shipper }}</span>
+              </p>
+            </div>
+            <span>
+              <img src="../../assets/box.png" alt="" />
+            </span>
           </div>
-          <div class="uk-flex uk-flex-column" style="align-items: center">
-            <font-awesome-icon
-              icon="check-circle"
-              style="font-size: 20px; color: green"
-            />
-            <span class="font-weight-medium" style="color: green">Entregada</span>
+          <p class="uk-width-1-1">
+            <strong>Dirección: </strong><span>{{ order?.address }}</span>
+          </p>
+          <p class="uk-width-1-2">
+            <strong> No. de Orden: </strong
+            ><span>{{ order?.numberOfOrders }}</span>
+          </p>
+          <p class="uk-width-1-2">
+            <strong>No. de Cajas: </strong>{{ order?.numberOfBox }}<span></span>
+          </p>
+          <div
+            class="uk-flex uk-width-1-1 uk-flex-between"
+            style="margin-top: 10px"
+          >
+            <div class="uk-width-1-2">
+              <div
+                class="uk-flex-column"
+                style="align-items: center; display: inline-flex"
+              >
+                <img src="../../assets/map.png" class="img-scan" alt="" />
+                <span>Ver Ruta</span>
+              </div>
+            </div>
           </div>
-
-          <div class="uk-flex" style="margin-top: 10px" >
+        </div>
+      </div>
+      <div class="uk-flex" style="margin-top: 10px" >
               <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
               <img class="img-result" :src="firm" alt="Fima Digital" />
           </div>
-        </li>
       </ul>
     </div>
     <div
@@ -102,6 +108,7 @@
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
+import { Vibration } from "@ionic-native/vibration";
 import timeline from "../../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 export default {
@@ -128,17 +135,18 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allOrders"
+      "allOrders",
+      "settings"
     ]),
   },
   mounted() {
+    
     if(this.allOrders){
-      this.orders = this.allOrders;
+      this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
     }else{
       this.orders = this.orderScan;
     }
     this.load = this.loadStore;
-    this.step++
     if (this.orderScan?.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -146,6 +154,12 @@ export default {
         "deliveryActions",
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
+    }
+    if(!this.settings.AutoScan){
+      this.getShow("scan")
+    }else{
+      this.step++
+      this.resultScan = true
     }
   },
   watch: {
@@ -156,16 +170,19 @@ export default {
         }
       },
     },
+     $route: function(newVal){
+      if (newVal){
+        this.stopScan()
+      }
+    }
   },
 
   methods: {
     getShow(value) {
-      console.log('hfewbvfewhfew')
       this.show = value;
       if (value === "scan") {
         this.scanOrder();
       } else if (value === "camera" && this.imagiElement.length <= 6) {
-        console.log('camarasssssssssssssss')
         this.getCam();
 
       } else if (value === "firm") {
@@ -174,7 +191,25 @@ export default {
       }
     },
     async scanOrder() {
-              this.step++;
+             
+               if (await this.checkPermission()) {
+          BarcodeScanner.hideBackground();
+          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+          if (result.hasContent) {
+            BarcodeScanner.hideBackground();
+              this.resultScan = result
+                 this.step++;
+            var OrderElement = this.ordersScan.findIndex(x => x.numberOfOrders == result.content)
+            if (OrderElement > -1) {
+              console.log(OrderElement)
+            } else if (OrderElement ){
+              Vibration.vibrate(1000);
+              setTimeout(() => {
+                  this.scanOrder()
+              }, 1000)
+            }
+          }
+        }
       },
 
       verificacion(orders, result) {
@@ -331,12 +366,14 @@ export default {
   height: 100vh;
 }
 .stiky {
-  color: #000 !important;
-  top: 0px;
+  color: rgb(255, 255, 255) !important;
   z-index: 2;
-  padding: 7px 10px 5px !important;
-  background-color: rgb(248 248 248);
-  box-shadow: 1px 0px 5px #898989;
+    border-top: 1px solid #313575;
+  font-size: 12px !important;
+  padding: 0px 10px 5px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: center;
 }
 .info-header {
   width: 30%;
@@ -372,6 +409,23 @@ li::before {
   height: 60px;
   margin-right: 5px;
   border: 1px solid #000;
+}
+.btn {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+}
+.img-scan {
+  width: 39px;
+}
+.btn img {
+  width: 20px;
+  position: relative;
+  top: -2px;
+  margin-left: 5px;
+}
+.uk-card-body{
+  padding: 16px 15px;
 }
 
 </style>

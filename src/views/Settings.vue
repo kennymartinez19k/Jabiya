@@ -77,6 +77,6 @@ input {
     margin-left: 0.5rem;
 }
 button{
- padding: 0px 2.5px;
+ padding: 0px 7.5px;
 }
 </style>

@@ -21,33 +21,6 @@
             ><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
         </div>
-        <div class="info-header">
-          <!-- <span class="status">Carga {{ load?.status }}</span> -->
-          <img
-            v-if="load?.status == 'Asignada'"
-            src="../assets/asigned.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Entregada'"
-            src="../assets/delivery.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'En Ruta'"
-            src="../assets/road.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Despacho Aprobado'"
-            src="../assets/warehouse.png"
-            class="icon-load"
-            alt=""
-          />
-        </div>
       </div>
     </div>
     <div class="result-info">
@@ -84,6 +57,7 @@
           </div>
         </li>
       </ul>
+      
     </div>
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
@@ -149,15 +123,31 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
+      "allLoads",
+      "allOrders"
     ]),
   },
   mounted() {
-    this.orders = this.orderScan;
-    this.load = this.loadStore;
+     if(this.allOrders){
+       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
+    }else{
+      this.orders = this.orderScan;
+    }
+    if(this.loadStore){
+      this.allLoads.forEach(el => {
+        if(el.status == 'Asignada'){
+          this.load = el
+          console.log(this.load)
+        }
+      });
+    } else{
+      
+      this.load = this.loadStore
+    }
     this.getShow("scan");
-    if (this.orderScan.length > 1) {
+    if (this.orderScan?.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
-    } else if (this.orderScan.length == 1) {
+    } else if (this.orderScan?.length == 1) {
       this.$emit(
         "deliveryActions",
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
@@ -172,6 +162,11 @@ export default {
         }
       },
     },
+     $route: function(newVal){
+      if (newVal){
+        this.stopScan()
+      }
+    }
   },
 
   methods: {
@@ -179,7 +174,7 @@ export default {
       this.show = value;
       if (value === "scan") {
         this.scanOrder();
-      } else if (value === "camera" && this.imagiElement.length <= 6) {
+      } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.getCam();
       } else if (value === "firm") {
         this.serieA = value;
@@ -224,7 +219,7 @@ export default {
       },
 
       verificacion(orders, result) {
-        for (let i = 0; i < orders.length; i++) {
+        for (let i = 0; i < orders?.length; i++) {
           if (i?.numberOfOrders === result.content.numberOfOrders) {
             return true
           }
@@ -255,7 +250,7 @@ export default {
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
 
-      if (this.imagiElement.length === 3) {
+      if (this.imagiElement?.length === 3) {
         this.step++;
       }
       this.cont = this.cont + 1;
@@ -291,6 +286,18 @@ export default {
         console.log(error, "error");
       }
     },
+    verifiedElement(val){
+        this.checkOrder = true
+        this.orders[val].completed = true
+        this.$store.commit("scanOrder", this.orders);
+        setTimeout(() => {
+          this.checkOrder = false
+          if (this.orders.every(x => x.completed == true)){
+          this.statusOrders = 'approve'
+        } else this.scanOrder()
+        }, 1000)
+
+    }
   },
 };
 </script>
@@ -375,12 +382,16 @@ export default {
   padding: 0px 10px;
   height: 100vh;
 }
+
 .stiky {
-  color: #000 !important;
-  top: 0px;
+  color: rgb(255, 255, 255) !important;
   z-index: 2;
-  padding: 7px 10px 5px !important;
-  background-color: rgb(248 248 248);
+    border-top: 1px solid #313575;
+  font-size: 12px !important;
+  padding: 0px 10px 5px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: center;
   box-shadow: 1px 0px 5px #898989;
 }
 .info-header {

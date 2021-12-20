@@ -10,7 +10,7 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   <div v-for="date in dateLoad" :id="date" :key="date">
-    <load-date :userOrden="userOrden" :date="date"/>
+    <load-date :userOrden="loads" :date="date"/>
   </div>    
   </div>
 </template>
@@ -35,71 +35,31 @@ export default {
   beforeMount(){
     this.setOpen(true)
   },
-  watch:{
-    loads: function(){
-      window.location.href = '#Hoy'
-    }
-  },
   mounted(){
     window.location.href = '#Hoy'
     moment.locale('es')
+    this.loads = this.allLoads.filter(x =>  x.driver == "Chofer 2" )
+    this.loads[0].status = "Driver Assigned"
+    this.loads[1].status = "Driver Arrival"
+
     console.log(this.loads)
+
+  },
+  watch:{
+    allLoads: function(newVal){
+      this.loads = newVal.filter(x => x.status = !"Defining Load")
+      console.log(this.loads)
+    }
   },
   data() {
     return {
       loaded: false,
-      userOrden: [
-        {
-          hour: "10:00 Am",
-          status: "Driver Assigned",
-          shipper: "Juan Perez",
-          numberOfOrden: 2177,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Cargar Vehiculo",
-          icon: "color: #1f7a18",
-        },
-        {
-          hour: "12:00 PM",
-          status: "Driver Assigned",
-          shipper: "Maria Hernandez",
-          numberOfOrden: 1883,
-          shipperZone: "Respaldo Rodeo",
-          btnAction: "Ver Orden(es)",
-          icon: "color: #000000",
-        },
-        {
-          hour: "10:00 AM",
-          status: "Delivered",
-          shipper: "Juan Perez",
-          numberOfOrden: 2238,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Continuar Entrega(s)",
-          icon: "color: #a7a7a7",
-        },
-        {
-          hour: "10:00 AM",
-          status: "Driver Arrival",
-          shipper: "Juan Perez",
-          numberOfOrden: 2833,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Continuar Entrega(s)",
-          icon: "color: #a7a7a7",
-        },
-        {
-          hour: "10:00 AM",
-          status: "Dispatched",
-          shipper: "Juan Perez",
-          numberOfOrden: 2993,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Comenzar Entrega(s)",
-          icon: "color: #c39108",
-        },
-      ],
+      loads: null,
     };
   },
   computed:{
     ...mapGetters([
-      'loads'
+      'allLoads'
     ]),
     dateLoad: function () {
       var yesterday = new Date().setDate(new Date().getDate() -1 )
