@@ -20,11 +20,11 @@
       >
         <div style="width: 100%" class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
+            <strong>Shipper:</strong><span>&nbsp; {{ load?.shipper }}</span>
           </p>
           <p>
             <strong class="uk-block">Destino:</strong>
-            <span>&nbsp; {{ load?.zone }}</span>
+            <span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
         </div>
         <!-- <div class="info-header">
@@ -106,7 +106,8 @@
                 style="align-items: center; display: inline-flex"
               >
                 <img src="../assets/parcel.png" class="img-scan" alt="" />
-                <span>Entregar Orden</span>
+  <!-- <pre>{{$router}} 55</pre> -->
+                <span>Entregar Orden</span> 
               </div>
             </div>
           </div>
@@ -125,7 +126,7 @@
       :completedBg="completed"
       class="slide box-slide"
       text="Escaneo Corrido"
-      success-text="success"
+      success-text="Activando"
       @completed="complete(orders)"
       textSize="10px"
     />

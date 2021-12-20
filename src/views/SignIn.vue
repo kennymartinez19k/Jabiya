@@ -85,14 +85,7 @@ methods:{
         this.iconType = 'eye'
       }
     },
-//    async getSignInLogin () {
-//        this.AutoLogin.email = this.login.email
-//        this.AutoLogin.password = this.login.password
 
-//         const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
-//         console.log(resultLogin, 'login')
-//         return resultLogin
-//     }
 }
 }
 </script>
