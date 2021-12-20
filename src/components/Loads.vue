@@ -1,6 +1,5 @@
 <template>
   <div class="cnt">
-   
     <ion-loading
     :is-open="isOpenRef"
     cssClass="my-custom-class"
@@ -11,7 +10,7 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   <div v-for="date in dateLoad" :id="date" :key="date">
-    <load-date :userOrden="loads" :date="date"/>
+    <load-date :userOrden="userOrden" :date="date"/>
   </div>    
   </div>
 </template>
@@ -33,6 +32,14 @@ export default {
 
     return { isOpenRef, setOpen };
   },
+  beforeMount(){
+    this.setOpen(true)
+  },
+  watch:{
+    loads: function(){
+      window.location.href = '#Hoy'
+    }
+  },
   mounted(){
     window.location.href = '#Hoy'
     moment.locale('es')
@@ -44,46 +51,46 @@ export default {
       userOrden: [
         {
           hour: "10:00 Am",
-          status: "Asignada",
-          client: "Juan Perez",
+          status: "Driver Assigned",
+          shipper: "Juan Perez",
           numberOfOrden: 2177,
-          zone: "Rep. de colombia",
+          shipperZone: "Rep. de colombia",
           btnAction: "Cargar Vehiculo",
           icon: "color: #1f7a18",
         },
         {
           hour: "12:00 PM",
-          status: "Entregada",
-          client: "Maria Hernandez",
+          status: "Driver Assigned",
+          shipper: "Maria Hernandez",
           numberOfOrden: 1883,
-          zone: "Respaldo Rodeo",
+          shipperZone: "Respaldo Rodeo",
           btnAction: "Ver Orden(es)",
           icon: "color: #000000",
         },
         {
           hour: "10:00 AM",
-          status: "En Ruta",
-          client: "Juan Perez",
+          status: "Delivered",
+          shipper: "Juan Perez",
           numberOfOrden: 2238,
-          zone: "Rep. de colombia",
+          shipperZone: "Rep. de colombia",
           btnAction: "Continuar Entrega(s)",
           icon: "color: #a7a7a7",
         },
         {
           hour: "10:00 AM",
-          status: "En Ruta",
-          client: "Juan Perez",
+          status: "Driver Arrival",
+          shipper: "Juan Perez",
           numberOfOrden: 2833,
-          zone: "Rep. de colombia",
+          shipperZone: "Rep. de colombia",
           btnAction: "Continuar Entrega(s)",
           icon: "color: #a7a7a7",
         },
         {
           hour: "10:00 AM",
-          status: "Despacho Aprobado",
-          client: "Juan Perez",
+          status: "Dispatched",
+          shipper: "Juan Perez",
           numberOfOrden: 2993,
-          zone: "Rep. de colombia",
+          shipperZone: "Rep. de colombia",
           btnAction: "Comenzar Entrega(s)",
           icon: "color: #c39108",
         },
@@ -127,8 +134,5 @@ export default {
 </script>
 
 <style scoped>
-.cnt {
-  height: 100%;
-  overflow: scroll;
-}
+
 </style>

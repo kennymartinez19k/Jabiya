@@ -9,7 +9,9 @@ export default {
   name: 'BackButton',
   methods: {
     goBack () {
-      this.$router.go(-1)
+      if(this.$route.name == 'recover-password'){
+        this.$router.push({ name: 'sign-in' })
+      } else this.$router.go(-1)
     }
   }
 }

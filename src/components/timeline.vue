@@ -25,6 +25,7 @@
     </div>
     <ul class="progressbar">
       <li
+        v-if="!settings.AutoScan"
         class="stepOne"
         :class="{ active: resultScan !== null }"
         @click="getShow('scan')"
@@ -81,6 +82,7 @@
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
 import UIkit from "uikit";
+import { mapGetters } from 'vuex';
 export default {
   components: {
     SignatureAction,
@@ -120,7 +122,11 @@ export default {
 
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters([
+      'settings'
+    ])
+  },
 
   methods: {
     getShow(value) {

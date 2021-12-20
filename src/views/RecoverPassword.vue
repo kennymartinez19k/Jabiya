@@ -1,6 +1,6 @@
 <template>
   <BackButton />
-    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap container cont">
+    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
       <form
         class="
           uk-card
@@ -147,25 +147,20 @@ export default {
 
 }
 .cnt {
-  /* overflow: scroll; */
+  overflow: scroll;
   width: 100%;
-  height: 500px;
+  height: 11.7cm;
+
 }
 @media screen and (max-width: 639px) {
   .logo {
     max-width: 23%;
     margin: 25px 0 0;
   }
-  .container {
-    height: 55vh;
-  }
   .uk-card-body {
     min-width: 100px !important;
     box-shadow: 0px 0px 0px #000 !important;
   }
-}
-.cont{
-  height: 70vh;
 }
 .form-login{
     border: 1px solid #b1b1b1;

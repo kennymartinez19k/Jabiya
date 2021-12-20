@@ -10,6 +10,7 @@ const storeModule = {
       ...timelineStore.state,
       scanOrder: null,
       allOrders: [],
+      settings: {}
     }
   ),
   mutations: {
@@ -21,6 +22,9 @@ const storeModule = {
     },
     setAllOrders(state, val){
       state.orders = val
+    },
+    setSettings(state, val){
+      state.settings = val
     },
     
   },
@@ -34,7 +38,8 @@ const storeModule = {
     ...loads.getters,
     ...timelineStore.getters,
     orderScan : state => state.scanOrder,
-    allOrders: state => state.orders
+    allOrders: state => state.orders,
+    settings: state => state.settings
   }
 }
 
