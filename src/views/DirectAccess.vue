@@ -4,25 +4,40 @@
           <h5 class="title uk-margin-top uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
-                <p><strong>Tus Cargas</strong></p>
+                <p class="name-action"><strong>Ver Tus Cargas</strong></p>
           </li>
-          <li class="action uk-width-1-2" @click="DeliveredOrders('scan-order')">
+          <li class="action uk-width-1-2" @click="DeliveredOrders('orders-auto-scan')">
+               <img src="../assets/container.png" alt="">
+                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
+          </li>
+          
+          <li class="action uk-width-1-2" @click="DeliveredOrders('delivery-actions-auto')">
               <img src="../assets/boxes.png" alt="">
-                <p><strong>Entregar Ordenes</strong> </p>
+                <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute()">
+          <li class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
-                <p><strong>Procesar Factura</strong> </p>
+                <p class="name-action"><strong>Procesar Factura</strong> </p>
           </li>
           <li class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
-                <p><strong>Reconciliación con Almacén</strong></p>
+                <p class="name-action"><strong>Reconciliación con Almacén</strong></p>
+          </li>
+          <li class="action uk-width-1-2" @click="changeRoute('home')">
+              <img src="../assets/Reject-box.png" alt="">
+                <p class="name-action"><strong>Procesar Rechazo del Contenedor</strong></p>
+          </li>
+           <li class="action uk-width-1-2" @click="changeRoute('home')">
+              <img src="../assets/refund.png" alt="">
+                <p class="name-action"><strong>Devolver Contenedor</strong></p>
           </li>
       </ul>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+import { mapGetters } from 'vuex';
 export default {
     data() {
     return {
@@ -30,7 +45,7 @@ export default {
         {
           numberOfOrders: 1234,
           numberOfBox: 2,
-          client: "Juan Martinez Soto",
+          shipper: "Juan Martinez Soto",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -39,7 +54,7 @@ export default {
         {
           numberOfOrders: 1223,
           numberOfBox: 2,
-          client: "Maria Lisbeth Alcantara Rodriguez",
+          shipper: "Maria Lisbeth Alcantara Rodriguez",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -48,7 +63,7 @@ export default {
         {
           numberOfOrders: 3321,
           numberOfBox: 2,
-          client: "Albert Perez",
+          shipper: "Albert Perez",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -57,7 +72,7 @@ export default {
         {
           numberOfOrders: 4324,
           numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
+          shipper: "Jose Abreu Pichardo",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -66,7 +81,7 @@ export default {
         {
           numberOfOrders: 3753,
           numberOfBox: 2,
-          client: "Albert Perez",
+          shipper: "Albert Perez",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -75,7 +90,7 @@ export default {
         {
           numberOfOrders: 1027,
           numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
+          shipper: "Jose Abreu Pichardo",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -84,7 +99,7 @@ export default {
         {
           numberOfOrders: 9120,
           numberOfBox: 2,
-          client: "Juan Jose Garcia",
+          shipper: "Juan Jose Garcia",
           address: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
           completed: false,
@@ -96,56 +111,78 @@ export default {
           date: new Date(),
           hour: "10:00 Am",
           status: "Asignada",
-          client: "Juan Perez",
-          numberOfOrden: 2177,
-          zone: "Rep. de colombia",
+          shipper: "Juan Perez",
+          loadNumber: 2177,
+          shipperZone: "Rep. de colombia",
           btnAction: "Cargar Vehiculo",
           icon: "color: #1f7a18",
         },
         {
           hour: "12:00 PM",
           status: "Entregada",
-          client: "Maria Hernandez",
-          numberOfOrden: 1883,
-          zone: "Respaldo Rodeo",
+          shipper: "Maria Hernandez",
+          loadNumber: 1883,
+          shipperZone: "Respaldo Rodeo",
           btnAction: "Ver Orden(es)",
           icon: "color: #000000",
         },
         {
           hour: "10:00 AM",
           status: "En Ruta",
-          client: "Juan Perez",
-          numberOfOrden: 2238,
-          zone: "Rep. de colombia",
+          shipper: "Juan Perez",
+          loadNumber: 2238,
+          shipperZone: "Rep. de colombia",
           btnAction: "Continuar Entrega(s)",
           icon: "color: #a7a7a7",
         },
         {
           hour: "10:00 AM",
           status: "En Ruta",
-          client: "Juan Perez",
-          numberOfOrden: 2833,
-          zone: "Rep. de colombia",
+          shipper: "Juan Perez",
+          loadNumber: 2833,
+          shipperZone: "Rep. de colombia",
           btnAction: "Continuar Entrega(s)",
           icon: "color: #a7a7a7",
         },
         {
           hour: "10:00 AM",
           status: "Despacho Aprobado",
-          client: "Juan Perez",
-          numberOfOrden: 2993,
-          zone: "Rep. de colombia",
+          shipper: "Juan Perez",
+          loadNumber: 2993,
+          shipperZone: "Rep. de colombia",
           btnAction: "Comenzar Entrega(s)",
           icon: "color: #c39108",
         },
       ],
     };
   },
-  async mounted(){
-    await this.$store.dispatch('changeDateLoads', 'd')
+  computed:{
+    ...mapGetters([
+      'settings'
+    ])
   },
+  async mounted(){
+    await this.$store.dispatch('changeDateLoads')
+
+    let cookieinfo = "connect.sid=s%3ABR94OXNkBmkRIThnYWMc1H5PZ_2djah5.gFYxhod25z18n9Gte%2B4gj7XtNP8HDDcrr6ZWkWFWqRU; Path=/; Expires=Sat, 18 Dec 2021 03:06:07 GMT; HttpOnly"
+    try{
+      const result = await axios.get("http://preprod.flai.com.do:8756/exo/loads", {
+        withCredentials: true,
+        headers:{
+           "Access-Control-Allow-Origin": "*",
+           Cookie: cookieinfo
+        }})
+      console.log(result)
+    }
+    catch(err){
+      console.log(err)
+    }
+  },
+
+  
   methods: {
     changeRoute(val){
+      
       this.$router.push({name: val})
     },
     DeliveredOrders(val){
@@ -168,7 +205,7 @@ ul {
   padding: 10px 0px;
 }
 .action{
-    margin: 15px 0px 40px;
+    margin: 15px 0px 30px;
     padding: 10px;
 }
 .title{
@@ -179,5 +216,8 @@ ul {
 }
 .action-element{
     font-size: 13px;
+}
+.name-action{
+  padding: 0px 10px
 }
 </style>

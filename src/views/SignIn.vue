@@ -1,14 +1,13 @@
 <template>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
-
-    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap container cnt">
+    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
         <form class="uk-card uk-card-default uk-padding-remove uk-card-large uk-card-body uk-width-1-3@s" style="padding: 0px 20px !important; min-width: 400px">
             <img class="logo" src="../assets/logo.png" alt="">
             <h4 class="uk-text-light">Entrar a su cuenta</h4>
             <span class="uk-text-muted" style="margin-bottom: 30px; display: block">Ingrese su número de móvil y contraseña y presione iniciar seción para ingresar a su cuenta</span>
 
             <div class="uk-margin uk-text-left">
-               <label class="uk-text-emphasis" for="email">Teléfono</label>
+               <label class="uk-text-emphasis" for="email">Email</label>
                <div class="uk-input uk-flex form-login" style="align-items: center">
                 <input class="uk-form-width-medium formLogin" v-model="login.email" type="email" placeholder="ejemplo@email.com" required>
                 <font-awesome-icon icon="envelope" style="font-size: 15px"/>
@@ -25,18 +24,16 @@
                 <label class="terms uk-text-light"><input v-model="login.rememberPassword" style="margin-right: 5px" class="uk-checkbox" type="checkbox" checked>Recordar contraseña</label>
                 <router-link to="/recover" class="show-link">¿Olvidaste tu contraseña?</router-link>
             </div>
-            <button type="button" class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute('direct-access')" style="margin-top: 15px">Iniciar sesión</button>
+            <button type="button" class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom" @click="changeRoute()" style="margin-top: 15px">Iniciar sesión</button>
         </form>
     </div>
 </template>
  
 <script>
 import Loading from 'vue-loading-overlay';
-
-
 export default {
 components:{
-    Loading
+    Loading,
 },
 data() {
     return {
@@ -56,15 +53,15 @@ data() {
     }
 },
 methods:{
-    changeRoute(path){
+    async changeRoute(path){
         if (path == 'direct-access') {
-           if(this.login.email !== '' && this.login.password !== '' ) {
-            this.loaded = true
-            this.getSignInLogin()
-            this.$router.push({ name: path }).catch(() => {})
+           if(this.signInLogin.email !== '' && this.signInLogin.password !== '' ) {   
+              this.loaded = true
+            const result = await this.getSignInLogin()
+            if(result) this.$router.push({ name: "settings" }).catch(() => {})
         }
         } else {
-         this.$router.push({ name: path }).catch(() => {})
+         this.$router.push({ name: "settings" }).catch(() => {})
         }
     },
     showPassword(){
@@ -84,7 +81,7 @@ methods:{
         const resultLogin = await this.$services.singInServices.getToken(this.AutoLogin)
         console.log(resultLogin, 'login')
        this.loaded = false
-
+        return resultLogin
     }
 }
 }
@@ -107,9 +104,7 @@ methods:{
     font-size: 14px;
     
 }
-/* template {
-     scroll-behavior: smooth;
-} */
+
 .cnt {
   overflow: scroll;
   width: 100%;

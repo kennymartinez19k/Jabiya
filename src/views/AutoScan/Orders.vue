@@ -78,45 +78,34 @@
         </div>
         <div
           class="uk-flex uk-flex-column"
-          style="min-width: 83px; margin-left: 7px; align-items: flex-end"
+          style="min-width: 70px; margin-left: 7px; align-items: flex-end"
         >
           <div
             class="uk-flex uk-flex-column"
-            @click="scan(order)"
+            @click="autoScan(order)"
             style="align-items: center"
           >
-            <img src="../assets/parcel.png" class="img-scan" alt="" />
+            <img src="../../assets/road.png" class="img-scan" alt="" />
             <span v-if="order.completed">Descargar Orden</span>
-            <span v-else>Escanear Orden</span>
+            <span v-else>Iniciar Ruta</span>
           </div>
         </div>
       </div>
     </div>
     <div></div>
     <div class="button-opt">
-      <slide-unlock
-      ref="vueslideunlock"
-      :auto-width="true"
-      :circle="true"
-      :disabled="false"
-      :noanimate="false"
-      :width="400"
-      :height="40"
-      :completedBg="completed"
-      class="slide box-slide"
-      text="Escaneo Corrido"
-      success-text="success"
-      @completed="complete(orders)"
-      textSize="10px"
-    />
-      </div>
+      <button @click="uploadTruck()" class="uk-button uk-button-transparent">Cargar Vehiculo 
+          <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
+      </button>
+      <button @click="autoScan(orders)" class="uk-button uk-button-transparent">Iniciar Ruta
+          <img src="../../assets/road.png" style="width: 25px; margin-left: 5px ">
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import SlideUnlock from "vue-slide-unlock";
-
 export default {
   alias: `Cargar Vehiculo`,
   name: `cargarrr`,
@@ -143,7 +132,7 @@ export default {
           client_name: "Maria Lisbeth Alcantara Rodriguez",
           zone_name: "Alma Rosa calle abreu #17",
           timeToWait: "2020-01-23",
-          completed: true,
+          completed: false,
           hour: new Date('2020-12-02, 10:00')
         },
         {
@@ -194,9 +183,6 @@ export default {
       ],
     };
   },
-   components: {
-    SlideUnlock,
-  },
   computed: {
     ...mapGetters(["loadStore", "orderScan", 'loads']),
   },
@@ -219,17 +205,22 @@ export default {
         }
       });
     },
-    scan(val) {
+    uploadTruck(){
+        this.orders.map(x => x.completed = true)
+    },
+    autoScan(val) {
       let orderScan = []
       if (val.length) {
         orderScan = val
-        this.$emit("deliveryActions", 'Escaneo Corrido');
+        this.$emit("deliveryActions", 'Ordenes en Ruta');
       } else {
         this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
+      this.orders.map(x => x.completed = true)
+      console.log(this.orders) 
       this.$store.commit("scanOrder", orderScan);
-      this.$router.push({ name: "scan-order" }).catch(() => {});
+      this.$router.push({ name: "maps" }).catch(() => {});
     },
     completedOrden() {
       this.orders.forEach((x) => {
@@ -257,11 +248,20 @@ p {
 }
 .button-opt {
   background: #ffffff !important;
-  height: 70px;
+  height: 60px;
   border-top: 1px solid #b1b1b1;
+  display: flex;
+  justify-content: space-evenly;
   width: 100%;
+  padding: 10px;
   position: absolute;
   bottom: 0px;
+}
+.button-opt button{
+    padding: 0px 15px !important;
+    align-items: center;
+    display: flex;
+    font-size: 12px;
 }
 
 .uk-card {
@@ -353,7 +353,7 @@ p {
   background: rgba(233, 255, 233, 0.6);
 }
 .box-slide {
-  background-image: url('../assets/parcel.png');
+  background-image: url('../../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
     background-position: 80%

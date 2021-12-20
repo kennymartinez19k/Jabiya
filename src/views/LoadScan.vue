@@ -1,22 +1,22 @@
 <template>
   <div class="stiky">
-      <span
-        style="margin-bottom: 5px !important; font-weight: 500"
+      <p
+        style="font-size: 13px; font-weight: 500"
       >
-        {{load?.loadNumber}}
-      </span>
+        ILS 20/12/21 Gate {{load?.loadNumber}}
+      </p>
       <div
         class="
           uk-flex
           uk-flex
-          uk-flex-between
+          uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
         "
         style="align-items: center;"
       >
-        <div style=" width: 100%" class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>
             
@@ -47,7 +47,7 @@
         
       </div>
       <div v-if="statusOrders == 'approve'" style="width: 100%; font-size: 30px">
-          <font-awesome-icon icon="check-circle" class="check" />
+          <img src="../assets/check.png" style="width: 35px" alt="">
           <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
         </div>
       <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
@@ -71,16 +71,16 @@
         <ul class="uk-list uk-list-divider" style="list-style: none">
           <li v-for="orden in orders" :key="orden" class="article uk-card uk-card-default uk-card-body">
               <div>
-                <p class="uk-width-1-1" style="font-weight: 600">
-                <font-awesome-icon icon="map-marker-alt" style="font-size: 14px; color: green" />&nbsp;<strong>{{
+                <p><strong>No. de Orden:</strong> &nbsp;  {{orden.order_num}}</p>
+                <p class="uk-width-1-1">
+                Destino: &nbsp;<span>{{
                   orden.zone.name
-                }}</strong>
+                }}</span>
               </p>
-              <strong>No. de Orden: &nbsp; {{orden.order_num}}</strong>
               </div>
-              <div class="uk-flex uk-flex-column" style="align-items: center">
-                <font-awesome-icon icon="check-circle" style="font-size: 20px; color: green"/>
-                <span style="color: green; font-weight: 500">Cargada</span>
+              <div class="uk-flex uk-flex-column completed-card">
+                <img src="../assets/check.png" class="icon-checked" alt="">
+                <span>Completado</span>
               </div>
           </li>
         </ul>
@@ -143,6 +143,8 @@ export default {
       this.orders = this.orderScan;
       this.load = this.loadStore
     }else{
+      console.log(this.allOrders)
+      console.log(this.allLoads)
       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
       this.allLoads.forEach(el => {
         if(el.status == 'Asignada'){
@@ -318,10 +320,10 @@ p{
   z-index: 2;
   border-top: 1px solid #313575;
   font-size: 12px !important;
-  padding: 7px 10px 5px !important;
+  padding: 0px 10px 5px !important;
  background: #2a307c;
  font-weight: 300 !important;
- text-align: start;
+ text-align: center;
   box-shadow: 1px 0px 5px #898989;
 }
 .info-header {
@@ -396,11 +398,12 @@ p{
  justify-content: space-between;
  align-items: flex-start;
  padding: 12px;
+ font-weight: 500;
  width: 100%;
  background: #fefffe;
  color: rgb(0, 0, 0);
  box-shadow: 0px 1.2px 1px #ccc;
- border-radius: 10px;
+ border-radius: 5px;
 border: 1px solid #efefef;
 }
 .uk-card-body::before{
@@ -409,4 +412,14 @@ border: 1px solid #efefef;
 .completedOrden{
   background: green;
 }
+.icon-checked{
+  width: 20px;
+}
+.completed-card{
+  height: 43px;
+  border-left: 1px solid #ccc;
+  padding-left: 20px;
+  align-items: center;
+}
+
 </style>

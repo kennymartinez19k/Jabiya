@@ -19,12 +19,9 @@ const Loads = {
     },
   
     actions: {
-      async changeDateLoads({commit}, d){
-        if(d){
-          console.log('Success')
+      async changeDateLoads({commit}){
 
-        }
-        const loads = await services.loadsServices.getLoads(services.loadsServices.getHeaders ())
+        const loads = await services.loadsServices.getLoads()
         console.log(loads)
         commit('chargeLoads', loads)
       }

@@ -28,7 +28,11 @@
         <div class="uk-flex uk-flex-between">
           <div class="uk-text-left info-user">
             <p>
-              <strong> Estado: </strong><span>{{ load.status }}</span>
+              <strong> Estado: </strong>
+              <span v-if="load.status == 'Driver Assigned'">Asignada</span>
+              <span v-if="load.status == 'Delivered'">Entregada</span>
+              <span v-if="load.status == 'Driver Arrival'">En Ruta</span>
+              <span v-if="load.status == 'Dispatched'">Despacho Aprobado</span>
             </p>
             <p>
               <strong>Cliente: </strong> <span>{{ load.shipper }}</span>
@@ -74,8 +78,8 @@
             <button class="uk-button " @click="setLoad(load)">
               <span v-if="load.status == 'Driver Assigned'">Cargar Vehiculo</span>
               <span v-if="load.status == 'Delivered'">Ver Ordenes</span>
-              <span v-if="load.status == 'Driver Arrival'"></span>
-              <span v-if="load.status == 'Dispatched'">Cargar Vehic</span>
+              <span v-if="load.status == 'Driver Arrival'">Continuar Entrega(s)</span>
+              <span v-if="load.status == 'Dispatched'">Comenzar Entrega(s)</span>
 
             </button>
           </div>
@@ -86,6 +90,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   props: {
     userOrden: Array,
@@ -96,13 +101,22 @@ export default {
       loads: []
     }
   },
+  computed:{
+    ...mapGetters([
+      'settings'
+    ])
+  },
   mounted(){
+    
     this.loads = this.userOrden
   },
   methods: {
     async setLoad(valueOrder) {
+
       this.$store.commit("setloadStore", valueOrder);
-      if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
+      if(this.settings.AutoScan){
+        if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders-auto-scan');
+      } else if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
       if(valueOrder?.status == 'Delivered') this.changeRoute('orders');
       if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
       if(valueOrder?.status == 'Dispatched') this.changeRoute('orders');

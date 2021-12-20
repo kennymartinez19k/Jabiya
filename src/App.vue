@@ -3,6 +3,7 @@
   <router-view class="view-header" @deliveryActions="setName($event)" :class="{view: !currentPage}"/>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
 
 export default {
@@ -27,6 +28,9 @@ export default {
     },
   },
   computed:{
+    ...mapGetters([
+      'settings'
+    ]),
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)
     },

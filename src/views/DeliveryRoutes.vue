@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-flex uk-flex-between cnt">
+  <div class="uk-flex uk-flex-between uk-flex-column cnt">
     <div class="stiky">
       <span
         class="uk-text-center uk-margin-remove"
@@ -281,10 +281,7 @@ export default {
 </script>
 
 <style scoped>
-.cnt {
-  height: 100%;
-  overflow: scroll;
-}
+
 .uk-card {
   padding: 20px 10px;
 }
@@ -359,10 +356,12 @@ export default {
 .stiky {
   color: rgb(255, 255, 255) !important;
   z-index: 2;
-  padding: 7px 10px 4px !important;
+  border-top: 1px solid #313575;
+  font-size: 12px !important;
+  padding: 0px 10px 5px !important;
  background: #2a307c;
  font-weight: 300 !important;
- text-align: start;
+ text-align: center;
   box-shadow: 1px 0px 5px #898989;
 }
 .info-header {
