@@ -12,17 +12,17 @@
         "
         style="align-items: center"
       >
-        <div class="font-weight-medium uk-flex" style="width: 100%">
-          <p style="margin-right: 10px !important">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.client }}</span>
+        <div class="font-weight-medium uk-text-left" style="width: 70%">
+          <p style="margin-right: 10px !important; ">
+            <strong>Shipper:</strong><span>&nbsp; {{ load?.shipper }}</span>
           </p>
           <p>
-            <strong>Zona de Destino:</strong
-            ><span>&nbsp; {{ load?.zone }}</span>
+            <strong style="">Zona de Destino:</strong
+            ><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
         </div>
         <div class="info-header">
-          <span class="status">Carga {{ load?.status }}</span>
+          <!-- <span class="status">Carga {{ load?.status }}</span> -->
           <img
             v-if="load?.status == 'Asignada'"
             src="../assets/asigned.png"
@@ -30,7 +30,7 @@
             alt=""
           />
           <img
-            v-if="load?.status == 'Entregada'"
+            v-if="load?.status == 'Driver Arrival'"
             src="../assets/delivery.png"
             class="icon-load"
             alt=""
