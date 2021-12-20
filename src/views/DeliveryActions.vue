@@ -168,6 +168,11 @@ export default {
         }
       },
     },
+     $route: function(newVal){
+      if (newVal){
+        this.stopScan()
+      }
+    }
   },
 
   methods: {

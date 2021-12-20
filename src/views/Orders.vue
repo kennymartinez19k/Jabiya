@@ -106,7 +106,7 @@
       class="slide box-slide"
       text="Escaneo Corrido"
       success-text="success"
-      @completed="complete(orders)"
+      @completed="scan(orders)"
       textSize="10px"
     />
       </div>
@@ -228,6 +228,7 @@ export default {
         this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
+      console.log(orderScan)
       this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
@@ -258,7 +259,7 @@ p {
 .button-opt {
   background: #ffffff !important;
   height: 70px;
-  border-top: 1px solid #b1b1b1;
+  border-top: 1px solid #e2e2e2;
   width: 100%;
   position: absolute;
   bottom: 0px;

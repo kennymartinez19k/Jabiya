@@ -164,13 +164,13 @@ export default {
   async mounted(){
     await this.$store.dispatch('changeDateLoads')
 
-    let cookieinfo = "connect.sid=s%3ABR94OXNkBmkRIThnYWMc1H5PZ_2djah5.gFYxhod25z18n9Gte%2B4gj7XtNP8HDDcrr6ZWkWFWqRU; Path=/; Expires=Sat, 18 Dec 2021 03:06:07 GMT; HttpOnly"
+    let cookieinfo = "connect.sid=s%3A8B5bO9hbe2vrxN2bKSPMMnXpNuNguuj1.iHTPUg%2FKuYBtBrcn4QIUk1avaPTQ1MbVT6HdyfxhGgI; Path=/; Expires=Tue, 21 Dec 2021 01:16:31 GMT; HttpOnly"
     try{
       const result = await axios.get("http://preprod.flai.com.do:8756/exo/loads", {
         withCredentials: true,
         headers:{
            "Access-Control-Allow-Origin": "*",
-           Cookie: cookieinfo
+           "Cookie": cookieinfo,
         }})
       console.log(result)
     }
@@ -179,7 +179,7 @@ export default {
     }
   },
 
-  
+
   methods: {
     changeRoute(val){
       
