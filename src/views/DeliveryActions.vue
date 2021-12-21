@@ -128,21 +128,20 @@ export default {
     ]),
   },
   mounted() {
-     if(this.allOrders){
-       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
+     if(this.orderScan){
+       this.orders = this.orderScan;
     }else{
-      this.orders = this.orderScan;
+      console.log(this.allLoads)
+      this.orders = this.allLoads.orders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
     }
     if(this.loadStore){
+      this.load = this.loadStore
+    } else{
       this.allLoads.forEach(el => {
         if(el.status == 'Asignada'){
           this.load = el
-          console.log(this.load)
         }
       });
-    } else{
-      
-      this.load = this.loadStore
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
@@ -150,7 +149,7 @@ export default {
     } else if (this.orderScan?.length == 1) {
       this.$emit(
         "deliveryActions",
-        `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
+        `Orden No. ${this.orderScan[0]?.order_num}`
       );
     }
   },
@@ -192,23 +191,15 @@ export default {
 
             BarcodeScanner.hideBackground();
               this.resultScan = result
-            alert(result.content, 'result')
-            console.log(result.content, 'result')
             var OrderElement = null
             this.ordersScan.forEach((x) =>  { if(x.numberOfOrders === result.content) { 
-              alert(x, 'OrderElement') 
             OrderElement = true} })
-            // var OrderElement = this.ordersScan.findIndex((x) => x.numberOfOrders === result.content)
-            alert(OrderElement, 'OrderElement')
             if (OrderElement) {
-              this.mira = 'jojojojojo'
-              console.log(OrderElement)
             alert(OrderElement, 'OrderElement')
 
             } else if (!OrderElement){
               this.mira = 'nooooooooooooo'
               Vibration.vibrate(1000);
-            alert('noooooooooo')
 
               setTimeout(() => {
                   this.scanOrder()
@@ -283,7 +274,7 @@ export default {
         });
         console.log(permissions1);
       } catch (error) {
-        console.log(error, "error");
+        console.log(error);
       }
     },
     verifiedElement(val){

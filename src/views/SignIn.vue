@@ -122,7 +122,7 @@ export default {
               this.$router.push({ name: "settings" }).catch(() => {});
           }
         } else {
-          this.$router.push({ name: "settings" }).catch(() => {});
+          this.$router.push({ name: "direct-access" }).catch(() => {});
         }
       } catch (error) {
         this.loaded = false;

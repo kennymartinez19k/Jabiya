@@ -83,7 +83,6 @@
 
 <script>
 import BackButton from "../components/Buttons/BackButton.vue";
-// import {} from '../assets/img/qr.png'
 export default {
   components: {
     BackButton,
@@ -116,7 +115,6 @@ export default {
 
         }
          if (newVal !== null && newVal.lenght !== oldVal) {
-          //  alert('sssssssssssssss')
                 this.showCompany = false
             } else {
                 this.showCompany = true
