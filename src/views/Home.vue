@@ -1,14 +1,15 @@
 <template>
   <div>
-      <load-calendar />
+      <loads />
   </div>
 </template>
 
 <script>
-import LoadCalendar from '../components/LoadCalendar.vue'
+import Loads from '../components/Loads.vue'
 export default {
+  alias: 'Tus Cargas',
  components: {
-     LoadCalendar,
+     Loads,
  },
 
   methods: {

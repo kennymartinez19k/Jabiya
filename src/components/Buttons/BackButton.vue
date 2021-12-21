@@ -1,5 +1,7 @@
 <template>
-    <span @click="goBack()" uk-icon="icon: reply"></span><strong></strong>
+    <span @click="goBack()" uk-icon="icon: arrow-left"></span><strong></strong>
+<!-- <span uk-icon="icon:  arrow-left"></span> -->
+
 </template>
 
 <script>
@@ -7,7 +9,9 @@ export default {
   name: 'BackButton',
   methods: {
     goBack () {
-      this.$router.go(-1)
+      if(this.$route.name == 'recover-password'){
+        this.$router.push({ name: 'sign-in' })
+      } else this.$router.go(-1)
     }
   }
 }
@@ -15,7 +19,7 @@ export default {
 <style scoped>
 span{
   position: absolute;
-  top: 21px;
+  top: 30px;
   left: 23px;
   transform: scale(1.2);
   z-index: 1;

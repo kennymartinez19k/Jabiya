@@ -5,7 +5,6 @@ const currentPage = {
     mutations: {
         setCurrent (state, current) {
             state.current = current
-            console.log(state.current)
           },
     },
   
