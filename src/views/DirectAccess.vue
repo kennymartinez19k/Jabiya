@@ -162,7 +162,6 @@ export default {
     setCurrentPage(val) {
         this.$router.push({ name: val}).catch(() => {})
         this.hideMenu()
-        
     },
   },
 

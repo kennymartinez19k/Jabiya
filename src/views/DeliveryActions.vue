@@ -127,7 +127,6 @@ export default {
      if(this.orderScan){
        this.orders = this.orderScan;
     }else{
-      alert('todas')
       console.log(this.allLoads)
       this.orders = this.allLoads.orders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
     }
