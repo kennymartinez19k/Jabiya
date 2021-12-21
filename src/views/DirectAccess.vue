@@ -127,8 +127,7 @@ export default {
         "email": "admin@flai.com.do",
         "password": "1"
       });
-       const resultLogin = await this.$services.loadsServices.getLoads(data);
-       console.log(resultLogin)
+       this.Loads = await this.$services.loadsServices.getLoads(data);
     },
     openMenu(){
       this.positionSticky = true
