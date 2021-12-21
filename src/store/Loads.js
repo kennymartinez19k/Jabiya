@@ -22,7 +22,6 @@ const Loads = {
       async changeDateLoads({commit}){
 
         const loads = await services.loadsServices.getLoads()
-        console.log(loads)
         commit('chargeLoads', loads)
       }
     },

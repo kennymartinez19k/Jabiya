@@ -124,21 +124,21 @@ export default {
     ]),
   },
   mounted() {
-     if(this.allOrders){
-       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
+     if(this.orderScan){
+       this.orders = this.orderScan;
     }else{
-      this.orders = this.orderScan;
+      alert('todas')
+      console.log(this.allLoads)
+      this.orders = this.allLoads.orders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
     }
     if(this.loadStore){
+      this.load = this.loadStore
+    } else{
       this.allLoads.forEach(el => {
         if(el.status == 'Asignada'){
           this.load = el
-          console.log(this.load)
         }
       });
-    } else{
-      
-      this.load = this.loadStore
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
@@ -146,7 +146,7 @@ export default {
     } else if (this.orderScan?.length == 1) {
       this.$emit(
         "deliveryActions",
-        `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
+        `Orden No. ${this.orderScan[0]?.order_num}`
       );
     }
   },
@@ -191,7 +191,6 @@ export default {
               this.step++;
 
               this.verifiedElement(OrderElement)
-              console.log(OrderElement)
             } else if (OrderElement ){
               Vibration.vibrate(1000);
               setTimeout(() => {
@@ -267,7 +266,7 @@ export default {
         });
         console.log(permissions1);
       } catch (error) {
-        console.log(error, "error");
+        console.log(error);
       }
     },
     verifiedElement(val){

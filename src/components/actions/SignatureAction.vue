@@ -35,10 +35,8 @@ export default {
     save() {
       const { isEmpty, data } = this.$refs.signaturePad.saveSignature();
       console.log(isEmpty);
-      console.log(data);
       this.firm = data;
       this.$emit("digitalSignature", this.firm);
-      // UIkit.modal("#modal_button").hide();
     },
     onBegin() {
       console.log("=== Begin ===");

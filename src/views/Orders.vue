@@ -140,7 +140,6 @@ export default {
   mounted() {
     this.load = this.loadStore;
     this.orders = this.load.orders
-    console.log(this.loadStore)
     if (this.orderScan) {
       this.completedOrden();
     }

@@ -1,17 +1,34 @@
 <template>
   <div class="container">
-      <ul class=" uk-flex uk-flex-wrap">
-          <h5 class="title uk-margin-top uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
+      <a  class="uk-navbar-toggle uk-flex uk-flex-right" style="min-height: 55px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
+      <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar uk-padding-remove">
+            <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
+        <div class="info-user">
+            <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
+            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">Chofer 11</h4>
+            <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
+        </div>
+        <ul class="uk-list nav-opt uk-list-divider">
+            <li @click="setCurrentPage('home')">Tus Cargas</li>
+            <li @click="setCurrentPage('settings')">Configuracion</li>
+            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li @click="setCurrentPage('about')">Version app</li>
+        </ul>
+    </div>
+</div>
+      <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
+          <h5 class="title uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Cargas</strong></p>
           </li>
-          <li class="action uk-width-1-2" @click="DeliveredOrders('orders-auto-scan')">
+          <li class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
                <img src="../assets/container.png" alt="">
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
           
-          <li class="action uk-width-1-2" @click="DeliveredOrders('deliveryActions')">
+          <li class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
               <img src="../assets/boxes.png" alt="">
                 <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
           </li>
@@ -37,75 +54,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Uikit from 'uikit'
+
 export default {
     data() {
     return {
       load: null,
-      orders: [
-        {
-          numberOfOrders: 1234,
-          numberOfBox: 2,
-          shipper: "Juan Martinez Soto",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 08:22')
-        },
-        {
-          numberOfOrders: 1223,
-          numberOfBox: 2,
-          shipper: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 10:22')
-        },
-        {
-          numberOfOrders: 3321,
-          numberOfBox: 2,
-          shipper: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 12:22')
-        },
-        {
-          numberOfOrders: 4324,
-          numberOfBox: 2,
-          shipper: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 14:22')
-        },
-        {
-          numberOfOrders: 3753,
-          numberOfBox: 2,
-          shipper: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 16:22')
-        },
-        {
-          numberOfOrders: 1027,
-          numberOfBox: 2,
-          shipper: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 18:22')
-        },
-        {
-          numberOfOrders: 9120,
-          numberOfBox: 2,
-          shipper: "Juan Jose Garcia",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 20:22')
-        },
-      ],
+     
       Loads: null,
       userLoads: [
         {
@@ -176,10 +131,9 @@ export default {
       var config = {
         method: 'get',
         url: 'http://preprod.flai.com.do:8756/exo/loads/',
-        credentials: "same-origin",
         headers: { 
           'Content-Type': 'application/json', 
-          auth: 'connect.sid=s%3AX8cHDJxicKpzDVtA2UA7LaXfwz0W8ccU.Ke%2BXlwN8xN4mFW%2FpEEZTDy%2FXzNd44oIViAPkE4f9hV0; Path=/; Expires=Tue, 21 Dec 2021 06:09:19 GMT; HttpOnly'
+          auth: 'connect.sid=s%3AwYgruhVlmtPMz7k6OKBXGRdCad0BR1nP.bTpcDZoxu1UqUaS%2FcPJD9aEcARNbqpjhHwP5UZJ8Pc4; Path=/; Expires=Wed, 22 Dec 2021 01:10:24 GMT; HttpOnly'
         },
         data : data
       };
@@ -192,12 +146,24 @@ export default {
         console.log(error)
       }
     },
+    openMenu(){
+      this.positionSticky = true
+      Uikit.offcanvas('#offcanvas-overlay').show();  
+    },
+    hideMenu(){
+        this.positionSticky = false
+        Uikit.offcanvas('#offcanvas-overlay').hide();
+    },
     
     changeRoute(val){
-      this.$store.commit('setAllOrders', this.orders)
       this.$store.commit('setAllLoads', this.Loads)
       this.$router.push({name: val})
-    }
+    },
+    setCurrentPage(val) {
+        this.$router.push({ name: val}).catch(() => {})
+        this.hideMenu()
+        
+    },
   },
 
 }
@@ -208,16 +174,13 @@ export default {
   background: #fff;
   height: 100vh;
 }
-ul {
-  list-style: none;
-  padding: 10px 0px;
-}
+
 .action{
     margin: 15px 0px 30px;
     padding: 10px;
 }
 .title{
-  margin: 20px 10px;
+  margin: 0px 10px 10px;
 }
 .action img{
     width: 40%;
@@ -227,5 +190,32 @@ ul {
 }
 .name-action{
   padding: 0px 10px
+}
+.close-navbar{
+    width: 25px;
+    right: 5px;
+    top: 10px;
+}
+.uk-list-divider>li:nth-child(n+2) {
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0
+}
+.info-user{
+    box-sizing: border-box;
+    background: #2a307c;
+    padding: 20px;
+    width: 100%;
+    height: 30%;
+}
+.uk-offcanvas-bar{
+    background: #fff;
+    width: 250px
+}
+.nav-opt{
+  color: #000;
+  text-align: initial;
+}
+.nav-opt li{
+  padding: 20px;
 }
 </style>

@@ -14,7 +14,7 @@
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Cargas</li>
-            <li @click="setCurrentPage('about')">Seleccione el idioma</li>
+            <li @click="setCurrentPage('about')">Configuracion</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
             <li @click="setCurrentPage('about')">Version app</li>
         </ul>

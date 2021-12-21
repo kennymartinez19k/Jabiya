@@ -5,7 +5,7 @@
         class="uk-text-center uk-margin-remove"
         style="margin-bottom: 5px !important; font-weight: 400"
       >
-        ILS 11/23/2021 1:30PM Gate 01
+        
       </span>
       <div
         class="
@@ -56,6 +56,7 @@
         </div> -->
       </div>
     </div>
+
     <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom allScreen">
       <div
         v-for="order in orders"
@@ -77,14 +78,14 @@
             </span>
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order.zone_name }}</span>
+            <strong>Dirección: </strong><span>{{ order?.zone?.name }}</span>
           </p>
           <p class="uk-width-1-2">
             <strong> No. de Orden: </strong
-            ><span>{{ order.order_num }}</span>
+            ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>No. de Cajas: </strong>{{ order.numberOfBox }}<span></span>
+            <strong>No. de Cajas: </strong>{{ order?.numberOfBox }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
@@ -230,10 +231,8 @@ export default {
           const geo = await Geolocation.getCurrentPosition();
           this.location1.latitude = geo.coords.latitude
           this.location1.longitude = geo.coords.longitude
-          // this.successCallback ( this.location1)
-            console.log('Current position:', this.location1);
         } catch (e) {
-          console.log('Current position:', this.location1);
+          console.log(e)
         
         }
     },
