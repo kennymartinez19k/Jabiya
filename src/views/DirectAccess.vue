@@ -163,34 +163,17 @@ export default {
     ])
   },
   async mounted(){
-    this.call()
+    await this.call()
   },
 
   methods: {
     async call(){
-      var axios = require('axios');
       var data = JSON.stringify({
         "email": "admin@flai.com.do",
         "password": "1"
       });
-      var config = {
-        method: 'get',
-        url: 'http://preprod.flai.com.do:8756/exo/loads/',
-        credentials: "same-origin",
-        headers: { 
-          'Content-Type': 'application/json', 
-          auth: 'connect.sid=s%3AX8cHDJxicKpzDVtA2UA7LaXfwz0W8ccU.Ke%2BXlwN8xN4mFW%2FpEEZTDy%2FXzNd44oIViAPkE4f9hV0; Path=/; Expires=Tue, 21 Dec 2021 06:09:19 GMT; HttpOnly'
-        },
-        data : data
-      };
-      try{
-        const result = await axios(config)
-        this.Loads = result.data
-        console.log(this.Loads)
-      }
-      catch(error){
-        console.log(error)
-      }
+       const resultLogin = await this.$services.loadsServices.getLoads(data);
+       console.log(resultLogin)
     },
     
     changeRoute(val){
