@@ -30,6 +30,7 @@
 </div>
       <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
           <h5 class="title uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
+          <pre> {{check}} check</pre>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Cargas</strong></p>
@@ -71,15 +72,17 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import Uikit from 'uikit'
 
 export default {
-    components: {
-     IonLoading,
+  components: {
+    IonLoading,
     Loading,
   },
     data() {
     return {
       load: null,
-     
+      loaded: false,
       Loads: null,
+      check: null,
+
       userLoads: [
         {
           date: new Date(),
@@ -141,14 +144,21 @@ export default {
 
   methods: {
     async call(){
-      var data = JSON.stringify({
-        "email": "admin@flai.com.do",
-        "password": "1"
-      });
-        this.loaded = true;
-       const resultLogin = await this.$services.loadsServices.getLoads(data);
-       console.log(resultLogin)
+      // var data = JSON.stringify({
+      //   "email": "admin@flai.com.do",
+      //   "password": "1"
+      // });
+      try {
+       this.loaded = true;
+       this.Loads = await this.$services.loadsServices.getLoads();
+       console.log(this.Loads)
        this.loaded = false;
+      } catch (error) {
+       this.loaded = false;
+        this.check = error
+        alert(error)
+      }
+ 
     },
     openMenu(){
       this.positionSticky = true
