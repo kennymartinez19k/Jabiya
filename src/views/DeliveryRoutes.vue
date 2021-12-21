@@ -107,7 +107,6 @@
                 style="align-items: center; display: inline-flex"
               >
                 <img src="../assets/parcel.png" class="img-scan" alt="" />
-  <!-- <pre>{{$router}} 55</pre> -->
                 <span>Entregar Orden</span> 
               </div>
             </div>

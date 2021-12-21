@@ -9,7 +9,6 @@
         </p>
       </div>
     </div>
-
     <div>
       <div
         v-for="load in userOrden"
