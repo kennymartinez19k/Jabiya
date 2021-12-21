@@ -154,7 +154,7 @@ export default {
     async call(){
    
        this.loaded = true;
-       this.Loads = await this.$services.loadsServices.getLoads(data);
+       this.Loads = await this.$services.loadsServices.getLoads();
        this.loaded = false;
        console.log(this.Loads)
     },
