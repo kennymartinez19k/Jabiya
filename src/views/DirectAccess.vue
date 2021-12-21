@@ -1,5 +1,16 @@
 <template>
   <div class="container">
+     <div class="">
+    <ion-loading
+    :is-open="isOpenRef"
+    cssClass="my-custom-class"
+    message="Por favor Espere..."
+    :duration="timeout"
+    @didDismiss="setOpen(false)"
+  >
+  </ion-loading>
+  <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
+  </div>
       <ul class=" uk-flex uk-flex-wrap">
           <h5 class="title uk-margin-top uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
@@ -37,10 +48,19 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Loading from "vue-loading-overlay";
+import { IonLoading } from "@ionic/vue";
+import "vue-loading-overlay/dist/vue-loading.css";
+
 export default {
+    components: {
+     IonLoading,
+    Loading,
+  },
     data() {
     return {
       load: null,
+      loaded: false,
       orders: [
         {
           numberOfOrders: 1234,
@@ -172,15 +192,24 @@ export default {
         "email": "admin@flai.com.do",
         "password": "1"
       });
+       this.loaded = true;
        const resultLogin = await this.$services.loadsServices.getLoads(data);
        console.log(resultLogin)
+       this.loaded = false;
     },
     
     changeRoute(val){
       this.$store.commit('setAllOrders', this.orders)
       this.$store.commit('setAllLoads', this.Loads)
       this.$router.push({name: val})
-    }
+    },
+
+     setOpe(val) {
+      this.loaded = val;
+      setTimeout(() => {
+        this.loaded = false;
+      }, 2000);
+    },
   },
 
 }
