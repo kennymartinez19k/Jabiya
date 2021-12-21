@@ -33,7 +33,7 @@
     </div>
     <div class="result-info">
       <ul
-        v-if="resultScan"
+       v-if="!resultScan"
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
@@ -47,9 +47,9 @@
               <font-awesome-icon
                 icon="map-marker-alt"
                 style="font-size: 14px; color: green"
-              />&nbsp;<strong>{{ orden.address }}</strong>
+              />&nbsp;<strong>{{ orden.zone.name }}</strong>
             </p>
-            <strong>No. de Orden: &nbsp; {{ orden.numberOfOrders }}</strong>
+            <strong>No. de Orden: &nbsp; {{ orden.order_num }}</strong>
           </div>
           <div class="uk-flex uk-flex-column" style="align-items: center">
             <font-awesome-icon
@@ -59,7 +59,7 @@
             <span class="font-weight-medium" style="color: green">Entregada</span>
           </div>
 
-          <div class="uk-flex" style="margin-top: 10px" >
+          <div v-if="imagiElement.length" class="uk-flex uk-width-1-1" style="margin-top: 10px" >
               <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
               <img class="img-result" :src="firm" alt="Fima Digital" />
           </div>
@@ -133,20 +133,13 @@ export default {
     ]),
   },
   mounted() {
-     if(this.orderScan){
-       this.orders = this.orderScan;
-    }else{
-      console.log(this.allLoads)
-      this.orders = this.allLoads.orders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
-    }
     if(this.loadStore){
-      this.load = this.loadStore
-    } else{
-      this.allLoads.forEach(el => {
-        if(el.status == 'Asignada'){
-          this.load = el
-        }
-      });
+       this.load = this.loadStore;
+       this.orders = this.orderScan
+    }else{
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
+      this.orders = this.load.orders
+      console.log(this.orders)
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
@@ -186,8 +179,7 @@ export default {
       }
     },
     async scanOrder() {
-      
-
+      this.statusOrders = 'start';
         if (await this.checkPermission()) {
           BarcodeScanner.hideBackground();
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result

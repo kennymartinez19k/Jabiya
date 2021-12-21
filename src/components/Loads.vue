@@ -41,11 +41,12 @@ export default {
   },
  async mounted(){
     window.location.href = '#Hoy'
-     moment.locale('es')
-   await this.allLoads.forEach((x, i) => {
+    moment.locale('es')
+    this.allLoads.forEach((x, i) => {
      if(i === 0) x.status = "Driver Assigned"
     }
-    ) 
+    )
+
   },
   data() {
     return {
