@@ -106,7 +106,7 @@
       :height="40"
       :completedBg="completed"
       class="slide box-slide"
-      text="Escaneo Corrido"
+      text="Cargar e Iniciar Ruta"
       success-text="success"
       @completed="scan(orders)"
       textSize="10px"
@@ -135,11 +135,16 @@ export default {
     SlideUnlock,
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan", 'loads']),
+    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoads"]),
   },
   mounted() {
-    this.load = this.loadStore;
+    if(this.loadStore){
+      this.load = this.loadStore;
+    }else{
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
+    }
     this.orders = this.load.orders
+    console.log(this.orders)
     if (this.orderScan) {
       this.completedOrden();
     }

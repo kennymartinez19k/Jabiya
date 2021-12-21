@@ -125,7 +125,7 @@
       :height="40"
       :completedBg="completed"
       class="slide box-slide"
-      text="Escaneo Corrido"
+      text="Cargar e Iniciar Ruta"
       success-text="Activando"
       @completed="complete(orders)"
       textSize="10px"

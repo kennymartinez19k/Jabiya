@@ -1,7 +1,7 @@
 import services from '../services'
 const Loads = {
     state: {
-      load: {},
+      load: null,
       allLoads: [],
       loads: []
     },

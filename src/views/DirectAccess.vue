@@ -23,14 +23,21 @@
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Cargas</strong></p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
+          <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
                <img src="../assets/container.png" alt="">
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          
-          <li class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
+          <li v-else class="action uk-width-1-2" @click="changeRoute('orders')">
+               <img src="../assets/container.png" alt="">
+                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
+          </li>
+          <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
               <img src="../assets/boxes.png" alt="">
                 <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
+          </li>
+          <li v-else class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
+            <img src="../assets/boxes.png" alt="">
+            <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
           </li>
           <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
@@ -117,8 +124,9 @@ export default {
       'settings'
     ])
   },
-  async mounted(){
+  async beforeMount(){
     await this.call()
+  
   },
 
   methods: {
@@ -128,6 +136,7 @@ export default {
         "password": "1"
       });
        this.Loads = await this.$services.loadsServices.getLoads(data);
+       console.log(this.Loads)
     },
     openMenu(){
       this.positionSticky = true
@@ -138,9 +147,11 @@ export default {
         Uikit.offcanvas('#offcanvas-overlay').hide();
     },
     
-    changeRoute(val){
-      this.$store.commit('setAllLoads', this.Loads)
-      this.$router.push({name: val})
+    async changeRoute(val){
+      if (await this.Loads){
+        this.$store.commit('setAllLoads', this.Loads)
+        this.$router.push({name: val})
+      }
     },
     setCurrentPage(val) {
         this.$router.push({ name: val}).catch(() => {})

@@ -4,8 +4,8 @@ class LoadsServices {
       this.http = http
     }
 
-    async getLoads (data) {
-      const result = await this.http.get('http://preprod.flai.com.do:8756/exo/loads', data)
+    async getLoads () {
+      const result = await this.http.get('http://preprod.flai.com.do:8756/exo/loads')
       return result.data.filter(x => x.driver === 'Miguel Gonzalez')
     }
 }
