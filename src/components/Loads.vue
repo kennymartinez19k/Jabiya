@@ -38,7 +38,11 @@ export default {
   mounted(){
     window.location.href = '#Hoy'
     moment.locale('es')
-    this.allLoads[0].status = "Driver Assigned" 
+    this.allLoads.forEach((x, i) => {
+     if(i === 0) x.status = "Driver Assigned"
+    }
+    )
+
   },
   data() {
     return {

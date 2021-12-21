@@ -71,10 +71,10 @@
         <ul class="uk-list uk-list-divider" style="list-style: none">
           <li v-for="orden in orders" :key="orden" class="article uk-card uk-card-default uk-card-body">
               <div>
-                <p><strong>No. de Orden:</strong> &nbsp;  {{orden.numberOfOrders}}</p>
+                <p><strong>No. de Orden:</strong> &nbsp;  {{orden.order_num}}</p>
                 <p class="uk-width-1-1">
                 Destino: &nbsp;<span>{{
-                  orden.zone_name
+                  orden.zone.name
                 }}</span>
               </p>
               </div>

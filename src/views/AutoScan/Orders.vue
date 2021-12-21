@@ -188,9 +188,6 @@ export default {
   },
   mounted() {
     if(this.loadStore){
-      this.orders = this.loadStore.orders
-    }
-    if(this.loadStore){
       this.load = this.loadStore
     }else{
       this.allLoads.forEach(el => {
@@ -199,6 +196,10 @@ export default {
             console.log(this.load)
           }
         });
+    }
+    if(this.loadStore){
+      this.orders = this.loadStore.orders
+      console.log(this.orders)
     }
     console.log(this.loadStore)
     if (this.orderScan) {
