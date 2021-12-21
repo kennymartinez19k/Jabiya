@@ -1,26 +1,34 @@
 <template>
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
+      <p
+        style=" font-size: 13px; !important; font-weight: 500"
+      >
+        {{load?.loadNumber}}
+      </p>
       <div
         class="
           uk-flex
           uk-flex
-          uk-flex-between
+          uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center"
+        style="align-items: center;"
       >
-        <div class="font-weight-medium uk-text-left" style="width: 70%">
-          <p style="margin-right: 10px !important; ">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.shipper }}</span>
+        <div class="uk-flex uk-flex-wrap">
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.driver }}</span>      
           </p>
+          <div></div>
           <p>
-            <strong style="">Zona de Destino:</strong
-            ><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
+          
+          
         </div>
+        
       </div>
     </div>
     <div class="result-info">
@@ -64,9 +72,6 @@
       style="z-index: 0; padding: 15px 0px  !important;"
     >
       <strong class="exception uk-padding-small">
-        Si <pre>{{resultScan?.content}} fff</pre>
-        Si <pre>{{mira}} fff</pre>
-
         Hubo Alguna Excepcion? No
         <div class="onoffswitch">
           <input

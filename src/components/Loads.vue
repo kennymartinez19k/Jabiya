@@ -10,8 +10,8 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   <div v-for="date in dateLoad" :id="date" :key="date">
-    <load-date :userOrden="loads" :date="date"/>
-  </div>    
+    <load-date :userOrden="allLoads" :date="date"/>
+  </div> 
   </div>
 </template>
 
@@ -38,15 +38,7 @@ export default {
   mounted(){
     window.location.href = '#Hoy'
     moment.locale('es')
-    this.loads = this.allLoads.filter(x =>  x.driver == "Chofer 2" )
-    this.loads[0].status = "Driver Assigned"
-    this.loads[1].status = "Driver Arrival"
-
-  },
-  watch:{
-    allLoads: function(newVal){
-      this.loads = newVal.filter(x => x.status = !"Defining Load")
-    }
+    this.allLoads[0].status = "Driver Assigned" 
   },
   data() {
     return {

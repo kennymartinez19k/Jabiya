@@ -72,7 +72,7 @@
           </p>
           <p class="uk-width-1-1">
             <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>{{
-              order.zone_name
+              order.zone.name
             }}</span>
           </p>
         </div>
