@@ -13,7 +13,6 @@ export default {
       noHead: [
         'sign-in',
         'sign-up',
-        'settings',
         'direct-access',
         'recover-password'
       ],
@@ -22,11 +21,6 @@ export default {
   },
   components:{
     AppHeader
-  },
-  watch:{
-    $route: function(newVal){
-      console.log(newVal.name)
-    },
   },
   computed:{
     ...mapGetters([
@@ -47,7 +41,6 @@ export default {
 methods:{
   setName(val){
     this.nameOrder = val
-    console.log(this.nameOrder)
   },
 }
 }

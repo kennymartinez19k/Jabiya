@@ -4,7 +4,6 @@
       <p
         style=" font-size: 13px; !important; font-weight: 500"
       >
-      Numero de Carga
         {{load?.loadNumber}}
       </p>
       <div
@@ -20,7 +19,7 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.driver }}</span>      
           </p>
           <div></div>
           <p>
@@ -189,15 +188,18 @@ export default {
   },
   mounted() {
     if(this.loadStore){
-      this.load = this.loadStore
+      this.orders = this.loadStore.orders
     }
-    this.allLoads.forEach(el => {
-        if(el.status == 'Asignada'){
-          this.load = el
-          console.log(this.load)
-        }
-      });
-    this.orders = this.ordersProof
+    if(this.loadStore){
+      this.load = this.loadStore
+    }else{
+      this.allLoads.forEach(el => {
+          if(el.status == 'Asignada'){
+            this.load = el
+            console.log(this.load)
+          }
+        });
+    }
     console.log(this.loadStore)
     if (this.orderScan) {
       this.completedOrden();

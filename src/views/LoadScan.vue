@@ -3,7 +3,7 @@
       <p
         style="font-size: 13px; font-weight: 500"
       >
-        ILS 20/12/21 Gate {{load?.loadNumber}}
+         {{load?.loadNumber}}
       </p>
       <div
         class="
@@ -137,24 +137,19 @@ export default {
     }
   },
   mounted() {
-    console.log(this.orderScan)
     if(this.orderScan){
       BarcodeScanner.prepare();
-      console.log(this.loadStore)
       this.orders = this.orderScan;
       this.load = this.loadStore
     }else{
-      console.log(this.allOrders)
-      console.log(this.allLoads)
+    
       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
       this.allLoads.forEach(el => {
         if(el.status == 'Asignada'){
           this.load = el
-          console.log(this.load)
         }
       });
     }
-    console.log(this.orders)
     this.scanOrder();
   },
 
@@ -164,7 +159,6 @@ export default {
         const geo = await Geolocation.getCurrentPosition();
         this.location1.latitude = geo.coords.latitude;
         this.location1.longitude = geo.coords.longitude;
-        console.log("Current position:", this.location1);
       } catch (e) {
         if (e.code === 1 || e.message === "location disabled") {
           alert("Debe activar la localización.");

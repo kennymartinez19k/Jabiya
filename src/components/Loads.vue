@@ -42,13 +42,10 @@ export default {
     this.loads[0].status = "Driver Assigned"
     this.loads[1].status = "Driver Arrival"
 
-    console.log(this.loads)
-
   },
   watch:{
     allLoads: function(newVal){
       this.loads = newVal.filter(x => x.status = !"Defining Load")
-      console.log(this.loads)
     }
   },
   data() {

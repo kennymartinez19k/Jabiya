@@ -192,7 +192,7 @@ export default {
     },
     async scanOrder() {
              
-               if (await this.checkPermission()) {
+          if (await this.checkPermission()) {
           BarcodeScanner.hideBackground();
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
           if (result.hasContent) {
