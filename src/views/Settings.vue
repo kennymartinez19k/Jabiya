@@ -3,45 +3,16 @@
     <div>
       <label class="item" for="check">
         <h6>Escaneo Automatico</h6>
-        <!-- <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox"> -->
-        <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-          <label
-            >Si<input
-              class="uk-radio"
-              type="radio"
-              :value="true"
-              name="radio2"
-              v-model="settings.AutoScan"
-          /></label>
-          <label
-            >No<input
-              class="uk-radio"
-              type="radio"
-              :value="false"
-              name="radio2"
-              v-model="settings.AutoScan"
-          /></label>
-        </div>
+        <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox">
+        
       </label>
-      <label class="item" for="check">
-          <h6>Seleccione un Idioma:</h6>
-            <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-          <label
-            >Español<input
-              class="uk-radio"
-              type="radio"
-              :value="true"
-              name="language"
-              v-model="settings.language"
-          /></label>
-          <label
-            >English<input
-              class="uk-radio"
-              type="radio"
-              :value="false"
-              name="language"
-              v-model="settings.language"
-          /></label>
+      <label class="item uk-margin" for="check">
+            <h6>Seleccione un Idioma:</h6>
+        <div class="uk-form-controls" style="width: 40%">
+            <select class="uk-select" id="form-horizontal-select">
+                <option>Español</option>
+                <option>English</option>
+            </select>
         </div>
       </label>
     </div>
@@ -74,11 +45,12 @@ export default {
 </script>
 
 <style scoped>
-.item {
+.item{
   width: 100%;
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #ccc;
+  padding: 10px 0px;
   align-items: baseline;
 }
 .header {

@@ -51,7 +51,7 @@
                 style="font-size: 16px !important; font-weight: 600"
                 class="uk-width-1-1"
               >
-                <span>{{ order?.shipper }}</span>
+                <span>{{ order?.client_name }}</span>
               </p>
             </div>
             <span>
@@ -59,11 +59,11 @@
             </span>
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order?.address }}</span>
+            <strong>Dirección: </strong><span>{{ order?.zone.name }}</span>
           </p>
           <p class="uk-width-1-2">
             <strong> No. de Orden: </strong
-            ><span>{{ order?.numberOfOrders }}</span>
+            ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
             <strong>No. de Cajas: </strong>{{ order?.numberOfBox }}<span></span>
@@ -135,18 +135,20 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allOrders",
-      "settings"
+      "settings",
+      'allLoads'
     ]),
   },
   mounted() {
-    
-    if(this.allOrders){
-      this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
+    console.log()
+    if(this.loadStore){
+       this.load = this.loadStore;
+       this.orders = this.orderScan
     }else{
-      this.orders = this.orderScan;
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
+      this.orders = this.load.orders
+      console.log(this.orders)
     }
-    this.load = this.loadStore;
     if (this.orderScan?.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
