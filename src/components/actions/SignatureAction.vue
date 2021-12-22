@@ -9,11 +9,11 @@
     />
 
     <div class="uk-flex uk-flex-between uk-margin-small-top">
-      <button class="uk-button uk-button-primary btn" @click="save">
-        Guardar
-      </button>
       <button class="uk-button uk-button-secondary btn" @click="undo">
         Deshacer
+      </button>
+      <button class="uk-button uk-button-primary btn" @click="save">
+        Guardar
       </button>
     </div>
   </div>
