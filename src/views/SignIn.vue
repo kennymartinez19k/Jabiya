@@ -70,10 +70,14 @@
           >¿Olvidaste tu contraseña?</router-link
         >
       </div>
+       <div v-if="showError" class="uk-alert-warning" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>Revisar los datos</p>
+        </div>
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="changeRoute()"
+        @click="changeRoute('0')"
         style="margin-top: 15px"
       >
         Iniciar sesión
@@ -93,6 +97,7 @@ export default {
       loaded: false,
       type: "password",
       iconType: "eye",
+      showError: null,
       login: {
         email: "admin@flai.com.do",
         password: "1",
@@ -104,29 +109,44 @@ export default {
       },
     };
   },
+  watch: {
+      'login.email': function (newVal) {
+          if (newVal) {
+              this.showError = false
+              
+          }
+      },
+        'login.password': function (newVal) {
+          if (newVal) {
+              this.showError = false
+              
+          }
+      }
+  },
   methods: {
     async changeRoute(path) {
       try {
-        if (path == "direct-access") {
+        if (path == "0") {
           if (this.login.email !== "" && this.login.password !== "") {
             this.loaded = true;
             this.AutoLogin.email = this.login.email;
             this.AutoLogin.password = this.login.password;
-
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
+
             this.loaded = false;
 
             if (resultLogin)
-              this.$router.push({ name: "settings" }).catch(() => {});
+              this.$router.push({ name: "direct-access" }).catch(() => {});
           }
         } else {
           this.$router.push({ name: "direct-access" }).catch(() => {});
         }
       } catch (error) {
         this.loaded = false;
-        alert(error);
+       this.showError = true
+        // alert(error);
       }
     },
     showPassword() {

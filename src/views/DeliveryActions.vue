@@ -2,7 +2,7 @@
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
       <p
-        style=" font-size: 13px; !important; font-weight: 500"
+        style=" font-size: 13px !important; font-weight: 500"
       >
         {{load?.loadNumber}}
       </p>

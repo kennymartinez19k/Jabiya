@@ -30,7 +30,6 @@
 </div>
       <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
           <h5 class="title uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
-          <pre> {{check}} check</pre>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Cargas</strong></p>
