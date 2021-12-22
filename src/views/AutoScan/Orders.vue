@@ -19,7 +19,7 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.driver }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
           </p>
           <div></div>
           <p>
@@ -188,20 +188,12 @@ export default {
   },
   mounted() {
     if(this.loadStore){
-      this.load = this.loadStore
+      this.load = this.loadStore;
     }else{
-      this.allLoads.forEach(el => {
-          if(el.status == 'Asignada'){
-            this.load = el
-            console.log(this.load)
-          }
-        });
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
     }
-    if(this.loadStore){
-      this.orders = this.loadStore.orders
-      console.log(this.orders)
-    }
-    console.log(this.loadStore)
+    this.orders = this.load.orders
+    console.log(this.orders)
     if (this.orderScan) {
       this.completedOrden();
     }

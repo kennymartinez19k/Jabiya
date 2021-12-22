@@ -87,8 +87,7 @@
       </div>
         <ul class="box-orden" v-if="statusOrders !== 'approve'">
           <li v-for="orden in orders" :key="orden" 
-              :class="{completedOrden: orden.completed}" style="">&nbsp;</li>
-           
+              :class="{completedOrden: orden.completed}" style="">&nbsp;</li>       
         </ul>
       </div>
     </div>
@@ -141,8 +140,7 @@ export default {
       BarcodeScanner.prepare();
       this.orders = this.orderScan;
       this.load = this.loadStore
-    }else{
-    
+    }else{ 
       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
       this.allLoads.forEach(el => {
         if(el.status == 'Asignada'){
@@ -202,7 +200,7 @@ export default {
         return true
       }
       this.status = false;
-      return false
+      return true
     },
     changeRoute(val){
       this.$router.push({ name: val }).catch(() => {});

@@ -169,7 +169,6 @@ export default {
         this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
-      console.log(orderScan)
       this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },

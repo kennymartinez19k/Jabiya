@@ -2,7 +2,7 @@
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
       <p
-        style=" font-size: 13px !important; font-weight: 500"
+        style=" font-size: 13px; !important; font-weight: 500"
       >
         {{load?.loadNumber}}
       </p>
@@ -19,7 +19,7 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.driver }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
           </p>
           <div></div>
           <p>
@@ -33,7 +33,7 @@
     </div>
     <div class="result-info">
       <ul
-       v-if="!resultScan"
+       v-if="resultScan"
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
@@ -185,21 +185,18 @@ export default {
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
           if (result.hasContent) {
               this.step++;
-
             BarcodeScanner.hideBackground();
+            var OrderElement = this.orders.findIndex(x => x.order_num == result.content)
+            alert(OrderElement)
+            if (OrderElement > -1) {
               this.resultScan = result
-            var OrderElement = null
-            this.ordersScan.forEach((x) =>  { if(x.numberOfOrders === result.content) { 
-            OrderElement = true} })
-            if (OrderElement) {
-            alert(OrderElement, 'OrderElement')
-
-            } else if (!OrderElement){
-              this.mira = 'nooooooooooooo'
+              this.verifiedElement(OrderElement)
+            } else if (OrderElement){
+              this.statusOrders = 'reject';
               Vibration.vibrate(1000);
-
               setTimeout(() => {
-                  this.scanOrder()
+                this.statusOrders = 'start'
+                this.scanOrder()
               }, 1000)
             }
           }
