@@ -103,7 +103,7 @@
     </div>
     <div></div>
     <div class="button-opt">
-      <button @click="uploadTruck()" class="uk-button uk-button-transparent">Cargar Vehiculo 
+      <button @click="uploadTruck()" class="uk-button uk-button-transparent">Montar Viaje
           <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
       <button @click="autoScan(orders)" class="uk-button uk-button-transparent">Iniciar Ruta
@@ -116,7 +116,7 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  alias: `Cargar Vehiculo`,
+  alias: `Montar Viaje`,
   name: `cargarrr`,
   data() {
     return {

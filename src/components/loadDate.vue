@@ -19,6 +19,7 @@
           delivered: load.status == 'Delivered',
           onWay: load.status == 'Driver Arrival',
           dispatch: load.status == 'Dispatched',
+          expectingApprove: load.status == 'Expecting Approval'
         }"
       >
         <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
@@ -33,7 +34,7 @@
               <span v-if="load.status == 'Delivered'">Entregada</span>
               <span v-if="load.status == 'Driver Arrival'">En Ruta</span>
               <span v-if="load.status == 'Dispatched'">Despacho Aprobado</span>
-              <span v-if="load.status == 'Expecting Approval'">Esperando que Apruebes</span>
+              <span v-if="load.status == 'Expecting Approval'">Esperando tu Aprobacion</span>
 
             </p>
             <p>
@@ -53,7 +54,7 @@
               <div style="margin-top: 1px">
                 <img
                   v-if="load.status ==  'Driver Assigned'"
-                  src="../assets/asigned.png"
+                  src="../assets/cargo.png"
                   class="icon-load"
                   alt=""
                 />
@@ -75,6 +76,12 @@
                   class="icon-load"
                   alt=""
                 />
+                <img
+                  v-if="load.status == 'Expecting Approval'"
+                  src="../assets/approve-container.png"
+                  class="icon-load"
+                  alt=""
+                />
               </div>
             </div>
             <button class="uk-button " @click="setLoad(load)">
@@ -82,7 +89,7 @@
               <span v-if="load.status == 'Delivered'">Ver Ordenes</span>
               <span v-if="load.status == 'Driver Arrival'">Continuar Entrega(s)</span>
               <span v-if="load.status == 'Dispatched'">Comenzar Entrega(s)</span>
-
+              <span v-if="load.status == 'Expecting Approval'">Aceptar / Rechazar Viaje</span>
             </button>
           </div>
         </div>
@@ -151,7 +158,7 @@ p {
   box-shadow: 0px 0px;
 }
 .uk-button {
-  padding: 0px 5px !important;
+  padding: 10px 5px !important;
   font-size: 12px;
 }
 
@@ -183,6 +190,7 @@ p {
 }
 button {
   font-size: 9px !important;
+  line-height: 15px;
 }
 .asigned {
   color: rgb(73 73 73);
@@ -220,7 +228,7 @@ body {
 .delivered {
   color: rgb(130, 127, 127) !important;
 }
-.delivered button {
+.delivered button, .expectingApprove button {
   background: #ffffff;
   color: rgb(73, 73, 73);
   border: 1px solid rgb(136, 136, 136);

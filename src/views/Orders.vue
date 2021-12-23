@@ -131,7 +131,7 @@ import { mapGetters } from "vuex";
 import SlideUnlock from "vue-slide-unlock";
 
 export default {
-  alias: `Cargar Vehiculo`,
+  alias: `Montar Viaje`,
   name: `cargarrr`,
   data() {
     return {
