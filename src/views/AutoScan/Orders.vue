@@ -36,13 +36,13 @@
         v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed }"
+        :class="{ ordenCompleted: order?.completed }"
       >
         <div class="uk-text-left info-user uk-flex uk-flex-wrap">
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-left">
               <span
-                v-if="order.completed"
+                v-if="order?.completed"
                 style="
                   display: flex;
                   position: relative;
@@ -81,32 +81,22 @@
           style="min-width: 70px; margin-left: 7px; align-items: flex-end"
         >
           <div
-            v-if="!order.completed"
             class="uk-flex uk-flex-column"
-            @click="autoScan(order)"
+            @click="setMap()"
             style="align-items: center"
           >
             <img src="../../assets/road.png" class="img-scan" alt="" />
             <span>Iniciar Ruta</span>
-          </div>
-          <div
-            v-if="order.completed"
-            class="uk-flex uk-flex-column"
-            @click="downloadOrders(order)"
-            style="align-items: center"
-          >
-            <img src="../../assets/road.png" class="img-scan" alt="" />
-            <span>Descargar Orden</span>
           </div>
         </div>
       </div>
     </div>
     <div></div>
     <div class="button-opt">
-      <button @click="uploadTruck()" class="uk-button uk-button-transparent">Cargar Vehiculo 
+      <button @click="uploadOrDownload()" class="uk-button uk-button-transparent">{{messageStatusLoad}}
           <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
-      <button @click="autoScan(orders)" class="uk-button uk-button-transparent">Iniciar Ruta
+      <button @click="setMap()" class="uk-button uk-button-transparent">Iniciar Ruta
           <img src="../../assets/road.png" style="width: 25px; margin-left: 5px ">
       </button>
     </div>
@@ -116,7 +106,7 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  alias: `Cargar Vehiculo`,
+  alias: `Montar Viaje`,
   name: `cargarrr`,
   data() {
     return {
@@ -201,6 +191,11 @@ export default {
       }
       return null
     },
+    messageStatusLoad : function () {
+      var status = this.orders?.some(x => x.completed)
+      if (status) return 'Desmontar Viaje'
+      return 'Montar Viaje'
+      }
   },
   mounted() {
     if(this.loadStore){
@@ -218,40 +213,23 @@ export default {
   methods: {
     orderObj() {
       this.orders.sort((a) => {
-        if (a.completed == true) {
+        if (a?.completed == true) {
           return 1;
         } else {
           return -1;
         }
       });
     },
-    downloadOrders(val){
-      if(val.completed){
-        val.completed = false
-      }
+    uploadOrDownload(){
+      this.orders.map(x => x.completed = !x.completed)
     },
-    uploadTruck(){
-        this.orders.map(x => x.completed = true)
-    },
-    autoScan(val) {
-      let orderScan = []
-      if (val.length) {
-        orderScan = val
-        this.$emit("deliveryActions", 'Ordenes en Ruta');
-      } else {
-        this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
-        orderScan.push(val)
-      }
-      
-      this.orders.map(x => x.completed = true)
-      console.log(this.orders) 
-      this.$store.commit("scanOrder", orderScan);
-      this.$router.push({ name: "maps" }).catch(() => {});
+    setMap(){
+      window.open("https://www.google.com/maps/dir/'18.475615,-69.957918'/'18.478645,-69.966486'")
     },
     completedOrden() {
       this.orders.forEach((x) => {
         if (x.numberOfOrders == this.orderScan.numberOfOrders) {
-          x.completed = this.orderScan.completed;
+          x.completed = this.orderScan?.completed;
         } else x.completed = false;
       });
     },

@@ -143,12 +143,10 @@ export default {
     console.log()
     if(this.loadStore){
        this.load = this.loadStore;
-       this.orders = this.orderScan
     }else{
       this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
-      this.orders = this.load.orders
-      console.log(this.orders)
     }
+    this.orders = this.load.orders
     if (this.orderScan?.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
