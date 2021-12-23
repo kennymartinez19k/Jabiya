@@ -9,8 +9,8 @@
             <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
         <div class="info-user">
             <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
-            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">Chofer 11</h4>
-            <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
+            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">{{userData?.firstName}} {{userData?.lastName}} </h4>
+            <h6 class="uk-tect-light uk-margin-remove">{{userData?.email}}</h6>
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Cargas</li>
@@ -25,12 +25,15 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import Uikit from 'uikit'
 export default {
     props:{
         nameComponent: String
     },
 computed:{
+    ...mapGetters(["userData"]),
+    
     titlePage(){
             return this.nameComponent
     }

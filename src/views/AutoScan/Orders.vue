@@ -2,7 +2,7 @@
   <div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
       <p
-        style=" font-size: 13px; !important; font-weight: 500"
+        style=" font-size: 13px !important; font-weight: 500"
       >
         {{load?.loadNumber}}
       </p>
@@ -57,7 +57,7 @@
                 />
               </span>
               <p
-                style="!important; font-weight: 500"
+                style=" font-weight: 500 !important;"
                 class="uk-width-1-1"
               >
                 <span>{{ order.client_name }}</span>
@@ -68,7 +68,7 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium">Cajas: </span>0 <span></span>
+            <span class="font-weight-medium">Cajas: </span>{{productsBox}}<span></span>
           </p>
           <p class="uk-width-1-1">
             <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>{{
@@ -193,7 +193,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan", "loads", "allLoads"]),
+    ...mapGetters(["loadStore", "orderScan", "loads", "allLoads", "products"]),
+
+     productsBox: function () {
+      if (this.products?.length !== 0) {
+        return  this.products[0]?.quantity
+      }
+      return null
+    },
   },
   mounted() {
     if(this.loadStore){
