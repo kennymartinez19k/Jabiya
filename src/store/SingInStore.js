@@ -5,7 +5,7 @@ const SingInStore = {
     mutations: {
         setUserData (state, user) {
             state.userData = user
-            console.log(state.userData, 'ssssssss')
+            // console.log(state.userData, 'ssssssss')
         },
     
     },
