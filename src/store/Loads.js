@@ -2,7 +2,8 @@ const Loads = {
     state: {
       load: null,
       allLoads: [],
-      loads: []
+      loads: [],
+      products:[]
     },
     mutations: {
         setloadStore (state, load) {
@@ -13,12 +14,17 @@ const Loads = {
         },
         chargeLoads(state, val){
           state.loads = val
-        }
+        },
+        setloadProductStore (state, products) {
+          state.products = products
+          console.log(state.products, 'state.products')
+      },
     },
     getters: {
       loadStore: state => state.load,
       allLoads: state => state.allLoads,
-      loads: state => state.loads
+      loads: state => state.loads,
+      products: state => state.products,
     }
   
   }
