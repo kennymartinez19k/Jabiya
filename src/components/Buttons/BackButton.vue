@@ -1,7 +1,6 @@
 <template>
     <span @click="goBack()" uk-icon="icon: arrow-left"></span><strong></strong>
-<!-- <span uk-icon="icon:  arrow-left"></span> -->
-
+q   
 </template>
 
 <script>

@@ -1,5 +1,16 @@
 <template>
   <div class="container">
+         <div class="">
+    <ion-loading
+    :is-open="isOpenRef"
+    cssClass="my-custom-class"
+    message="Por favor Espere..."
+    :duration="timeout"
+    @didDismiss="setOpen(false)"
+  >
+  </ion-loading>
+  <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
+  </div>
       <a  class="uk-navbar-toggle uk-flex uk-flex-right" style="min-height: 55px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
       <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar uk-padding-remove">
@@ -62,14 +73,23 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Loading from "vue-loading-overlay";
+import { IonLoading } from "@ionic/vue";
+import "vue-loading-overlay/dist/vue-loading.css";
 import Uikit from 'uikit'
 
 export default {
+  components: {
+    IonLoading,
+    Loading,
+  },
     data() {
     return {
       load: null,
-     
+      loaded: false,
       Loads: null,
+      check: null,
+
       userLoads: [
         {
           date: new Date(),
@@ -138,12 +158,10 @@ export default {
 
   methods: {
     async call(){
-      var data = JSON.stringify({
-        "email": "admin@flai.com.do",
-        "password": "1"
-      });
-      console.log(data)
+   
+       this.loaded = true;
        this.Loads = await this.$services.loadsServices.getLoads();
+       this.loaded = false;
        console.log(this.Loads)
     },
     openMenu(){
