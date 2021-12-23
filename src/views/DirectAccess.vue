@@ -35,11 +35,11 @@
                 <p class="name-action"><strong>Ver Tus Cargas</strong></p>
           </li>
           <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
-               <img src="../assets/container.png" alt="">
+               <img src="../assets/cargo.png" alt="">
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
           <li v-else class="action uk-width-1-2" @click="changeRoute('orders')">
-               <img src="../assets/container.png" alt="">
+               <img src="../assets/cargo.png" alt="">
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
           <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
@@ -47,8 +47,8 @@
                 <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
           </li>
           <li v-else class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
-            <img src="../assets/boxes.png" alt="">
-            <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
+            <img src="../assets/deliver-container.png" alt="">
+            <p class="name-action"><strong>Procesar Entrega del Contenedor</strong> </p>
           </li>
           <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
@@ -59,11 +59,12 @@
                 <p class="name-action"><strong>Reconciliación con Almacén</strong></p>
           </li>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
-              <img src="../assets/Reject-box.png" alt="">
+              <img src="../assets/deliver-container.png" alt="">
+              <font-awesome-icon icon="times-circle"/>
                 <p class="name-action"><strong>Procesar Rechazo del Contenedor</strong></p>
           </li>
            <li class="action uk-width-1-2" @click="changeRoute('home')">
-              <img src="../assets/refund.png" alt="">
+              <img src="../assets/return-container.png" alt="">
                 <p class="name-action"><strong>Devolver Contenedor</strong></p>
           </li>
       </ul>
@@ -145,6 +146,12 @@ export default {
     ])
   },
   async beforeMount(){
+    this.$store.commit("setloadStore", null);
+    this.$store.commit("scanOrder", null);
+    this.$emit(
+        "deliveryActions",
+        ``
+      );
     await this.call()
   
   },

@@ -378,7 +378,7 @@ export default {
   background-image: url('../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-position: 80%
+    background-position: 81%
 }
 .allScreen{
   height: 80vh;

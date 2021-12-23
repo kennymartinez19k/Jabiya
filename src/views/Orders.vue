@@ -82,7 +82,17 @@
           class="uk-flex uk-flex-column"
           style="min-width: 83px; margin-left: 7px; align-items: flex-end"
         >
+        <div
+            v-if="order.completed"
+            class="uk-flex uk-flex-column"
+            @click="downloadOrders(order)"
+            style="align-items: center"
+          >
+            <img src="../assets/road.png" class="img-scan" alt="" />
+            <span>Descargar Orden</span>
+          </div>
           <div
+            v-else
             class="uk-flex uk-flex-column"
             @click="scan(order)"
             style="align-items: center"
@@ -91,6 +101,7 @@
             <span v-if="order.completed">Descargar Orden</span>
             <span v-else>Escanear Orden</span>
           </div>
+          
         </div>
       </div>
     </div>
@@ -159,6 +170,11 @@ export default {
           return -1;
         }
       });
+    },
+      downloadOrders(val){
+      if(val.completed){
+        val.completed = false
+      }
     },
     scan(val) {
       let orderScan = []
@@ -297,6 +313,6 @@ p {
   background-image: url('../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-position: 80%
+    background-position: 81%
 }
 </style>

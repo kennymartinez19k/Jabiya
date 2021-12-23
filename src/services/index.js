@@ -7,4 +7,5 @@ export default {
     ejemploService: new EjemploService(axiosInstance),
     loadsServices: new LoadsServices(axiosInstance),
     singInServices: new SingInServices(axiosInstance),
+    
 }

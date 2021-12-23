@@ -81,13 +81,22 @@
           style="min-width: 70px; margin-left: 7px; align-items: flex-end"
         >
           <div
+            v-if="!order.completed"
             class="uk-flex uk-flex-column"
             @click="autoScan(order)"
             style="align-items: center"
           >
             <img src="../../assets/road.png" class="img-scan" alt="" />
-            <span v-if="order.completed">Descargar Orden</span>
-            <span v-else>Iniciar Ruta</span>
+            <span>Iniciar Ruta</span>
+          </div>
+          <div
+            v-if="order.completed"
+            class="uk-flex uk-flex-column"
+            @click="downloadOrders(order)"
+            style="align-items: center"
+          >
+            <img src="../../assets/road.png" class="img-scan" alt="" />
+            <span>Descargar Orden</span>
           </div>
         </div>
       </div>
@@ -209,6 +218,11 @@ export default {
         }
       });
     },
+    downloadOrders(val){
+      if(val.completed){
+        val.completed = false
+      }
+    },
     uploadTruck(){
         this.orders.map(x => x.completed = true)
     },
@@ -221,6 +235,7 @@ export default {
         this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
+      
       this.orders.map(x => x.completed = true)
       console.log(this.orders) 
       this.$store.commit("scanOrder", orderScan);

@@ -1,5 +1,6 @@
 <template>
-  <div class="stiky">
+  <div class="container">
+    <div class="stiky">
       <p
         style="font-size: 13px; font-weight: 500"
       >
@@ -32,18 +33,29 @@
         
       </div>
     </div>
-  <div class="container">
-    <div
+    <div class="allScreen">
+      
+      
+      <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve' }"
       style="z-index: 1; padding: 15px 0px !important"
     >
       <div v-if="statusOrders == 'start'">
         <h5 style="margin: 5px 0px">
-          Escanee su Orden
+          <span v-if="orders.length <= 1">
+            Escanee su Orden
+          </span>
+          <span v-else>
+            Escanee su Orden Para Cargar
+          </span>
           <img src="../assets/parcel.png" style="width: 10%">
         </h5>        
-        <p style="font-size: 14px">Verifique su orden para cargarla al camion</p>
+        <p v-if="orders.length <= 1" style="font-size: 14px">Verifique orden para cargar al camion</p>
+        <div v-else style="font-size: 13px">
+        <span class="font-weight-medium">Ordenes: </span>
+        <span v-for="(orden, i) of orders" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
+        </div>
         
       </div>
       <div v-if="statusOrders == 'approve'" style="width: 100%; font-size: 30px">
@@ -55,19 +67,18 @@
           </h6>
       </div>
     </div>
-    <div>
-      <div
-        class="allScreen"
+     <div
+        class="result-scan"
         :class="{checkScreen: checkOrder, banScreen: statusOrders == 'reject', finishCheck: statusOrders == 'approve'}"
       >
-      <div></div>
+      <div v-if="statusOrders != 'approve' || checkOrders"></div>
       <div v-if="checkOrder">
         <div  :class="{animationCheck: checkOrder}" class="check-all-Screen"></div>
       </div>
       <div v-if="statusOrders == 'reject'">
           <font-awesome-icon icon="ban" class="ban" />
       </div>
-      <div v-if="statusOrders == 'approve'" id="list-completed" style="width: 95%; padding: 15px 0px">
+      <div v-if="statusOrders == 'approve'" id="list-completed" style="width: 95%; padding: 15px 0px; margin: 0px 10px">
         <ul class="uk-list uk-list-divider" style="list-style: none">
           <li v-for="orden in orders" :key="orden" class="article uk-card uk-card-default uk-card-body">
               <div>
@@ -85,9 +96,10 @@
           </li>
         </ul>
       </div>
-        <ul class="box-orden" v-if="statusOrders !== 'approve'">
+        <ul class="box-orden">
           <li v-for="orden in orders" :key="orden" 
-              :class="{completedOrden: orden.completed}" style="">&nbsp;</li>       
+              :class="{completedOrden: orden.completed}" style="">&nbsp;</li> 
+                    
         </ul>
       </div>
     </div>
@@ -239,15 +251,12 @@ p{
 }
 .container {
   display: flex;
-  flex-direction: column-reverse;
-  justify-content: space-between;
+  flex-direction: column;
 }
 .cont {
   box-shadow: 0px 0px 7px !important;
-  height: 19vh;
-  position: absolute;
-  bottom: 0px;
   width: 100%;
+  height: 17vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -281,9 +290,8 @@ p{
 
 .allScreen {
   display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  height: 63vh;
+  flex-direction: column-reverse;
+  height: 85vh;
   overflow: scroll;
   align-items: center;
 }
@@ -300,8 +308,9 @@ p{
   list-style: none;
   display: flex;
   padding: 0px;
-  width: 90%;
+  width: 100%;
   flex-wrap: wrap;
+  padding: 0px 20px;
   margin-bottom: 10px !important
 }
 .box-orden li{
@@ -415,5 +424,12 @@ border: 1px solid #efefef;
   padding-left: 20px;
   align-items: center;
 }
-
+.result-scan{
+  width: 100%;
+  height: 68vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 </style>

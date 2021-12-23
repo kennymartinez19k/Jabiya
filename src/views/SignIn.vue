@@ -77,7 +77,7 @@
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="changeRoute('0')"
+        @click="changeRoute('direct-access')"
         style="margin-top: 15px"
       >
         Iniciar sesión
@@ -126,7 +126,7 @@ export default {
   methods: {
     async changeRoute(path) {
       try {
-        if (path == "0") {
+        if (path == "direct-access") {
           if (this.login.email !== "" && this.login.password !== "") {
             this.loaded = true;
             this.AutoLogin.email = this.login.email;
@@ -134,14 +134,14 @@ export default {
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
-
+            console.log(resultLogin)
             this.loaded = false;
 
             if (resultLogin)
-              this.$router.push({ name: "direct-access" }).catch(() => {});
+              this.$router.push({ name: path }).catch(() => {});
           }
         } else {
-          this.$router.push({ name: "direct-access" }).catch(() => {});
+          this.$router.push({ name: path }).catch(() => {});
         }
       } catch (error) {
         this.loaded = false;
