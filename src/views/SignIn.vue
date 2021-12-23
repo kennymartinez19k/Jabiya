@@ -134,9 +134,10 @@ export default {
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
+            alert('hgh')
             console.log(resultLogin)
             this.loaded = false;
-
+            alert('hftdyty')
             if (resultLogin)
               this.$router.push({ name: path }).catch(() => {});
           }
