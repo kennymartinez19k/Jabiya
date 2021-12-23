@@ -29,9 +29,12 @@
             <p>
               <strong> Estado: </strong>
               <span v-if="load.status == 'Driver Assigned'">Asignada</span>
+              <span v-if="load.status == 'Approved'">Aprobada</span>
               <span v-if="load.status == 'Delivered'">Entregada</span>
               <span v-if="load.status == 'Driver Arrival'">En Ruta</span>
               <span v-if="load.status == 'Dispatched'">Despacho Aprobado</span>
+              <span v-if="load.status == 'Expecting Approval'">Esperando que Apruebes</span>
+
             </p>
             <p>
               <strong>Cliente: </strong> <span>{{ load.shipper }}</span>
@@ -75,7 +78,7 @@
               </div>
             </div>
             <button class="uk-button " @click="setLoad(load)">
-              <span v-if="load.status == 'Driver Assigned'">Cargar Vehiculo</span>
+              <span v-if="load.status == 'Driver Assigned'">Montar Viaje</span>
               <span v-if="load.status == 'Delivered'">Ver Ordenes</span>
               <span v-if="load.status == 'Driver Arrival'">Continuar Entrega(s)</span>
               <span v-if="load.status == 'Dispatched'">Comenzar Entrega(s)</span>

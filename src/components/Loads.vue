@@ -55,15 +55,15 @@ export default {
       'allLoads'
     ]),
     dateLoad: function () {
-      var yesterday = new Date().setDate(new Date().getDate() -1 )
-      yesterday = moment(new Date(yesterday)).format('ll')
+      // var yesterday = new Date().setDate(new Date().getDate() -1 )
+      // yesterday = moment(new Date(yesterday)).format('ll')
 
       var today = 'Hoy'
 
-      var tomorrow = new Date().setDate(new Date().getDate() +1 )
-      tomorrow = moment(new Date(tomorrow)).format('ll') 
+      // var tomorrow = new Date().setDate(new Date().getDate() +1 )
+      // tomorrow = moment(new Date(tomorrow)).format('ll') 
 
-      return [yesterday, today, tomorrow]
+      return [today]
 
     },
   },

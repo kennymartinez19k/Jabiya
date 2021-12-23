@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+  <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
       <p
         style=" font-size: 13px; !important; font-weight: 500"
@@ -31,9 +31,16 @@
         
       </div>
     </div>
-    <div class="result-info">
+    <div class="result-info"
+    :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve' }"
+    >
+    <div></div>
+      <div v-if="statusOrders == 'reject'">
+          <font-awesome-icon icon="ban" class="ban" />
+          <h6>ORDEN NO RECONOCIDA</h6>
+      </div>
       <ul
-       v-if="resultScan"
+        v-if="resultScan"
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
@@ -139,7 +146,7 @@ export default {
     }else{
       this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
       this.orders = this.load.orders
-      console.log(this.orders)
+      this.$store.commit("scanOrder", this.orders);
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
@@ -184,11 +191,10 @@ export default {
           BarcodeScanner.hideBackground();
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
           if (result.hasContent) {
-              this.step++;
             BarcodeScanner.hideBackground();
             var OrderElement = this.orders.findIndex(x => x.order_num == result.content)
-            alert(OrderElement)
             if (OrderElement > -1) {
+              this.step++;
               this.resultScan = result
               this.verifiedElement(OrderElement)
             } else if (OrderElement){
@@ -354,9 +360,9 @@ export default {
   font-size: 14px;
   font-weight: 600;
 }
-.uk-container {
-  margin: 0px -16px;
-
+.container {
+  display: flex;
+  flex-direction: column;
 }
 .backg {
     background-color: rgb(255, 255, 255);
@@ -366,6 +372,11 @@ export default {
   overflow: scroll;
   padding: 0px 10px;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.statusError{
+    justify-content: center;
 }
 
 .stiky {
@@ -408,11 +419,21 @@ export default {
 li::before {
   content: none;
 }
+.statusCheck{
+  background: rgb(255, 255, 255) !important;
+  box-shadow: 0px 0px 7px green !important;
+  color: #fff !important;
+}
 .img-result {
   width: 21%;
   height: 60px;
   margin-right: 5px;
   border: 1px solid #000;
+}
+.ban {
+  color: #be1515;
+  font-size: 50px;
+
 }
 
 </style>

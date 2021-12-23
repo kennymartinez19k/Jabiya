@@ -73,7 +73,7 @@
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="changeRoute()"
+        @click="changeRoute('direct-access')"
         style="margin-top: 15px"
       >
         Iniciar sesión
@@ -116,10 +116,11 @@ export default {
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
+            console.log(resultLogin)
             this.loaded = false;
 
             if (resultLogin)
-              this.$router.push({ name: "settings" }).catch(() => {});
+              this.$router.push({ name: path }).catch(() => {});
           }
         } else {
           this.$router.push({ name: "direct-access" }).catch(() => {});
