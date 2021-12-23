@@ -121,22 +121,23 @@ export default {
   },
   methods: {
     async setLoad(valueOrder) {
-      console.log(valueOrder.loadId, 'valueOrder')
       await this.getLoadsId(valueOrder.loadId)
       this.$store.commit("setloadStore", valueOrder);
       if(this.settings.AutoScan){
         if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders-auto-scan');
-      } else if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
+        if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-actions-auto');
+      } else {
+      if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
       if(valueOrder?.status == 'Delivered') this.changeRoute('');
       if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
       if(valueOrder?.status == 'Dispatched') this.changeRoute('');
-
+      }
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
     },
-    async getLoadsId (idOrdes) {
-      const result = await this.$services.loadsServices.getLoadsbyId(idOrdes)
+    async getLoadsId (val) {
+      const result = await this.$services.loadsServices.getLoadsbyId(val)
       this.$store.commit("setloadProductStore", result);
 
       console.log(result, 'loadDate')

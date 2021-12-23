@@ -136,7 +136,8 @@ export default {
       "exceptionStore",
       "digitalFirmStore",
       "allLoads",
-      "allOrders"
+      "allOrders",
+      "settings"
     ]),
   },
   mounted() {
