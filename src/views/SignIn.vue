@@ -126,7 +126,7 @@ export default {
   methods: {
     async changeRoute(path) {
       try {
-        if (path == "0") {
+        if (path == "direct-access") {
           if (this.login.email !== "" && this.login.password !== "") {
             this.loaded = true;
             this.AutoLogin.email = this.login.email;
