@@ -11,7 +11,23 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   </div>
-
+      <a  class="uk-navbar-toggle uk-flex uk-flex-right" style="min-height: 55px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
+      <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar uk-padding-remove">
+            <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
+        <div class="info-user">
+            <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
+            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">{{userData?.firstName}} {{userData?.lastName}} </h4>
+            <h6 class="uk-tect-light uk-margin-remove">{{userData?.email}}</h6>
+        </div>
+        <ul class="uk-list nav-opt uk-list-divider">
+            <li @click="setCurrentPage('home')">Tus Cargas</li>
+            <li @click="setCurrentPage('settings')">Configuracion</li>
+            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li @click="setCurrentPage('about')">Version app</li>
+        </ul>
+    </div>
+</div>
       <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
           <h5 class="title uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
@@ -126,7 +142,7 @@ export default {
   },
   computed:{
     ...mapGetters([
-      'settings'
+      'settings', "userData"
     ])
   },
   async beforeMount(){
