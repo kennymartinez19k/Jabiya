@@ -134,8 +134,8 @@ export default {
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
-            console.log(resultLogin)
             this.loaded = false;
+            this.$store.commit("setUserData", resultLogin);
 
             if (resultLogin)
               this.$router.push({ name: path }).catch(() => {});

@@ -1,6 +1,7 @@
 import currentPage from '../store/currentPage'
 import loads from '../store/Loads'
 import timelineStore from '../store/TimelineStore'
+import singInStore from '../store/SingInStore'
 
 const storeModule = {
   state: () => (
@@ -8,6 +9,7 @@ const storeModule = {
       ...currentPage.state,
       ...loads.state,
       ...timelineStore.state,
+      ...singInStore.state,
       scanOrder: null,
       allOrders: [],
       settings: {}
@@ -17,6 +19,7 @@ const storeModule = {
     ...currentPage.mutations,
     ...loads.mutations,
     ...timelineStore.mutations,
+    ...singInStore.mutations,
     scanOrder(state, val){
       state.scanOrder = val
     },
@@ -31,12 +34,14 @@ const storeModule = {
   actions: {
     ...currentPage.actions,
     ...loads.actions,
-    ...timelineStore.actions
+    ...timelineStore.actions,
+    ...singInStore.actions,
   },
   getters: {
     ...currentPage.getters,
     ...loads.getters,
     ...timelineStore.getters,
+    ...singInStore.getters,
     orderScan : state => state.scanOrder,
     allOrders: state => state.orders,
     settings: state => state.settings
