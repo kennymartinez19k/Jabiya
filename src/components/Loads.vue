@@ -25,7 +25,11 @@ import 'moment/locale/es'
 import "vue-loading-overlay/dist/vue-loading.css";
 import { mapGetters } from 'vuex';
 export default {
-  
+  components: {
+    IonLoading,
+    Loading,
+    LoadDate,
+  },
   setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
@@ -35,7 +39,7 @@ export default {
   beforeMount(){
     this.setOpen(true)
   },
-  mounted(){
+ async mounted(){
     window.location.href = '#Hoy'
     moment.locale('es')
     this.allLoads.forEach((x, i) => {
@@ -67,11 +71,7 @@ export default {
 
     },
   },
-  components: {
-    IonLoading,
-    Loading,
-    LoadDate,
-  },
+
   props: {
     timeout: { type: Number, default: 1000 },
   },
