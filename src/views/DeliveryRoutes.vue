@@ -27,33 +27,6 @@
             <span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
         </div>
-        <!-- <div class="info-header">
-          <span class="status">Carga {{ load?.status }}</span>
-          <img
-            v-if="load?.status == 'Asignada'"
-            src="../assets/asigned.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Entregada'"
-            src="../assets/delivery.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'En Ruta'"
-            src="../assets/road.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Despacho Aprobado'"
-            src="../assets/warehouse.png"
-            class="icon-load"
-            alt=""
-          />
-        </div> -->
       </div>
     </div>
 
@@ -67,10 +40,11 @@
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-center">
               <p
-                style="font-size: 16px !important; font-weight: 600"
+                style="font-size: 16px !important;"
                 class="uk-width-1-1"
               >
-                <span>Cliente: {{ order.client_name }}</span>
+                <span class="font-weight-medium">Cliente: </span>
+                <span>{{ order.client_name }}</span>
               </p>
             </div>
             <span>
@@ -81,11 +55,11 @@
             <strong>Dirección: </strong><span>{{ order?.sector}}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong> No. de Orden: </strong
+            <strong> Orden: </strong
             ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>Cajas / Pallets: </strong>{{ order?.products.length }}<span></span>
+            <strong>Cajas / Pallets: </strong>{{ order?.products?.length }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"

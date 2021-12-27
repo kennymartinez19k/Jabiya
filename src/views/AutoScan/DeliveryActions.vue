@@ -63,11 +63,11 @@
             <strong>Dirección: </strong><span>{{ order?.sector }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong> No. de Orden: </strong
+            <strong> Orden: </strong
             ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>No. de Cajas: </strong>{{ order?.products.length }}<span></span>
+            <strong>Cajas / Pallets: </strong>{{ order?.products?.length }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
@@ -140,6 +140,7 @@ export default {
       "digitalFirmStore",
       "settings",
       'allLoads',
+
     ]),
   },
   mounted() {
@@ -150,6 +151,7 @@ export default {
       this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
       this.orders = this.load.orders
     }
+    console.log(this.orders)
     if (this.orderScan?.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {

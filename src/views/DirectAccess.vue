@@ -145,7 +145,6 @@ export default {
     ]),
     async permiso(){
       let a = await this.hasPermission('sendInfo')
-      console.log(a)
       return a
     },
     async call(){
