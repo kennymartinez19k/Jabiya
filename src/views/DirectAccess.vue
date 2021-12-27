@@ -17,15 +17,15 @@
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Viajes</strong></p>
           </li>
-          <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
+          <li v-if="permiso()" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
                <img src="../assets/cargo.png" alt="">
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
           <li v-else class="action uk-width-1-2" @click="changeRoute('orders')">
                <img src="../assets/cargo.png" alt="">
-                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
+                <p class="name-action"><strong>Montar Viaje e Iniciar Rutaaa</strong> </p>
           </li>
-          <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
+          <li v-if="settings?.AutoScan" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
               <img src="../assets/deliver-container.png" alt="">
             <p class="name-action"><strong>Procesar Entrega del Contenedor</strong> </p>
           </li>
@@ -33,11 +33,11 @@
             <img src="../assets/deliver-container.png" alt="">
             <p class="name-action"><strong>Procesar Entrega del Contenedor</strong> </p>
           </li>
-          <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
+          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
                 <p class="name-action"><strong>Procesar Factura</strong> </p>
           </li>
-          <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
+          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
                 <p class="name-action"><strong>Reconciliación con Almacén</strong></p>
           </li>
@@ -45,7 +45,7 @@
               <img src="../assets/reject-container.png" alt="">
                 <p class="name-action"><strong>Procesar Rechazo del Contenedor</strong></p>
           </li>
-           <li class="action uk-width-1-2" @click="changeRoute('home')">
+           <li v-if="permiso()" class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/return-container.png" alt="">
                 <p class="name-action"><strong>Devolver Contenedor</strong></p>
           </li>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Loading from "vue-loading-overlay";
 import { IonLoading } from "@ionic/vue";
 import "vue-loading-overlay/dist/vue-loading.css";
@@ -125,11 +125,12 @@ export default {
   computed:{
     ...mapGetters([
       'settings', "userData"
-    ])
+    ]),
   },
   async beforeMount(){
     this.$store.commit("setloadStore", null);
     this.$store.commit("scanOrder", null);
+    
     this.$emit(
         "deliveryActions",
         ``
@@ -139,8 +140,15 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'hasPermission'
+    ]),
+    async permiso(){
+      let a = await this.hasPermission('sendInfo')
+      console.log(a)
+      return a
+    },
     async call(){
-   
        this.loaded = true;
        this.Loads = await this.$services.loadsServices.getLoads();
        this.loaded = false;
@@ -156,6 +164,7 @@ export default {
     },
     
     async changeRoute(val){
+      await this.getLoadsId(val.loadId)
       if (await this.Loads){
         this.$store.commit('setAllLoads', this.Loads)
         this.$router.push({name: val})
@@ -165,7 +174,11 @@ export default {
         this.$router.push({ name: val}).catch(() => {})
         this.hideMenu()
     },
-    
+    async getLoadsId (val) {
+      const result = await this.$services.loadsServices.getLoadsbyId(val)
+      this.$store.commit("setloadProductStore", result);
+
+    }
   },
 
 }
