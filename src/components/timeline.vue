@@ -25,7 +25,7 @@
     </div>
     <ul class="progressbar">
       <li
-        v-if="!settings.AutoScan"
+        v-if="!settings?.AutoScan"
         class="stepOne"
         :class="{ active: resultScan !== null }"
         @click="getShow('scan')"

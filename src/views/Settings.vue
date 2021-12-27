@@ -15,6 +15,15 @@
             </select>
         </div>
       </label>
+      <label class="item uk-margin" for="check">
+            <h6>Perfil:</h6>
+        <div class="uk-form-controls" style="width: 40%">
+            <select v-model="profile" class="uk-select" id="form-horizontal-select">
+                <option>Ninguno</option>
+                <option value="drayage">Contenedor</option>
+            </select>
+        </div>
+      </label>
     </div>
     <div class="btn">
         <button class="uk-button uk-button-transparent" @click="saveSettings">Guardar Cambios</button>
@@ -28,7 +37,8 @@ export default {
     return {
       settings: {
         AutoScan: null,
-        language: null
+        language: null,
+        profile: null
       },
     };
   },
@@ -38,6 +48,8 @@ export default {
   methods: {
     saveSettings() {
       this.$store.commit("setSettings", this.settings);
+      this.$store.commit("changeRol", this.profile );
+
       this.$router.push({ name: "direct-access" });
     },
   },

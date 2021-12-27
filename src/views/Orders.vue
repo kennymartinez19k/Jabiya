@@ -70,11 +70,11 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium">Cajas: </span>{{productsBox}}<span></span>
+            <span class="font-weight-medium">Cajas: </span>{{order.products.length}}<span></span>
           </p>
           <p class="uk-width-1-1">
             <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>{{
-              order.zone.name
+              order.sector
             }}</span>
           </p>
         </div>
@@ -147,21 +147,17 @@ export default {
   },
   computed: {
     ...mapGetters(["loadStore", "orderScan", 'loads', "allLoads", "products"]),
-
-    productsBox: function () {
-      if (this.products?.length !== 0) {
-        return  this.products[0]?.quantity
-      }
-      return null
-    },
   },
   mounted() {
+    console.log(this.orderScan)
     if(this.loadStore){
       this.load = this.loadStore;
+      this.orders = this.orderScan
     }else{
       this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
+    this.orders = this.load.orders 
+
     }
-    this.orders = this.load.orders
     console.log(this.orders)
     if (this.orderScan) {
       this.completedOrden();
@@ -196,6 +192,7 @@ export default {
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
     completedOrden() {
+      console.log(this.orders)
       this.orders.forEach((x) => {
         if (x.numberOfOrders == this.orderScan.numberOfOrders) {
           x.completed = this.orderScan.completed;

@@ -70,7 +70,7 @@
                 style="font-size: 16px !important; font-weight: 600"
                 class="uk-width-1-1"
               >
-                <span>{{ order.client_name }}</span>
+                <span>Cliente: {{ order.client_name }}</span>
               </p>
             </div>
             <span>
@@ -78,14 +78,14 @@
             </span>
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order?.zone?.name }}</span>
+            <strong>Dirección: </strong><span>{{ order?.sector}}</span>
           </p>
           <p class="uk-width-1-2">
             <strong> No. de Orden: </strong
             ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>No. de Cajas: </strong>{{ order?.numberOfBox }}<span></span>
+            <strong>Cajas / Pallets: </strong>{{ order?.products.length }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
@@ -218,11 +218,11 @@ export default {
     SlideUnlock,
   },
   computed: {
-    ...mapGetters(["loadStore"]),
+    ...mapGetters(["loadStore", "orderScan"]),
   },
   mounted() {
     this.load = this.loadStore;
-    this.orders = this.loadStore.orders
+    this.orders = this.orderScan
   },
   methods: {
         async location () {
