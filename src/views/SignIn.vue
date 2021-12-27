@@ -72,7 +72,7 @@
       </div>
        <div v-if="showError" class="uk-alert-warning" uk-alert>
             <a class="uk-alert-close" uk-close></a>
-            <p>Revisar los datos</p>
+            <p>{{showErrorText}}</p>
         </div>
       <button
         type="button"
@@ -98,6 +98,7 @@ export default {
       type: "password",
       iconType: "eye",
       showError: null,
+      showErrorText: null,
       login: {
         email: "admin@flai.com.do",
         password: "1",
@@ -139,14 +140,18 @@ export default {
 
             if (resultLogin)
               this.$router.push({ name: path }).catch(() => {});
-          }
+          } 
         } else {
           this.$router.push({ name: path }).catch(() => {});
         }
       } catch (error) {
         this.loaded = false;
+        if (error.message === 'Request failed with status code 401') {
+          this.showErrorText = 'Error al introducir los datos'
+        }else if (error.message === 'Network Error') {
+          this.showErrorText = 'Error de conexion, verifique que este conectado'
+        }
        this.showError = true
-        // alert(error);
       }
     },
     showPassword() {
