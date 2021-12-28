@@ -114,7 +114,7 @@ export default {
                 this.accountRecovery.companyData = null
 
         }
-         if (newVal !== null && newVal.lenght !== oldVal) {
+         if (newVal !== null && newVal.length !== oldVal) {
                 this.showCompany = false
             } else {
                 this.showCompany = true

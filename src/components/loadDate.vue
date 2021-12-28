@@ -9,7 +9,6 @@
         </p>
       </div>
     </div>
-
     <div>
       <div
         v-for="load in userOrden"
@@ -20,6 +19,7 @@
           delivered: load.status == 'Delivered',
           onWay: load.status == 'Driver Arrival',
           dispatch: load.status == 'Dispatched',
+          expectingApprove: load.status == 'Expecting Approval'
         }"
       >
         <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
@@ -30,9 +30,12 @@
             <p>
               <strong> Estado: </strong>
               <span v-if="load.status == 'Driver Assigned'">Asignada</span>
+              <span v-if="load.status == 'Approved'">Aprobada</span>
               <span v-if="load.status == 'Delivered'">Entregada</span>
               <span v-if="load.status == 'Driver Arrival'">En Ruta</span>
               <span v-if="load.status == 'Dispatched'">Despacho Aprobado</span>
+              <span v-if="load.status == 'Expecting Approval'">Esperando tu Aprobacion</span>
+
             </p>
             <p>
               <strong>Cliente: </strong> <span>{{ load.shipper }}</span>
@@ -51,7 +54,7 @@
               <div style="margin-top: 1px">
                 <img
                   v-if="load.status ==  'Driver Assigned'"
-                  src="../assets/asigned.png"
+                  src="../assets/cargo.png"
                   class="icon-load"
                   alt=""
                 />
@@ -73,14 +76,20 @@
                   class="icon-load"
                   alt=""
                 />
+                <img
+                  v-if="load.status == 'Expecting Approval'"
+                  src="../assets/approve-container.png"
+                  class="icon-load"
+                  alt=""
+                />
               </div>
             </div>
             <button class="uk-button " @click="setLoad(load)">
-              <span v-if="load.status == 'Driver Assigned'">Cargar Vehiculo</span>
+              <span v-if="load.status == 'Driver Assigned'">Montar Viaje</span>
               <span v-if="load.status == 'Delivered'">Ver Ordenes</span>
               <span v-if="load.status == 'Driver Arrival'">Continuar Entrega(s)</span>
               <span v-if="load.status == 'Dispatched'">Comenzar Entrega(s)</span>
-
+              <span v-if="load.status == 'Expecting Approval'">Aceptar / Rechazar Viaje</span>
             </button>
           </div>
         </div>
@@ -107,24 +116,31 @@ export default {
     ])
   },
   mounted(){
-    
     this.loads = this.userOrden
   },
   methods: {
     async setLoad(valueOrder) {
-
+      await this.getLoadsId(valueOrder.loadId)
       this.$store.commit("setloadStore", valueOrder);
-      if(this.settings.AutoScan){
+      if(this.settings?.AutoScan){
         if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders-auto-scan');
-      } else if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
+        if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-actions-auto');
+      } else {
+      if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
       if(valueOrder?.status == 'Delivered') this.changeRoute('');
       if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
       if(valueOrder?.status == 'Dispatched') this.changeRoute('');
-
+      }
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
     },
+    async getLoadsId (val) {
+      const result = await this.$services.loadsServices.getLoadsbyId(val)
+      console.log(result)
+      this.$store.commit("scanOrder", result);
+
+    }
   
   },
 };
@@ -149,7 +165,7 @@ p {
   box-shadow: 0px 0px;
 }
 .uk-button {
-  padding: 0px 5px !important;
+  padding: 10px 5px !important;
   font-size: 12px;
 }
 
@@ -181,6 +197,7 @@ p {
 }
 button {
   font-size: 9px !important;
+  line-height: 15px;
 }
 .asigned {
   color: rgb(73 73 73);
@@ -218,7 +235,7 @@ body {
 .delivered {
   color: rgb(130, 127, 127) !important;
 }
-.delivered button {
+.delivered button, .expectingApprove button {
   background: #ffffff;
   color: rgb(73, 73, 73);
   border: 1px solid rgb(136, 136, 136);

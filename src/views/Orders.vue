@@ -3,7 +3,7 @@
     
     <div class="stiky">
       <p
-        style=" font-size: 13px; !important; font-weight: 500"
+        style=" font-size: 13px !important; font-weight: 500"
       >
         {{load?.loadNumber}}
       </p>
@@ -59,9 +59,9 @@
                 />
               </span>
               <p
-                style="!important; font-weight: 500"
                 class="uk-width-1-1"
               >
+              <span class="font-weight-medium">Cliente: </span>
                 <span>{{ order.client_name }}</span>
               </p>
             </div>
@@ -70,19 +70,28 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium">Cajas: </span>0 <span></span>
+            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.products?.length}}<span></span>
           </p>
           <p class="uk-width-1-1">
-            <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>{{
-              order.zone.name
-            }}</span>
+            <span class="font-weight-medium">Destino: </span> 
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
         </div>
         <div
           class="uk-flex uk-flex-column"
           style="min-width: 83px; margin-left: 7px; align-items: flex-end"
         >
+        <div
+            v-if="order.completed"
+            class="uk-flex uk-flex-column"
+            @click="downloadOrders(order)"
+            style="align-items: center"
+          >
+            <img src="../assets/road.png" class="img-scan" alt="" />
+            <span>Descargar Orden</span>
+          </div>
           <div
+            v-else
             class="uk-flex uk-flex-column"
             @click="scan(order)"
             style="align-items: center"
@@ -91,6 +100,7 @@
             <span v-if="order.completed">Descargar Orden</span>
             <span v-else>Escanear Orden</span>
           </div>
+          
         </div>
       </div>
     </div>
@@ -106,7 +116,7 @@
       :height="40"
       :completedBg="completed"
       class="slide box-slide"
-      text="Escaneo Corrido"
+      text="Cargar e Iniciar Ruta"
       success-text="success"
       @completed="scan(orders)"
       textSize="10px"
@@ -120,7 +130,7 @@ import { mapGetters } from "vuex";
 import SlideUnlock from "vue-slide-unlock";
 
 export default {
-  alias: `Cargar Vehiculo`,
+  alias: `Montar Viaje`,
   name: `cargarrr`,
   data() {
     return {
@@ -135,11 +145,17 @@ export default {
     SlideUnlock,
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan", 'loads']),
+    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoads", "products"]),
   },
   mounted() {
-    this.load = this.loadStore;
-    this.orders = this.load.orders
+    if(this.loadStore){
+      this.load = this.loadStore;
+      this.orders = this.orderScan
+    }else{
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
+    this.orders = this.load.orders 
+
+    }
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -155,16 +171,24 @@ export default {
         }
       });
     },
+      downloadOrders(val){
+      if(val.completed){
+        val.completed = false
+      }
+    },
     scan(val) {
       let orderScan = []
-      if (val.length) {
+      if (val.length > 1) {
         orderScan = val
         this.$emit("deliveryActions", 'Escaneo Corrido');
-      } else {
+      } else if(val.length == 1) {
+        let obj = val.find(x => x)
+        this.$emit("deliveryActions", `Orden No: ${obj?.order_num}`);
+        orderScan.push(obj)
+      }else{
         this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
-      console.log(orderScan)
       this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
@@ -293,6 +317,6 @@ p {
   background-image: url('../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-position: 80%
+    background-position: 81%
 }
 </style>

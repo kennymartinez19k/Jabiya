@@ -1,7 +1,7 @@
 <template>
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
-            <font-awesome-icon icon="home" @click="setCurrentPage('direct-access')" style="font-size: 20px; margin: 0px 15px"/>
+            <font-awesome-icon :icon="iconType" @click="setCurrentPage(action)" style="font-size: 20px; margin: 0px 15px"/>
             <h6 class="uk-margin-remove" style="font-size: 14px; margin: 0px 10px !important">{{titlePage}}</h6>
             <a  class="uk-navbar-toggle" style="min-height: 55px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
     <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
@@ -9,12 +9,12 @@
             <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
         <div class="info-user">
             <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
-            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">Chofer 11</h4>
-            <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
+            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">{{userData?.firstName}} {{userData?.lastName}} </h4>
+            <h6 class="uk-tect-light uk-margin-remove">{{userData?.email}}</h6>
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">Tus Cargas</li>
-            <li @click="setCurrentPage('about')">Configuracion</li>
+            <li @click="setCurrentPage('home')">Tus Viajes</li>
+            <li @click="setCurrentPage('settings')">Configuracion</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
             <li @click="setCurrentPage('about')">Version app</li>
         </ul>
@@ -25,14 +25,35 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import Uikit from 'uikit'
 export default {
     props:{
         nameComponent: String
     },
 computed:{
+    ...mapGetters(["userData"]),
+    
     titlePage(){
             return this.nameComponent
+    }
+},
+watch:{
+    $route: function(newVal){
+        newVal.name == "direct-access" ?
+            (
+              this.action = "sign-in",
+              this.iconType = 'sign-out-alt'
+
+            ): newVal.name == "home" ? 
+            (
+              this.action = "direct-access",
+              this.iconType = "home" 
+            ):
+            (
+              this.action = "back",
+              this.iconType = "arrow-left"
+            )
     }
 },
 mounted(){
@@ -41,6 +62,8 @@ mounted(){
 },
 data() {
     return {
+        iconType: 'sign-out-alt',
+        action: "sign-in",
         positionSticky: false
     }
 },
@@ -54,8 +77,11 @@ methods:{
         Uikit.offcanvas('#offcanvas-overlay').hide();
     },
     setCurrentPage(val) {
-        this.$router.push({ name: val}).catch(() => {})
-        this.hideMenu()
+        if(val == "back") this.$router.go(-1)
+        else {
+            this.$router.push({ name: val}).catch(() => {})
+            this.hideMenu()
+        }
         
     },
 }

@@ -4,10 +4,21 @@ class LoadsServices {
       this.http = http
     }
 
-    async getLoads (data) {
-      const result = await this.http.get('http://preprod.flai.com.do:8756/exo/loads/?fields=_id,shipperZone,noOfOrders,driver,shipper,loadNumber,status&date=12/10/2021', data)
-      console.log(result.data, 'dddddddddddddddd')
-      return result.data.filter(x => x.driver === 'Francisco  Javier')
+    async getLoads () {
+      var today = new Date().getTime() - (new Date().getTime() % 86400000)
+      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/?date=${today}`)
+      return result.data
+    }
+
+    async getLoadsbyId (id) {
+      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${id}?fields=Orders`)
+      return result.data.Orders
+    }
+    async getLoadsbyDate () {
+      var loadDate = new Date().getTime() - (new Date().getTime() % 86400000)
+      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/?date=${loadDate}`)
+      console.log(result)
+      return result.data
     }
 }
   export default LoadsServices

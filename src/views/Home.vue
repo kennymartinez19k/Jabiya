@@ -7,7 +7,7 @@
 <script>
 import Loads from '../components/Loads.vue'
 export default {
-  alias: 'Tus Cargas',
+  alias: 'Tus Viajes',
  components: {
      Loads,
  },

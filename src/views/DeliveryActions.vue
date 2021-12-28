@@ -1,29 +1,44 @@
 <template>
-  <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+  <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
+      <p
+        style=" font-size: 13px !important; font-weight: 500"
+      >
+        {{load?.loadNumber}}
+      </p>
       <div
         class="
           uk-flex
           uk-flex
-          uk-flex-between
+          uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center"
+        style="align-items: center;"
       >
-        <div class="font-weight-medium uk-text-left" style="width: 70%">
-          <p style="margin-right: 10px !important; ">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.shipper }}</span>
+        <div class="uk-flex uk-flex-wrap">
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
           </p>
+          <div></div>
           <p>
-            <strong style="">Zona de Destino:</strong
-            ><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
+          
+          
         </div>
+        
       </div>
     </div>
-    <div class="result-info">
+    <div class="result-info"
+    :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve' }"
+    >
+    <div></div>
+      <div v-if="statusOrders == 'reject'">
+          <font-awesome-icon icon="ban" class="ban" />
+          <h6>ORDEN NO RECONOCIDA</h6>
+      </div>
       <ul
         v-if="resultScan"
         class="uk-list uk-list-divider"
@@ -39,9 +54,9 @@
               <font-awesome-icon
                 icon="map-marker-alt"
                 style="font-size: 14px; color: green"
-              />&nbsp;<strong>{{ orden.address }}</strong>
+              />&nbsp;<strong>{{ orden.zone.name }}</strong>
             </p>
-            <strong>No. de Orden: &nbsp; {{ orden.numberOfOrders }}</strong>
+            <strong>No. de Orden: &nbsp; {{ orden.order_num }}</strong>
           </div>
           <div class="uk-flex uk-flex-column" style="align-items: center">
             <font-awesome-icon
@@ -51,7 +66,7 @@
             <span class="font-weight-medium" style="color: green">Entregada</span>
           </div>
 
-          <div class="uk-flex" style="margin-top: 10px" >
+          <div v-if="imagiElement.length" class="uk-flex uk-width-1-1" style="margin-top: 10px" >
               <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
               <img class="img-result" :src="firm" alt="Fima Digital" />
           </div>
@@ -64,9 +79,6 @@
       style="z-index: 0; padding: 15px 0px  !important;"
     >
       <strong class="exception uk-padding-small">
-        Si <pre>{{resultScan?.content}} fff</pre>
-        Si <pre>{{mira}} fff</pre>
-
         Hubo Alguna Excepcion? No
         <div class="onoffswitch">
           <input
@@ -124,24 +136,18 @@ export default {
       "exceptionStore",
       "digitalFirmStore",
       "allLoads",
-      "allOrders"
+      "allOrders",
+      "settings"
     ]),
   },
   mounted() {
-     if(this.orderScan){
-       this.orders = this.orderScan;
-    }else{
-      console.log(this.allLoads)
-      this.orders = this.allLoads.orders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
-    }
     if(this.loadStore){
-      this.load = this.loadStore
-    } else{
-      this.allLoads.forEach(el => {
-        if(el.status == 'Asignada'){
-          this.load = el
-        }
-      });
+       this.load = this.loadStore;
+       this.orders = this.orderScan
+    }else{
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
+      this.orders = this.load.orders
+      this.$store.commit("scanOrder", this.orders);
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
@@ -181,28 +187,23 @@ export default {
       }
     },
     async scanOrder() {
-      
-
+      this.statusOrders = 'start';
         if (await this.checkPermission()) {
           BarcodeScanner.hideBackground();
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
           if (result.hasContent) {
-              this.step++;
-
             BarcodeScanner.hideBackground();
+            var OrderElement = this.orders.findIndex(x => x.order_num == result.content)
+            if (OrderElement > -1) {
+              this.step++;
               this.resultScan = result
-            var OrderElement = null
-            this.ordersScan.forEach((x) =>  { if(x.numberOfOrders === result.content) { 
-            OrderElement = true} })
-            if (OrderElement) {
-            alert(OrderElement, 'OrderElement')
-
-            } else if (!OrderElement){
-              this.mira = 'nooooooooooooo'
+              this.verifiedElement(OrderElement)
+            } else if (OrderElement){
+              this.statusOrders = 'reject';
               Vibration.vibrate(1000);
-
               setTimeout(() => {
-                  this.scanOrder()
+                this.statusOrders = 'start'
+                this.scanOrder()
               }, 1000)
             }
           }
@@ -360,9 +361,9 @@ export default {
   font-size: 14px;
   font-weight: 600;
 }
-.uk-container {
-  margin: 0px -16px;
-
+.container {
+  display: flex;
+  flex-direction: column;
 }
 .backg {
     background-color: rgb(255, 255, 255);
@@ -372,6 +373,11 @@ export default {
   overflow: scroll;
   padding: 0px 10px;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.statusError{
+    justify-content: center;
 }
 
 .stiky {
@@ -414,11 +420,21 @@ export default {
 li::before {
   content: none;
 }
+.statusCheck{
+  background: rgb(255, 255, 255) !important;
+  box-shadow: 0px 0px 7px green !important;
+  color: #fff !important;
+}
 .img-result {
   width: 21%;
   height: 60px;
   margin-right: 5px;
   border: 1px solid #000;
+}
+.ban {
+  color: #be1515;
+  font-size: 50px;
+
 }
 
 </style>

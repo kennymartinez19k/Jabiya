@@ -1,15 +1,13 @@
-// import axios from 'axios'
 class SingInServices {
     constructor (http) {
       this.http = http
     }
   
     async getToken (singIn) {
-    
+      localStorage.removeItem('auth');
       const result = await this.http.post('http://preprod.flai.com.do:8756/exo/authenticate', singIn)
-      console.log(result.data.data, 'result.data')
-      
-      return result.data.data[0]
+      localStorage.setItem('auth', result.data.data.cookie[0])
+      return result.data.data
     }
   }
   export default SingInServices

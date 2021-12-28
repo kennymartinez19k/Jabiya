@@ -27,33 +27,6 @@
             <span>&nbsp; {{ load?.shipperZone }}</span>
           </p>
         </div>
-        <!-- <div class="info-header">
-          <span class="status">Carga {{ load?.status }}</span>
-          <img
-            v-if="load?.status == 'Asignada'"
-            src="../assets/asigned.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Entregada'"
-            src="../assets/delivery.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'En Ruta'"
-            src="../assets/road.png"
-            class="icon-load"
-            alt=""
-          />
-          <img
-            v-if="load?.status == 'Despacho Aprobado'"
-            src="../assets/warehouse.png"
-            class="icon-load"
-            alt=""
-          />
-        </div> -->
       </div>
     </div>
 
@@ -67,9 +40,10 @@
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-center">
               <p
-                style="font-size: 16px !important; font-weight: 600"
+                style="font-size: 16px !important;"
                 class="uk-width-1-1"
               >
+                <span class="font-weight-medium">Cliente: </span>
                 <span>{{ order.client_name }}</span>
               </p>
             </div>
@@ -78,14 +52,14 @@
             </span>
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order?.zone?.name }}</span>
+            <strong>Dirección: </strong><span>{{ order?.sector}}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong> No. de Orden: </strong
+            <strong> Orden: </strong
             ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>No. de Cajas: </strong>{{ order?.numberOfBox }}<span></span>
+            <strong>Cajas / Pallets: </strong>{{ order?.products?.length }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
@@ -107,7 +81,6 @@
                 style="align-items: center; display: inline-flex"
               >
                 <img src="../assets/parcel.png" class="img-scan" alt="" />
-  <!-- <pre>{{$router}} 55</pre> -->
                 <span>Entregar Orden</span> 
               </div>
             </div>
@@ -126,7 +99,7 @@
       :height="40"
       :completedBg="completed"
       class="slide box-slide"
-      text="Escaneo Corrido"
+      text="Cargar e Iniciar Ruta"
       success-text="Activando"
       @completed="complete(orders)"
       textSize="10px"
@@ -219,11 +192,11 @@ export default {
     SlideUnlock,
   },
   computed: {
-    ...mapGetters(["loadStore"]),
+    ...mapGetters(["loadStore", "orderScan"]),
   },
   mounted() {
     this.load = this.loadStore;
-    this.orders = this.loadStore.orders
+    this.orders = this.orderScan
   },
   methods: {
         async location () {
@@ -379,7 +352,7 @@ export default {
   background-image: url('../assets/parcel.png');
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-position: 80%
+    background-position: 81%
 }
 .allScreen{
   height: 80vh;

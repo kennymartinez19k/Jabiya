@@ -11,6 +11,7 @@ import Settings from '../views/Settings.vue'
 import Maps from '../views/MapsExample.vue'
 import OrdersAutoScan from '../views/AutoScan/Orders.vue'
 import DeliveryActionsAuto from '../views/AutoScan/DeliveryActions.vue'
+import About from '../views/About.vue'
 const routes = [
   {
     path: '/',
@@ -73,6 +74,11 @@ const routes = [
     path: "/delivery-actions-auto",
     name: "delivery-actions-auto",
     component: DeliveryActionsAuto,
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: About,
   },
   
  

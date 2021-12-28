@@ -13,7 +13,6 @@ export default {
       noHead: [
         'sign-in',
         'sign-up',
-        'direct-access',
         'recover-password'
       ],
       nameOrder: null

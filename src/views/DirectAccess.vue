@@ -1,51 +1,56 @@
 <template>
   <div class="container">
-      <a  class="uk-navbar-toggle uk-flex uk-flex-right" style="min-height: 55px !important; padding: 0px 15px !important" uk-navbar-toggle-icon  @click="openMenu" href="#"></a>
-      <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
-    <div class="uk-offcanvas-bar uk-padding-remove">
-            <img src="../assets/close.png" class="close-navbar uk-offcanvas-close" alt="" @click="hideMenu" srcset="">
-        <div class="info-user">
-            <img src="https://cdn-icons-png.flaticon.com/512/236/236831.png" style="width: 35% !important" alt="" srcset="">
-            <h4 class="uk-text-light uk-margin-remove" style="margin: 5px 0px !important">Chofer 11</h4>
-            <h6 class="uk-tect-light uk-margin-remove">Chofer11@gmail.com</h6>
-        </div>
-        <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">Tus Cargas</li>
-            <li @click="setCurrentPage('settings')">Configuracion</li>
-            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
-            <li @click="setCurrentPage('about')">Version app</li>
-        </ul>
-    </div>
-</div>
+         <div class="">
+    <ion-loading
+    :is-open="isOpenRef"
+    cssClass="my-custom-class"
+    message="Por favor Espere..."
+    :duration="timeout"
+    @didDismiss="setOpen(false)"
+  >
+  </ion-loading>
+  <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
+  </div>
       <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
           <h5 class="title uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
-                <p class="name-action"><strong>Ver Tus Cargas</strong></p>
+                <p class="name-action"><strong>Ver Tus Viajes</strong></p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
-               <img src="../assets/container.png" alt="">
+          <li v-if="settings.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
+               <img src="../assets/cargo.png" alt="">
+               <div class="disabled"></div>
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          
-          <li class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
-              <img src="../assets/boxes.png" alt="">
-                <p class="name-action"><strong>Entregar Contenedor al Cliente</strong> </p>
+          <li v-else :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders')">
+               <img src="../assets/cargo.png" alt="">
+               <div class="disabled"></div>
+                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
+          <li v-if="settings?.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
+              <img src="../assets/deliver-container.png" alt="">
+              <div class="disabled"></div>
+            <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
+          </li>
+          <li v-else :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
+            <img src="../assets/deliver-container.png" alt="">
+            <div class="disabled"></div>
+            <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
+          </li>
+          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
                 <p class="name-action"><strong>Procesar Factura</strong> </p>
           </li>
-          <li v-if="settings.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
+          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
                 <p class="name-action"><strong>Reconciliación con Almacén</strong></p>
           </li>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
-              <img src="../assets/Reject-box.png" alt="">
-                <p class="name-action"><strong>Procesar Rechazo del Contenedor</strong></p>
+              <img src="../assets/reject-container.png" alt="">
+                <p class="name-action"><strong>Procesar No-Entrega del Contenedor </strong></p>
           </li>
            <li class="action uk-width-1-2" @click="changeRoute('home')">
-              <img src="../assets/refund.png" alt="">
+              <img src="../assets/return-container.png" alt="">
                 <p class="name-action"><strong>Devolver Contenedor</strong></p>
           </li>
       </ul>
@@ -53,82 +58,51 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+import Loading from "vue-loading-overlay";
+import { IonLoading } from "@ionic/vue";
+import "vue-loading-overlay/dist/vue-loading.css";
 import Uikit from 'uikit'
 
 export default {
+  components: {
+    IonLoading,
+    Loading,
+  },
     data() {
     return {
       load: null,
-     
+      loaded: false,
       Loads: null,
-      userLoads: [
-        {
-          date: new Date(),
-          hour: "10:00 Am",
-          status: "Asignada",
-          shipper: "Juan Perez",
-          loadNumber: 2177,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Cargar Vehiculo",
-          icon: "color: #1f7a18",
-        },
-        {
-          hour: "12:00 PM",
-          status: "Entregada",
-          shipper: "Maria Hernandez",
-          loadNumber: 1883,
-          shipperZone: "Respaldo Rodeo",
-          btnAction: "Ver Orden(es)",
-          icon: "color: #000000",
-        },
-        {
-          hour: "10:00 AM",
-          status: "En Ruta",
-          shipper: "Juan Perez",
-          loadNumber: 2238,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Continuar Entrega(s)",
-          icon: "color: #a7a7a7",
-        },
-        {
-          hour: "10:00 AM",
-          status: "En Ruta",
-          shipper: "Juan Perez",
-          loadNumber: 2833,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Continuar Entrega(s)",
-          icon: "color: #a7a7a7",
-        },
-        {
-          hour: "10:00 AM",
-          status: "Despacho Aprobado",
-          shipper: "Juan Perez",
-          loadNumber: 2993,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Comenzar Entrega(s)",
-          icon: "color: #c39108",
-        },
-      ],
+      check: null,
     };
   },
   computed:{
     ...mapGetters([
-      'settings'
-    ])
+      'settings', "userData"
+    ]),
   },
-  async mounted(){
+  async beforeMount(){
+    this.$store.commit("setloadStore", null);
+    this.$store.commit("scanOrder", null);
+    
+    this.$emit(
+        "deliveryActions",
+        ``
+      );
     await this.call()
+  
   },
 
   methods: {
+    ...mapActions([
+      'hasPermission'
+    ]),
     async call(){
-      var data = JSON.stringify({
-        "email": "admin@flai.com.do",
-        "password": "1"
-      });
-       const resultLogin = await this.$services.loadsServices.getLoads(data);
-       console.log(resultLogin)
+       this.loaded = true;
+       this.Loads = await this.$services.loadsServices.getLoads();
+       this.loaded = false;
+       console.log(this.Loads)
     },
     openMenu(){
       this.positionSticky = true
@@ -139,14 +113,19 @@ export default {
         Uikit.offcanvas('#offcanvas-overlay').hide();
     },
     
-    changeRoute(val){
-      this.$store.commit('setAllLoads', this.Loads)
-      this.$router.push({name: val})
+    async changeRoute(val){
+      if (await this.Loads){
+        this.$store.commit('setAllLoads', this.Loads)
+        this.$router.push({name: val})
+      }
     },
     setCurrentPage(val) {
         this.$router.push({ name: val}).catch(() => {})
         this.hideMenu()
     },
+    hasStatus(val){
+      return this.Loads?.some(x => x.status == val)
+    }
   },
 
 }
@@ -156,17 +135,18 @@ export default {
 .container{
   background: #fff;
   height: 100vh;
+  padding-top: 20px;
 }
 
 .action{
-    margin: 15px 0px 30px;
-    padding: 10px;
+    margin: 17px 0px;
+    position: relative;
 }
 .title{
   margin: 0px 10px 10px;
 }
 .action img{
-    width: 40%;
+    width: 45%;
 }
 .action-element{
     font-size: 13px;
@@ -194,11 +174,15 @@ export default {
     background: #fff;
     width: 250px
 }
-.nav-opt{
-  color: #000;
-  text-align: initial;
+
+.disabledAccess{
+  pointer-events: none;
 }
-.nav-opt li{
-  padding: 20px;
+.disabledAccess .disabled{
+    background: rgba(255, 255, 255, 0.4);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
 }
 </style>

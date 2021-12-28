@@ -48,10 +48,11 @@
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-center">
               <p
-                style="font-size: 16px !important; font-weight: 600"
+                style="font-size: 14px !important;"
                 class="uk-width-1-1"
               >
-                <span>{{ order?.shipper }}</span>
+              <span style="font-weight: 600">Cliente: </span>
+                <span>{{ order?.client_name }}</span>
               </p>
             </div>
             <span>
@@ -59,14 +60,14 @@
             </span>
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order?.address }}</span>
+            <strong>Dirección: </strong><span>{{ order?.sector }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong> No. de Orden: </strong
-            ><span>{{ order?.numberOfOrders }}</span>
+            <strong> Orden: </strong
+            ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>No. de Cajas: </strong>{{ order?.numberOfBox }}<span></span>
+            <strong>Cajas / Pallets: </strong>{{ order?.products?.length }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
@@ -113,6 +114,8 @@ import timeline from "../../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 export default {
   name: "DeliveryActions",
+  alias: 'Procesar Entrega',
+
   components: {
     timeline,
   },
@@ -135,18 +138,20 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allOrders",
-      "settings"
+      "settings",
+      'allLoads',
+
     ]),
   },
-  mounted() {
-    
-    if(this.allOrders){
-      this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
+  async mounted() {
+    if(this.loadStore){
+       this.load = this.loadStore;
+       this.orders = this.orderScan
     }else{
-      this.orders = this.orderScan;
+      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
+      await this.getLoadsId(this.load.loadId)
     }
-    this.load = this.loadStore;
+    console.log(this.orders)
     if (this.orderScan?.length > 1) {
       this.$emit("deliveryActions", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -155,7 +160,7 @@ export default {
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
     }
-    if(!this.settings.AutoScan){
+    if(!this.settings?.AutoScan){
       this.getShow("scan")
     }else{
       this.step++
@@ -189,6 +194,11 @@ export default {
         this.serieA = value;
         this.step++;
       }
+    },
+     async getLoadsId (val) {
+      const result = await this.$services.loadsServices.getLoadsbyId(val)
+      this.orders = result
+
     },
     async scanOrder() {
              
@@ -234,7 +244,6 @@ export default {
     },
 
     async getCam() {
-      console.log('sss')
       this.getCheckPermissions();
       const ele = await Camera.getPhoto({
         quality: 90,
