@@ -11,18 +11,20 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { IonicVue } from "@ionic/vue";
 import StepProgress from "vue-step-progress";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import VueObserveVisibility from 'vue-observe-visibility'
 import "@ionic/core/css/ionic.bundle.css";
 import i18n from './i18n'
 // inject vue barcode scanner
 library.add(fas);
 const store = createStore({ ...storeModule });
-createApp(App)
+createApp(App).use(i18n)
   .component("font-awesome-icon", FontAwesomeIcon)
   .component("step", StepProgress)
   .use(IonicVue)
   .use(router)
   .use(i18n)
   .use(store)
+  .use(VueObserveVisibility)
   .use(servicesPlugins)
   .use(VueSignaturePad)
   .use(defineCustomElements)

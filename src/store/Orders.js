@@ -3,7 +3,9 @@ const orders = {
   state: {
       scanOrder: null,
       allOrders: [],
-      settings: {},
+      settings: {
+        AutoScan: true
+      },
       language: null,
     },
   mutations: {

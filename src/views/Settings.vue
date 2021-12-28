@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       settings: {
-        AutoScan: null,
+        AutoScan: true,
         language: null,
         profile: null
       },

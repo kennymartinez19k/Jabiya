@@ -59,9 +59,9 @@
                 />
               </span>
               <p
-                style=" font-weight: 500 !important;"
                 class="uk-width-1-1"
               >
+              <span class="font-weight-medium">Cliente: </span>
                 <span>{{ order.client_name }}</span>
               </p>
             </div>
@@ -70,12 +70,11 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium">Cajas: </span>{{order.products.length}}<span></span>
+            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.products?.length}}<span></span>
           </p>
           <p class="uk-width-1-1">
-            <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>{{
-              order.sector
-            }}</span>
+            <span class="font-weight-medium">Destino: </span> 
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
         </div>
         <div
@@ -149,7 +148,6 @@ export default {
     ...mapGetters(["loadStore", "orderScan", 'loads', "allLoads", "products"]),
   },
   mounted() {
-    console.log(this.orderScan)
     if(this.loadStore){
       this.load = this.loadStore;
       this.orders = this.orderScan
@@ -158,7 +156,6 @@ export default {
     this.orders = this.load.orders 
 
     }
-    console.log(this.orders)
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -181,10 +178,14 @@ export default {
     },
     scan(val) {
       let orderScan = []
-      if (val.length) {
+      if (val.length > 1) {
         orderScan = val
         this.$emit("deliveryActions", 'Escaneo Corrido');
-      } else {
+      } else if(val.length == 1) {
+        let obj = val.find(x => x)
+        this.$emit("deliveryActions", `Orden No: ${obj?.order_num}`);
+        orderScan.push(obj)
+      }else{
         this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
         orderScan.push(val)
       }
@@ -192,7 +193,6 @@ export default {
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
     completedOrden() {
-      console.log(this.orders)
       this.orders.forEach((x) => {
         if (x.numberOfOrders == this.orderScan.numberOfOrders) {
           x.completed = this.orderScan.completed;
