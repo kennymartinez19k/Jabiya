@@ -14,8 +14,8 @@ class LoadsServices {
       const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${id}?fields=Orders`)
       return result.data.Orders
     }
-    async getLoadsbyDate () {
-      var loadDate = new Date().getTime() - (new Date().getTime() % 86400000)
+    async getLoadsbyDate (date) {
+      var loadDate = new Date(date).getTime() - (new Date(date).getTime() % 86400000)
       const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/?date=${loadDate}`)
       console.log(result)
       return result.data

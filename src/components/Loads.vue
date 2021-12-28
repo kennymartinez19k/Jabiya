@@ -146,11 +146,15 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      days:{
+        tomorrow: null,
+        today: null,
+        yesterday: null
+      },
       loaded: false,
       loads: [],
       dateAvalaible: [],
       date: new Date(),
-      currentDate: null,
     };
   },
   components: {
@@ -195,21 +199,30 @@ export default {
     async scrollTrigger() {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(async (entry) => {
+          var contDate;
           if (entry.intersectionRatio > 0) {
-            var contDate = this.date.setDate(this.date.getDate() - 1);
+            if(!this.days.tomorrow) {
+              contDate = this.date.setDate(this.date.getDate() + 1);
+              this.days.tomorrow = contDate
+            } 
+            else if(!this.days.today){
+               contDate = this.date.setDate(this.date.getDate() - 1);
+               this.days.today = contDate
+            }
+            else { 
+              contDate = this.date.setDate(this.date.getDate() - 1);
+            }
             var date = moment(contDate).format("MM/DD/YYYY");
-            console.log(date);
-            this.currentDate = date;
             const result = await this.$services.loadsServices.getLoadsbyDate(date);
             this.dateAvalaible.push(date)
             if (result.length == 0) {
               await this.scrollTrigger();
             }
             else {
-              this.dateAvalaible = 1; 
               console.log(result)
             }
             result.forEach((x) => this.loads.push(x));
+            console.log(this.loads)
     
             this.showloader = true;
             setTimeout(() => {
