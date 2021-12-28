@@ -68,7 +68,7 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium">Cajas / Pallets: </span>{{order.products.length}}<span></span>
+            <span class="font-weight-medium">Cajas / Pallets: </span>{{order.products?.length}}<span></span>
           </p>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span>

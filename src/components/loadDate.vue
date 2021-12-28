@@ -116,8 +116,8 @@ export default {
     ])
   },
   mounted(){
-    
     this.loads = this.userOrden
+    console.log(this.loads)
   },
   methods: {
     async setLoad(valueOrder) {

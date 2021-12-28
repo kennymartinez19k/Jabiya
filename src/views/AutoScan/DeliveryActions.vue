@@ -143,13 +143,13 @@ export default {
 
     ]),
   },
-  mounted() {
+  async mounted() {
     if(this.loadStore){
        this.load = this.loadStore;
        this.orders = this.orderScan
     }else{
       this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
-      this.orders = this.load.orders
+      await this.getLoadsId(this.load.loadId)
     }
     console.log(this.orders)
     if (this.orderScan?.length > 1) {
@@ -195,6 +195,11 @@ export default {
         this.step++;
       }
     },
+     async getLoadsId (val) {
+      const result = await this.$services.loadsServices.getLoadsbyId(val)
+      this.orders = result
+
+    },
     async scanOrder() {
              
           if (await this.checkPermission()) {
@@ -239,7 +244,6 @@ export default {
     },
 
     async getCam() {
-      console.log('sss')
       this.getCheckPermissions();
       const ele = await Camera.getPhoto({
         quality: 90,

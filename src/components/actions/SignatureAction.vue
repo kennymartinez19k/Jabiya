@@ -33,17 +33,11 @@ export default {
       this.$refs.signaturePad.undoSignature();
     },
     save() {
-      const { isEmpty, data } = this.$refs.signaturePad.saveSignature();
-      console.log(isEmpty);
+      const { data } = this.$refs.signaturePad.saveSignature();
       this.firm = data;
       this.$emit("digitalSignature", this.firm);
     },
-    onBegin() {
-      console.log("=== Begin ===");
-    },
-    onEnd() {
-      console.log("=== End ===");
-    },
+
   },
 };
 </script>

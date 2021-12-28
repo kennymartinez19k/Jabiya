@@ -17,7 +17,6 @@ const Loads = {
         },
         setloadProductStore (state, products) {
           state.products = products
-          console.log(state.products, 'state.products')
       },
     },
     getters: {

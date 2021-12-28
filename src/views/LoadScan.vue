@@ -85,7 +85,7 @@
                 <p><strong>No. de Orden:</strong> &nbsp;  {{orden.order_num}}</p>
                 <p class="uk-width-1-1">
                 Destino: &nbsp;<span>{{
-                  orden.zone.name
+                  orden.sector
                 }}</span>
               </p>
               </div>
