@@ -1,9 +1,10 @@
-
+// import i18n from '../i18n'
 const orders = {
   state: {
       scanOrder: null,
       allOrders: [],
-      settings: {}
+      settings: {},
+      language: null,
     },
   mutations: {
     scanOrder(state, val){
@@ -15,13 +16,17 @@ const orders = {
     setSettings(state, val){
       state.settings = val
     },
-    
+    setLanguageStore (state, lang) {
+      state.language = lang
+     console.log(lang, 'sdoiooo')
+    }    
   },
 
   getters: {
     orderScan : state => state.scanOrder,
     allOrders: state => state.orders,
-    settings: state => state.settings
+    settings: state => state.settings,
+    languageStore: state => state.language
   }
 }
 

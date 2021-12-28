@@ -1,10 +1,10 @@
 
 const profiles = {
     state: {
-        rol: 'admin',
+        rol: 'container',
         permissions: {
-            'admin': ['sendInfo', 'saveInfo'],
-            'mar': ['saveInfo'],
+            'container': ['autoScan', 'saveInfo'],
+            'otro': ['noAutoScan'],
         }
     },
     mutations: {
@@ -15,15 +15,15 @@ const profiles = {
     },
     actions:{
         hasPermission({state}, permission){
-            debugger // eslint-disable-line
-            var a = state.permissions[state.rol].some(p => p == permission)
+            // debugger // eslint-disable-line
+            var a = state.permissions[state.rol].some(p => p === permission)
             console.log(a)
             return a
         }
     },
   
     getters: {
-      
+      rolStore : state => state.rol
     }
   }
   

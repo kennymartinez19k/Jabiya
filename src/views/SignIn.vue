@@ -31,7 +31,7 @@
           <input
             class="uk-form-width-medium formLogin"
             v-model="login.email"
-            type="email"
+            type="number"
             placeholder="ejemplo@email.com"
             required
           />
@@ -74,6 +74,7 @@
             <a class="uk-alert-close" uk-close></a>
             <p>{{showErrorText}}</p>
         </div>
+        <!-- <pre>{{ejemplo}}ddd </pre> -->
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
@@ -100,7 +101,7 @@ export default {
       showError: null,
       showErrorText: null,
       login: {
-        email: "admin@flai.com.do",
+        email: "8094034881",
         password: "1",
         rememberPassword: false,
       },
@@ -108,6 +109,7 @@ export default {
         email: "",
         password: "",
       },
+      ejemplo: null
     };
   },
   watch: {
@@ -132,6 +134,7 @@ export default {
             this.loaded = true;
             this.AutoLogin.email = this.login.email;
             this.AutoLogin.password = this.login.password;
+            this.ejemplo = 'busca '
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
@@ -150,6 +153,7 @@ export default {
           this.showErrorText = 'Error al introducir los datos'
         }else if (error.message === 'Network Error') {
           this.showErrorText = 'Error de conexion, verifique que este conectado'
+          this.ejemplo = error
         }
        this.showError = true
       }

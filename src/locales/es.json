@@ -1,0 +1,29 @@
+{
+  "directAccess": {
+    "titleAccess": "Seleccione la Acción que Desea Realizar",
+    "titleTravel": "Ver tus Viajes",
+    "titleMount": "Montar Viaje e Iniciar Ruta",
+    "titleDelivery": "Realizar Entrega del Contenedor al Cliente",
+    "titleProcessNo": "Procesar No-Entrega del contenedor",
+    "titleRejection": "Procesar Rechazo del Contenedor",
+    "titleReturn": "Devolver Contenedor",
+    "titleInvoices": "Procesar Facturas",
+    "titleReconciliation": "Reconciliación con Almacén"
+  },
+  "appHeader": {
+    "yourTrips": "Tus Viajes",
+    "Setting": "Configuración",
+    "Signoff": "Cerrar sesión",
+    "appVersion": "Versión app"
+  },
+  "settings": {
+    "titleH6": "Escaneo Automatico",
+    "titleIdiom": "Seleccione un Idioma:",
+    "optionEnglish": "English",
+    "optionSpanish": "Español",
+    "profile": "Perfil:",
+    "optionNone": "Ninguno",
+    "optionContainer": "Contenedor",
+    "saveButton": "Guardar Cambios"
+  }
+}
