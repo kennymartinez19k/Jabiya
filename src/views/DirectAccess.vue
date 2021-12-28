@@ -17,21 +17,25 @@
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Viajes</strong></p>
           </li>
-          <li v-if="permiso()" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
+          <li v-if="settings.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
                <img src="../assets/cargo.png" alt="">
+               <div class="disabled"></div>
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          <li v-else class="action uk-width-1-2" @click="changeRoute('orders')">
+          <li v-else :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders')">
                <img src="../assets/cargo.png" alt="">
-                <p class="name-action"><strong>Montar Viaje e Iniciar Rutaaa</strong> </p>
+               <div class="disabled"></div>
+                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
+          <li v-if="settings?.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
               <img src="../assets/deliver-container.png" alt="">
-            <p class="name-action"><strong>Procesar Entrega del Contenedor</strong> </p>
+              <div class="disabled"></div>
+            <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
           </li>
-          <li v-else class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
+          <li v-else :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
             <img src="../assets/deliver-container.png" alt="">
-            <p class="name-action"><strong>Procesar Entrega del Contenedor</strong> </p>
+            <div class="disabled"></div>
+            <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
           </li>
           <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
@@ -43,9 +47,9 @@
           </li>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/reject-container.png" alt="">
-                <p class="name-action"><strong>Procesar Rechazo del Contenedor</strong></p>
+                <p class="name-action"><strong>Procesar No-Entrega del Contenedor </strong></p>
           </li>
-           <li v-if="permiso()" class="action uk-width-1-2" @click="changeRoute('home')">
+           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/return-container.png" alt="">
                 <p class="name-action"><strong>Devolver Contenedor</strong></p>
           </li>
@@ -71,55 +75,6 @@ export default {
       loaded: false,
       Loads: null,
       check: null,
-
-      userLoads: [
-        {
-          date: new Date(),
-          hour: "10:00 Am",
-          status: "Asignada",
-          shipper: "Juan Perez",
-          loadNumber: 2177,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Montar Viaje",
-          icon: "color: #1f7a18",
-        },
-        {
-          hour: "12:00 PM",
-          status: "Entregada",
-          shipper: "Maria Hernandez",
-          loadNumber: 1883,
-          shipperZone: "Respaldo Rodeo",
-          btnAction: "Ver Orden(es)",
-          icon: "color: #000000",
-        },
-        {
-          hour: "10:00 AM",
-          status: "En Ruta",
-          shipper: "Juan Perez",
-          loadNumber: 2238,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Continuar Entrega(s)",
-          icon: "color: #a7a7a7",
-        },
-        {
-          hour: "10:00 AM",
-          status: "En Ruta",
-          shipper: "Juan Perez",
-          loadNumber: 2833,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Continuar Entrega(s)",
-          icon: "color: #a7a7a7",
-        },
-        {
-          hour: "10:00 AM",
-          status: "Despacho Aprobado",
-          shipper: "Juan Perez",
-          loadNumber: 2993,
-          shipperZone: "Rep. de colombia",
-          btnAction: "Comenzar Entrega(s)",
-          icon: "color: #c39108",
-        },
-      ],
     };
   },
   computed:{
@@ -143,11 +98,6 @@ export default {
     ...mapActions([
       'hasPermission'
     ]),
-    async permiso(){
-      let a = await this.hasPermission('sendInfo')
-      console.log(a)
-      return a
-    },
     async call(){
        this.loaded = true;
        this.Loads = await this.$services.loadsServices.getLoads();
@@ -164,7 +114,6 @@ export default {
     },
     
     async changeRoute(val){
-      await this.getLoadsId(val.loadId)
       if (await this.Loads){
         this.$store.commit('setAllLoads', this.Loads)
         this.$router.push({name: val})
@@ -174,10 +123,8 @@ export default {
         this.$router.push({ name: val}).catch(() => {})
         this.hideMenu()
     },
-    async getLoadsId (val) {
-      const result = await this.$services.loadsServices.getLoadsbyId(val)
-      this.$store.commit("setloadProductStore", result);
-
+    hasStatus(val){
+      return this.Loads?.some(x => x.status == val)
     }
   },
 
@@ -193,6 +140,7 @@ export default {
 
 .action{
     margin: 17px 0px;
+    position: relative;
 }
 .title{
   margin: 0px 10px 10px;
@@ -226,11 +174,15 @@ export default {
     background: #fff;
     width: 250px
 }
-.nav-opt{
-  color: #000;
-  text-align: initial;
+
+.disabledAccess{
+  pointer-events: none;
 }
-.nav-opt li{
-  padding: 20px;
+.disabledAccess .disabled{
+    background: rgba(255, 255, 255, 0.4);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
 }
 </style>

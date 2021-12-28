@@ -14,11 +14,8 @@ const profiles = {
         }
     },
     actions:{
-        hasPermission({state}, permission){
-            debugger // eslint-disable-line
-            var a = state.permissions[state.rol].some(p => p == permission)
-            console.log(a)
-            return a
+        hasPermission(){
+            return true
         }
     },
   
