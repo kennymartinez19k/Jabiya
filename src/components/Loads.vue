@@ -8,7 +8,7 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-    <div v-for="(n, index) in dateAvalaible" :key="index">
+    <div v-for="(loadsByDate, i) in loads" :key="i">
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div
           class="uk-card-header"
@@ -20,86 +20,88 @@
                 datetime="2016-04-01T19:00"
                 class="uk-text-bold uk-text-uppercase"
                 style="font-size: 12px"
-                >{{ n }}</time
+                >{{ loadsByDate[0] }}</time
               >
             </p>
           </div>
         </div>
-        <div>
+        <div>     
           <div
-            v-show="loads.length > 0"
-            v-for="load in loads"
-            style="height: 200px"
+            v-for="load in loadsByDate"
+            v-show="loadsByDate.length > 1 && typeof load == 'object'"
             :key="load"
             class="uk-card uk-card-default uk-card-body"
             :class="{
-              asigned: load.status == 'Driver Assigned',
-              delivered: load.status == 'Delivered',
-              onWay: load.status == 'Driver Arrival',
-              dispatch: load.status == 'Dispatched',
-              expectingApprove: load.status == 'Expecting Approval',
+              'assigned': load.loadingStatus?.text == 'Driver Assigned',
+              'delivered': load.loadingStatus?.text == 'Delivered',
+              'driver-arrival': load.loadingStatus?.text == 'Driver Arrival',
+              'orange-flashing': load.loadingStatus?.text == 'Dispatched',
+              expectingApprove: load.loadingStatus?.text == 'Expecting Approval',
+              'approved': load.loadingStatus?.text == 'Approved'
             }"
-          >
+          >  
             <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
-              <strong>{{ load.loadNumber }}</strong>
+              <strong>{{ load.loadMapId }}</strong>
             </h5>
             <div class="uk-flex uk-flex-between">
               <div class="uk-text-left info-user">
                 <p>
                   <strong> Estado:</strong>
-                  <span v-if="load.loadingStatus.text == 'Driver Assigned'">Asignada</span>
-                  <span v-if="load.loadingStatus.text == 'Approved'">Aprobada</span>
-                  <span v-if="load.loadingStatus.text == 'Delivered'">Entregada</span>
-                  <span v-if="load.loadingStatus.text == 'Driver Arrival'">En Ruta</span>
-                  <span v-if="load.loadingStatus.text == 'Dispatched'"
+                  <span v-if="load.loadingStatus?.text == 'Driver Assigned'">Asignada</span>
+                  <span v-if="load?.loadingStatus?.text == 'Approved'">Aprobada</span>
+                  <span v-if="load?.loadingStatus?.text == 'Delivered'">Entregada</span>
+                  <span v-if="load?.loadingStatus?.text == 'Driver Arrival'">En Ruta</span>
+                  <span v-if="load?.loadingStatus?.text == 'Dispatched'"
                     >Despacho Aprobado</span
                   >
-                  <span v-if="load.loadingStatus.text == 'Defining Load'">Definiendo Contenedor</span>
+                  <span v-if="load?.loadingStatus?.text == 'Defining Load'">Definiendo Contenedor</span>
 
-                  <span v-if="load.loadingStatus.text == 'Expecting Approval'"
+                  <span v-if="load?.loadingStatus?.text == 'Expecting Approval'"
                     >Esperando tu Aprobacion</span
                   >
                 </p>
                 <p>
-                  <strong>Cliente: </strong> <span>{{ load.Orders[0].client_name }}</span>
+                  <!-- <strong>Cliente: </strong> <span>{{ load?.Orders[0] }}</span> -->
                 </p>
                 <p>
                   <strong>No. de Orden(es): </strong
-                  ><span>{{ load.Orders.length }}</span>
+                  ><span>{{ load?.Orders?.length }}</span>
                 </p>
                 <p>
-                  <strong>Sector 1a Orden: </strong><span>{{ load.Orders[0].sector }}</span>
+                  <strong>Sector 1a Orden: </strong>
+                  <span v-for="order in load.Orders" :key="order">
+                    {{ order.sector }}</span>
                 </p>
               </div>
               <div class="btn">
                 <div>
                   <div style="margin-top: 1px">
                     <img
-                      v-if="load.loadingStatus.text == 'Driver Assigned'"
+                      v-if="load?.loadingStatus?.text == 'Driver Assigned'"
                       src="../assets/cargo.png"
                       class="icon-load"
                       alt=""
                     />
                     <img
-                      v-if="load.loadingStatus.text == 'Delivered'"
+                      v-if="load?.loadingStatus?.text == 'Delivered'"
                       src="../assets/delivery.png"
                       class="icon-load"
                       alt=""
                     />
                     <img
-                      v-if="load.loadingStatus.text == 'Driver Arrival'"
+                      v-if="load?.loadingStatus?.text == 'Driver Arrival'"
                       src="../assets/road.png"
                       class="icon-load"
                       alt=""
                     />
                     <img
-                      v-if="load.loadingStatus.text == 'Dispatched'"
+                      v-if="load?.loadingStatus?.text == 'Dispatched'"
                       src="../assets/warehouse.png"
                       class="icon-load"
                       alt=""
                     />
                     <img
-                      v-if="load.loadingStatus.text == 'Expecting Approval'"
+                      v-if="load?.loadingStatus?.text == 'Expecting Approval'"
                       src="../assets/approve-container.png"
                       class="icon-load"
                       alt=""
@@ -107,25 +109,26 @@
                   </div>
                 </div>
                 <button class="uk-button" @click="setLoad(load)">
-                  <span v-if="load.loadingStatus.text == 'Driver Assigned'"
+                  <span v-if="load?.loadingStatus?.text == 'Driver Assigned'"
                     >Montar Viaje</span
                   >
-                  <span v-if="load.loadingStatus.text == 'Delivered'">Ver Ordenes</span>
-                  <span v-if="load.loadingStatus.text == 'Driver Arrival'"
+                  <span v-if="load?.loadingStatus?.text == 'Delivered'">Ver Ordenes</span>
+                  <span v-if="load?.loadingStatus?.text == 'Driver Arrival'"
                     >Continuar Entrega(s)</span
                   >
-                  <span v-if="load.loadingStatus.text == 'Dispatched'"
+                  <span v-if="load?.loadingStatus?.text == 'Dispatched'"
                     >Comenzar Entrega(s)</span
                   >
-                  <span v-if="load.loadingStatus.text == 'Expecting Approval'"
+                  <span v-if="load?.loadingStatus?.text == 'Expecting Approval'"
                     >Aceptar / Rechazar Viaje</span
                   >
+                  <span v-if="load?.loadingStatus?.text == 'Approved'">Aprobada</span>
                 </button>
               </div>
             </div>
           </div>
-          <div style="height: 50px">
-            <span v-show="loads.length == 0">No Existen Cargas disponibles</span>
+          <div v-show="loadsByDate.length <= 1" style="height: 50px">
+            <span >No Existen Viajes Disponibles</span>
           </div>
         </div>
       </div>
@@ -173,9 +176,7 @@ export default {
     window.location.href = "#Hoy";
     moment.locale("es");
     await this.scrollTrigger();
-    this.loads.forEach((x, i) => {
-      if (i === 0) x.status = "Driver Assigned";
-    });
+    
   },
   computed: {
     ...mapGetters(["allLoads", "settings"]),
@@ -214,16 +215,19 @@ export default {
             }
             var date = moment(contDate).format("MM/DD/YYYY");
             const result = await this.$services.loadsServices.getLoadsbyDate(date);
-            this.dateAvalaible.push(date)
             if (result.length == 0) {
               await this.scrollTrigger();
             }
             else {
               console.log(result)
             }
-            result.forEach((x) => this.loads.push(x));
-            console.log(this.loads)
-    
+            result.unshift(date)
+            result.forEach(x => {
+              console.log(x)
+              if(x?.loadingStatus?.text == 'Approved') x.loadingStatus.text = "Driver Assigned"
+            })
+            this.loads.push(result)
+            
             this.showloader = true;
             setTimeout(() => {
               this.currentPage += 1;
@@ -234,27 +238,24 @@ export default {
       });
       observer.observe(this.$refs.infinitescrolltrigger);
     },
-    async setLoad(valueOrder) {
-      await this.getLoadsId(valueOrder.loadId);
-      this.$store.commit("setloadStore", valueOrder);
+    async setLoad(val) {
+      await this.getLoadsId(val.loadMapId);
+      this.$store.commit("setloadStore", val);
       if (this.settings?.AutoScan) {
-        if (valueOrder?.status == "Driver Assigned")
-          this.changeRoute("orders-auto-scan");
-        if (valueOrder?.status == "Driver Arrival")
-          this.changeRoute("delivery-actions-auto");
+        if (val?.loadingStatus?.text == "Driver Assigned") this.changeRoute("orders-auto-scan");
+        if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
       } else {
-        if (valueOrder?.status == "Driver Assigned") this.changeRoute("orders");
-        if (valueOrder?.status == "Delivered") this.changeRoute("");
-        if (valueOrder?.status == "Driver Arrival")
-          this.changeRoute("delivery-routes");
-        if (valueOrder?.status == "Dispatched") this.changeRoute("");
+        if (val?.loadingStatus?.text == "Driver Assigned") this.changeRoute("orders");
+        if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-routes");
       }
+        if (val?.loadingStatus?.text == "Expecting Approval") this.changeRoute("travel-confirmation");
+
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
     },
     async getLoadsId(val) {
-      const result = await this.$services.loadsServices.getLoadsbyId(val);
+      const result = await this.$services.loadsServices.getOrdersByLoadId(val);
       console.log(result);
       this.$store.commit("scanOrder", result);
     },
@@ -315,10 +316,10 @@ button {
   font-size: 9px !important;
   line-height: 15px;
 }
-.asigned {
+.assigned {
   color: rgb(73 73 73);
 }
-.asigned button {
+.assigned button {
   color: green;
   border: 1px solid #009b08;
   font-weight: 700;
@@ -348,10 +349,12 @@ body {
   }
 }
 
-.delivered {
+.only-black, .delivered, .driver-arrival, .approved {
   color: rgb(130, 127, 127) !important;
 }
 .delivered button,
+.driver-arrival button,
+.approved button,
 .expectingApprove button {
   background: #ffffff;
   color: rgb(73, 73, 73);
@@ -370,10 +373,10 @@ body {
   border: 1px solid #3c6e3c;
 }
 
-.dispatch {
-  color: #000;
+.orange-flashing {
+  color: rgb(199, 194, 194);
 }
-.dispatch button {
+.orange-flashing button {
   box-shadow: 0px 0.5px 3px #c58002;
   color: #af7202;
   background: #ffffff;

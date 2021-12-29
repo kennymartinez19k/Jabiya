@@ -196,7 +196,7 @@ export default {
       }
     },
      async getLoadsId (val) {
-      const result = await this.$services.loadsServices.getLoadsbyId(val)
+      const result = await this.$services.loadsServices.getOrdersByLoadId(val)
       this.orders = result
 
     },

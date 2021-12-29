@@ -11,15 +11,15 @@
     </div>
     <div>
       <div
-        v-for="load in userOrden"
+        v-for="(load, i) in userOrden"
         :key="load"
         class="uk-card uk-card-default uk-card-body"
         :class="{
-          asigned: load.status == 'Driver Assigned',
-          delivered: load.status == 'Delivered',
-          onWay: load.status == 'Driver Arrival',
-          dispatch: load.status == 'Dispatched',
-          expectingApprove: load.status == 'Expecting Approval'
+          asigned: load.loadingStatus.text == 'Driver Assigned',
+          delivered: load.loadingStatus.text == 'Delivered',
+          onWay: load.loadingStatus.text == 'Driver Arrival',
+          dispatch: load.loadingStatus.text == 'Dispatched',
+          expectingApprove: load.loadingStatus.text == 'Expecting Approval'
         }"
       >
         <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
@@ -29,23 +29,29 @@
           <div class="uk-text-left info-user">
             <p>
               <strong> Estado: </strong>
-              <span v-if="load.status == 'Driver Assigned'">Asignada</span>
-              <span v-if="load.status == 'Approved'">Aprobada</span>
-              <span v-if="load.status == 'Delivered'">Entregada</span>
-              <span v-if="load.status == 'Driver Arrival'">En Ruta</span>
-              <span v-if="load.status == 'Dispatched'">Despacho Aprobado</span>
-              <span v-if="load.status == 'Expecting Approval'">Esperando tu Aprobacion</span>
+              <span v-if="load.loadingStatus.text == 'Driver Assigned'">Asignada</span>
+              <span v-if="load.loadingStatus.text == 'Approved'">Aprobada</span>
+              <span v-if="load.loadingStatus.text == 'Delivered'">Entregada</span>
+              <span v-if="load.loadingStatus.text == 'Driver Arrival'">En Ruta</span>
+              <span v-if="load.loadingStatus.text == 'Dispatched'">Despacho Aprobado</span>
+              <span v-if="load.loadingStatus.text == 'Expecting Approval'">Esperando tu Aprobacion</span>
 
             </p>
             <p>
-              <strong>Cliente: </strong> <span>{{ load.shipper }}</span>
+              <strong>Cliente: </strong> 
+              <span >
+                {{ load.shipper[i].name }}
+              </span>
             </p>
             <p>
               <strong>No. de Orden(es): </strong
               ><span>{{ load.noOfOrders }}</span>
             </p>
             <p>
-              <strong>Zona: </strong><span>{{ load.shipperZone }}</span>
+              <strong>Zona: </strong>
+              <span>
+                {{ load.Orders[i].sector}}
+              </span>
             </p>
           </div>
           <div class="btn">
@@ -53,31 +59,31 @@
                 
               <div style="margin-top: 1px">
                 <img
-                  v-if="load.status ==  'Driver Assigned'"
+                  v-if="load.loadingStatus.text ==  'Driver Assigned'"
                   src="../assets/cargo.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'Delivered'"
+                  v-if="load.loadingStatus.text == 'Delivered'"
                   src="../assets/delivery.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'Driver Arrival'"
+                  v-if="load.loadingStatus.text == 'Driver Arrival'"
                   src="../assets/road.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'Dispatched'"
+                  v-if="load.loadingStatus.text == 'Dispatched'"
                   src="../assets/warehouse.png"
                   class="icon-load"
                   alt=""
                 />
                 <img
-                  v-if="load.status == 'Expecting Approval'"
+                  v-if="load.loadingStatus.text == 'Expecting Approval'"
                   src="../assets/approve-container.png"
                   class="icon-load"
                   alt=""
@@ -85,11 +91,11 @@
               </div>
             </div>
             <button class="uk-button " @click="setLoad(load)">
-              <span v-if="load.status == 'Driver Assigned'">Montar Viaje</span>
-              <span v-if="load.status == 'Delivered'">Ver Ordenes</span>
-              <span v-if="load.status == 'Driver Arrival'">Continuar Entrega(s)</span>
-              <span v-if="load.status == 'Dispatched'">Comenzar Entrega(s)</span>
-              <span v-if="load.status == 'Expecting Approval'">Aceptar / Rechazar Viaje</span>
+              <span v-if="load.loadingStatus.text == 'Driver Assigned'">Montar Viaje</span>
+              <span v-if="load.loadingStatus.text == 'Delivered'">Ver Ordenes</span>
+              <span v-if="load.loadingStatus.text == 'Driver Arrival'">Continuar Entrega(s)</span>
+              <span v-if="load.loadingStatus.text == 'Dispatched'">Comenzar Entrega(s)</span>
+              <span v-if="load.loadingStatus.text == 'Expecting Approval'">Aceptar / Rechazar Viaje</span>
             </button>
           </div>
         </div>
@@ -107,13 +113,14 @@ export default {
   },
   data(){
     return{
-      loads: []
+      loads: [],
+      loadSector: null
     }
   },
   computed:{
     ...mapGetters([
       'settings'
-    ])
+    ]),
   },
   mounted(){
     this.loads = this.userOrden
@@ -136,8 +143,7 @@ export default {
       this.$router.push({ name: path }).catch(() => {});
     },
     async getLoadsId (val) {
-      const result = await this.$services.loadsServices.getLoadsbyId(val)
-      console.log(result)
+      const result = await this.$services.loadsServices.getOrdersByLoadId(val)
       this.$store.commit("scanOrder", result);
 
     }

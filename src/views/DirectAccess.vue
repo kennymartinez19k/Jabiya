@@ -73,7 +73,7 @@ export default {
     return {
       load: null,
       loaded: false,
-      Loads: null,
+      Loads: [],
       check: null,
     };
   },
@@ -100,7 +100,12 @@ export default {
     ]),
     async call(){
        this.loaded = true;
-       this.Loads = await this.$services.loadsServices.getLoads();
+       const LoadMaps = await this.$services.loadsServices.getLoadsbyDate();
+       LoadMaps.forEach( async(x) => {
+         var Loads = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
+         this.Loads.push(Loads);
+         console.log(x.loadMapId)
+       });
        this.loaded = false;
        console.log(this.Loads)
     },
