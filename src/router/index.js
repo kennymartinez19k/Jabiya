@@ -11,6 +11,7 @@ import Settings from '../views/Settings.vue'
 import Maps from '../views/MapsExample.vue'
 import OrdersAutoScan from '../views/AutoScan/Orders.vue'
 import DeliveryActionsAuto from '../views/AutoScan/DeliveryActions.vue'
+import TravelConfirmation from '../views/TravelConfirmation.vue'
 import About from '../views/About.vue'
 const routes = [
   {
@@ -79,6 +80,11 @@ const routes = [
     path: "/about",
     name: "about",
     component: About,
+  },
+  {
+    path: "/travel-confirmation",
+    name: "travel-confirmation",
+    component: TravelConfirmation,
   },
   
  
