@@ -33,19 +33,19 @@
             <img src="../assets/deliver-container.png" alt="">
             <p class="name-action"><strong>{{$t('directAccess.titleDelivery')}}</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
+          <li v-if="showProfile === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
                 <p class="name-action"><strong>{{$t('directAccess.titleInvoices')}}</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
+          <li v-if="showProfile === false" class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
                 <p class="name-action"><strong>{{$t('directAccess.titleReconciliation')}}</strong></p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute('home')">
+          <li  class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/reject-container.png" alt="">
                 <p class="name-action"><strong>{{$t('directAccess.titleProcessNo')}}</strong></p>
           </li>
-           <li class="action uk-width-1-2" @click="changeRoute('home')">
+           <li v-if="showProfile === true" class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/return-container.png" alt="">
                 <p class="name-action"><strong>{{$t('directAccess.titleReturn')}}</strong></p>
           </li>
@@ -72,6 +72,7 @@ export default {
       loaded: false,
       Loads: null,
       check: null,
+      showProfile: null
     };
   },
   computed:{
