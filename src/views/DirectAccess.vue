@@ -25,11 +25,11 @@
                <img src="../assets/cargo.png" alt="">
                 <p class="name-action"><strong>{{$t('directAccess.titleMount')}}</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
+          <li v-if="settings?.AutoScan"  class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
               <img src="../assets/deliver-container.png" alt="">
             <p class="name-action"><strong>{{$t('directAccess.titleDelivery')}}</strong> </p>
           </li>
-          <li v-else :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
+          <li v-else class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
             <img src="../assets/deliver-container.png" alt="">
             <p class="name-action"><strong>{{$t('directAccess.titleDelivery')}}</strong> </p>
           </li>
@@ -125,12 +125,8 @@ export default {
        LoadMaps.forEach( async(x) => {
          var Loads = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
          this.Loads.push(Loads);
-         console.log(x.loadMapId)
-        //  console.log(x.shipper)
-        //  console.log(x.shipper)
        });
        this.loaded = false;
-       console.log(this.Loads)
     },
     openMenu(){
       this.positionSticky = true

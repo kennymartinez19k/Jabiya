@@ -1,12 +1,14 @@
 import axios from 'axios'
-const token =  JSON.parse(localStorage.getItem('auth'))
+let token = '';
+if(JSON.parse(localStorage.getItem('auth'))) 
+  token = JSON.parse(localStorage.getItem('auth'))
 
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
     credential :"same-origin",
     headers: { 
       'Content-Type': 'application/json', 
-      auth: token.cookie
+      auth: token.cookie[0]
     }
 })
 

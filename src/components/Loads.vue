@@ -32,7 +32,7 @@
             :key="load"
             class="uk-card uk-card-default uk-card-body"
             :class="{
-              'assigned': load.loadingStatus?.text == 'Driver Assigned',
+              'assigned': load.loadingStatus?.text == 'Approved',
               'delivered': load.loadingStatus?.text == 'Delivered',
               'driver-arrival': load.loadingStatus?.text == 'Driver Arrival',
               'orange-flashing': load.loadingStatus?.text == 'Dispatched',
@@ -41,13 +41,12 @@
             }"
           >  
             <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
-              <strong>{{ load.loadMapId }}</strong>
+              <strong>{{ load?.loadNumber }}</strong>
             </h5>
             <div class="uk-flex uk-flex-between">
               <div class="uk-text-left info-user">
                 <p>
                   <strong> Estado:</strong>
-                  <span v-if="load.loadingStatus?.text == 'Driver Assigned'">Asignada</span>
                   <span v-if="load?.loadingStatus?.text == 'Approved'">Aprobada</span>
                   <span v-if="load?.loadingStatus?.text == 'Delivered'">Entregada</span>
                   <span v-if="load?.loadingStatus?.text == 'Driver Arrival'">En Ruta</span>
@@ -61,7 +60,10 @@
                   >
                 </p>
                 <p>
-                  <!-- <strong>Cliente: </strong> <span>{{ load?.Orders[0] }}</span> -->
+                  <strong>Cliente: </strong>
+                   <span v-for="info in load.shipper" :key="info">
+                     {{info.name }}
+                    </span>
                 </p>
                 <p>
                   <strong>No. de Orden(es): </strong
@@ -69,15 +71,14 @@
                 </p>
                 <p>
                   <strong>Sector 1a Orden: </strong>
-                  <span v-for="order in load.Orders" :key="order">
-                    {{ order.sector }}</span>
+                  <span>{{ load?.firstOrdenSector }}</span>
                 </p>
               </div>
               <div class="btn">
                 <div>
                   <div style="margin-top: 1px">
                     <img
-                      v-if="load?.loadingStatus?.text == 'Driver Assigned'"
+                      v-if="load?.loadingStatus?.text == 'Approved'"
                       src="../assets/cargo.png"
                       class="icon-load"
                       alt=""
@@ -109,7 +110,7 @@
                   </div>
                 </div>
                 <button class="uk-button" @click="setLoad(load)">
-                  <span v-if="load?.loadingStatus?.text == 'Driver Assigned'"
+                  <span v-if="load?.loadingStatus?.text == 'Approved'"
                     >Montar Viaje</span
                   >
                   <span v-if="load?.loadingStatus?.text == 'Delivered'">Ver Ordenes</span>
@@ -122,7 +123,6 @@
                   <span v-if="load?.loadingStatus?.text == 'Expecting Approval'"
                     >Aceptar / Rechazar Viaje</span
                   >
-                  <span v-if="load?.loadingStatus?.text == 'Approved'">Aprobada</span>
                 </button>
               </div>
             </div>
@@ -219,18 +219,22 @@ export default {
             }
             var date = moment(contDate).format("MM/DD/YYYY");
             const result = await this.$services.loadsServices.getLoadsbyDate(date);
-            if (result.length == 0) {
+            result.forEach(async x => {
+              const resultByDate = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
+              x.firstOrdenSector = x.Orders[0].sector
+              Object.assign(x, resultByDate)
+              console.log(x)
+
+            })
+            if (!result.length) {
               await this.scrollTrigger();
             }
             else {
               console.log(result)
             }
             result.unshift(date)
-            result.forEach(x => {
-              console.log(x)
-              if(x?.loadingStatus?.text == 'Approved') x.loadingStatus.text = "Driver Assigned"
-            })
             this.loads.push(result)
+            console.log(this.loads)
             
             this.showloader = true;
             setTimeout(() => {
@@ -240,16 +244,18 @@ export default {
           }
         });
       });
+      console.log(this.loads)
       observer.observe(this.$refs.infinitescrolltrigger);
     },
     async setLoad(val) {
-      await this.getLoadsId(val.loadMapId);
+      console.log(val)
+      await this.getLoadsId(val);
       this.$store.commit("setloadStore", val);
       if (this.settings?.AutoScan) {
-        if (val?.loadingStatus?.text == "Driver Assigned") this.changeRoute("orders-auto-scan");
+        if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders-auto-scan");
         if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
       } else {
-        if (val?.loadingStatus?.text == "Driver Assigned") this.changeRoute("orders");
+        if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders");
         if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-routes");
       }
         if (val?.loadingStatus?.text == "Expecting Approval") this.changeRoute("travel-confirmation");
@@ -259,9 +265,9 @@ export default {
       this.$router.push({ name: path }).catch(() => {});
     },
     async getLoadsId(val) {
-      const result = await this.$services.loadsServices.getOrdersByLoadId(val);
-      console.log(result);
-      this.$store.commit("scanOrder", result);
+      console.log('llamando endpoint')
+      console.log(val)
+      this.$store.commit("scanOrder", val.Orders);
     },
   },
 };
