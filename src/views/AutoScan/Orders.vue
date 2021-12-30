@@ -19,16 +19,13 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
@@ -116,71 +113,6 @@ export default {
       load: null,
       completed: "background-color: #2a307c !important",
       orders: null,
-      ordersProof: [
-        {
-          numberOfOrders: 1234,
-          order_num: 2,
-          client_name: "Juan Martinez Soto",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 08:00')
-        },
-        {
-          numberOfOrders: 1223,
-          order_num: 2,
-          client_name: "Maria Lisbeth Alcantara Rodriguez",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 10:00')
-        },
-        {
-          numberOfOrders: 3321,
-          order_num: 2,
-          client_name: "Albert Perez",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 12:00')
-        },
-        {
-          numberOfOrders: 4324,
-          order_num: 2,
-          client_name: "Jose Abreu Pichardo",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 14:00')
-        },
-        {
-          numberOfOrders: 3753,
-          order_num: 2,
-          client_name: "Albert Perez",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 16:22')
-        },
-        {
-          numberOfOrders: 1027,
-          order_num: 2,
-          client_name: "Jose Abreu Pichardo",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 18:22')
-        },
-        {
-          numberOfOrders: 9120,
-          order_num: 2,
-          client_name: "Juan Jose Garcia",
-          zone_name: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 20:22')
-        },
-      ],
     };
   },
   computed: {
@@ -235,6 +167,10 @@ export default {
         } else x.completed = false;
       });
     },
+    shipperName(val){
+      var shipper = val?.shipper[0]?.name
+      return shipper
+    }
   },
 };
 </script>

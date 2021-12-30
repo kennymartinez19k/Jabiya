@@ -17,22 +17,22 @@
               <img src="../assets/box-truck.png" alt="">
                 <p class="name-action"><strong>Ver Tus Viajes</strong></p>
           </li>
-          <li v-if="settings.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
+          <li v-if="settings.AutoScan" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
                <img src="../assets/cargo.png" alt="">
                <div class="disabled"></div>
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          <li v-else :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders')">
+          <li v-else class="action uk-width-1-2" @click="changeRoute('orders')">
                <img src="../assets/cargo.png" alt="">
                <div class="disabled"></div>
                 <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
+          <li v-if="settings?.AutoScan"  class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
               <img src="../assets/deliver-container.png" alt="">
               <div class="disabled"></div>
             <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
           </li>
-          <li v-else :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
+          <li v-else class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
             <img src="../assets/deliver-container.png" alt="">
             <div class="disabled"></div>
             <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
@@ -104,10 +104,8 @@ export default {
        LoadMaps.forEach( async(x) => {
          var Loads = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
          this.Loads.push(Loads);
-         console.log(x.loadMapId)
        });
        this.loaded = false;
-       console.log(this.Loads)
     },
     openMenu(){
       this.positionSticky = true
