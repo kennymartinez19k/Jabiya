@@ -11,47 +11,51 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   </div>
-      <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
-          <h5 class="title uk-width-1-1 uk-text-center">Seleccione la Acción que Desea Realizar</h5>
+      <!-- <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
+          <h5 class="title uk-width-1-1 uk-text-center">{{$t('directAccess.titleAccess')}}</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
-                <p class="name-action"><strong>Ver Tus Viajes</strong></p>
+                <p class="name-action"><strong>{{$t('directAccess.titleTravel')}}</strong></p>
           </li>
-          <li v-if="settings.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
+          <li v-if="showProfile === true" class="action uk-width-1-2" @click="changeRoute('orders-auto-scan')">
                <img src="../assets/cargo.png" alt="">
-               <div class="disabled"></div>
-                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
+                <p class="name-action"><strong>{{$t('directAccess.titleMount')}}</strong> </p>
           </li>
-          <li v-else :class="{'disabledAccess': !hasStatus('Driver Assigned')}" class="action uk-width-1-2" @click="changeRoute('orders')">
+          <li  v-else  class="action uk-width-1-2" @click="changeRoute('orders')">
                <img src="../assets/cargo.png" alt="">
-               <div class="disabled"></div>
-                <p class="name-action"><strong>Montar Viaje e Iniciar Ruta</strong> </p>
+                <p class="name-action"><strong>{{$t('directAccess.titleMount')}}</strong> </p>
           </li>
           <li v-if="settings?.AutoScan" :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('delivery-actions-auto')">
               <img src="../assets/deliver-container.png" alt="">
-              <div class="disabled"></div>
-            <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
+            <p class="name-action"><strong>{{$t('directAccess.titleDelivery')}}</strong> </p>
           </li>
           <li v-else :class="{'disabledAccess': !hasStatus('Driver Arrival')}" class="action uk-width-1-2" @click="changeRoute('deliveryActions')">
             <img src="../assets/deliver-container.png" alt="">
-            <div class="disabled"></div>
-            <p class="name-action"><strong>Realizar Entrega del Contenedor al Cliente</strong> </p>
+            <p class="name-action"><strong>{{$t('directAccess.titleDelivery')}}</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute('')">
+          <li v-if="showProfile === false" class="action uk-width-1-2" @click="changeRoute('')">
                <img src="../assets/invoice.png" alt="">
-                <p class="name-action"><strong>Procesar Factura</strong> </p>
+                <p class="name-action"><strong>{{$t('directAccess.titleInvoices')}}</strong> </p>
           </li>
-          <li v-if="settings?.AutoScan === false" class="action uk-width-1-2" @click="changeRoute()">
+          <li v-if="showProfile === false" class="action uk-width-1-2" @click="changeRoute()">
               <img src="../assets/almacen.png" alt="">
-                <p class="name-action"><strong>Reconciliación con Almacén</strong></p>
+                <p class="name-action"><strong>{{$t('directAccess.titleReconciliation')}}</strong></p>
           </li>
-          <li class="action uk-width-1-2" @click="changeRoute('home')">
+          <li  class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/reject-container.png" alt="">
-                <p class="name-action"><strong>Procesar No-Entrega del Contenedor </strong></p>
+                <p class="name-action"><strong>{{$t('directAccess.titleProcessNo')}}</strong></p>
           </li>
-           <li class="action uk-width-1-2" @click="changeRoute('home')">
+           <li v-if="showProfile === true" class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/return-container.png" alt="">
-                <p class="name-action"><strong>Devolver Contenedor</strong></p>
+                <p class="name-action"><strong>{{$t('directAccess.titleReturn')}}</strong></p>
+          </li>
+      </ul> -->
+          <h5 class="title uk-width-1-1 uk-text-center">{{titleAccessTypeEnum}}</h5>
+
+   <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
+          <li v-for="data in profileComponentTypeEnum[this.showProfile].directAccess" :key="data" class="action uk-width-1-2" @click="changeRoute(data[2])">
+              <img :src="require(`../assets/${data[1]}`)" alt="">
+                <p class="name-action"><strong>{{data[0]}}</strong></p>
           </li>
       </ul>
   </div>
@@ -63,6 +67,7 @@ import Loading from "vue-loading-overlay";
 import { IonLoading } from "@ionic/vue";
 import "vue-loading-overlay/dist/vue-loading.css";
 import Uikit from 'uikit'
+import { profileComponentTypeEnum, titleAccessTypeEnum } from '../types'
 
 export default {
   components: {
@@ -71,15 +76,18 @@ export default {
   },
     data() {
     return {
+      profileComponentTypeEnum,
+      titleAccessTypeEnum,
       load: null,
       loaded: false,
       Loads: [],
       check: null,
+      showProfile: 0
     };
   },
   computed:{
     ...mapGetters([
-      'settings', "userData"
+      'settings', "userData", "languageStore", "rolStore"
     ]),
   },
   async beforeMount(){
@@ -93,11 +101,24 @@ export default {
     await this.call()
   
   },
+  async mounted (){
+      this.$i18n.locale = this.languageStore
+      await this.permiso()
+  },
+ 
 
   methods: {
     ...mapActions([
       'hasPermission'
     ]),
+    async permiso(){
+     let a = await this.hasPermission('autoScan')
+      if (a === true) {
+        this.showProfile = 0
+      } else if (a === false) {
+        this.showProfile = 1
+      }
+    },
     async call(){
        this.loaded = true;
        const LoadMaps = await this.$services.loadsServices.getLoadsbyDate();
@@ -105,6 +126,8 @@ export default {
          var Loads = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
          this.Loads.push(Loads);
          console.log(x.loadMapId)
+        //  console.log(x.shipper)
+        //  console.log(x.shipper)
        });
        this.loaded = false;
        console.log(this.Loads)

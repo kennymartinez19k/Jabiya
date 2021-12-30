@@ -6,7 +6,7 @@ class SingInServices {
     async getToken (singIn) {
       localStorage.removeItem('auth');
       const result = await this.http.post('http://preprod.flai.com.do:8756/exo/authenticate', singIn)
-      localStorage.setItem('auth', result.data.data.cookie[0])
+      localStorage.setItem('auth', JSON.stringify(result.data.data));
       return result.data.data
     }
   }

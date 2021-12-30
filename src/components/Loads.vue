@@ -176,6 +176,10 @@ export default {
     window.location.href = "#Hoy";
     moment.locale("es");
     await this.scrollTrigger();
+      // this.allLoads.forEach((x, i) => {
+    //  if(i === 0) x.status = "Driver Assigned"
+    // }
+    // )
     
   },
   computed: {

@@ -124,6 +124,7 @@ export default {
   },
   mounted(){
     this.loads = this.userOrden
+    // console.log(this.loads,'loades')
   },
   methods: {
     async setLoad(valueOrder) {
@@ -133,10 +134,10 @@ export default {
         if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders-auto-scan');
         if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-actions-auto');
       } else {
-      if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
-      if(valueOrder?.status == 'Delivered') this.changeRoute('');
-      if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
-      if(valueOrder?.status == 'Dispatched') this.changeRoute('');
+        if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders');
+        if(valueOrder?.status == 'Delivered') this.changeRoute('');
+        if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-routes');
+        if(valueOrder?.status == 'Dispatched') this.changeRoute('');
       }
     },
     changeRoute(path) {
