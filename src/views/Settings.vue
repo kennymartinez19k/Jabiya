@@ -20,7 +20,7 @@
         <div class="uk-form-controls" style="width: 40%">
             <select v-model="settings.profile" class="uk-select" id="profile">
                 <option value="container" selected>{{$t('settings.optionContainer')}}</option>
-                <option value="otro">{{$t('settings.optionNone')}}</option>
+                <option value="eCommerce">{{$t('settings.optionNone')}}</option>
             </select>
         </div>
       </label>

@@ -25,16 +25,20 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import Uikit from 'uikit'
 export default {
     props:{
         nameComponent: String
     },
-computed:{
-    ...mapGetters(["userData"]),
-    
-    titlePage(){
+   data() {
+    return {
+        iconType: 'sign-out-alt',
+        action: "sign-in",
+        positionSticky: false,
+        userData: null
+    }
+},
+computed:{    titlePage(){
             return this.nameComponent
     }
 },
@@ -57,16 +61,11 @@ watch:{
     }
 },
 mounted(){
+    this.userData = JSON.parse(localStorage.getItem('auth'))
     if (this.nameComponent) this.titlePage = this.nameComponent
     else ''
 },
-data() {
-    return {
-        iconType: 'sign-out-alt',
-        action: "sign-in",
-        positionSticky: false
-    }
-},
+
 methods:{
     openMenu(){
       this.positionSticky = true

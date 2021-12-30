@@ -4,7 +4,7 @@ const profiles = {
         rol: 'container',
         permissions: {
             'container': ['autoScan', 'saveInfo'],
-            'otro': ['noAutoScan'],
+            'eCommerce': ['noAutoScan'],
         }
     },
     mutations: {

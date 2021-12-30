@@ -11,7 +11,7 @@
   </ion-loading>
   <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
   </div>
-      <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
+      <!-- <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
           <h5 class="title uk-width-1-1 uk-text-center">{{$t('directAccess.titleAccess')}}</h5>
           <li class="action uk-width-1-2" @click="changeRoute('home')">
               <img src="../assets/box-truck.png" alt="">
@@ -49,8 +49,15 @@
               <img src="../assets/return-container.png" alt="">
                 <p class="name-action"><strong>{{$t('directAccess.titleReturn')}}</strong></p>
           </li>
-      </ul>
+      </ul> -->
+          <h5 class="title uk-width-1-1 uk-text-center">{{titleAccessTypeEnum}}</h5>
 
+   <ul class="uk-flex uk-flex-wrap uk-margin-remove" style="padding: 10px 0px; list-style: none">
+          <li v-for="data in profileComponentTypeEnum[this.showProfile].directAccess" :key="data" class="action uk-width-1-2" @click="changeRoute(data[2])">
+              <img :src="require(`../assets/${data[1]}`)" alt="">
+                <p class="name-action"><strong>{{data[0]}}</strong></p>
+          </li>
+      </ul>
   </div>
 </template>
 
@@ -60,6 +67,7 @@ import Loading from "vue-loading-overlay";
 import { IonLoading } from "@ionic/vue";
 import "vue-loading-overlay/dist/vue-loading.css";
 import Uikit from 'uikit'
+import { profileComponentTypeEnum, titleAccessTypeEnum } from '../types'
 
 export default {
   components: {
@@ -68,11 +76,13 @@ export default {
   },
     data() {
     return {
+      profileComponentTypeEnum,
+      titleAccessTypeEnum,
       load: null,
       loaded: false,
       Loads: [],
       check: null,
-      showProfile: null
+      showProfile: 0
     };
   },
   computed:{
@@ -104,9 +114,9 @@ export default {
     async permiso(){
      let a = await this.hasPermission('autoScan')
       if (a === true) {
-        this.showProfile = a
+        this.showProfile = 0
       } else if (a === false) {
-        this.showProfile = a
+        this.showProfile = 1
       }
     },
     async call(){
@@ -116,6 +126,8 @@ export default {
          var Loads = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
          this.Loads.push(Loads);
          console.log(x.loadMapId)
+        //  console.log(x.shipper)
+        //  console.log(x.shipper)
        });
        this.loaded = false;
        console.log(this.Loads)

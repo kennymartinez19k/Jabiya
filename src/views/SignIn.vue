@@ -140,7 +140,6 @@ export default {
             );
             this.loaded = false;
             this.$store.commit("setUserData", resultLogin);
-
             if (resultLogin)
               this.$router.push({ name: path }).catch(() => {});
           } 
