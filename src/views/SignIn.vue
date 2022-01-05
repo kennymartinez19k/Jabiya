@@ -3,7 +3,7 @@
     :active="loaded"
     color="rgb(86, 76, 175)"
     loader="spinner"
-    :width="65"
+    :width="100"
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
   <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
@@ -31,7 +31,7 @@
           <input
             class="uk-form-width-medium formLogin"
             v-model="login.email"
-            type="email"
+            type="number"
             placeholder="ejemplo@email.com"
             required
           />
@@ -72,12 +72,13 @@
       </div>
        <div v-if="showError" class="uk-alert-warning" uk-alert>
             <a class="uk-alert-close" uk-close></a>
-            <p>Revisar los datos</p>
+            <p>{{showErrorText}}</p>
         </div>
+        <!-- <pre>{{ejemplo}}ddd </pre> -->
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="changeRoute('direct-access')"
+        @click="changeRoute('home')"
         style="margin-top: 15px"
       >
         Iniciar sesión
@@ -98,8 +99,9 @@ export default {
       type: "password",
       iconType: "eye",
       showError: null,
+      showErrorText: null,
       login: {
-        email: "admin@flai.com.do",
+        email: "8094034881",
         password: "1",
         rememberPassword: false,
       },
@@ -107,6 +109,7 @@ export default {
         email: "",
         password: "",
       },
+      ejemplo: null
     };
   },
   watch: {
@@ -126,27 +129,32 @@ export default {
   methods: {
     async changeRoute(path) {
       try {
-        if (path == "direct-access") {
+        if (path == "home") {
           if (this.login.email !== "" && this.login.password !== "") {
             this.loaded = true;
             this.AutoLogin.email = this.login.email;
             this.AutoLogin.password = this.login.password;
+            this.ejemplo = 'busca '
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
-            this.loaded = false;
+            this.loaded = true;
             this.$store.commit("setUserData", resultLogin);
-
             if (resultLogin)
               this.$router.push({ name: path }).catch(() => {});
-          }
+          } 
         } else {
           this.$router.push({ name: path }).catch(() => {});
         }
       } catch (error) {
         this.loaded = false;
+        if (error.message === 'Request failed with status code 401') {
+          this.showErrorText = 'Error al introducir los datos'
+        }else if (error.message === 'Network Error') {
+          this.showErrorText = 'Error de conexion, verifique que este conectado'
+          this.ejemplo = error
+        }
        this.showError = true
-        // alert(error);
       }
     },
     showPassword() {

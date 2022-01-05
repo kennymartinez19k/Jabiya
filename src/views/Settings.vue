@@ -36,7 +36,7 @@ export default {
   data() {
     return {
       settings: {
-        AutoScan: null,
+        AutoScan: true,
         language: null,
         profile: null
       },
@@ -50,7 +50,7 @@ export default {
       this.$store.commit("setSettings", this.settings);
       this.$store.commit("changeRol", this.profile );
 
-      this.$router.push({ name: "direct-access" });
+      this.$router.push({ name: "home" });
     },
   },
 };

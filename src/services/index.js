@@ -1,11 +1,11 @@
 import axiosInstance from '../http-common'
-import EjemploService from './EjemploService'
 import LoadsServices from './LoadsServices'
+import LoadsScanServices from './LoadScanServices'
 import SingInServices from './SingInServices'
 
 export default {
-    ejemploService: new EjemploService(axiosInstance),
     loadsServices: new LoadsServices(axiosInstance),
     singInServices: new SingInServices(axiosInstance),
+    loadsScanServices: new LoadsScanServices(axiosInstance),
     
 }

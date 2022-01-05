@@ -8,6 +8,7 @@ const Loads = {
     mutations: {
         setloadStore (state, load) {
             state.load = load
+            console.log(load)
         },
         setAllLoads(state, val){
           state.allLoads = val
@@ -17,7 +18,6 @@ const Loads = {
         },
         setloadProductStore (state, products) {
           state.products = products
-          console.log(state.products, 'state.products')
       },
     },
     getters: {

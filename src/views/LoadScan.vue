@@ -2,9 +2,9 @@
   <div class="container">
     <div class="stiky">
       <p
-        style="font-size: 13px; font-weight: 500"
+        style=" font-size: 13px !important; font-weight: 500"
       >
-         {{load?.loadNumber}}
+        {{load?.loadNumber}}
       </p>
       <div
         class="
@@ -19,18 +19,13 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>
-            
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div class="allScreen">
@@ -85,7 +80,7 @@
                 <p><strong>No. de Orden:</strong> &nbsp;  {{orden.order_num}}</p>
                 <p class="uk-width-1-1">
                 Destino: &nbsp;<span>{{
-                  orden.zone.name
+                  orden.sector
                 }}</span>
               </p>
               </div>
@@ -150,8 +145,10 @@ export default {
   mounted() {
     if(this.orderScan){
       BarcodeScanner.prepare();
-      this.orders = this.orderScan;
-      this.load = this.loadStore
+      this.load = this.loadStore;
+      this.orders = this.loadStore.Orders
+      this.load.firstOrdenSector = this.orders[0]?.sector
+      console.log(this.load)
     }else{ 
       this.orders = this.allOrders.filter(x => x.hour >= new Date('2020-12-02, 08:00') && x.hour <= new Date('2020-12-02, 10:00'))
       this.allLoads.forEach(el => {
@@ -229,6 +226,14 @@ export default {
         } else this.scanOrder()
         }, 1000)
 
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    firstOrderSector(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
     }
   },
 };

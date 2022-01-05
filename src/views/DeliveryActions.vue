@@ -135,7 +135,6 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allLoads",
       "allOrders",
       "settings"
     ]),
@@ -144,10 +143,6 @@ export default {
     if(this.loadStore){
        this.load = this.loadStore;
        this.orders = this.orderScan
-    }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
-      this.orders = this.load.orders
-      this.$store.commit("scanOrder", this.orders);
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {

@@ -1,34 +1,100 @@
 <template>
-  <div class="cnt">
+  <div class="">
     <ion-loading
-    :is-open="isOpenRef"
-    cssClass="my-custom-class"
-    message="Por favor Espere..."
-    :duration="timeout"
-    @didDismiss="setOpen(false)"
-  >
-  </ion-loading>
-  <Loading :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="65" background-color="rgba(252, 252, 252, 0.7)"></Loading>
-  <div v-for="date in dateLoad" :id="date" :key="date">
-    <load-date :userOrden="allLoads" :date="date"/>
-  </div> 
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
+    <div v-for="(loadsByDate, i) in loads" :key="i">
+      <div class="uk-card uk-card-default uk-width-1-2@m container">
+        <div
+          class="uk-card-header"
+          style="padding: 5px 30px !important; border: none"
+        >
+          <div class="uk-width-expand uk-flex uk-flex-center">
+            <p class="uk-text-meta uk-margin-remove-top date">
+              <time
+                datetime="2016-04-01T19:00"
+                class="uk-text-bold uk-text-uppercase"
+                style="font-size: 12px"
+                >{{ loadsByDate[0] }}</time
+              >
+            </p>
+          </div>
+        </div>
+        <div>     
+          <div
+            v-for="load in loadsByDate"
+            v-show="loadsByDate.length > 1 && typeof load == 'object'"
+            :key="load"
+            class="uk-card uk-card-default uk-card-body"
+            @click="setLoad(load)"
+          >  
+            <p class="uk-text-left uk-margin-remove" style="width: 100%">
+              <strong>{{ load?.loadNumber }}</strong>
+            </p>
+            <div class="uk-flex uk-flex-between">
+              <div class="uk-text-left info-user">    
+                <p>
+                  <strong>No. de Orden(es): </strong
+                  ><span>{{ load?.Orders?.length }}</span>
+                </p>
+                <p>
+                  <strong>Cliente: </strong>
+                   <span>
+                     {{shipperName(load) }}
+                    </span>
+                </p>
+                <p>
+                  <strong>Sector 1a Orden: </strong>
+                  <span>{{ load?.firstOrdenSector?.sector }}</span>
+                </p>
+              </div>
+              <div style="padding-right: 5px">
+                <font-awesome-icon icon="arrow-right" style="font-size: 20px"/>
+              </div>
+             
+            </div>
+          </div>
+          <div v-show="loadsByDate.length <= 1" style="height: 50px">
+            <span >No Existen Viajes Disponibles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div ref="infinitescrolltrigger" id="scoll-trigger"></div>
+      <div class="circle-loader" v-if="showloader"></div>
+    </footer>
   </div>
 </template>
 
 <script>
-import LoadDate from "./loadDate.vue";
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
-import Loading from "vue-loading-overlay";
-import moment from 'moment'
-import 'moment/locale/es'
-import "vue-loading-overlay/dist/vue-loading.css";
-import { mapGetters } from 'vuex';
+import moment from "moment";
+import "moment/locale/es";
+import { mapGetters } from "vuex";
+
 export default {
+  data() {
+    return {
+      days:{
+        tomorrow: null,
+        today: null,
+        yesterday: null
+      },
+      loaded: false,
+      loads: [],
+      dateAvalaible: [],
+      date: new Date(),
+    };
+  },
   components: {
     IonLoading,
-    Loading,
-    LoadDate,
   },
   setup() {
     const isOpenRef = ref(false);
@@ -36,42 +102,24 @@ export default {
 
     return { isOpenRef, setOpen };
   },
-  beforeMount(){
-    this.setOpen(true)
+  beforeMount() {
+    this.setOpen(true);
   },
- async mounted(){
-    window.location.href = '#Hoy'
-    moment.locale('es')
-    this.allLoads.forEach((x, i) => {
-     if(i === 0) x.status = "Driver Assigned"
-    }
-    )
-
+  async mounted() {
+    window.location.href = "#Hoy";
+    moment.locale("es");
+    await this.scrollTrigger();
+    
   },
-  data() {
-    return {
-      loaded: false,
-      loads: null,
-    };
-  },
-  computed:{
-    ...mapGetters([
-      'allLoads'
-    ]),
+  computed: {
+    ...mapGetters(["allLoads", "settings"]),
     dateLoad: function () {
-      // var yesterday = new Date().setDate(new Date().getDate() -1 )
-      // yesterday = moment(new Date(yesterday)).format('ll')
+      var today = "Hoy";
+      var yesterday = "27/12/2021";
 
-      var today = 'Hoy'
-
-      // var tomorrow = new Date().setDate(new Date().getDate() +1 )
-      // tomorrow = moment(new Date(tomorrow)).format('ll') 
-
-      return [today]
-
+      return [yesterday, today];
     },
   },
-
   props: {
     timeout: { type: Number, default: 1000 },
   },
@@ -82,10 +130,301 @@ export default {
         this.loaded = false;
       }, 2000);
     },
+    async scrollTrigger() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(async (entry) => {
+          var contDate;
+          if (entry.intersectionRatio > 0) {
+            if(!this.days.tomorrow) {
+              contDate = this.date.setDate(this.date.getDate() + 1);
+              this.days.tomorrow = contDate
+            } 
+            else if(!this.days.today){
+               contDate = this.date.setDate(this.date.getDate() - 1);
+               this.days.today = contDate
+            }
+            else { 
+              contDate = this.date.setDate(this.date.getDate() - 1);
+            }
+            var date = moment(contDate).format("MM/DD/YYYY");
+            const result = await this.$services.loadsServices.getLoadsbyDate(date);
+            result.forEach(async x => {
+              const resultByDate = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
+              x.firstOrdenSector = x.Orders.find(order => order)
+              Object.assign(x, resultByDate)
+            })
+            if (!result.length || this.loads.length < 3) {
+              await this.scrollTrigger();
+            }
+            else {
+              console.log(result)
+            }
+            result.unshift(date)
+            this.loads.push(result)
+            
+            this.showloader = true;
+            setTimeout(() => {
+              this.showloader = false;
+            }, 1000);
+          }
+        });
+      });
+      console.log(this.loads)
+      observer.observe(this.$refs.infinitescrolltrigger);
+    },
+    async setLoad(val) {
+      console.log(val)
+      this.$store.commit("setloadStore", val);
+      this.$router.push({ name: 'load-status' }).catch(() => {});
+      // if (this.settings?.AutoScan) {
+      //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("drayage-orden");
+      //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
+      // } else {
+      //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders");
+      //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-routes");
+      // }
+      //   if (val?.loadingStatus?.text == "Expecting Approval") this.changeRoute("confirm-trip");
+    },
+    changeRoute(path) {
+      this.$router.push({ name: path }).catch(() => {});
+    },
+    
+    loadStatus(val){
+      if(val?.loadingStatus?.text == 'Delivered') return 'Entregada'
+      if(val?.loadingStatus?.text == 'Driver Arrival') return 'En Ruta'
+      if(val?.loadingStatus?.text == 'Dispatched') return 'Despacho Aprobado'
+      if(val?.loadingStatus?.text == 'Expecting Approval') return 'Esperando tu Aprobacion'
+      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.every(x => x.status == 'ACCEPTED'))
+        return 'Aprobada'
+      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
+        return 'Rechazada'
+      
+    },
+    loadIsReject(val){
+      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
+      return false
+      else return true
+    },
+    loadIsAccepted(val){
+      if(val?.loadingStatus?.text == 'Approved' &&
+        val?.approvers?.every(x => x.status == 'ACCEPTED')
+      ) return true
+      else return false
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
+    },
   },
 };
 </script>
 
 <style scoped>
+p {
+  margin: 3px 0px !important;
+}
+.uk-card {
+  padding: 20px 10px;
+}
+.uk-card-body {
+  border-radius: 2px;
+  margin-bottom: 15px;
+  border: 0.1px solid #e5e5e5;
+  align-items: center;
+  padding: 16px 10px;
+}
+.container {
+  padding: 5px 14px 5px;
+  box-shadow: 0px 0px;
+}
+.uk-button {
+  padding: 10px 5px !important;
+  font-size: 12px;
+}
+
+.date {
+  background: #2535ff21;
+  color: #000;
+  border-radius: 5px;
+  padding: 1px 10px;
+}
+.icon-load {
+  width: 60px;
+  margin-bottom: 10px;
+}
+.info-user{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;  
+}
+.info-user p {
+  margin-right: 10px !important;
+}
+.info-user strong{
+  font-size: 12px !important;
+}
+.check-load {
+  position: absolute;
+  z-index: 1;
+  right: 69px;
+  width: 24px;
+  top: 34px;
+  color: #00b200;
+  font-size: 22.5px;
+}
+.btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-left: 10px;
+  min-width: 125px;
+}
+button {
+  font-size: 9px !important;
+  line-height: 15px;
+}
+.assigned {
+  color: rgb(73 73 73);
+}
+.assigned button {
+  color: green;
+  border: 1px solid #009b08;
+  font-weight: 700;
+  box-shadow: 0px 0.5px 2px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  display: inline-block;
+  padding: 5px 10px;
+  -webkit-animation: glowing 800ms infinite;
+}
+body {
+  background: black;
+}
+
+@-webkit-keyframes glowing {
+  0% {
+    background-color: transparent;
+    -webkit-box-shadow: 0 0 1px #146d02;
+  }
+  50% {
+    background-color: transparent;
+    -webkit-box-shadow: 0 0 5px #025a11;
+  }
+  100% {
+    background-color: transparent;
+    -webkit-box-shadow: 0 0 0px #02691c;
+  }
+}
+
+.only-black, .delivered, .driver-arrival, .approved {
+  color: rgb(130, 127, 127) !important;
+}
+.delivered button,
+.driver-arrival button,
+.approved button,
+.expectingApprove button {
+  background: #ffffff;
+  color: rgb(73, 73, 73);
+  border: 1px solid rgb(136, 136, 136);
+  /* color: #252525; */
+  font-weight: 700;
+}
+.onWay {
+  color: rgb(73 73 73);
+}
+
+.onWay button {
+  color: green;
+  background: #fff;
+  font-weight: 700;
+  border: 1px solid #3c6e3c;
+}
+
+.orange-flashing {
+  color: rgb(199, 194, 194);
+}
+.orange-flashing button {
+  box-shadow: 0px 0.5px 3px #c58002;
+  color: #af7202;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  font-weight: 700;
+  -webkit-animation: onWays 800ms infinite;
+}
+@-webkit-keyframes onWays {
+  0% {
+    -webkit-box-shadow: 0 0 1px #c58002;
+  }
+  50% {
+    -webkit-box-shadow: 0 0 5px #a06800;
+  }
+  100% {
+    -webkit-box-shadow: 0 0 0px #d38a02;
+  }
+}
+a {
+  text-decoration: none;
+  color: #fff;
+}
+.rainbow-button {
+  width: calc(20vw + 6px);
+  height: calc(8vw + 6px);
+  background-image: linear-gradient(
+    90deg,
+    #00c0ff 0%,
+    #ffcf00 49%,
+    #fc4f4f 80%,
+    #00c0ff 100%
+  );
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  font-size: 3vw;
+  font-weight: bold;
+}
+.rainbow-button:after {
+  content: attr(alt);
+  width: 20vw;
+  height: 8vw;
+  background-color: #191919;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rainbow-button:hover {
+  animation: slidebg 2s linear infinite;
+}
+
+@keyframes slidebg {
+  to {
+    background-position: 20vw;
+  }
+}
+footer {
+  position: relative;
+  width: 400px;
+  height: 100px;
+}
+
+footer .circle-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.2);
+  border-top: 5px solid #fff;
+  animation: animate 1.5s infinite linear;
+}
+footer #scroll-trigger {
+  height: 50px;
+}
+.reject-img{
+  width: 80px;
+}
 
 </style>
