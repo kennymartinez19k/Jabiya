@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -43,7 +44,13 @@ export default {
     };
   },
   mounted() {
+    this.settings = this.settingsStore
     this.$store.commit("setSettings", this.settings);
+  },
+  computed:{
+    ...mapGetters([
+      'settingsStore'
+    ])
   },
   methods: {
     saveSettings() {

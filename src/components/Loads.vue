@@ -176,6 +176,7 @@ export default {
       console.log(val)
       this.$store.commit("setloadStore", val);
       this.$router.push({ name: 'load-status' }).catch(() => {});
+      
       // if (this.settings?.AutoScan) {
       //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("drayage-orden");
       //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
@@ -188,18 +189,7 @@ export default {
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
     },
-    
-    loadStatus(val){
-      if(val?.loadingStatus?.text == 'Delivered') return 'Entregada'
-      if(val?.loadingStatus?.text == 'Driver Arrival') return 'En Ruta'
-      if(val?.loadingStatus?.text == 'Dispatched') return 'Despacho Aprobado'
-      if(val?.loadingStatus?.text == 'Expecting Approval') return 'Esperando tu Aprobacion'
-      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.every(x => x.status == 'ACCEPTED'))
-        return 'Aprobada'
-      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
-        return 'Rechazada'
-      
-    },
+
     loadIsReject(val){
       if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
       return false

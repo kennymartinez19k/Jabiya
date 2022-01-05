@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'settings'
+      'settingsStore'
     ])
   },
 

@@ -23,7 +23,7 @@ export default {
   },
   computed:{
     ...mapGetters([
-      'settings'
+      'settingsStore'
     ]),
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)

@@ -8,7 +8,7 @@
       >
         <div
           @click="
-            changeRoute({ status: 'Expecting Approval', route: 'confirm-trip' })
+            changeRoute('Expecting Approval')
           "
           class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
         >
@@ -28,7 +28,7 @@
       </li>
       <li :class="{ disabled: !loadStatus.approved  }">
         <div
-          @click="changeRoute({ status: 'Approved', route: 'drayage-orden' })"
+          @click="changeRoute('Approved')"
           class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
         >
           <h6>Montar Viaje</h6>
@@ -121,6 +121,8 @@
 
 <script>
 import { mapGetters } from "vuex";
+import {Mixins} from '../mixins/mixins'
+
 export default {
   data() {
     return {
@@ -128,6 +130,7 @@ export default {
       loads: [],
     };
   },
+  mixins: [Mixins],
   computed: {
     ...mapGetters(["loadStore"]),
     loadStatus() {
@@ -147,8 +150,8 @@ export default {
   },
   methods: {
     changeRoute(val) {
-      if (val.status == this.loads.loadingStatus.text)
-        this.$router.push({ name: val.route }).catch(() => {});
+      if (val == this.loads?.loadingStatus?.text)
+        this.changeRouteLoads(val)
     },
   },
 };
