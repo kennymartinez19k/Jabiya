@@ -8,6 +8,7 @@ const Loads = {
     mutations: {
         setloadStore (state, load) {
             state.load = load
+            console.log(load)
         },
         setAllLoads(state, val){
           state.allLoads = val

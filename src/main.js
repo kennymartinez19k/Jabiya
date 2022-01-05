@@ -7,19 +7,25 @@ import servicesPlugins from "./plugins";
 import VueSignaturePad from "vue-signature-pad";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSignOutAlt, faArrowLeft, faArrowRight, faMapMarkerAlt, faBan, faCheckCircle, faEnvelope, faEye , faEyeSlash  } from "@fortawesome/free-solid-svg-icons";
 import { IonicVue } from "@ionic/vue";
-import StepProgress from "vue-step-progress";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import VueObserveVisibility from 'vue-observe-visibility'
 import "@ionic/core/css/ionic.bundle.css";
-import i18n from './i18n'
-// inject vue barcode scanner
-library.add(fas);
+
+library.add(faCheck);
+library.add(faSignOutAlt);
+library.add(faArrowLeft);
+library.add(faMapMarkerAlt);
+library.add(faBan);
+library.add(faCheckCircle);
+library.add(faEnvelope);
+library.add(faEye);
+library.add(faEyeSlash);
+library.add(faArrowRight)
 const store = createStore({ ...storeModule });
 createApp(App).use(i18n)
   .component("font-awesome-icon", FontAwesomeIcon)
-  .component("step", StepProgress)
   .use(IonicVue)
   .use(router)
   .use(i18n)
@@ -28,5 +34,4 @@ createApp(App).use(i18n)
   .use(servicesPlugins)
   .use(VueSignaturePad)
   .use(defineCustomElements)
-  .use(StepProgress)
   .mount("#app");

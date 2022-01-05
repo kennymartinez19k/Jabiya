@@ -119,8 +119,8 @@ export default {
   },
   computed:{
     ...mapGetters([
-      'settings'
-    ]),
+      'settingsStore'
+    ])
   },
   mounted(){
     this.loads = this.userOrden

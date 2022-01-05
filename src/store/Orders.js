@@ -27,7 +27,7 @@ const orders = {
   getters: {
     orderScan : state => state.scanOrder,
     allOrders: state => state.orders,
-    settings: state => state.settings,
+    settingsStore: state => state.settings,
     languageStore: state => state.language
   }
 }

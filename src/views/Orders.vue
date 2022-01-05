@@ -20,16 +20,13 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
@@ -150,10 +147,12 @@ export default {
   mounted() {
     if(this.loadStore){
       this.load = this.loadStore;
-      this.orders = this.orderScan
+      this.orders = this.loadStore.Orders
+      this.load.firstOrdenSector = this.orders[0]?.sector
+      console.log(this.load)
     }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
-    this.orders = this.load.orders 
+     this.load = this.allLoads
+    this.orders = this.load.orders
 
     }
     if (this.orderScan) {
@@ -199,6 +198,14 @@ export default {
         } else x.completed = false;
       });
     },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    firstOrderSector(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    }
   },
 };
 </script>

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -47,20 +47,24 @@ export default {
     ...mapGetters(['languageStore', 'rolStore'])
   },
   mounted() {
+    this.settings = this.settingsStore
     this.$store.commit("setSettings", this.settings);
     this.setLanguage()
     this.setProfile()
 
   },
-   
+  computed:{
+    ...mapGetters([
+      'settingsStore'
+    ])
+  },
   methods: {
     saveSettings() {
       this.$store.commit("setSettings", this.settings);
       this.$store.commit("changeRol", this.settings.profile );
       this.$store.commit("setLanguageStore", this.settings.language );
 
-      this.$router.push({ name: "direct-access" });
-      
+      this.$router.push({ name: "home" });
     },
     setLanguage() {
         if (this.languageStore !== null) {

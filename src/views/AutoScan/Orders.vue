@@ -74,24 +74,11 @@
             }}</span>
           </p>
         </div>
-        <div
-          class="uk-flex uk-flex-column"
-          style="min-width: 70px; margin-left: 7px; align-items: flex-end"
-        >
-          <div
-            class="uk-flex uk-flex-column"
-            @click="setMap()"
-            style="align-items: center"
-          >
-            <img src="../../assets/road.png" class="img-scan" alt="" />
-            <span>Iniciar Ruta</span>
-          </div>
-        </div>
       </div>
     </div>
     <div></div>
     <div class="button-opt">
-      <button @click="uploadOrDownload()" class="uk-button uk-button-transparent">{{messageStatusLoad}}
+      <button @click="uploadOrDownload(load)" class="uk-button uk-button-transparent">{{messageStatusLoad}}
           <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
       <button @click="setMap()" class="uk-button uk-button-transparent">Iniciar Ruta
@@ -105,7 +92,6 @@
 import { mapGetters } from "vuex";
 export default {
   alias: `Montar Viaje`,
-  name: `cargarrr`,
   data() {
     return {
       status: null,
@@ -131,14 +117,13 @@ export default {
       }
   },
   mounted() {
+    console.log(this.loadStore)
     if(this.loadStore){
       this.load = this.loadStore;
-      this.orders = this.orderScan
-    }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
-    this.orders = this.load.orders
+      this.orders = this.loadStore.Orders
+      this.load.firstOrdenSector = this.orders[0]?.sector
+      console.log(this.load)
     }
-    console.log(this.orders)
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -146,19 +131,13 @@ export default {
   },
   methods: {
     orderObj() {
-      this.orders.sort((a) => {
+      this.orders?.sort((a) => {
         if (a?.completed == true) {
           return 1;
         } else {
           return -1;
         }
       });
-    },
-    uploadOrDownload(){
-      this.orders.map(x => x.completed = !x.completed)
-    },
-    setMap(){
-      window.open("https://www.google.com/maps/dir/'18.475615,-69.957918'/'18.478645,-69.966486'")
     },
     completedOrden() {
       this.orders.forEach((x) => {
@@ -168,8 +147,38 @@ export default {
       });
     },
     shipperName(val){
-      var shipper = val?.shipper[0]?.name
-      return shipper
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    firstOrderSector(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    async uploadOrDownload(val){
+      this.orders.map(x => x.completed = !x.completed)
+      const result = await this.$services.loadsScanServices.driverArrival(val.loadMapId);
+      console.log(result)
+
+      val.Orders.forEach( async load => {
+        let orders =  await this.$services.loadsScanServices.getProduct(load._id);
+        let order = orders.find(x => x)
+        order.products.forEach(async prod => {
+          if(prod.scanOneByOne === "no") {
+            const resultScanning =  await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+            console.log(resultScanning)
+          }
+          else {
+            for(let i = 0; i <= prod.quantity; i++){
+              const resultScanning =  await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+              console.log(resultScanning)
+            }
+          }
+        })
+      })
+
+    },
+    setMap(){
+      window.open("https://www.google.com/maps/dir/'18.475615,-69.957918'/'18.478645,-69.966486'")
     }
   },
 };
@@ -287,10 +296,7 @@ p {
   flex-direction: column;
   align-items: flex-end;
 }
-.info-user {
-  border-right: 1px solid #ccc;
-  padding-right: 5px;
-}
+
 .ordenCompleted {
   background: rgba(233, 255, 233, 0.6);
 }

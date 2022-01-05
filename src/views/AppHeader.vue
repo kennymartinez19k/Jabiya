@@ -44,14 +44,14 @@ computed:{    titlePage(){
 },
 watch:{
     $route: function(newVal){
-        newVal.name == "direct-access" ?
+        newVal.name == "home" ?
             (
               this.action = "sign-in",
               this.iconType = 'sign-out-alt'
 
             ): newVal.name == "home" ? 
             (
-              this.action = "direct-access",
+              this.action = "home",
               this.iconType = "home" 
             ):
             (

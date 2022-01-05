@@ -3,7 +3,7 @@
     :active="loaded"
     color="rgb(86, 76, 175)"
     loader="spinner"
-    :width="65"
+    :width="100"
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
   <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
@@ -78,7 +78,7 @@
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="changeRoute('direct-access')"
+        @click="changeRoute('home')"
         style="margin-top: 15px"
       >
         Iniciar sesión
@@ -129,7 +129,7 @@ export default {
   methods: {
     async changeRoute(path) {
       try {
-        if (path == "direct-access") {
+        if (path == "home") {
           if (this.login.email !== "" && this.login.password !== "") {
             this.loaded = true;
             this.AutoLogin.email = this.login.email;
@@ -138,7 +138,7 @@ export default {
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
-            this.loaded = false;
+            this.loaded = true;
             this.$store.commit("setUserData", resultLogin);
             if (resultLogin)
               this.$router.push({ name: path }).catch(() => {});

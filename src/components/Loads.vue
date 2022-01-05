@@ -31,100 +31,32 @@
             v-show="loadsByDate.length > 1 && typeof load == 'object'"
             :key="load"
             class="uk-card uk-card-default uk-card-body"
-            :class="{
-              'assigned': load.loadingStatus?.text == 'Approved',
-              'delivered': load.loadingStatus?.text == 'Delivered',
-              'driver-arrival': load.loadingStatus?.text == 'Driver Arrival',
-              'orange-flashing': load.loadingStatus?.text == 'Dispatched',
-              expectingApprove: load.loadingStatus?.text == 'Expecting Approval',
-              'approved': load.loadingStatus?.text == 'Approved'
-            }"
+            @click="setLoad(load)"
           >  
-            <h5 class="uk-text-left uk-margin-remove" style="width: 100%">
+            <p class="uk-text-left uk-margin-remove" style="width: 100%">
               <strong>{{ load?.loadNumber }}</strong>
-            </h5>
+            </p>
             <div class="uk-flex uk-flex-between">
-              <div class="uk-text-left info-user">
-                <p>
-                  <strong> Estado:</strong>
-                  <span v-if="load?.loadingStatus?.text == 'Approved'">Aprobada</span>
-                  <span v-if="load?.loadingStatus?.text == 'Delivered'">Entregada</span>
-                  <span v-if="load?.loadingStatus?.text == 'Driver Arrival'">En Ruta</span>
-                  <span v-if="load?.loadingStatus?.text == 'Dispatched'"
-                    >Despacho Aprobado</span
-                  >
-                  <span v-if="load?.loadingStatus?.text == 'Defining Load'">Definiendo Contenedor</span>
-
-                  <span v-if="load?.loadingStatus?.text == 'Expecting Approval'"
-                    >Esperando tu Aprobacion</span
-                  >
-                </p>
-                <p>
-                  <strong>Cliente: </strong>
-                   <span v-for="info in load.shipper" :key="info">
-                     {{info.name }}
-                    </span>
-                </p>
+              <div class="uk-text-left info-user">    
                 <p>
                   <strong>No. de Orden(es): </strong
                   ><span>{{ load?.Orders?.length }}</span>
                 </p>
                 <p>
+                  <strong>Cliente: </strong>
+                   <span>
+                     {{shipperName(load) }}
+                    </span>
+                </p>
+                <p>
                   <strong>Sector 1a Orden: </strong>
-                  <span>{{ load?.firstOrdenSector }}</span>
+                  <span>{{ load?.firstOrdenSector?.sector }}</span>
                 </p>
               </div>
-              <div class="btn">
-                <div>
-                  <div style="margin-top: 1px">
-                    <img
-                      v-if="load?.loadingStatus?.text == 'Approved'"
-                      src="../assets/cargo.png"
-                      class="icon-load"
-                      alt=""
-                    />
-                    <img
-                      v-if="load?.loadingStatus?.text == 'Delivered'"
-                      src="../assets/delivery.png"
-                      class="icon-load"
-                      alt=""
-                    />
-                    <img
-                      v-if="load?.loadingStatus?.text == 'Driver Arrival'"
-                      src="../assets/road.png"
-                      class="icon-load"
-                      alt=""
-                    />
-                    <img
-                      v-if="load?.loadingStatus?.text == 'Dispatched'"
-                      src="../assets/warehouse.png"
-                      class="icon-load"
-                      alt=""
-                    />
-                    <img
-                      v-if="load?.loadingStatus?.text == 'Expecting Approval'"
-                      src="../assets/approve-container.png"
-                      class="icon-load"
-                      alt=""
-                    />
-                  </div>
-                </div>
-                <button class="uk-button" @click="setLoad(load)">
-                  <span v-if="load?.loadingStatus?.text == 'Approved'"
-                    >Montar Viaje</span
-                  >
-                  <span v-if="load?.loadingStatus?.text == 'Delivered'">Ver Ordenes</span>
-                  <span v-if="load?.loadingStatus?.text == 'Driver Arrival'"
-                    >Continuar Entrega(s)</span
-                  >
-                  <span v-if="load?.loadingStatus?.text == 'Dispatched'"
-                    >Comenzar Entrega(s)</span
-                  >
-                  <span v-if="load?.loadingStatus?.text == 'Expecting Approval'"
-                    >Aceptar / Rechazar Viaje</span
-                  >
-                </button>
+              <div style="padding-right: 5px">
+                <font-awesome-icon icon="arrow-right" style="font-size: 20px"/>
               </div>
+             
             </div>
           </div>
           <div v-show="loadsByDate.length <= 1" style="height: 50px">
@@ -176,10 +108,6 @@ export default {
     window.location.href = "#Hoy";
     moment.locale("es");
     await this.scrollTrigger();
-      // this.allLoads.forEach((x, i) => {
-    //  if(i === 0) x.status = "Driver Assigned"
-    // }
-    // )
     
   },
   computed: {
@@ -221,12 +149,10 @@ export default {
             const result = await this.$services.loadsServices.getLoadsbyDate(date);
             result.forEach(async x => {
               const resultByDate = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-              x.firstOrdenSector = x.Orders[0].sector
+              x.firstOrdenSector = x.Orders.find(order => order)
               Object.assign(x, resultByDate)
-              console.log(x)
-
             })
-            if (!result.length) {
+            if (!result.length || this.loads.length < 3) {
               await this.scrollTrigger();
             }
             else {
@@ -234,11 +160,9 @@ export default {
             }
             result.unshift(date)
             this.loads.push(result)
-            console.log(this.loads)
             
             this.showloader = true;
             setTimeout(() => {
-              this.currentPage += 1;
               this.showloader = false;
             }, 1000);
           }
@@ -249,25 +173,36 @@ export default {
     },
     async setLoad(val) {
       console.log(val)
-      await this.getLoadsId(val);
       this.$store.commit("setloadStore", val);
-      if (this.settings?.AutoScan) {
-        if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders-auto-scan");
-        if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
-      } else {
-        if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders");
-        if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-routes");
-      }
-        if (val?.loadingStatus?.text == "Expecting Approval") this.changeRoute("travel-confirmation");
-
+      this.$router.push({ name: 'load-status' }).catch(() => {});
+      
+      // if (this.settings?.AutoScan) {
+      //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("drayage-orden");
+      //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
+      // } else {
+      //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders");
+      //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-routes");
+      // }
+      //   if (val?.loadingStatus?.text == "Expecting Approval") this.changeRoute("confirm-trip");
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
     },
-    async getLoadsId(val) {
-      console.log('llamando endpoint')
-      console.log(val)
-      this.$store.commit("scanOrder", val.Orders);
+
+    loadIsReject(val){
+      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
+      return false
+      else return true
+    },
+    loadIsAccepted(val){
+      if(val?.loadingStatus?.text == 'Approved' &&
+        val?.approvers?.every(x => x.status == 'ACCEPTED')
+      ) return true
+      else return false
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
     },
   },
 };
@@ -275,7 +210,7 @@ export default {
 
 <style scoped>
 p {
-  margin: 7px 0px !important;
+  margin: 3px 0px !important;
 }
 .uk-card {
   padding: 20px 10px;
@@ -305,6 +240,17 @@ p {
 .icon-load {
   width: 60px;
   margin-bottom: 10px;
+}
+.info-user{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;  
+}
+.info-user p {
+  margin-right: 10px !important;
+}
+.info-user strong{
+  font-size: 12px !important;
 }
 .check-load {
   position: absolute;
@@ -449,6 +395,25 @@ footer {
   position: relative;
   width: 400px;
   height: 100px;
+}
+
+footer .circle-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.2);
+  border-top: 5px solid #fff;
+  animation: animate 1.5s infinite linear;
+}
+footer #scroll-trigger {
+  height: 50px;
+}
+.reject-img{
+  width: 80px;
 }
 
 footer .circle-loader {
