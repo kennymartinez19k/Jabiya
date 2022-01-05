@@ -10,6 +10,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck, faSignOutAlt, faArrowLeft, faArrowRight, faMapMarkerAlt, faBan, faCheckCircle, faEnvelope, faEye , faEyeSlash  } from "@fortawesome/free-solid-svg-icons";
 import { IonicVue } from "@ionic/vue";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import VueObserveVisibility from 'vue-observe-visibility'
 import "@ionic/core/css/ionic.bundle.css";
 
 library.add(faCheck);
@@ -23,11 +24,13 @@ library.add(faEye);
 library.add(faEyeSlash);
 library.add(faArrowRight)
 const store = createStore({ ...storeModule });
-createApp(App)
+createApp(App).use(i18n)
   .component("font-awesome-icon", FontAwesomeIcon)
   .use(IonicVue)
   .use(router)
+  .use(i18n)
   .use(store)
+  .use(VueObserveVisibility)
   .use(servicesPlugins)
   .use(VueSignaturePad)
   .use(defineCustomElements)

@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-
-    
     <div v-if="serieA === 'firm'" class="uk-padding-small">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
     </div>
@@ -32,6 +30,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
+        <span>Escaner</span>
       </li>
       <li
         class="stepTwo"
@@ -43,6 +42,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/cam.png" alt="" srcset="" /></div>
+        <span>Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
       <li
@@ -58,6 +58,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
+        <span>Camara</span>
         <div
           :class="{
             disabled: (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length !== 3),
@@ -72,6 +73,17 @@
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
+        <span>Firma</span>
+        <div :class="{ disabled: step < 2 }"></div>
+      </li>
+      <li
+        class="stepFour"
+        :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
+        @click="getShow('finish')"
+      >
+        <div class="info"><font-awesome-icon icon="check" /></div>
+        <div><img src="../assets/check.png" alt="" srcset="" /></div>
+        <span>Completado</span>
         <div :class="{ disabled: step < 2 }"></div>
       </li>
     </ul>
@@ -93,6 +105,9 @@ export default {
         if (newVal !== null) {
           this.serieA = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
+          setTimeout(()=> {
+            this.$router.push({ name: 'direct-access'}).catch(() => {})
+          },1000)
         }
       },
     },
@@ -137,6 +152,7 @@ export default {
       }
       if (value === "firm") {
         this.serieA = value;
+        
       }
     },
     resetTextException() {
@@ -158,10 +174,10 @@ export default {
 }
 .disabled {
   position: absolute;
-  width: 76px;
-  height: 60px;
+  width: 90px;
+  height: 70px;
   top: 40px;
-  left: 22px;
+  left: 10px;
   background: #ffffffc4;
 }
 img {

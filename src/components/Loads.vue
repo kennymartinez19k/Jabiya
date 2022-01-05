@@ -78,7 +78,6 @@ import { IonLoading } from "@ionic/vue";
 import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
-
 export default {
   data() {
     return {
@@ -417,4 +416,19 @@ footer #scroll-trigger {
   width: 80px;
 }
 
+footer .circle-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.2);
+  border-top: 5px solid #fff;
+  animation: animate 1.5s infinite linear;
+}
+footer #scroll-trigger {
+  height: 50px;
+}
 </style>
