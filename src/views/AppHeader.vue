@@ -13,10 +13,10 @@
             <h6 class="uk-tect-light uk-margin-remove">{{userData?.email}}</h6>
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">{{$t('appHeader.yourTrips')}}</li>
-            <li @click="setCurrentPage('settings')">{{$t('appHeader.Setting')}}</li>
-            <li @click="setCurrentPage('sign-in')">{{$t('appHeader.Signoff')}}</li>
-            <li @click="setCurrentPage('about')">{{$t('appHeader.appVersion')}}</li>
+            <li @click="setCurrentPage('home')">Tus Viajes</li>
+            <li @click="setCurrentPage('settings')">Configuración</li>
+            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li @click="setCurrentPage('about')">Versión app</li>
         </ul>
     </div>
    </div>

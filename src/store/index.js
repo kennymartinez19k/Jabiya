@@ -4,6 +4,7 @@ import timelineStore from '../store/TimelineStore'
 import singInStore from '../store/SingInStore'
 import orders from '../store/Orders'
 import profiles from './Profiles'
+import invoicesStore from './InvoicesStore'
 
 const storeModule = {
   state: () => (
@@ -13,7 +14,9 @@ const storeModule = {
       ...timelineStore.state,
       ...singInStore.state,
       ...orders.state,
-      ...profiles.state
+      ...profiles.state,
+      ...invoicesStore.state,
+
     }
   ),
   mutations: {
@@ -22,7 +25,8 @@ const storeModule = {
     ...timelineStore.mutations,
     ...singInStore.mutations,
     ...orders.mutations,
-    ...profiles.mutations
+    ...profiles.mutations,
+    ...invoicesStore.mutations,
     
   },
   actions: {
@@ -30,7 +34,8 @@ const storeModule = {
     ...loads.actions,
     ...timelineStore.actions,
     ...singInStore.actions,
-    ...profiles.actions
+    ...profiles.actions,
+    ...invoicesStore.actions,
   },
   getters: {
     ...currentPage.getters,
@@ -38,7 +43,8 @@ const storeModule = {
     ...timelineStore.getters,
     ...singInStore.getters,
     ...orders.getters,
-    ...profiles.getters
+    ...profiles.getters,
+    ...invoicesStore.getters,
 
   }
 }

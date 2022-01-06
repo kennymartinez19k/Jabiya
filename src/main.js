@@ -7,7 +7,7 @@ import servicesPlugins from "./plugins";
 import VueSignaturePad from "vue-signature-pad";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheck, faSignOutAlt, faArrowLeft, faArrowRight, faMapMarkerAlt, faBan, faCheckCircle, faEnvelope, faEye , faEyeSlash  } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSignOutAlt, faArrowLeft, faArrowRight, faMapMarkerAlt, faBan, faCheckCircle, faEnvelope, faEye , faEyeSlash, faMinus, faPlus  } from "@fortawesome/free-solid-svg-icons";
 import { IonicVue } from "@ionic/vue";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import VueObserveVisibility from 'vue-observe-visibility'
@@ -22,13 +22,13 @@ library.add(faCheckCircle);
 library.add(faEnvelope);
 library.add(faEye);
 library.add(faEyeSlash);
+library.add(faMinus, faPlus)
 library.add(faArrowRight)
 const store = createStore({ ...storeModule });
-createApp(App).use(i18n)
+createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon)
   .use(IonicVue)
   .use(router)
-  .use(i18n)
   .use(store)
   .use(VueObserveVisibility)
   .use(servicesPlugins)

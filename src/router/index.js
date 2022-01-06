@@ -11,6 +11,9 @@ import OrdersAutoScan from '../views/AutoScan/Orders.vue'
 import DeliveryActionsAuto from '../views/AutoScan/DeliveryActions.vue'
 import ConfirmTrip from '../views/ConfirmTrip.vue'
 import LoadStatus from '../views/LoadStatus.vue'
+import InvoicesOrders from '../views/InvoicesOrders.vue'
+import DetailsInvoices from '../components/DetailsInvoices.vue'
+import ReconciliationWarehouse from '../components/ReconciliationWarehouse.vue'
 const routes = [
   {
     path: '/',
@@ -75,6 +78,21 @@ const routes = [
     path: "/load-status",
     name: "load-status",
     component: LoadStatus,
+  },
+  {
+    path: "/invoice",
+    name: "invoices-orders",
+    component: InvoicesOrders,
+  },
+  {
+    path: "/details-invoices",
+    name: "details-invoices",
+    component: DetailsInvoices,
+  },
+  {
+    path: "/warehouse",
+    name: "reconciliation-warehouse",
+    component: ReconciliationWarehouse,
   },
  
 ];

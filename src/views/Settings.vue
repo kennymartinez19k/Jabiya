@@ -2,31 +2,31 @@
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
     <div>
       <label class="item" for="check">
-        <h6>{{$t('settings.titleH6')}}</h6>
+        <h6>Escaneo Automatico</h6>
         <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox">
         
       </label>
       <label class="item uk-margin" for="language">
-            <h6>{{$t('settings.titleIdiom')}}</h6>
+            <h6>Seleccione un Idioma:</h6>
         <div class="uk-form-controls" style="width: 40%">
             <select class="uk-select" id="language" v-model="settings.language">
-                <option  value="es" selected>{{$t('settings.optionSpanish')}}</option>
-                <option value="en">{{$t('settings.optionEnglish')}}</option>
+                <option  value="es" selected>English</option>
+                <option value="en">Español</option>
             </select>
         </div>
       </label>
       <label class="item uk-margin" for="profile">
-            <h6>{{$t('settings.profile')}}</h6>
+            <h6>Perfil</h6>
         <div class="uk-form-controls" style="width: 40%">
             <select v-model="settings.profile" class="uk-select" id="profile">
-                <option value="container" selected>{{$t('settings.optionContainer')}}</option>
-                <option value="eCommerce">{{$t('settings.optionNone')}}</option>
+                <option value="container" selected>Contenedor</option>
+                <option value="eCommerce">eCommerce</option>
             </select>
         </div>
       </label>
     </div>
     <div class="btn">
-        <button class="uk-button uk-button-transparent" @click="saveSettings()">{{$t('settings.saveButton')}}</button>
+        <button class="uk-button uk-button-transparent" @click="saveSettings()">Guardar Cambios</button>
     </div>
   </div>
 </template>
@@ -44,7 +44,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['languageStore', 'rolStore'])
+    ...mapGetters(['languageStore', 'rolStore', 'settingsStore'])
   },
   mounted() {
     this.settings = this.settingsStore
@@ -53,11 +53,7 @@ export default {
     this.setProfile()
 
   },
-  computed:{
-    ...mapGetters([
-      'settingsStore'
-    ])
-  },
+
   methods: {
     saveSettings() {
       this.$store.commit("setSettings", this.settings);
@@ -115,6 +111,6 @@ button {
 }
 .btn{
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;;
 }
 </style>
