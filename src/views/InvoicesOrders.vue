@@ -1,5 +1,13 @@
 <template>
   <div class="uk-container  uk-text-center">
+     <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
     <div>
       <h4 class=" uk-text-left">Ordenes</h4>
       <div class="uk-card uk-card-default uk-card-body" style="padding: 0 8px">
@@ -15,7 +23,7 @@
             <tr @click="orderDetail(order.id)">
               <td>{{order.name}} </td>
               <td>juan Perez</td>
-              <td>RD$500.00</td>
+              <td>{{order.amount_total}}</td>
             </tr>
           </tbody>
         </table>
@@ -27,14 +35,32 @@
 
 <script>
 import axios from 'axios'
+import { ref } from "vue";
+import { IonLoading } from "@ionic/vue";
 export default {
   alias: "Crear Facturas",
+  components: {
+    IonLoading
+  },
+    props: {
+    timeout: { type: Number, default: 1000 },
+  },
   data() {
     return {
       userShipper: null,
     }
   },
-  async mounted () {
+  // async mounted () {
+  //   await this.longIn()
+  // },
+   setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
+  },
+  async beforeMount() {
+    this.setOpen(true);
     await this.longIn()
   },
 
@@ -56,7 +82,7 @@ export default {
       },
 
       async products () {
-        const result = await axios.get('https://jabiyaerp.flai.com.do/api/order?id=23123123', {withCredentials: true })
+        const result = await axios.get('https://jabiyaerp.flai.com.do/api/order', {withCredentials: true })
         console.log(result.data.result.data.orders, 'result')
         this.userShipper = result.data.result.data.orders
       }
