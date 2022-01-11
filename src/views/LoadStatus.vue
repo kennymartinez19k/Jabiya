@@ -72,9 +72,10 @@
         </div>
         <div class="disabled-container"></div>
       </li>
-      <li class="disabled" :class="{ active: loadStatus.Approved }">
+       <!-- class="disabled" :class="{ active: loadStatus.Approved }" -->
+      <li>
         <div
-          @click="step++"
+          @click="setInvoice()"
           class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
         >
           <h6>Realizar Factura</h6>
@@ -158,6 +159,10 @@ export default {
 
       // if (val == this.loads?.loadingStatus?.text)
     },
+    setInvoice () {
+      this.$router.push({ name: "invoices-orders" }).catch(() => {});
+
+    }
   },
 };
 </script>

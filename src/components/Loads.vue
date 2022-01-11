@@ -79,6 +79,12 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 export default {
+   components: {
+    IonLoading,
+  },
+    props: {
+    timeout: { type: Number, default: 1000 },
+  },
   data() {
     return {
       days:{
@@ -92,9 +98,7 @@ export default {
       date: new Date(),
     };
   },
-  components: {
-    IonLoading,
-  },
+ 
   setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
@@ -116,9 +120,7 @@ export default {
     ...mapGetters(["allLoads", "settings"]),
     
   },
-  props: {
-    timeout: { type: Number, default: 1000 },
-  },
+
   methods: {
     setOpe(val) {
       this.loaded = val;

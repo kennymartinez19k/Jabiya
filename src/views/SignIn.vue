@@ -1,5 +1,6 @@
 <template>
   <Loading
+  class="loading-position"
     :active="loaded"
     color="rgb(86, 76, 175)"
     loader="spinner"
@@ -217,5 +218,12 @@ export default {
 }
 .form-login {
   border: 1px solid #b1b1b1;
+}
+.loading-position{
+  position: absolute;
+  z-index: 1;
+  top: 278px;
+  right: 11px;
+  width: 92%;
 }
 </style>
