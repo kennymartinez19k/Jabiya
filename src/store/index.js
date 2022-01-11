@@ -30,7 +30,8 @@ const storeModule = {
     ...loads.actions,
     ...timelineStore.actions,
     ...singInStore.actions,
-    ...profiles.actions
+    ...profiles.actions,
+    ...orders.actions
   },
   getters: {
     ...currentPage.getters,

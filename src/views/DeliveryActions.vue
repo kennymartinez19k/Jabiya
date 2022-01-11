@@ -135,7 +135,6 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allOrders",
       "settings"
     ]),
   },

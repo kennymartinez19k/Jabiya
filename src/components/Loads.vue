@@ -44,8 +44,8 @@
                 </p>
                 <p>
                   <strong>Cliente: </strong>
-                   <span>
-                     {{shipperName(load) }}
+                   <span v-for="info in load.shipper" :key="info">
+                    {{info.name}}
                     </span>
                 </p>
                 <p>
@@ -101,23 +101,20 @@ export default {
 
     return { isOpenRef, setOpen };
   },
-  beforeMount() {
+  async beforeMount() {
     this.setOpen(true);
+
   },
   async mounted() {
     window.location.href = "#Hoy";
     moment.locale("es");
     await this.scrollTrigger();
+
     
   },
   computed: {
     ...mapGetters(["allLoads", "settings"]),
-    dateLoad: function () {
-      var today = "Hoy";
-      var yesterday = "27/12/2021";
-
-      return [yesterday, today];
-    },
+    
   },
   props: {
     timeout: { type: Number, default: 1000 },

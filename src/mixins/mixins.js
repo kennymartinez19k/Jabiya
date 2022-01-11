@@ -9,7 +9,7 @@ export const Mixins = {
                  if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
              }
              else {
-                if(val == 'Approved') router.push({name: 'orders'})
+                if(val == 'Approved' || val == 'Loading Truck') router.push({name: 'orders'})
                 if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
              }
          }

@@ -26,9 +26,9 @@
         </div>
         <div class="disabled-container"></div>
       </li>
-      <li :class="{ disabled: !loadStatus.approved  }">
+      <li>
         <div
-          @click="changeRoute('Approved')"
+          @click="changeRoute('')"
           class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
         >
           <h6>Montar Viaje</h6>
@@ -150,8 +150,13 @@ export default {
   },
   methods: {
     changeRoute(val) {
-      if (val == this.loads?.loadingStatus?.text)
+    if(val == ''){
+     this.changeRouteLoads('Approved')
+    }else{
         this.changeRouteLoads(val)
+    }
+
+      // if (val == this.loads?.loadingStatus?.text)
     },
   },
 };

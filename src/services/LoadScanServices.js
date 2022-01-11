@@ -11,7 +11,7 @@ class LoadsScanServices {
           "statusType": "Arrival",   
         }
       }
-      const result = await this.http.patch(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions`, params)
+      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions`, params)
       return result.data
     }
 
@@ -21,6 +21,7 @@ class LoadsScanServices {
     }
 
     async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
+      console.log(orderId, boxId, loadCounter, productId, qrCode)
       const params = {
         "actionName": "loadBox",
         "params": {
@@ -31,6 +32,7 @@ class LoadsScanServices {
       }
       
       const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
+      console.log(result)
       return result
     }
   

@@ -4,7 +4,7 @@ const SingInStore = {
     },
     mutations: {
         setUserData (state) {
-            state.userData = JSON.parse(localStorage.getItem('auth'))
+            state.userData = JSON.parse(localStorage.getItem('userInfo'))
 
         },
     

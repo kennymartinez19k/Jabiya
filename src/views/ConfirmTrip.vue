@@ -195,7 +195,7 @@ export default {
     },
     async acceptOrRejectLoad(id, version, status) {
       
-      var user = JSON.parse(localStorage.getItem("auth"));
+      var user = JSON.parse(localStorage.getItem("userInfo"));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,

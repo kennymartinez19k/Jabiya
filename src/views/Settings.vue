@@ -2,31 +2,31 @@
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
     <div>
       <label class="item" for="check">
-        <h6>{{$t('settings.titleH6')}}</h6>
+        <h6>Escaneo Automatico</h6>
         <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox">
         
       </label>
-      <label class="item uk-margin" for="language">
-            <h6>{{$t('settings.titleIdiom')}}</h6>
+      <label class="item uk-margin" for="check">
+            <h6>Seleccione un Idioma:</h6>
         <div class="uk-form-controls" style="width: 40%">
-            <select class="uk-select" id="language" v-model="settings.language">
-                <option  value="es" selected>{{$t('settings.optionSpanish')}}</option>
-                <option value="en">{{$t('settings.optionEnglish')}}</option>
+            <select class="uk-select" id="form-horizontal-select">
+                <option>Español</option>
+                <option>English</option>
             </select>
         </div>
       </label>
-      <label class="item uk-margin" for="profile">
-            <h6>{{$t('settings.profile')}}</h6>
+      <label class="item uk-margin" for="check">
+            <h6>Perfil:</h6>
         <div class="uk-form-controls" style="width: 40%">
-            <select v-model="settings.profile" class="uk-select" id="profile">
-                <option value="container" selected>{{$t('settings.optionContainer')}}</option>
-                <option value="eCommerce">{{$t('settings.optionNone')}}</option>
+            <select v-model="profile" class="uk-select" id="form-horizontal-select">
+                <option>Ninguno</option>
+                <option value="drayage">Contenedor</option>
             </select>
         </div>
       </label>
     </div>
     <div class="btn">
-        <button class="uk-button uk-button-transparent" @click="saveSettings()">{{$t('settings.saveButton')}}</button>
+        <button class="uk-button uk-button-transparent" @click="saveSettings">Guardar Cambios</button>
     </div>
   </div>
 </template>
@@ -43,15 +43,9 @@ export default {
       },
     };
   },
-  computed: {
-    ...mapGetters(['languageStore', 'rolStore'])
-  },
   mounted() {
     this.settings = this.settingsStore
     this.$store.commit("setSettings", this.settings);
-    this.setLanguage()
-    this.setProfile()
-
   },
   computed:{
     ...mapGetters([
@@ -61,30 +55,10 @@ export default {
   methods: {
     saveSettings() {
       this.$store.commit("setSettings", this.settings);
-      this.$store.commit("changeRol", this.settings.profile );
-      this.$store.commit("setLanguageStore", this.settings.language );
+      this.$store.commit("changeRol", this.profile );
 
       this.$router.push({ name: "home" });
     },
-    setLanguage() {
-        if (this.languageStore !== null) {
-         this.settings.language = this.languageStore
-        this.$i18n.locale = this.languageStore
-
-       } else {
-         this.settings.language = 'es'
-        this.$i18n.locale = 'es'
-       }
-    },
-     setProfile() {
-        if (this.rolStore !== null) {
-         this.settings.profile = this.rolStore
-
-       } else {
-         this.settings.profile = 'container'
-       }
-    }
- 
   },
 };
 </script>

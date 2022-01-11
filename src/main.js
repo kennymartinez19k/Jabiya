@@ -24,11 +24,10 @@ library.add(faEye);
 library.add(faEyeSlash);
 library.add(faArrowRight)
 const store = createStore({ ...storeModule });
-createApp(App).use(i18n)
+createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon)
   .use(IonicVue)
   .use(router)
-  .use(i18n)
   .use(store)
   .use(VueObserveVisibility)
   .use(servicesPlugins)
