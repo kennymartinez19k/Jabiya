@@ -22,7 +22,7 @@
           <tbody v-for="order in userShipper" :key="order">
             <tr @click="orderDetail(order.id)">
               <td>{{order.name}} </td>
-              <td>juan Perez</td>
+              <td>{{order.client}}</td>
               <td>{{order.amount_total}}</td>
             </tr>
           </tbody>
