@@ -17,8 +17,8 @@
       >
         <p><strong>Orden:</strong>&nbsp;<span>{{customerDetails?.name}}</span></p>
         <p><strong>Dirección:</strong>&nbsp;<span>{{customerDetails?.delivery_address?.full_address}}</span></p>
-        <p><strong>Cliente:</strong>&nbsp;<span>Juan Perez</span></p>
-        <p><strong>Total:</strong>&nbsp;<span>{{customerDetails?.currencySymbol}} {{customerDetails?.amount_total}}</span></p>
+        <p><strong>Cliente:</strong>&nbsp;<span>{{customerDetails?.client}}</span></p>
+        <p><strong>Total:</strong>&nbsp;<span>{{customerDetails?.currencySymbol}}{{customerDetails?.amount_total}} <span v-if="showUpdating">Se recalcula al guardar tus cambios</span></span></p>
       </div>
     </div>
       <h4  class="uk-text-small">Lista de Productos</h4>
@@ -37,17 +37,17 @@
               <td class="uk-table-small  ">{{product.productName}}</td>
               <td class=" ">{{product.currencySymbol}}{{product.price}}</td>
               <td :class="{showActive: product.productQuantity !== NewOrdersQuantyti[i]}">{{product.productQuantity}}</td>
-              <font-awesome-icon icon="plus" class="Space font-awesome" @click="product.productQuantity += 1 && product.productQuantity < NewOrdersQuantyti[i], showButton()" />
-               <font-awesome-icon icon="minus"  class="Space font-awesome" @click="product.productQuantity -= 1, showButton()" />
+              <font-awesome-icon icon="plus" class="Space font-awesome" @click="product.productQuantity += 1 && product.productQuantity < NewOrdersQuantyti[i], showButton(product.productQuantity, i)" />
+               <font-awesome-icon icon="minus"  class="Space font-awesome" @click="product.productQuantity -= 1, showButton(product.productQuantity,i)" />
             </tr>
             
           </tbody>
-          <tfoot>
+          <!-- <tfoot>
             <td>Anterior</td>
             <td class="uk-text-right">1/1</td>
             <td></td>
             <td>Siguiente</td>
-          </tfoot>
+          </tfoot> -->
         </table>
       </div>
     </div>
@@ -105,7 +105,8 @@ export default {
       total: null,
       order_lines: null,
       customerDetails: null,
-      NewOrdersQuantyti: []
+      NewOrdersQuantyti: [],
+      showUpdating: false
     };
   },
    setup() {
@@ -125,11 +126,7 @@ export default {
   
   },
   methods: {
- 
-    alertButtom(){
-      alert('cargando factura')
-    },
-     async productsOfOrders () {
+      async productsOfOrders () {
         const result = await axios.get(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}`, {withCredentials: true })
         console.log(result.data.result.data, 'productsOfOrders')
         this.order_lines = result.data.result.data.order_lines
@@ -159,8 +156,19 @@ export default {
        console.log(result, 'productQuantityChange')
        await this.productsOfOrders()
     },
-    showButton () {
-      this.buttonShow = true
+    showButton (value, index) {
+     
+      console.log(value, 'value')
+      console.log(index, 'index')
+      console.log(this.NewOrdersQuantyti, 'this.NewOrdersQuantyti')
+      if (this.NewOrdersQuantyti.some(x => x === value)) {
+      this.buttonShow = false
+      this.showUpdating = false
+      } else {
+         this.buttonShow = true
+      this.showUpdating = true
+      }
+      
     }
   },
 };
