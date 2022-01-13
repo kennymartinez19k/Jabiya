@@ -1,30 +1,29 @@
 <template>
   <div class="uk-flex uk-flex-between uk-flex-column cnt">
     <div class="stiky">
-      <span
-        class="uk-text-center uk-margin-remove"
-        style="margin-bottom: 5px !important; font-weight: 400"
-      >
-        
-      </span>
+      <p style="font-size: 13px !important; font-weight: 500">
+        {{ load?.loadNumber }}
+      </p>
       <div
         class="
           uk-flex
           uk-flex
-          uk-flex-between
+          uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
         "
         style="align-items: center"
       >
-        <div style="width: 100%" class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <strong>Shipper:</strong><span>&nbsp; {{ load?.shipper }}</span>
+            <span class="font-weight-medium">Shipper: </span
+            ><span>&nbsp; {{ shipperName(load) }}</span>
           </p>
+          <div></div>
           <p>
-            <strong class="uk-block">Destino:</strong>
-            <span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ load?.firstOrdenSector?.sector }}</span>
           </p>
         </div>
       </div>
@@ -59,7 +58,7 @@
             ><span>{{ order?.order_num }}</span>
           </p>
           <p class="uk-width-1-2">
-            <strong>Cajas / Pallets: </strong>{{ order?.products?.length }}<span></span>
+            <strong>Cajas / Pallets: </strong>{{ order?.no_of_boxes }}<span></span>
           </p>
           <div
             class="uk-flex uk-width-1-1 uk-flex-between"
@@ -120,72 +119,8 @@ export default {
       status: null,
       result: null,
       load: null,
+      orders: null,
       completed: "background-color: #2a307c !important",
-      orders: [
-        {
-          numberOfOrders: 1234,
-          numberOfBox: 2,
-          client: "Juan Martinez Soto",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 08:00')
-        },
-        {
-          numberOfOrders: 1223,
-          numberOfBox: 2,
-          client: "Maria Lisbeth Alcantara Rodriguez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: true,
-          hour: new Date('2020-12-02, 10:00')
-        },
-        {
-          numberOfOrders: 3321,
-          numberOfBox: 2,
-          client: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 12:00')
-        },
-        {
-          numberOfOrders: 4324,
-          numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 14:00')
-        },
-        {
-          numberOfOrders: 3753,
-          numberOfBox: 2,
-          client: "Albert Perez",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 16:22')
-        },
-        {
-          numberOfOrders: 1027,
-          numberOfBox: 2,
-          client: "Jose Abreu Pichardo",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 18:22')
-        },
-        {
-          numberOfOrders: 9120,
-          numberOfBox: 2,
-          client: "Juan Jose Garcia",
-          address: "Alma Rosa calle abreu #17",
-          timeToWait: "2020-01-23",
-          completed: false,
-          hour: new Date('2020-12-02, 20:22')
-        },
-      ],
     };
   },
   components: {
@@ -196,7 +131,7 @@ export default {
   },
   mounted() {
     this.load = this.loadStore;
-    this.orders = this.orderScan
+    this.orders = this.load.Orders
   },
   methods: {
         async location () {
@@ -249,6 +184,10 @@ export default {
       }
 
       return false;
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
     },
   },
 };

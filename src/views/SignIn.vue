@@ -79,6 +79,7 @@
         </div>
       <button
         type="button"
+        :class="{disabled: disabled}"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
         @click="changeRoute('home')"
         style="margin-top: 15px"
@@ -101,6 +102,7 @@ export default {
       type: "password",
       iconType: "eye",
       showError: null,
+      disabled: false,
       showErrorText: null,
       login: {
         email: "8094034881",
@@ -133,6 +135,7 @@ export default {
   },
   methods: {
     async changeRoute(path) {
+      this.disabled = true
       try {
         if (path == "home") {
           if (this.login.email !== "" && this.login.password !== "") {
@@ -153,6 +156,7 @@ export default {
         }
       } catch (error) {
         this.loaded = false;
+        this.disabled = false
         if (error.message === 'Request failed with status code 401') {
           this.showErrorText = 'Error al introducir los datos'
         }else if (error.message === 'Network Error') {
@@ -229,5 +233,8 @@ export default {
   top: 278px;
   right: 11px;
   width: 92%;
+}
+.disabled{
+  pointer-events: none;
 }
 </style>

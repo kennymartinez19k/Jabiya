@@ -89,9 +89,7 @@
           <img src="../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
       
-      <button @click="setMap()" class="uk-button uk-button-transparent">Iniciar Ruta
-          <img src="../assets/road.png" style="width: 25px; margin-left: 5px ">
-      </button>
+      
     </div>
   </div>
 </template>
@@ -177,9 +175,7 @@ export default {
         }
       });
     },
-    call(val){
-      console.log(val)
-    },
+   
     scan() {
 
      this.$emit("setNameHeader", 'Escaneo Corrido');
