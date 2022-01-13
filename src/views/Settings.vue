@@ -49,38 +49,15 @@ export default {
   mounted() {
     this.settings = this.settingsStore
     this.$store.commit("setSettings", this.settings);
-    this.setLanguage()
-    this.setProfile()
-
   },
 
   methods: {
     saveSettings() {
       this.$store.commit("setSettings", this.settings);
-      this.$store.commit("changeRol", this.settings.profile );
-      this.$store.commit("setLanguageStore", this.settings.language );
+      this.$store.commit("changeRol", this.profile );
 
       this.$router.push({ name: "home" });
     },
-    setLanguage() {
-        if (this.languageStore !== null) {
-         this.settings.language = this.languageStore
-        this.$i18n.locale = this.languageStore
-
-       } else {
-         this.settings.language = 'es'
-        this.$i18n.locale = 'es'
-       }
-    },
-     setProfile() {
-        if (this.rolStore !== null) {
-         this.settings.profile = this.rolStore
-
-       } else {
-         this.settings.profile = 'container'
-       }
-    }
- 
   },
 };
 </script>
@@ -106,9 +83,7 @@ export default {
 input {
   margin-left: 0.5rem;
 }
-button {
-  padding: 0px 7.5px;
-}
+
 .btn{
     display: flex;
     justify-content: flex-end;;

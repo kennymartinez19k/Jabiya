@@ -1,6 +1,6 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
-  <router-view class="view-header" @deliveryActions="setName($event)" :class="{view: !currentPage}"/>
+  <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
 <script>
 import { mapGetters } from 'vuex'
@@ -115,7 +115,7 @@ strong{
   font-weight: 500 !important;
 }
 .cnt {
-  height: 100%;
+  height: 100% !important;
   overflow: scroll;
 }
 .uk-button-transparent{
@@ -123,5 +123,26 @@ strong{
     background: white;
     border: 1px solid;
     border: 1px solid #4a4a4a;
+}
+.uk-button{
+  line-height: 15px;
+  font-size: 10px;
+  padding: 10px 10px;
+}
+
+:focus:not([tabindex^='-']) {
+    outline: 0px dotted #333;
+    outline-offset: 1px;
+}
+.stiky {
+  color: rgb(255, 255, 255) !important;
+  z-index: 2;
+    border-top: 1px solid #313575;
+  font-size: 12px !important;
+  padding: 0px 10px 5px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: center;
+  box-shadow: 1px 0px 5px #898989;
 }
 </style>

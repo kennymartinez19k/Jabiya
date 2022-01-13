@@ -35,6 +35,7 @@ const storeModule = {
     ...timelineStore.actions,
     ...singInStore.actions,
     ...profiles.actions,
+    ...orders.actions,
     ...invoicesStore.actions,
   },
   getters: {

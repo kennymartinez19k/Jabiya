@@ -26,7 +26,7 @@ class LoadsServices {
             "status": status
         }
       }
-      const result = await this.http.patch(`http://preprod.flai.com.do:8756/exo/loads/${id}/actions`, params)
+      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${id}/actions`, params)
       return result
     }
   

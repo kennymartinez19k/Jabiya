@@ -44,8 +44,8 @@
                 </p>
                 <p>
                   <strong>Cliente: </strong>
-                   <span>
-                     {{shipperName(load) }}
+                   <span v-for="info in load.shipper" :key="info">
+                    {{info.name}}
                     </span>
                 </p>
                 <p>
@@ -60,7 +60,7 @@
             </div>
           </div>
           <div v-show="loadsByDate.length <= 1" style="height: 50px">
-            <span >No Existen Viajes Disponibles</span>
+            <span >No Tiene Viajes Asignados Para Este Día</span>
           </div>
         </div>
       </div>
@@ -106,24 +106,21 @@ export default {
 
     return { isOpenRef, setOpen };
   },
-  beforeMount() {
+  async beforeMount() {
     this.setOpen(true);
+
   },
   async mounted() {
     
     window.location.href = "#HOY";
     moment.locale("es");
     await this.scrollTrigger();
+
     
   },
   computed: {
     ...mapGetters(["allLoads", "settings"]),
-    dateLoad: function () {
-      var today = "Hoy";
-      var yesterday = "27/12/2021";
-
-      return [yesterday, today];
-    },
+    
   },
 
   methods: {

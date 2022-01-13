@@ -135,7 +135,6 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allOrders",
       "settings"
     ]),
   },
@@ -146,10 +145,10 @@ export default {
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
-      this.$emit("deliveryActions", `Entrega de Ordenes`);
+      this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
       this.$emit(
-        "deliveryActions",
+        "setNameHeader",
         `Orden No. ${this.orderScan[0]?.order_num}`
       );
     }

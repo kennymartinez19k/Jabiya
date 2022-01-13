@@ -1,10 +1,9 @@
-// import i18n from '../i18n'
 const orders = {
   state: {
       scanOrder: null,
-      allOrders: [],
+      registrationForScan: null,
       settings: {
-        AutoScan: true
+        AutoScan: false
       },
       language: null,
     },
@@ -12,23 +11,30 @@ const orders = {
     scanOrder(state, val){
       state.scanOrder = val
     },
-    setAllOrders(state, val){
-      state.orders = val
+    setStructureToScan(state, val){
+      state.registrationForScan = val
+      console.log(state.registrationForScan)
     },
     setSettings(state, val){
       state.settings = val
     },
     setLanguageStore (state, lang) {
       state.language = lang
-     console.log(lang, 'sdoiooo')
+     console.log(lang)
     }    
+  },
+  actions:{
+    changeLoadScannedInStore({commit}, val){
+      commit('setStructureToScan', val)
+      localStorage.setItem('LoadScanned',JSON.stringify(val))
+    }
   },
 
   getters: {
     orderScan : state => state.scanOrder,
-    allOrders: state => state.orders,
     settingsStore: state => state.settings,
-    languageStore: state => state.language
+    languageStore: state => state.language,
+    structureToScan: state => state.registrationForScan
   }
 }
 

@@ -14,31 +14,27 @@
         </div>
         <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <li @click="setCurrentPage('settings')">Configuración</li>
+            <li @click="setCurrentPage('settings')">Configuracion</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
-            <li @click="setCurrentPage('about')">Versión app</li>
+            <li @click="setCurrentPage('about')">Version app</li>
         </ul>
     </div>
-   </div>
+</div>
     </div>
 </nav>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import Uikit from 'uikit'
 export default {
     props:{
         nameComponent: String
     },
-   data() {
-    return {
-        iconType: 'sign-out-alt',
-        action: "sign-in",
-        positionSticky: false,
-        userData: null
-    }
-},
-computed:{    titlePage(){
+computed:{
+    ...mapGetters(["userData"]),
+    
+    titlePage(){
             return this.nameComponent
     }
 },
@@ -61,11 +57,18 @@ watch:{
     }
 },
 mounted(){
-    this.userData = JSON.parse(localStorage.getItem('auth'))
+    this.userData = JSON.parse(localStorage.getItem('userInfo'))
     if (this.nameComponent) this.titlePage = this.nameComponent
     else ''
 },
-
+data() {
+    return {
+        iconType: 'sign-out-alt',
+        action: "sign-in",
+        positionSticky: false,
+        userData: null
+    }
+},
 methods:{
     openMenu(){
       this.positionSticky = true
@@ -121,7 +124,7 @@ li{
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
-    height: 58px;
+    height: 55px;
 }
 .close-navbar{
     width: 25px;

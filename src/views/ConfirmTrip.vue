@@ -195,7 +195,7 @@ export default {
     },
     async acceptOrRejectLoad(id, version, status) {
       
-      var user = JSON.parse(localStorage.getItem("auth"));
+      var user = JSON.parse(localStorage.getItem("userInfo"));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,
@@ -241,7 +241,6 @@ p {
 }
 .button-opt {
   background: #ffffff !important;
-  height: 60px;
   border-top: 1px solid #b1b1b1;
   display: flex;
   justify-content: space-evenly;
@@ -251,14 +250,13 @@ p {
   bottom: 0px;
 }
 .button-opt button {
-  padding: 0px 15px !important;
+  padding: 10px 5px !important;
   align-items: center;
   display: flex;
-  font-size: 12px;
 }
 
 .uk-card {
-  padding: 20px 10px;
+  padding: 5px 10px;
 }
 .uk-card-body {
   margin-bottom: 10px;
@@ -305,17 +303,7 @@ p {
   display: flex;
 }
 
-.stiky {
-  color: rgb(255, 255, 255) !important;
-  z-index: 2;
-  border-top: 1px solid #313575;
-  font-size: 12px !important;
-  padding: 0px 10px 5px !important;
-  background: #2a307c;
-  font-weight: 300 !important;
-  text-align: center;
-  box-shadow: 1px 0px 5px #898989;
-}
+
 .img-scan {
   width: 39px;
 }
@@ -349,10 +337,9 @@ p {
   background-position: 80%;
 }
 .uk-button{
-  padding: 0px 15px !important;
+  padding: 5px 10px !important;
     align-items: center;
     display: flex;
-    font-size: 12px;
     border-radius: 5px;
 }
 </style>

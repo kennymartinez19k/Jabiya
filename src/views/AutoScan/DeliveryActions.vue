@@ -1,6 +1,8 @@
 <template>
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
+         <button @click="step++">Sumar</button>
+    {{step}}
       <p
         style=" font-size: 13px; !important; font-weight: 500"
       >
@@ -95,6 +97,7 @@
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 15px 0px  !important;"
     >
+ 
       <timeline
         :step="step"
         :exception="exception"
@@ -109,7 +112,6 @@
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
-import { Vibration } from "@ionic-native/vibration";
 import timeline from "../../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 export default {
@@ -127,7 +129,7 @@ export default {
       cont: 0,
       load: null,
       imagiElement: [],
-      step: 0,
+      step: 1,
       exception: false,
       firm: null,
     };
@@ -153,19 +155,14 @@ export default {
     }
     console.log(this.orders)
     if (this.orderScan?.length > 1) {
-      this.$emit("deliveryActions", `Entrega de Ordenes`);
+      this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
       this.$emit(
-        "deliveryActions",
+        "setNameHeader",
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
     }
-    if(!this.settings?.AutoScan){
-      this.getShow("scan")
-    }else{
-      this.step++
-      this.resultScan = true
-    }
+
   },
   watch: {
     digitalFirmStore: {
@@ -202,24 +199,6 @@ export default {
     },
     async scanOrder() {
              
-          if (await this.checkPermission()) {
-          BarcodeScanner.hideBackground();
-          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-          if (result.hasContent) {
-            BarcodeScanner.hideBackground();
-              this.resultScan = result
-                 this.step++;
-            var OrderElement = this.ordersScan.findIndex(x => x.numberOfOrders == result.content)
-            if (OrderElement > -1) {
-              console.log(OrderElement)
-            } else if (OrderElement ){
-              Vibration.vibrate(1000);
-              setTimeout(() => {
-                  this.scanOrder()
-              }, 1000)
-            }
-          }
-        }
       },
 
       verificacion(orders, result) {

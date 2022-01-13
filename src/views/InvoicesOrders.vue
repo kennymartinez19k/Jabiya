@@ -14,7 +14,7 @@
         <table class="uk-table uk-table-hover uk-table-divider uk-text-center">
           <thead>
             <tr>
-              <th class=" uk-text-center">orden</th>
+              <th class=" uk-text-center">Orden</th>
               <th class=" uk-text-center">Cliente</th>
               <th class=" uk-text-center">Total</th>
             </tr>

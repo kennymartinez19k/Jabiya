@@ -1,5 +1,35 @@
 <template>
+<div class="">
+ <div class="stiky">
+      <p style="font-size: 13px !important; font-weight: 500">
+        {{ loads?.loadNumber }}
+      </p>
+      <div
+        class="
+          uk-flex
+          uk-flex
+          uk-flex-center
+          uk-flex-left
+          uk-margin-remove
+          uk-padding-remove
+        "
+        style="align-items: center"
+      >
+        <div class="uk-flex uk-flex-wrap">
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Shipper: </span
+            ><span>&nbsp; {{ shipperName(loads) }}</span>
+          </p>
+          <div></div>
+          <p>
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ loads?.firstOrdenSector?.sector }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
   <div class="container">
+   
     <ul class="progressbar">
       <li
         :class="{
@@ -26,7 +56,7 @@
         </div>
         <div class="disabled-container"></div>
       </li>
-      <li :class="{ disabled: !loadStatus.approved  }">
+      <li>
         <div
           @click="changeRoute('Approved')"
           class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
@@ -49,12 +79,35 @@
         </div>
         <div class="disabled-container"></div>
       </li>
-      <li class="disabled" :class="{ active: loadStatus.Approved }">
+      <li>
         <div
-          @click="step++"
+          @click="changeRoute('Dispatched')"
           class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
         >
-          <h6>Entregar Orden</h6>
+          <h6>Iniciar Ruta</h6>
+        </div>
+        <div class="icon-item">
+          <img
+            v-if="loadStatus.step <= 2"
+            src="../assets/checklist.png"
+            alt=""
+            srcset=""
+          />
+          <img
+            v-else
+            src="../assets/checklist-checked-box.png"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="disabled-container"></div>
+      </li>
+      <li class="">
+        <div
+          @click="changeRoute('Deliver-Load')"
+          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
+        >
+          <h6>Entregar Contenedor</h6>
         </div>
         <div class="icon-item">
           <img
@@ -72,7 +125,28 @@
         </div>
         <div class="disabled-container"></div>
       </li>
-       <!-- class="disabled" :class="{ active: loadStatus.Approved }" -->
+        <li class="">
+        <div
+          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
+        >
+          <h6>Regresar Contenedor</h6>
+        </div>
+        <div class="icon-item">
+          <img
+            v-if="loadStatus.step <= 3"
+            src="../assets/checklist.png"
+            alt=""
+            srcset=""
+          />
+          <img
+            v-else
+            src="../assets/checklist-checked-box.png"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="disabled-container"></div>
+      </li>
       <li>
         <div
           @click="setInvoice()"
@@ -96,28 +170,10 @@
         </div>
         <div class="disabled-container"></div>
       </li>
-      <li class="disabled" :class="{ active: loadStatus.Approved }">
-        <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m item">
-          <h6>Montar Viaje</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 5"
-            src="../assets/checklist.png"
-            alt=""
-            srcset=""
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-            alt=""
-            srcset=""
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
+
     </ul>
   </div>
+</div>
 </template>
 
 <script>
@@ -125,6 +181,7 @@ import { mapGetters } from "vuex";
 import {Mixins} from '../mixins/mixins'
 
 export default {
+  alias: 'Seleccione el Siguiente Paso',
   data() {
     return {
       step: 0,
@@ -151,13 +208,16 @@ export default {
   },
   methods: {
     changeRoute(val) {
-      if (val == this.loads?.loadingStatus?.text)
-        this.changeRouteLoads(val)
+     this.changeRouteLoads(val)
     },
     setInvoice () {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});
 
-    }
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
+    },
   },
 };
 </script>
@@ -168,7 +228,6 @@ export default {
   padding: 0px 10px;
   display: flex;
   flex-direction: row;
-  position: absolute;
   z-index: 1;
 }
 .progressbar {
@@ -183,15 +242,18 @@ export default {
   float: left;
   width: 100%;
   display: flex;
-  height: 100px;
+  height: 80px;
   position: relative;
   text-align: center;
 }
+.progressbar h6{
+  margin: 0px;
+}
 .progressbar li .item {
-  height: 50px;
+  height: 40px;
   width: 73%;
   margin-right: 10px;
-  padding: 0px;
+  padding: 10px 0px;
   box-shadow: none;
   border: 1px solid #c0bdbd;
 }
@@ -205,18 +267,20 @@ export default {
   width: 30px;
   height: 30px;
 }
-
+p{
+  margin: 2px 0px !important
+}
 .progressbar {
   counter-reset: step;
 }
 .progressbar li:before {
-  content: "2";
+  content: counter(step);
   counter-increment: step;
   width: 25px;
   height: 25px;
   border: 2px solid #bebebe;
   display: block;
-  margin: 0 10px;
+  margin: 0 8px 0px 4px;
   border-radius: 50%;
   line-height: 27px;
   background: white;
@@ -231,7 +295,7 @@ export default {
   height: 100%;
   background: #979797;
   top: 15px;
-  left: 7%;
+  left: 5%;
   z-index: -1;
 }
 .progressbar li:last-child:after {
