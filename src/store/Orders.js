@@ -23,7 +23,12 @@ const orders = {
      console.log(lang)
     }    
   },
-
+  actions:{
+    changeLoadScannedInStore({commit}, val){
+      commit('setStructureToScan', val)
+      localStorage.setItem('LoadScanned',JSON.stringify(val))
+    }
+  },
 
   getters: {
     orderScan : state => state.scanOrder,

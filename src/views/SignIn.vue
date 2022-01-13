@@ -7,7 +7,7 @@
     :width="100"
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
-  <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
+  <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
     <form
       class="
         uk-card
@@ -25,6 +25,8 @@
         >Ingrese su número de móvil y contraseña y presione iniciar seción para
         ingresar a su cuenta</span
       >
+
+
 
       <div class="uk-margin uk-text-left">
         <label class="uk-text-emphasis" for="email">Email</label>
@@ -75,7 +77,6 @@
             <a class="uk-alert-close" uk-close></a>
             <p>{{showErrorText}}</p>
         </div>
-        <!-- <pre>{{ejemplo}}ddd </pre> -->
       <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
@@ -126,6 +127,9 @@ export default {
               
           }
       }
+  },
+  mounted(){
+    console.log(window.color)
   },
   methods: {
     async changeRoute(path) {

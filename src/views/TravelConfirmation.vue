@@ -210,7 +210,6 @@ p {
 }
 .button-opt {
   background: #ffffff !important;
-  height: 60px;
   border-top: 1px solid #b1b1b1;
   display: flex;
   justify-content: space-evenly;
@@ -220,10 +219,9 @@ p {
   bottom: 0px;
 }
 .button-opt button{
-    padding: 0px 15px !important;
+    padding: 5px 5px !important;
     align-items: center;
     display: flex;
-    font-size: 12px;
 }
 
 .uk-card {

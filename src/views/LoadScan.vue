@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <button @click="uploadProducts(11)">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -38,11 +39,9 @@
     >
       <div v-if="statusOrders == 'start'">
         <h5 style="margin: 5px 0px">
-          <span v-if="orders.length <= 1">
-            Escanee su Orden
-          </span>
-          <span v-else>
-            Escanee su Orden Para Cargar
+          
+          <span>
+            Escanee Ordenes
           </span>
           <img src="../assets/parcel.png" style="width: 10%">
         </h5>        
@@ -105,8 +104,8 @@
 
             <p>Introduza la Cantidad que desea escanear <span>{{totalLimitOfBoxes.scanned}}/{{totalLimitOfBoxes.totalOfOrders}}</span></p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
-            <p class="uk-text-right uk-flex" style="margin-top: 20px !important">
-                <button class="uk-button uk-button-default uk-modal-close" @click="scanOrder()" type="button">Cancelar</button>
+            <p class="uk-text-right uk-flex uk-flex-end" style="margin-top: 20px !important; justify-content: flex-end">
+                <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
             </p>
         </div>
@@ -165,6 +164,11 @@ export default {
         this.stopScan()
       }
     },
+    structureToScan: function(){
+      let LoadScanned = JSON.parse(localStorage.getItem('LoadScanned'))
+      this.firstStructureLoad = LoadScanned.firstStructure
+      this.secondStructureLoad = LoadScanned.secondStructure
+    },
     quantityForScan: function(newVal){
       if(newVal > this.totalLimitOfBoxes.totalOfOrders){
         this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders
@@ -182,7 +186,34 @@ export default {
       this.orders.map(x => x.completedScanned = false)
       this.load.firstOrdenSector = this.orders[0]?.sector
     }
-    this.scanOrder()
+      const LoadScanned = JSON.parse(localStorage.getItem('LoadScanned'))
+    let firstStructure = []
+    let secondStructure = []
+    if(LoadScanned){
+      this.firstStructureLoad.forEach(x => {
+        let data = LoadScanned?.firstStructure.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity)
+        if(data){
+            firstStructure.push(data)
+        }
+        else{
+            firstStructure.push(x)
+        }
+      })
+      this.secondStructureLoad.forEach(x => {
+        let data = LoadScanned?.secondStructure.find(p => p.qrCode === x.qrCode && p.totalOfOrders === x.totalOfOrders)
+        if(!data) data = x
+        data.completedScanned = data.loadScanningCounter == data.totalOfOrders
+        data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
+        secondStructure.push(data)
+      })
+    }
+    console.log(firstStructure)
+    console.log(secondStructure)
+
+    this.firstStructureLoad = firstStructure
+    this.secondStructureLoad = secondStructure
+
+    // this.scanOrder()
   },
 
   methods: {  
@@ -296,7 +327,7 @@ export default {
 
       }
       let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad}
-      await this.$store.commit("setStructureToScan", data)
+      await this.$store.dispatch("changeLoadScannedInStore", data)
       this.verifiedLoad()
     },
     async scanOrder() {
@@ -324,6 +355,7 @@ export default {
           x => x.qrCode == qrCode &&
           x.loadScanningCounter < x.quantity
       )
+      alert(1)
         if(orderForScan){
           let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === orderForScan.qrCode && x.loadScanningCounter < x.quantity)
           let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == orderForScan.qrCode)
@@ -337,18 +369,15 @@ export default {
 
             if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
               this.secondStructureLoad[index_second].scanProgress = true
+              
             }
             else{
               this.secondStructureLoad[index_second].completedScanned = true
               this.secondStructureLoad[index_second].scanProgress = false
             }
-            // if(LoadDistribute > this.firstStructureLoad[index_first].quantity){
-            //   let LoadForDistribute = LoadDistribute - this.firstStructureLoad[index_first].quantity
-            //   this.distributeProductScan(LoadForDistribute,qrCode )
-            // }
             await this.$services.loadsScanServices.scanProduct(order._id, productInfo._id, LoadDistribute, productInfo.product._id, qrCode)
-
-    }
+            
+        }
     },
     async location() {
         try {

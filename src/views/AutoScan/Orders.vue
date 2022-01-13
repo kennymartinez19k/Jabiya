@@ -82,9 +82,7 @@
       <button @click="uploadOrDownload(load)" class="uk-button uk-button-transparent">{{messageStatusLoad}}
           <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
-      <button @click="setMap()" class="uk-button uk-button-transparent">Iniciar Ruta
-          <img src="../../assets/road.png" style="width: 25px; margin-left: 5px ">
-      </button>
+      
     </div>
   </div>
 </template>
@@ -200,7 +198,6 @@ p {
 }
 .button-opt {
   background: #ffffff !important;
-  height: 60px;
   border-top: 1px solid #b1b1b1;
   display: flex;
   justify-content: space-evenly;
@@ -210,10 +207,9 @@ p {
   bottom: 0px;
 }
 .button-opt button{
-    padding: 0px 15px !important;
+    padding: 5px 5px !important;
     align-items: center;
     display: flex;
-    font-size: 12px;
 }
 
 .uk-card {

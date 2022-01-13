@@ -124,7 +124,7 @@ li{
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
-    height: 58px;
+    height: 55px;
 }
 .close-navbar{
     width: 25px;

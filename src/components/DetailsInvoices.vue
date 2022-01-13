@@ -17,7 +17,7 @@
       >
         <p><strong>Orden:</strong>&nbsp;<span>{{customerDetails?.name}}</span></p>
         <p><strong>Dirección:</strong>&nbsp;<span>{{customerDetails?.delivery_address?.full_address}}</span></p>
-        <p><strong>Cliente:</strong>&nbsp;<span>Juan Perez</span></p>
+        <p><strong>Cliente:</strong>&nbsp;<span>J{{customerDetails?.client}}</span></p>
         <p><strong>Total:</strong>&nbsp;<span>{{customerDetails?.currencySymbol}} {{customerDetails?.amount_total}}</span></p>
       </div>
     </div>
@@ -42,12 +42,12 @@
             </tr>
             
           </tbody>
-          <tfoot>
+          <!-- <tfoot>
             <td>Anterior</td>
             <td class="uk-text-right">1/1</td>
             <td></td>
             <td>Siguiente</td>
-          </tfoot>
+          </tfoot> -->
         </table>
       </div>
     </div>

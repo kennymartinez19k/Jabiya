@@ -30,7 +30,7 @@
     </div>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
       <div class="uk-flex select-all">
-        <input  type="checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
+        <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
         <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
       </div>
       <div
@@ -77,10 +77,11 @@
           </p>
         </div>
         <div>
-          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" >
+          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
         </div>
         
       </div>
+      
     </div>
     <div></div>
       <div class="button-opt">
@@ -157,11 +158,14 @@ export default {
       this.load.firstOrdenSector = this.orders[0]?.sector
       console.log(this.load)
     }else{
-     this.load = this.allLoads
+      this.load = this.allLoads
     this.orders = this.load.orders
 
     }
     this.orderObj();
+
+  
+      
   },
   methods: {
     orderObj() {
@@ -178,7 +182,7 @@ export default {
     },
     scan() {
 
-     this.$emit("deliveryActions", 'Escaneo Corrido');
+     this.$emit("setNameHeader", 'Escaneo Corrido');
       this.$store.commit("scanOrder", this.listOrderDetails );
       let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       this.$store.commit("setStructureToScan", structureInfo)
@@ -257,7 +261,6 @@ p {
 }
 .button-opt {
   background: #ffffff !important;
-  height: 65px;
   border-top: 1px solid #e2e2e2;
   width: 100%;
   position: absolute;
@@ -267,8 +270,7 @@ p {
   padding: 10px 0px;
 }
 .button-opt button{
-  padding: 0px 10px;
-  font-size: 10px;
+  padding: 5px 5px;
   line-height: 15px;
 }
 .uk-card {
@@ -370,6 +372,9 @@ p {
 }
 .select-all input{
   transform: scale(1.1);
+}
+.select-all input :focus-visible {
+    outline: 0px dotted #333;
 }
 .select-all label {
   font-weight: 600;

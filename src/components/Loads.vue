@@ -60,7 +60,7 @@
             </div>
           </div>
           <div v-show="loadsByDate.length <= 1" style="height: 50px">
-            <span >No Existen Viajes Disponibles</span>
+            <span >No Tiene Viajes Asignados Para Este Día</span>
           </div>
         </div>
       </div>

@@ -83,9 +83,7 @@ export default {
 input {
   margin-left: 0.5rem;
 }
-button {
-  padding: 0px 7.5px;
-}
+
 .btn{
     display: flex;
     justify-content: flex-end;;
