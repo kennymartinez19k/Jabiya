@@ -3,7 +3,7 @@ const orders = {
       scanOrder: null,
       registrationForScan: null,
       settings: {
-        AutoScan: false
+        AutoScan: true
       },
       language: null,
     },
@@ -26,7 +26,9 @@ const orders = {
   actions:{
     changeLoadScannedInStore({commit}, val){
       commit('setStructureToScan', val)
-      localStorage.setItem('LoadScanned',JSON.stringify(val))
+      let name = JSON.stringify(val.name)
+      console.log(name)
+      localStorage.setItem(name,JSON.stringify(val))
     }
   },
 

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts(11)">Escanear</button>
+    <button @click="uploadProducts(2)">escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -144,7 +144,7 @@ export default {
       totalLimitOfBoxes: {
         scanned: null,
         totalOfOrders: null
-      }
+      },
     };
   },
   computed: {
@@ -165,7 +165,8 @@ export default {
       }
     },
     structureToScan: function(){
-      let LoadScanned = JSON.parse(localStorage.getItem('LoadScanned'))
+      let loadId = JSON.stringify(this.load.loadMapId)
+      let LoadScanned = JSON.parse(localStorage.getItem(loadId))
       this.firstStructureLoad = LoadScanned.firstStructure
       this.secondStructureLoad = LoadScanned.secondStructure
     },
@@ -186,10 +187,11 @@ export default {
       this.orders.map(x => x.completedScanned = false)
       this.load.firstOrdenSector = this.orders[0]?.sector
     }
-      const LoadScanned = JSON.parse(localStorage.getItem('LoadScanned'))
-    let firstStructure = []
-    let secondStructure = []
+    let name = JSON.stringify(this.load.loadMapId)
+    const LoadScanned = JSON.parse(localStorage.getItem(name))
     if(LoadScanned){
+      let firstStructure = []
+      let secondStructure = []
       this.firstStructureLoad.forEach(x => {
         let data = LoadScanned?.firstStructure.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity)
         if(data){
@@ -206,14 +208,11 @@ export default {
         data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
         secondStructure.push(data)
       })
-    }
-    console.log(firstStructure)
-    console.log(secondStructure)
-
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
-
-    // this.scanOrder()
+    }
+    
+    this.scanOrder()
   },
 
   methods: {  
@@ -326,7 +325,7 @@ export default {
             }     
 
       }
-      let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad}
+      let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad, name:this.load.loadMapId }
       await this.$store.dispatch("changeLoadScannedInStore", data)
       this.verifiedLoad()
     },
@@ -414,6 +413,7 @@ export default {
         setTimeout(() => {
           this.checkOrder = false
           if(this.secondStructureLoad.every(x => x.completedScanned)){
+            localStorage.removeItem('LoadScanned')
             this.statusOrders = "aprovve"   
           }
           else this.scanOrder()

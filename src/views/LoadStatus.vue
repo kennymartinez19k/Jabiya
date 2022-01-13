@@ -1,5 +1,5 @@
 <template>
-<div class="">
+<div >
  <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ loads?.loadNumber }}
@@ -203,11 +203,14 @@ export default {
       return statusLoad;
     },
   },
-  mounted() {
+  async mounted() {
     this.loads = this.loadStore;
+    
   },
   methods: {
-    changeRoute(val) {
+    async changeRoute(val) {
+      const data = await this.profile('container')
+      console.log(data)
      this.changeRouteLoads(val)
     },
     setInvoice () {

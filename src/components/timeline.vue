@@ -66,7 +66,16 @@
         <span>Firma</span>
         <div :class="{ disabled: step < 2 }"></div>
       </li>
-      
+      <li
+        class="stepFour"
+        :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
+        @click="getShow('finish')"
+      >
+        <div class="info"><font-awesome-icon icon="check" /></div>
+        <div><img src="../assets/check.png" alt="" srcset="" /></div>
+        <span>Completado</span>
+        <div :class="{ disabled: step < 2 }"></div>
+      </li>
     </ul>
 
   </div>
