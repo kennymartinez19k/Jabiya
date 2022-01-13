@@ -355,7 +355,6 @@ export default {
           x => x.qrCode == qrCode &&
           x.loadScanningCounter < x.quantity
       )
-      alert(1)
         if(orderForScan){
           let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === orderForScan.qrCode && x.loadScanningCounter < x.quantity)
           let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == orderForScan.qrCode)
