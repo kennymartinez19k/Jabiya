@@ -8,7 +8,11 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-    <div v-for="(loadsByDate, i) in loads" :key="i">
+    <div
+      v-for="(loadsByDate, i) in loads"
+      :key="i"
+      style="border-top: 1px dashed"
+    >
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div
           class="uk-card-header"
@@ -25,42 +29,45 @@
             </p>
           </div>
         </div>
-        <div>     
+        <div>
           <div
             v-for="load in loadsByDate"
             v-show="loadsByDate.length > 1 && typeof load == 'object'"
             :key="load"
             class="uk-card uk-card-default uk-card-body"
             @click="setLoad(load)"
-          >  
+          >
             <p class="uk-text-left uk-margin-remove" style="width: 100%">
               <strong>{{ load?.loadNumber }}</strong>
             </p>
             <div class="uk-flex uk-flex-between">
-              <div class="uk-text-left info-user">    
+              <div class="uk-text-left info-user">
                 <p>
                   <strong>No. de Orden(es): </strong
                   ><span>{{ load?.Orders?.length }}</span>
                 </p>
                 <p>
                   <strong>Cliente: </strong>
-                   <span v-for="info in load.shipper" :key="info">
-                    {{info.name}}
-                    </span>
+                  <span v-for="info in load.shipper" :key="info">
+                    {{ info.name }}
+                  </span>
                 </p>
                 <p>
                   <strong>Sector 1a Orden: </strong>
                   <span>{{ load?.firstOrdenSector?.sector }}</span>
                 </p>
+                <p>
+                  <strong>Estado </strong>
+                  <span>{{ loadStatus(load) }}</span>
+                </p>
               </div>
               <div style="padding-right: 5px">
-                <font-awesome-icon icon="arrow-right" style="font-size: 20px"/>
+                <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
               </div>
-             
             </div>
           </div>
           <div v-show="loadsByDate.length <= 1" style="height: 50px">
-            <span >No Tiene Viajes Asignados Para Este Día</span>
+            <span>No Tiene Viajes Asignados Para Este Día</span>
           </div>
         </div>
       </div>
@@ -78,19 +85,22 @@ import { IonLoading } from "@ionic/vue";
 import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
+import { Mixins } from "../mixins/mixins";
+
 export default {
-   components: {
+  components: {
     IonLoading,
   },
-    props: {
+  props: {
     timeout: { type: Number, default: 1000 },
   },
+  mixins: [Mixins],
   data() {
     return {
-      days:{
+      days: {
         tomorrow: null,
         today: null,
-        yesterday: null
+        yesterday: null,
       },
       loaded: false,
       loads: [],
@@ -99,7 +109,7 @@ export default {
       dateMoment: moment(new Date()).format('MM/DD/YYYY'),
     };
   },
- 
+
   setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
@@ -108,19 +118,15 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-
   },
   async mounted() {
     
     window.location.href = "#HOY";
     moment.locale("es");
     await this.scrollTrigger();
-
-    
   },
   computed: {
     ...mapGetters(["allLoads", "settings"]),
-    
   },
 
   methods: {
@@ -135,29 +141,29 @@ export default {
         entries.forEach(async (entry) => {
           var contDate;
           if (entry.intersectionRatio > 0) {
-            if(!this.days.tomorrow) {
+            if (!this.days.tomorrow) {
               contDate = this.date.setDate(this.date.getDate() + 1);
-              this.days.tomorrow = contDate
-            } 
-            else if(!this.days.today){
-               contDate = this.date.setDate(this.date.getDate() - 1);
-               this.days.today = contDate
-            }
-            else { 
+              this.days.tomorrow = contDate;
+            } else if (!this.days.today) {
+              contDate = this.date.setDate(this.date.getDate() - 1);
+              this.days.today = contDate;
+            } else {
               contDate = this.date.setDate(this.date.getDate() - 1);
             }
             var date = moment(contDate).format("MM/DD/YYYY");
-            const result = await this.$services.loadsServices.getLoadsbyDate(date);
-            result.forEach(async x => {
-              const resultByDate = await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-              x.firstOrdenSector = x.Orders.find(order => order)
-              Object.assign(x, resultByDate)
-            })
+            const result = await this.$services.loadsServices.getLoadsbyDate(
+              date
+            );
+            result.forEach(async (x) => {
+              const resultByDate =
+                await this.$services.loadsServices.getLoadDetails(x.loadMapId);
+              x.firstOrdenSector = x.Orders.find((order) => order);
+              Object.assign(x, resultByDate);
+            });
             if (!result.length || this.loads.length < 3) {
               await this.scrollTrigger();
-            }
-            else {
-              console.log(result)
+            } else {
+              console.log(result);
             }
             if (date === moment(new Date()).format('MM/DD/YYYY')) {
               date = 'HOY'
@@ -172,41 +178,46 @@ export default {
           }
         });
       });
-      console.log(this.loads)
+      console.log(this.loads);
       observer.observe(this.$refs.infinitescrolltrigger);
     },
     async setLoad(val) {
-      console.log(val)
+      console.log(val);
       this.$store.commit("setloadStore", val);
-      this.$router.push({ name: 'load-status' }).catch(() => {});
-      
-      // if (this.settings?.AutoScan) {
-      //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("drayage-orden");
-      //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-actions-auto");
-      // } else {
-      //   if (val?.loadingStatus?.text == "Approved") this.changeRoute("orders");
-      //   if (val?.loadingStatus?.text == "Driver Arrival") this.changeRoute("delivery-routes");
-      // }
-      //   if (val?.loadingStatus?.text == "Expecting Approval") this.changeRoute("confirm-trip");
+      this.$router.push({ name: "load-status" }).catch(() => {});
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
     },
 
-    loadIsReject(val){
-      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
-      return false
-      else return true
+    loadIsReject(val) {
+      if (
+        val?.loadingStatus?.text == "Approved" &&
+        val?.approvers?.some((x) => x.status != "ACCEPTED")
+      )
+        return false;
+      else return true;
     },
-    loadIsAccepted(val){
-      if(val?.loadingStatus?.text == 'Approved' &&
-        val?.approvers?.every(x => x.status == 'ACCEPTED')
-      ) return true
-      else return false
+    loadIsAccepted(val) {
+      if (
+        val?.loadingStatus?.text == "Approved" &&
+        val?.approvers?.every((x) => x.status == "ACCEPTED")
+      )
+        return true;
+      else return false;
     },
-    shipperName(val){
-      var shipper = val?.shipper?.find(x => x.name)
-      return shipper?.name
+
+    shipperName(val) {
+      var shipper = val?.shipper?.find((x) => x.name);
+      return shipper?.name;
+    },
+    loadStatus(val) {
+      if (val?.loadingStatus?.text == "Expecting Approval") return "Esperando Aprobacion";
+      if (val?.loadingStatus?.text == "Approved") return "Aprobada";
+      if (val?.loadingStatus?.text == "Driver Arrival") return "LLegada del Conductor";
+      if (val?.loadingStatus?.text == "Dispatched") return "Despacho Aprobado";
+      if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
+      if (val?.loadingStatus?.text == "Delivered") return "Entregada";
     },
   },
 };
@@ -245,15 +256,15 @@ p {
   width: 60px;
   margin-bottom: 10px;
 }
-.info-user{
+.info-user {
   width: 100%;
   display: flex;
-  flex-wrap: wrap;  
+  flex-wrap: wrap;
 }
 .info-user p {
   margin-right: 10px !important;
 }
-.info-user strong{
+.info-user strong {
   font-size: 12px !important;
 }
 .check-load {
@@ -309,7 +320,10 @@ body {
   }
 }
 
-.only-black, .delivered, .driver-arrival, .approved {
+.only-black,
+.delivered,
+.driver-arrival,
+.approved {
   color: rgb(130, 127, 127) !important;
 }
 .delivered button,
@@ -416,7 +430,7 @@ footer .circle-loader {
 footer #scroll-trigger {
   height: 50px;
 }
-.reject-img{
+.reject-img {
   width: 80px;
 }
 

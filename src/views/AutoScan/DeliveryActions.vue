@@ -1,12 +1,8 @@
 <template>
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
-         <button @click="step++">Sumar</button>
-    {{step}}
-      <p
-        style=" font-size: 13px; !important; font-weight: 500"
-      >
-        {{load?.loadNumber}}
+      <p style="font-size: 13px !important; font-weight: 500">
+        {{ load?.loadNumber }}
       </p>
       <div
         class="
@@ -17,25 +13,23 @@
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center;"
+        style="align-items: center"
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span
+            ><span>&nbsp; {{ shipperName(load) }}</span>
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ load?.firstOrdenSector?.sector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div 
       class="result-info"
-      v-if="resultScan"
       >
       <ul
         class="uk-list uk-list-divider"
@@ -112,7 +106,7 @@
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
-import timeline from "../../components/timeline.vue";
+import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 export default {
   name: "DeliveryActions",
@@ -148,10 +142,8 @@ export default {
   async mounted() {
     if(this.loadStore){
        this.load = this.loadStore;
-       this.orders = this.orderScan
-    }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
-      await this.getLoadsId(this.load.loadId)
+       this.orders = this.load.Orders
+       console.log(this.orders)
     }
     console.log(this.orders)
     if (this.orderScan?.length > 1) {
@@ -257,6 +249,10 @@ export default {
       const permissions = Camera.checkPermissions(['prompt' | 'prompt-with-rationale' | 'granted' | 'denied']);
       console.log(permissions);
       this.getRequestPermissions();
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
     },
 
     async getRequestPermissions() {
