@@ -19,7 +19,7 @@
           style="padding: 5px 30px !important; border: none"
         >
           <div class="uk-width-expand uk-flex uk-flex-center">
-            <p class="uk-text-meta uk-margin-remove-top date">
+            <p :id="loadsByDate[0]" :class="{'show-date': loadsByDate[0] === 'HOY' }" class="uk-text-meta uk-margin-remove-top date">
               <time
                 datetime="2016-04-01T19:00"
                 class="uk-text-bold uk-text-uppercase"
@@ -106,6 +106,7 @@ export default {
       loads: [],
       dateAvalaible: [],
       date: new Date(),
+      dateMoment: moment(new Date()).format('MM/DD/YYYY'),
     };
   },
 
@@ -119,7 +120,8 @@ export default {
     this.setOpen(true);
   },
   async mounted() {
-    window.location.href = "#Hoy";
+    
+    window.location.href = "#HOY";
     moment.locale("es");
     await this.scrollTrigger();
   },
@@ -163,9 +165,12 @@ export default {
             } else {
               console.log(result);
             }
-            result.unshift(date);
-            this.loads.push(result);
-
+            if (date === moment(new Date()).format('MM/DD/YYYY')) {
+              date = 'HOY'
+            }
+                result.unshift(date)
+            this.loads.push(result)
+            
             this.showloader = true;
             setTimeout(() => {
               this.showloader = false;
@@ -429,6 +434,9 @@ footer #scroll-trigger {
   width: 80px;
 }
 
+.show-date{
+  color: red;
+}
 footer .circle-loader {
   position: absolute;
   top: 50%;
