@@ -46,6 +46,6 @@ export default {
   border: 2.5px solid #000;
 }
 .btn {
-  padding: 0 5px;
+  padding: 5px 5px;
 }
 </style>

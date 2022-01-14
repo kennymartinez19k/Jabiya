@@ -121,7 +121,7 @@ export default {
   },
   async mounted() {
     
-    window.location.href = "#HOY";
+    window.location.href = "#Hoy";
     moment.locale("es");
     await this.scrollTrigger();
   },
@@ -166,8 +166,9 @@ export default {
               console.log(result);
             }
             if (date === moment(new Date()).format('MM/DD/YYYY')) {
-              date = 'HOY'
+              date = 'Hoy'
             }
+            
                 result.unshift(date)
             this.loads.push(result)
             
@@ -184,6 +185,7 @@ export default {
     async setLoad(val) {
       console.log(val);
       this.$store.commit("setloadStore", val);
+      
       this.$router.push({ name: "load-status" }).catch(() => {});
     },
     changeRoute(path) {

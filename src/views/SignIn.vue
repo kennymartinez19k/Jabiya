@@ -29,7 +29,7 @@
 
 
       <div class="uk-margin uk-text-left">
-        <label class="uk-text-emphasis" for="email">Email</label>
+        <label class="uk-text-emphasis" for="email">Email / Telefono</label>
         <div class="uk-input uk-flex form-login" style="align-items: center">
           <input
             class="uk-form-width-medium formLogin"

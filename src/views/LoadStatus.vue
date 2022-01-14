@@ -1,8 +1,8 @@
 <template>
-<div >
- <div class="stiky">
+  <div>
+    <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
-        {{ loads?.loadNumber }}
+        {{ loadStore?.loadNumber }}
       </p>
       <div
         class="
@@ -18,208 +18,201 @@
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span
-            ><span>&nbsp; {{ shipperName(loads) }}</span>
+            ><span>&nbsp; {{ shipperName(loadStore) }}</span>
           </p>
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ loads?.firstOrdenSector?.sector }}</span>
+            ><span>&nbsp; {{ loadStore?.firstOrdenSector.sector }}</span>
           </p>
         </div>
       </div>
     </div>
-  <div class="container">
-   
-    <ul class="progressbar">
-      <li
-        :class="{
-          disabled: !loadStatus.expectingApproval && loadStatus.step < 1,
-        }"
-      >
-        <div
-          @click="
-            changeRoute('Expecting Approval')
-          "
-          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
-        >
-          <h6>Aprobar Viaje</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 1"
-            src="../assets/checklist.png"
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
-      <li>
-        <div
-          @click="changeRoute('Approved')"
-          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
-        >
-          <h6>Montar Viaje</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 2"
-            src="../assets/checklist.png"
-            alt=""
-            srcset=""
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-            alt=""
-            srcset=""
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
-      <li>
-        <div
-          @click="changeRoute('Dispatched')"
-          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
-        >
-          <h6>Iniciar Ruta</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 2"
-            src="../assets/checklist.png"
-            alt=""
-            srcset=""
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-            alt=""
-            srcset=""
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
-      <li class="">
-        <div
-          @click="changeRoute('Deliver-Load')"
-          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
-        >
-          <h6>Entregar Contenedor</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 3"
-            src="../assets/checklist.png"
-            alt=""
-            srcset=""
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-            alt=""
-            srcset=""
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
-        <li class="">
-        <div
-          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
-        >
-          <h6>Regresar Contenedor</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 3"
-            src="../assets/checklist.png"
-            alt=""
-            srcset=""
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-            alt=""
-            srcset=""
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
-      <li>
-        <div
-          @click="setInvoice()"
-          class="uk-card uk-card-default uk-card-body uk-width-1-2@m item"
-        >
-          <h6>Realizar Factura</h6>
-        </div>
-        <div class="icon-item">
-          <img
-            v-if="loadStatus.step <= 4"
-            src="../assets/checklist.png"
-            alt=""
-            srcset=""
-          />
-          <img
-            v-else
-            src="../assets/checklist-checked-box.png"
-            alt=""
-            srcset=""
-          />
-        </div>
-        <div class="disabled-container"></div>
-      </li>
 
-    </ul>
+    <div class="container">
+      <h6>Seleccione el Siguiente Paso</h6>
+      <ul class="progressbar">
+        <li 
+          :class="{active: loadStatus.step == step.expectingApproval, 'completed-status': loadStatus.step > step.expectingApproval}"
+        >
+          <div  
+            class="info"><span>1</span>
+          </div>
+
+          <div
+            @click="changeRoute('Expecting Approval')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus.expectingApproval}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.expectingApproval" src="../assets/checklist-checked-box.png" />
+          </div>
+          <div class="disabled-container"></div>
+        </li>
+        <li
+          :class="{active: loadStatus.step == step.approved, 'completed-status': loadStatus.step > step.approved}"
+        >
+           <div  
+            class="info"><span>2</span>
+          </div>
+          <div
+            @click="changeRoute('Approved')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus.approved}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Approved')" v-if="loadStatus.step == step.approved" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.approved" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.approved" src="../assets/checklist-checked-box.png" />
+          </div>
+          <div class="disabled-container"></div>
+
+        </li>
+        <li :class="{active: loadStatus.step == step.truckLoaded, 'completed-status': loadStatus.step > step.truckLoaded}">
+          <div  
+            class="info"><span>3</span>
+          </div>
+          <div
+            @click="changeRoute('Dispatched')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus.dispatch}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.truckLoaded" src="../assets/checklist-checked-box.png" />
+          </div>
+          <div class="disabled-container"></div>
+        </li>
+        <li 
+          :class="{active: loadStatus.step == step.delivered, 'completed-status': loadStatus.step > step.delivered}">
+          
+          <div class="info"><span>4</span></div>
+          <div   
+            @click="changeRoute('Deliver-Load')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus.delivered}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Deliver-Load')" v-if="loadStatus.step == step.delivered" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.delivered" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.delivered" src="../assets/checklist-checked-box.png" />
+          </div>
+          <div class="disabled-container"></div>
+        </li>
+        <li 
+          v-if="isReturn"
+          :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
+          <div class="info"><span>5</span></div>
+          <div   
+            @click="changeRoute('Delivered')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus.returnContainer}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Delivered')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.returnContainer" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.returnContainer" src="../assets/checklist-checked-box.png" />
+          </div>
+        </li>
+
+     
+      </ul>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import {Mixins} from '../mixins/mixins'
+import { Mixins } from "../mixins/mixins";
+
+
 
 export default {
-  alias: 'Seleccione el Siguiente Paso',
+  alias: "Manejo de Viaje",
+ 
   data() {
     return {
-      step: 0,
-      loads: [],
+      step:{
+        expectingApproval: 1,
+        approved: 2,
+        truckLoaded: 3,
+        delivered: 4,
+        returnContainer: 5
+      },
+      isReturn: false,
+      statusDelivered: false,
+      load: [],
     };
   },
+ 
   mixins: [Mixins],
   computed: {
-    ...mapGetters(["loadStore"]),
+    ...mapGetters(["loadStore", "startRoute", "finishDelivered"]),
     loadStatus() {
       let statusLoad = {};
-      if (this.loads?.loadingStatus?.text == "Approved")
-        statusLoad.approved = true;
-      statusLoad.step = 1;
-      if (this.loads?.loadingStatus?.text == "Expecting Approval")
+      
+      if (this.load?.loadingStatus?.text == "Expecting Approval"){
         statusLoad.expectingApproval = true;
-      statusLoad.step = 2;
+        statusLoad.step = 1;
+      }
+      if (this.load?.loadingStatus?.text == "Approved" || this.load?.loadingStatus?.text == "Driver Arrival" || this.load?.loadingStatus?.text == "Loading Truck" ){
+        statusLoad.approved = true;
+        statusLoad.step = 2;
+      }
+      if (this.load?.loadingStatus?.text == "Dispatched" && !this.startRoute){
+        statusLoad.dispatch = true;
+        statusLoad.step = 3;
+      }
+      if (this.load?.loadingStatus?.text == "Dispatched" && this.startRoute == 1){
+        statusLoad.delivered = true;
+        statusLoad.step = 4;
+      }
+      if ( this.load?.loadingStatus?.text == 'Delivered'){
+        statusLoad.returnContainer = true;
+        statusLoad.step = 5;
+      }
 
       return statusLoad;
     },
+    messageStatus(){
+      let message = {
+        expectingApproval: 'Aprobar Viaje',
+        approved: 'Montar Viaje',
+        dispatch: 'Iniciar Ruta',
+        delivered: 'Entregar al Cliente',
+        returnContainer: 'Devolver Contenedor'
+      }
+      if(this.loadStatus.step > 1) message.expectingApproval = 'Viaje Aprobado'
+      if(this.loadStatus.step > 2) message.approved = 'Viaje Montado'
+      if(this.loadStatus.step > 3) message.dispatch = 'Ruta Iniciada'
+      if(this.loadStatus.step > 4) message.delivered = 'Contenedor Entregado'
+      if(this.loadStatus.step > 5) message.returnContainer = 'Contenedor Retornado'
+      return message
+    }
   },
   async mounted() {
-    this.loads = this.loadStore;
-    
+    this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+    this.isReturn = this.load.Orders[0].isReturn
   },
   methods: {
     async changeRoute(val) {
-      const data = await this.profile('container')
-      console.log(data)
-     this.changeRouteLoads(val)
+      
+      this.changeRouteLoads(val, this.load);
     },
-    setInvoice () {
+    setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});
-
     },
-    shipperName(val){
-      var shipper = val?.shipper?.find(x => x.name)
-      return shipper?.name
+    shipperName(val) {
+      var shipper = val?.shipper?.find((x) => x.name);
+      return shipper?.name;
     },
   },
 };
@@ -230,7 +223,7 @@ export default {
   width: 100%;
   padding: 0px 10px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   z-index: 1;
 }
 .progressbar {
@@ -249,7 +242,7 @@ export default {
   position: relative;
   text-align: center;
 }
-.progressbar h6{
+.progressbar h6 {
   margin: 0px;
 }
 .progressbar li .item {
@@ -270,61 +263,113 @@ export default {
   width: 30px;
   height: 30px;
 }
-p{
-  margin: 2px 0px !important
+.icon-item .icon{
+  font-size: 25px;
 }
-.progressbar {
-  counter-reset: step;
+p {
+  margin: 2px 0px !important;
 }
-.progressbar li:before {
-  content: counter(step);
-  counter-increment: step;
-  width: 25px;
-  height: 25px;
-  border: 2px solid #bebebe;
+
+.disabled {
+  position: absolute;
+  width: 90px;
+  height: 70px;
+  top: 40px;
+  left: 10px;
+  background: #ffffffc4;
+}
+img {
+  width: 45%;
+}
+.progressbar li {
+  float: left;
+  width: 100%;
+  position: relative;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0px;
+  margin: 0px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.progressbar li .info {
+  content: "";
+  width: 30px;
+  height: 30px;
+  border: 2px solid #a1a1a1;;
   display: block;
-  margin: 0 8px 0px 4px;
+  margin: 0 5px;
   border-radius: 50%;
   line-height: 27px;
   background: white;
-  color: #bebebe;
+  color: #a1a1a1;;
   text-align: center;
   font-weight: bold;
 }
+
 .progressbar li:after {
   content: "";
   position: absolute;
   width: 1%;
-  height: 100%;
+  height: 55px;
   background: #979797;
-  top: 15px;
+  top: -53px;
   left: 5%;
   z-index: -1;
 }
-.progressbar li:last-child:after {
+.progressbar li:first-child:after {
   content: none;
 }
-.progressbar li.active + li:after {
-  background: #3aac5d;
-}
-
-.progressbar li.active + li:before {
-  border-color: #3aac5d;
-  background: #3aac5d;
-  color: white;
-}
-.active + li:before {
-  background: #3aac5d;
-}
-.disabled {
-  pointer-events: none;
-  position: relative;
-}
-.disabled .disabled-container {
-  background: rgba(255, 255, 255, 0.6);
+.progressbar li .disabled-container{
   position: absolute;
   width: 100%;
   height: 100%;
-  top: 0px;
+  background: rgba(255, 255, 255, 0.5);
 }
+
+.progressbar li.completed-status + li:after {
+  background: #3aac5d;
+}
+.progressbar li .active,
+.progressbar li .info .info {
+  border-color: #017625 !important;
+  background: #017625 !important;
+  color: white !important;
+}
+
+.progressbar .completed-status .info{
+  border-color: #017625 !important;
+  background: #017625 !important;
+  color: white !important;
+}
+.progressbar .active .action{
+  background: #017625;
+
+}
+.progressbar .active .action h6{
+  color: #fff;
+}
+
+.progressbar .active .disabled-container {
+  display:none !important;
+}
+.progressbar .completed-status .disabled-container{
+  display: none !important;
+
+}
+.progressbar .completed-status .action{
+  pointer-events: none;
+}
+.progressbar .completed-status .action h6{
+  color: green
+}
+
+.progressbar li .active h6{
+  color: #fff !important
+}
+
 </style>

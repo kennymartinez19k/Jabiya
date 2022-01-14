@@ -14,6 +14,8 @@ import LoadStatus from '../views/LoadStatus.vue'
 import InvoicesOrders from '../views/InvoicesOrders.vue'
 import DetailsInvoices from '../components/DetailsInvoices.vue'
 import ReconciliationWarehouse from '../components/ReconciliationWarehouse.vue'
+import ReturnContainer from '../views/AutoScan/ReturnContainer.vue'
+import about from '../views/About.vue'
 const routes = [
   {
     path: '/',
@@ -67,7 +69,11 @@ const routes = [
     name: "delivery-actions-auto",
     component: DeliveryActionsAuto,
   },
-  
+  {
+    path: "/return-container",
+    name: "return-container",
+    component: ReturnContainer, 
+  },
   {
     path: "/confirm-trip",
     name: "confirm-trip",
@@ -93,6 +99,11 @@ const routes = [
     path: "/warehouse",
     name: "reconciliation-warehouse",
     component: ReconciliationWarehouse,
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: about,
   },
  
 ];

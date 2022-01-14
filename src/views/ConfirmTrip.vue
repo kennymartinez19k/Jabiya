@@ -118,16 +118,16 @@
       </div>
     </div>
     <div class="button-opt">
-      <a href="#modal-center" uk-toggle class="uk-button uk-button-transparent"
+      <a href="#modal-center" uk-toggle class="uk-button uk-button-red"
         >Rechazar Viaje&nbsp;
-        <font-awesome-icon icon="ban" style="color: #c50000; font-size: 14px" />
+        <font-awesome-icon icon="ban" style="color: #fff; font-size: 14px" />
       </a>
       <button
         @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'ACCEPTED')"
-        class="uk-button uk-button-transparent"
+        class="uk-button uk-button-green"
       >
         Aceptar Viaje &nbsp;
-        <font-awesome-icon icon="check" style="color: green; font-size: 14px" />
+        <font-awesome-icon icon="check" style="color: #fff; font-size: 14px" />
       </button>
     </div>
   </div>
@@ -204,7 +204,8 @@ export default {
       );
       console.log(result);
       if (result) {
-        this.$router.push({ name: "home" });
+        if(status == 'REJECT')  this.$router.push({ name: "home" });
+        else this.$router.push({ name: "load-status" });
       }
     },
     shipperName(val) {
@@ -341,5 +342,13 @@ p {
     align-items: center;
     display: flex;
     border-radius: 5px;
+}
+.uk-button-green{
+  background: green;
+  color: #fff
+}
+.uk-button-red{
+  background: #930404;
+  color: #fff;
 }
 </style>

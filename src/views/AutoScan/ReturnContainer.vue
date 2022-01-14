@@ -98,10 +98,10 @@
 
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
-import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
+import { Geolocation } from '@capacitor/geolocation';
 
 export default {
   name: "DeliveryActions",
@@ -118,14 +118,9 @@ export default {
       cont: 0,
       load: null,
       imagiElement: [],
-      imagiToApi: [],
       step: 1,
       exception: false,
       firm: null,
-      location : {
-        latitude: null,
-        longitude: null  
-      }
     };
   },
   computed: {
@@ -140,16 +135,12 @@ export default {
     ]),
   },
   async mounted() {
-    await this.getLocation()
     if(this.loadStore){
        this.load = this.loadStore;
        this.orders = this.load.Orders
-       console.log(this.orders, 'order')
-       console.log(this.load, 'load')
-       console.log(this.load.loadMapId, 'load')
+       console.log(this.orders)
     }
     console.log(this.orders)
-    console.log(this.orders[0]._id, 'order nu,')
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -162,13 +153,9 @@ export default {
   },
   watch: {
     digitalFirmStore: {
-      handler: async function (newVal) {
+      handler: function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-          await this.postImages()
-            setTimeout(()=> {
-            this.$router.push({ name: 'load-status'}).catch(() => {})
-          },3000)
         }
       },
     },
@@ -180,16 +167,6 @@ export default {
   },
 
   methods: {
-     async getLocation () {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location.latitude = geo.coords.latitude
-          this.location.longitude = geo.coords.longitude
-        } catch (e) {
-          console.log(e)
-        
-        }
-    },
     getShow(value) {
       this.show = value;
       if (value === "scan") {
@@ -242,8 +219,9 @@ export default {
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
-      if (this.imagiElement.length >= 3) {
-        this.step = 2;
+
+      if (this.imagiElement.length === 3) {
+        this.step++;
       }
       this.cont = this.cont + 1;
     },
@@ -283,18 +261,21 @@ export default {
       }
     },
     async setMap(val){
-      await this.getLocation()
-      window.open(`https://www.google.com/maps/dir/'${this.location.latitude},${this.location.longitude}'/${val.latitude},${val.longitude}/`)
-      this.$store.commit("setStartRoute", false);
+            let latitude = val.latitude
+            let longitude = val.longitude
+            let myLocation = await this.location()
+            window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
+            this.$store.commit("setStartRoute", false);
 
-    },
-  
-    async postImages() {
-      const idOrder = this.orders[0]._id
-      let images = []
-      images.push(... this.imagiElement, this.firm)
-      await this.$services.imagesService.postImages(images, this.location.latitude, this.location.longitude, idOrder);
-    }
+         },
+         async location () {
+            try {
+                const coordinates = await Geolocation.getCurrentPosition();
+                return {latitude: coordinates.coords.latitude, longitude: coordinates.coords.longitude};
+            } catch (e) {
+              console.log(e)
+            }
+         },
   },
 };
 </script>

@@ -1,21 +1,31 @@
 <template>
   <article>
-    <section v-for="(n, index) in dateAvalaible" :key="index">
-        <span>{{date}}</span>
-        <div v-for="article in articles" style="height: 200px" :key="article">
-            <h5>{{article.shipper}}</h5>
-            <h6>{{article.loadNumber}}</h6>
-            <p>{{article.loadId}}
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-                voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-            </p>
-        </div>
-    </section>
-    <footer>
-      <div ref="infinitescrolltrigger" id="scoll-trigger"></div>
-      <div class="circle-loader" v-if="showloader"></div>
-    </footer>
+    <div class="root">
+     <div class="container">
+          <ul class="progressbar">
+            <li class="active">
+              <div class="info active"><font-awesome-icon icon="check" /></div>
+              Step 1
+            </li>
+            <li>
+              <div class="info active"><font-awesome-icon icon="check" /></div>
+              Step 2
+            </li>
+            <li>
+              <div class="info active"><font-awesome-icon icon="check" /></div>
+              Step 3
+            </li>
+            <li>
+              <div class="info active"><font-awesome-icon icon="check" /></div>
+              Step 4
+            </li>
+            <li>
+              <div class="info active"><font-awesome-icon icon="check" /></div>
+              Step 5
+            </li>
+          </ul>
+      </div>
+  </div>
   </article>
 </template>
 
@@ -69,48 +79,73 @@ export default {
 </script>
 
 <style scoped>
-article {
-  margin: 0 auto;
-  width: 400px;
+.container {
+  width: 100%;
 }
-article footer {
-  position: relative;
-  width: 400px;
-  height: 100px;
-}
-article footer .circle-loader {
+.disabled {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
+  width: 90px;
+  height: 70px;
+  top: 40px;
+  left: 10px;
+  background: #ffffffc4;
+}
+img {
+  width: 45%;
+}
+.progressbar li {
+  float: left;
+  width: 100%;
+  position: relative;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0px;
+  margin: 0px auto;
+  display: flex;
+  justify-content: center;
+}
+.progressbar li:before {
+  content: "";
+  width: 30px;
+  height: 30px;
+}
+.progressbar li .info {
+  content: "";
+  width: 30px;
+  height: 30px;
+  border: 2px solid #bebebe;
+  display: block;
+  margin: 0 5px;
   border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.2);
-  border-top: 5px solid #fff;
-  animation: animate 1.5s infinite linear;
+  line-height: 27px;
+  background: white;
+  color: #bebebe;
+  text-align: center;
+  font-weight: bold;
 }
-article footer #scroll-trigger {
-  height: 50px;
+
+.progressbar li:after {
+    content: "";
+    position: absolute;
+    width: 2%;
+    height: 57px;
+    background: #979797;
+    top: -28px;
+    left: 3%;
+    z-index: -1;
 }
-article section {
-  width: 400px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  background-color: #efefef;
-  color: #04525a;
-  overflow: hidden;
+.progressbar li:first-child:after {
+  content: none;
 }
-article section p {
-  margin: 0;
-  padding: 10px 20px;
+.progressbar li.active + li:after {
+  background: #3aac5d;
 }
-@keyframes animate {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+.active .info {
+  border-color: #3aac5d !important;
+  background: #3aac5d !important;
+  color: white !important;
 }
 </style>
