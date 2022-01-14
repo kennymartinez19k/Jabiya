@@ -382,6 +382,7 @@ export default {
           const geo = await Geolocation.getCurrentPosition();
           this.location1.latitude = geo.coords.latitude;
           this.location1.longitude = geo.coords.longitude;
+          console.log(this.location1.latitude, this.location1.longitude)
         } catch (e) {
           if (e.code === 1 || e.message === "location disabled") {
             alert("Debe activar la localización.");
@@ -410,10 +411,13 @@ export default {
     
     async verifiedLoad(){          
         this.checkOrder = true
-        setTimeout(() => {
+        setTimeout(async () => {
           this.checkOrder = false
           if(this.secondStructureLoad.every(x => x.completedScanned)){
             localStorage.removeItem('LoadScanned')
+            let quantityTotal = 0
+            this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
+            await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
             this.statusOrders = "aprovve"   
           }
           else this.scanOrder()

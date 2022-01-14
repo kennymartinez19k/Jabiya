@@ -3,12 +3,20 @@ const Loads = {
       load: null,
       allLoads: [],
       loads: [],
-      products:[]
+      products:[],
+      startRoute: true,
+      finishDelivered: 0
+
     },
     mutations: {
         setloadStore (state, load) {
             state.load = load
-            console.log(load)
+        },
+        finishDelivered(state, load){
+          state.finishDelivered = load
+        },
+        setStartRoute(state, startRoute){
+          state.startRoute = startRoute
         },
         setAllLoads(state, val){
           state.allLoads = val
@@ -25,6 +33,8 @@ const Loads = {
       allLoads: state => state.allLoads,
       loads: state => state.loads,
       products: state => state.products,
+      startRoute: state => state.startRoute,
+      finishDelivered: state => state.finishDelivered
     }
   
   }

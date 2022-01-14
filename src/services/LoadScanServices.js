@@ -21,7 +21,6 @@ class LoadsScanServices {
     }
 
     async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
-      console.log(orderId, boxId, loadCounter, productId, qrCode)
       const params = {
         "actionName": "loadBox",
         "params": {
@@ -32,6 +31,20 @@ class LoadsScanServices {
       }
       
       const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
+      console.log(result)
+      return result
+    }
+
+    async completeLoad(loadId, loadQuantity){
+      console.log(loadId, loadQuantity)
+      const params = {
+        "actionName": "completeLoadProcess",
+        "params": {
+          "loadFractionNumber": `${loadQuantity}/${loadQuantity} `
+          
+        }
+      }
+      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions`, params)
       console.log(result)
       return result
     }

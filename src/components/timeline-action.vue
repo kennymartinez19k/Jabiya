@@ -32,7 +32,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/cam.png" alt="" srcset="" /></div>
-        <span>Camara</span>
+        <span style="color: #000">Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
       <li
@@ -47,14 +47,13 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
-        <span>Camara</span>
+        <span style="color: #000">Camara</span>
         <div
           :class="{
             disabled: (imagiElement.length === 0) || (imagiElement.length !== 3),
           }"
         ></div>
       </li>
-
       <li
         class="stepThree"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
@@ -62,21 +61,10 @@
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
-        <span>Firma</span>
-        <div :class="{ disabled: step < 2 }"></div>
-      </li>
-      <li
-        class="stepFour"
-        :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
-        @click="getShow('finish')"
-      >
-        <div class="info"><font-awesome-icon icon="check" /></div>
-        <div><img src="../assets/check.png" alt="" srcset="" /></div>
-        <span>Completado</span>
+        <span style="color: #000">Firma</span>
         <div :class="{ disabled: step < 2 }"></div>
       </li>
     </ul>
-
   </div>
 </template>
 
@@ -88,14 +76,30 @@ export default {
   components: {
     SignatureAction,
   },
+  computed:{
+    ...mapGetters([
+      'loadStore',
+      'settingsStore'
+    ])
+  },
   watch: {
     digitalFirm: {
-      handler: function (newVal) {
+      handler: async function (newVal) {
         if (newVal !== null) {
           this.serieA = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
+          let load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+          
           setTimeout(()=> {
-            this.$router.push({ name: 'load-status'}).catch(() => {})
+            let isReturn = load.Orders[0].isReturn
+            this.$store.commit('finishDelivered', 5)
+
+            if(isReturn){
+              this.$router.push({ name: 'load-status'}).catch(() => {})
+            }else{
+              localStorage.removeItem(`startLoad${load.loadMapId}`)
+              this.$router.push({ name: 'home'}).catch(() => {})
+            }
           },1000)
         }
       },
@@ -123,11 +127,6 @@ export default {
       digitalFirm: null
 
     };
-  },
-  computed: {
-    ...mapGetters([
-      'settingsStore'
-    ])
   },
 
   methods: {

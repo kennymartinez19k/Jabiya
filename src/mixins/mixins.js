@@ -1,9 +1,11 @@
 import orders from '../store/Orders'
 import router from '../router'
+import { Geolocation } from '@capacitor/geolocation';
+
+
 export const Mixins = {
     data(){
         return{
-
             container:{
                 Loads:{
                     ButtonSendActionMessage: 'Iniciar Ruta',
@@ -11,36 +13,47 @@ export const Mixins = {
                 Orders:{},
                 deliveryActions:{}
             },
-
-
-
-
         }
     },
     methods: {
-         changeRouteLoads(val){
+         changeRouteLoads(val, load = null){
              var autoScan = orders.state.settings.AutoScan
              if(autoScan){
                  if(val == 'Approved') router.push({name: 'drayage-orden'})
                  if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
+                 if(val == 'Dispatched') this.setMap(load)
                  if(val == 'Deliver-Load') router.push({name: 'delivery-actions-auto'})
-                 if(val == 'Dispatched') this.setMap()
-
+                 if(val == 'Delivered') {
+                     localStorage.removeItem('startRoute')
+                     router.push({name: 'return-container'})
+                 }
              }
              else {
                 if(val == 'Approved' || val == 'Loading Truck') router.push({name: 'orders'})
                 if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
+                if(val == 'Dispatched') this.setMap(load)
                 if(val == 'Deliver-Load') router.push({name: 'delivery-routes'})
-                if(val == 'Dispatched') this.setMap()
              }
          },
 
-         setMap(){
-            window.open("https://www.google.com/maps/dir/'18.475615,-69.957918'/'18.478645,-69.966486'")
+         async setMap(val){
+            let latitude = val?.Orders[0].latitude
+            let longitude = val?.Orders[0].longitude
+            let myLocation = await this.location()
+            window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
+            this.$store.commit("setStartRoute", false);
+            let id = `startLoad${val.loadMapId}`
+            localStorage.setItem(id, 1)
+
          },
-         callProfile(){
-             let user = 'container'
-             this.profile(user)
+         async location () {
+            try {
+                const coordinates = await Geolocation.getCurrentPosition();
+                return {latitude: coordinates.coords.latitude, longitude: coordinates.coords.longitude};
+            } catch (e) {
+              console.log(e)
+            
+            }
          },
          profile(user){
              if(user == 'container'){

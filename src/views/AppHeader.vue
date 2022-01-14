@@ -45,7 +45,7 @@ watch:{
               this.action = "sign-in",
               this.iconType = 'sign-out-alt'
 
-            ): newVal.name == "home" ? 
+            ): newVal.name == "load-status" ? 
             (
               this.action = "home",
               this.iconType = "home" 

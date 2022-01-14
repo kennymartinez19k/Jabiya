@@ -145,4 +145,8 @@ strong{
  text-align: center;
   box-shadow: 1px 0px 5px #898989;
 }
+.uk-button-green{
+  background: green;
+  color: #fff
+}
 </style>

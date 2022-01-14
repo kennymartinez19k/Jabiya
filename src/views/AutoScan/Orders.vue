@@ -1,5 +1,13 @@
 <template>
   <div class="uk-flex uk-flex-column cnt">
+      <Loading
+  class="loading-position"
+    :active="loaded"
+    color="rgb(86, 76, 175)"
+    loader="spinner"
+    :width="100"
+    background-color="rgba(252, 252, 252, 0.7)"
+  ></Loading>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -23,7 +31,7 @@
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector.sector }}</span>
           </p>
         </div>
       </div>
@@ -78,8 +86,8 @@
       </div>
     </div>
     <div></div>
-    <div class="button-opt">
-      <button @click="uploadOrDownload(load)" class="uk-button uk-button-transparent">{{messageStatusLoad}}
+    <div class="button-opt ">
+      <button @click="uploadOrDownload(load)" class="uk-button uk-width-1-1 uk-button-green">{{messageStatusLoad}}
           <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
       
@@ -89,8 +97,13 @@
 
 <script>
 import { mapGetters } from "vuex";
+import Loading from "vue-loading-overlay";
+
 export default {
   alias: `Montar Viaje`,
+  components:{
+    Loading
+  },
   data() {
     return {
       status: null,
@@ -98,6 +111,7 @@ export default {
       load: null,
       completed: "background-color: #2a307c !important",
       orders: null,
+      loaded: false
     };
   },
   computed: {
@@ -120,7 +134,6 @@ export default {
     if(this.loadStore){
       this.load = this.loadStore;
       this.orders = this.loadStore.Orders
-      this.load.firstOrdenSector = this.orders[0]?.sector
       console.log(this.load)
     }
     if (this.orderScan) {
@@ -154,14 +167,22 @@ export default {
       return shipper?.name
     },
     async uploadOrDownload(val){
-      this.orders.map(x => x.completed = !x.completed)
-      const result = await this.$services.loadsScanServices.driverArrival(val.loadMapId);
-      console.log(result)
+      this.loaded = true
+      await this.$services.loadsScanServices.driverArrival(val.loadMapId);
+      let totalOfBoxes = await this.setLoadTruck(val)
+      await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, totalOfBoxes ) 
+      this.$router.push({name: 'load-status'})
 
-      val.Orders.forEach( async load => {
+    },
+    async setLoadTruck(val){
+      let totalOfBoxes = 0
+      for(let cont = 0; cont < val.Orders.length; cont++){
+        let load = val.Orders[cont]
         let orders =  await this.$services.loadsScanServices.getProduct(load._id);
         let order = orders.find(x => x)
-        order.products.forEach(async prod => {
+        totalOfBoxes += load.no_of_boxes
+        for(var i = 0; i < order.products.length; i++){
+          let prod = order.products[i]
           if(prod.scanOneByOne === "no") {
             const resultScanning =  await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
             console.log(resultScanning)
@@ -172,9 +193,9 @@ export default {
               console.log(resultScanning)
             }
           }
-        })
-      })
-
+        }
+      }
+      return totalOfBoxes
     },
     setMap(){
       window.open("https://www.google.com/maps/dir/'18.475615,-69.957918'/'18.478645,-69.966486'")
@@ -209,7 +230,6 @@ p {
 .button-opt button{
     padding: 5px 5px !important;
     align-items: center;
-    display: flex;
 }
 
 .uk-card {
@@ -302,5 +322,13 @@ p {
     background-size: 25px 25px;
     background-repeat: no-repeat;
     background-position: 80%
+}
+.loading-position{
+  position: absolute;
+  z-index: 1;
+  top: 278px;
+  right: 11px;
+  height: 100%;
+  width: 92%;
 }
 </style>

@@ -274,7 +274,6 @@ export default {
                 return {latitude: coordinates.coords.latitude, longitude: coordinates.coords.longitude};
             } catch (e) {
               console.log(e)
-            
             }
          },
   },
