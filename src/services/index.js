@@ -3,6 +3,7 @@ import axiosInstance from '../http-common'
 import LoadsServices from './LoadsServices'
 import LoadsScanServices from './LoadScanServices'
 import InvoicesSevices from './InvoicesSevices'
+import ImagesService from './ImagesService'
 
 // let axiosInstance = new AxiosInstance()
 
@@ -11,5 +12,6 @@ export default {
     singInServices: new SingInServices(axiosInstance),
     loadsServices: new LoadsServices(axiosInstance),
     loadsScanServices: new LoadsScanServices(axiosInstance),
-    invoicesSevices: new InvoicesSevices(axiosInstance)
+    invoicesSevices: new InvoicesSevices(axiosInstance),
+    imagesService: new ImagesService(axiosInstance),
 }

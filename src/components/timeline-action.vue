@@ -22,11 +22,12 @@
       </div>
     </div>
     <ul class="progressbar">
+       <!-- 'uk-disabled': step !== 1, -->
       <li
         class="stepTwo"
         :class="{
-          'uk-disabled': step !== 1,
-          active: imagiElement.length !== 0 && imagiElement.length === 3,
+         
+          active: imagiElement.length !== 0 && imagiElement.length >= 3,
         }"
         @click="getShow('camera')"
       >
@@ -40,7 +41,7 @@
         :class="{
           'uk-disabled': (imagiElement.length === 0) || (imagiElement.length !== 3),
           active:
-            imagiElement.length === 3 &&
+            imagiElement.length >= 3 &&
             textException !== null && showException === false,
         }"
         @click="getShow('exception')"
