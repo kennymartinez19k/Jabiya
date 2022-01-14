@@ -102,7 +102,6 @@ import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import { Geolocation } from '@capacitor/geolocation';
 
 export default {
   name: "DeliveryActions",
@@ -186,7 +185,6 @@ export default {
           const geo = await Geolocation.getCurrentPosition();
           this.location.latitude = geo.coords.latitude
           this.location.longitude = geo.coords.longitude
-          console.log(this.location, 'location')
         } catch (e) {
           console.log(e)
         
@@ -285,22 +283,12 @@ export default {
       }
     },
     async setMap(val){
-            let latitude = val.latitude
-            let longitude = val.longitude
-            let myLocation = await this.location()
-            window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
-            this.$store.commit("setStartRoute", false);
+      await this.getLocation()
+      window.open(`https://www.google.com/maps/dir/'${this.location.latitude},${this.location.longitude}'/${val.latitude},${val.longitude}/`)
+      this.$store.commit("setStartRoute", false);
 
-         },
-         async location () {
-            try {
-                const coordinates = await Geolocation.getCurrentPosition();
-                return {latitude: coordinates.coords.latitude, longitude: coordinates.coords.longitude};
-            } catch (e) {
-              console.log(e)
-            
-            }
-         },
+    },
+  
     async postImages() {
       const idOrder = this.orders[0]._id
       let images = []

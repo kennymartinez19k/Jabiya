@@ -1,6 +1,6 @@
 <template>
   <BackButton />
-    <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
+    <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
       <form
         class="
           uk-card

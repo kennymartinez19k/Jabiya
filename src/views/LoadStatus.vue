@@ -158,12 +158,7 @@ export default {
     ...mapGetters(["loadStore", "startRoute", "finishDelivered"]),
     loadStatus() {
       let statusLoad = {};
-      let id = `startLoad${this.load.loadMapId}`
-      let startRoute = localStorage.getItem(id)
-      if(startRoute){
-        this.startRoute = startRoute
-      }
-      console.log(startRoute)
+      
       if (this.load?.loadingStatus?.text == "Expecting Approval"){
         statusLoad.expectingApproval = true;
         statusLoad.step = 1;
