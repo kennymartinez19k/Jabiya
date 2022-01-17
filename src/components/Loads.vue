@@ -8,37 +8,36 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
+<ul class="uk-pagination" uk-margin>
+    <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
+    <li><span>
+      <p class="uk-text-meta uk-margin-remove-top date">
+        <time
+          class="uk-text-bold uk-text-uppercase"
+          style="font-size: 12px"
+          >{{dateMoment}}</time
+        >
+      </p>      
+    </span></li>
+    <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
+    
+</ul>
+    <div v-if="loads.length == 0" style="height: 50px">
+      <span>No Tiene Viajes Asignados Para Este Día</span>
+    </div>
     <div
-      v-for="(loadsByDate, i) in loads"
+      v-for="(load, i) in loads"
+      v-else
       :key="i"
-      style="border-top: 1px dashed"
     >
       <div class="uk-card uk-card-default uk-width-1-2@m container">
-        <div
-          class="uk-card-header"
-          style="padding: 5px 30px !important; border: none"
-        >
-          <div class="uk-width-expand uk-flex uk-flex-center">
-            <p :id="loadsByDate[0]" :class="{'show-date': loadsByDate[0] === 'HOY' }" class="uk-text-meta uk-margin-remove-top date">
-              <time
-                datetime="2016-04-01T19:00"
-                class="uk-text-bold uk-text-uppercase"
-                style="font-size: 12px"
-                >{{ loadsByDate[0] }}</time
-              >
-            </p>
-          </div>
-        </div>
         <div>
           <div
-            v-for="load in loadsByDate"
-            v-show="loadsByDate.length > 1 && typeof load == 'object'"
-            :key="load"
             class="uk-card uk-card-default uk-card-body"
             @click="setLoad(load)"
           >
             <p class="uk-text-left uk-margin-remove" style="width: 100%">
-              <strong>{{ load?.loadNumber }}</strong>
+              <strong>{{ load.loadNumber }}</strong>
             </p>
             <div class="uk-flex uk-flex-between">
               <div class="uk-text-left info-user">
@@ -66,7 +65,7 @@
               </div>
             </div>
           </div>
-          <div v-show="loadsByDate.length <= 1" style="height: 50px">
+          <div v-show="load.length <= 1" style="height: 50px">
             <span>No Tiene Viajes Asignados Para Este Día</span>
           </div>
         </div>
@@ -97,16 +96,12 @@ export default {
   mixins: [Mixins],
   data() {
     return {
-      days: {
-        tomorrow: null,
-        today: null,
-        yesterday: null,
-      },
+
       loaded: false,
       loads: [],
       dateAvalaible: [],
       date: new Date(),
-      dateMoment: moment(new Date()).format('MM/DD/YYYY'),
+      dateMoment: null
     };
   },
 
@@ -120,10 +115,9 @@ export default {
     this.setOpen(true);
   },
   async mounted() {
-    
     window.location.href = "#Hoy";
     moment.locale("es");
-    await this.scrollTrigger();
+    await this.currentDate();
   },
   computed: {
     ...mapGetters(["allLoads", "settings"]),
@@ -136,51 +130,27 @@ export default {
         this.loaded = false;
       }, 2000);
     },
-    async scrollTrigger() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(async (entry) => {
-          var contDate;
-          if (entry.intersectionRatio > 0) {
-            if (!this.days.tomorrow) {
-              contDate = this.date.setDate(this.date.getDate() + 1);
-              this.days.tomorrow = contDate;
-            } else if (!this.days.today) {
-              contDate = this.date.setDate(this.date.getDate() - 1);
-              this.days.today = contDate;
-            } else {
-              contDate = this.date.setDate(this.date.getDate() - 1);
-            }
-            var date = moment(contDate).format("MM/DD/YYYY");
-            const result = await this.$services.loadsServices.getLoadsbyDate(
-              date
-            );
-            result.forEach(async (x) => {
-              const resultByDate =
-                await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-              x.firstOrdenSector = x.Orders.find((order) => order);
-              Object.assign(x, resultByDate);
-            });
-            if (!result.length || this.loads.length < 3) {
-              await this.scrollTrigger();
-            } else {
-              console.log(result);
-            }
-            if (date === moment(new Date()).format('MM/DD/YYYY')) {
-              date = 'Hoy'
-            }
-            
-                result.unshift(date)
-            this.loads.push(result)
-            
-            this.showloader = true;
-            setTimeout(() => {
-              this.showloader = false;
-            }, 1000);
-          }
-        });
+    async currentDate(val = null) {
+      let contDate
+      if(val) contDate = this.date.setDate(this.date.getDate() + val);   
+      else contDate = this.date
+      var date = moment(contDate).format("MM/DD/YYYY");
+      this.loads = await this.$services.loadsServices.getLoadsbyDate(date);
+      this.loads.forEach(async (x) => {
+        const resultByDate =
+          await this.$services.loadsServices.getLoadDetails(x.loadMapId);
+          x.firstOrdenSector = x.Orders.find((order) => order);
+          Object.assign(x, resultByDate);
       });
+      if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+      else this.dateMoment = date
+      
+      this.showloader = true;
+      setTimeout(() => {
+        this.showloader = false;
+      }, 1000);
       console.log(this.loads);
-      observer.observe(this.$refs.infinitescrolltrigger);
+  
     },
     async setLoad(val) {
       console.log(val);
@@ -217,7 +187,7 @@ export default {
       if (val?.loadingStatus?.text == "Expecting Approval") return "Esperando Aprobacion";
       if (val?.loadingStatus?.text == "Approved") return "Aprobada";
       if (val?.loadingStatus?.text == "Driver Arrival") return "LLegada del Conductor";
-      if (val?.loadingStatus?.text == "Dispatched") return "Despacho Aprobado";
+      if (val?.loadingStatus?.text == "Dispatched") return "Despachada";
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") return "Entregada";
     },
@@ -453,5 +423,9 @@ footer .circle-loader {
 }
 footer #scroll-trigger {
   height: 50px;
+}
+.uk-pagination{
+  justify-content: center;
+      align-items: center;
 }
 </style>

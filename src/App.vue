@@ -91,8 +91,8 @@ button{
 }
 .view-header{
   height: 100%;
-  overflow: scroll;
-  /* background: #fff; */
+  overflow-y: scroll;
+    overflow-x: hidden;
 }
 html body{
   height: 100vh;

@@ -89,19 +89,7 @@ export default {
         if (newVal !== null) {
           this.serieA = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
-          let load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
           
-          setTimeout(()=> {
-            let isReturn = load.Orders[0].isReturn
-            this.$store.commit('finishDelivered', 5)
-
-            if(isReturn){
-              this.$router.push({ name: 'load-status'}).catch(() => {})
-            }else{
-              localStorage.removeItem(`startLoad${load.loadMapId}`)
-              this.$router.push({ name: 'home'}).catch(() => {})
-            }
-          },1000)
         }
       },
     },
@@ -151,6 +139,7 @@ export default {
       this.showException = false;
       this.$store.commit("setTextException", this.textException);
     },
+    
   },
 };
 </script>
