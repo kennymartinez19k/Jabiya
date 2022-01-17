@@ -5,16 +5,13 @@ const Loads = {
       loads: [],
       products:[],
       startRoute: true,
-      finishDelivered: 0
 
     },
     mutations: {
         setloadStore (state, load) {
             state.load = load
         },
-        finishDelivered(state, load){
-          state.finishDelivered = load
-        },
+       
         setStartRoute(state, startRoute){
           state.startRoute = startRoute
         },
@@ -34,7 +31,6 @@ const Loads = {
       loads: state => state.loads,
       products: state => state.products,
       startRoute: state => state.startRoute,
-      finishDelivered: state => state.finishDelivered
     }
   
   }

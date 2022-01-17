@@ -16,15 +16,18 @@ export const Mixins = {
         }
     },
     methods: {
-         changeRouteLoads(val, load = null){
+         async changeRouteLoads(val, load = null){
              var autoScan = orders.state.settings.AutoScan
              if(autoScan){
                  if(val == 'Approved') router.push({name: 'drayage-orden'})
                  if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
-                 if(val == 'Dispatched') this.setMap(load)
-                 if(val == 'Deliver-Load') router.push({name: 'delivery-actions-auto'})
-                 if(val == 'Delivered') {
-                     localStorage.removeItem('startRoute')
+                 if(val == 'Dispatched') await this.setMap(load)
+                 if(val == 'Deliver-Load') {
+                    router.push({name: 'delivery-actions-auto'})
+                 } 
+                 if(val == 'return-container') {
+                    let id = `startLoad${load.loadMapId}`
+                    localStorage.removeItem(id)
                      router.push({name: 'return-container'})
                  }
              }
@@ -41,7 +44,7 @@ export const Mixins = {
             let longitude = val?.Orders[0].longitude
             let myLocation = await this.location()
             window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
-            this.$store.commit("setStartRoute", false);
+            this.$store.commit("setStartRoute", true);
             let id = `startLoad${val.loadMapId}`
             localStorage.setItem(id, 1)
 

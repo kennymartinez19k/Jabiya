@@ -1,5 +1,13 @@
 <template>
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+      <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeOut"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -98,10 +106,13 @@
 
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+import { ref } from "vue";
 import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
+import { IonLoading } from "@ionic/vue";
+
 
 export default {
   name: "DeliveryActions",
@@ -109,6 +120,13 @@ export default {
 
   components: {
     timeline,
+    IonLoading
+  },
+  setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
   },
   data() {
     return {
@@ -125,7 +143,8 @@ export default {
       location : {
         latitude: null,
         longitude: null  
-      }
+      },
+      timeOut: null
     };
   },
   computed: {
@@ -143,13 +162,8 @@ export default {
     await this.getLocation()
     if(this.loadStore){
        this.load = this.loadStore;
-       this.orders = this.load.Orders
-       console.log(this.orders, 'order')
-       console.log(this.load, 'load')
-       console.log(this.load.loadMapId, 'load')
+       this.orders = this.load.Orders.filter(x => !x.isReturn)
     }
-    console.log(this.orders)
-    console.log(this.orders[0]._id, 'order nu,')
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -165,10 +179,21 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
+          await this.uploadOrDownload(this.load)
           await this.postImages()
-            setTimeout(()=> {
-            this.$router.push({ name: 'load-status'}).catch(() => {})
-          },3000)
+          let load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+          
+          setTimeout(()=> {
+            let isReturn = load.Orders[0].isReturn
+
+            if(isReturn){
+              this.$router.push({ name: 'load-status'}).catch(() => {})
+            }else{
+              localStorage.removeItem(`startLoad${load.loadMapId}`)
+              this.$router.push({ name: 'home'}).catch(() => {})
+            }
+          },1000)
+
         }
       },
     },
@@ -207,9 +232,6 @@ export default {
       this.orders = result
 
     },
-    async scanOrder() {
-             
-      },
 
       verificacion(orders, result) {
         for (let i = 0; i < orders.length; i++) {
@@ -290,11 +312,40 @@ export default {
     },
   
     async postImages() {
-      const idOrder = this.orders[0]._id
+      let order = this.orders.find(x => x)
       let images = []
       images.push(... this.imagiElement, this.firm)
-      await this.$services.imagesService.postImages(images, this.location.latitude, this.location.longitude, idOrder);
-    }
+      await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+    },
+    async uploadOrDownload(val){
+      await this.setLoadTruck(val)
+
+    },
+    async setLoadTruck(val){
+      this.timeOut = 20000
+      this.setOpen(true);
+      let totalOfBoxes = 0
+      for(let cont = 0; cont < val.Orders.length; cont++){
+        let load = val.Orders[cont]
+        let orders =  await this.$services.loadsScanServices.getProduct(load._id);
+        let order = orders.find(x => x)
+        totalOfBoxes += load.no_of_boxes
+        for(var i = 0; i < order.products.length; i++){
+          let prod = order.products[i]
+          if(prod.scanOneByOne === "no") {
+            const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+            console.log(resultScanning)
+          }
+          else {
+            for(let i = 0; i <= prod.quantity; i++){
+              const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+              console.log(resultScanning)
+            }
+          }
+        }
+      }
+      return totalOfBoxes
+    },
   },
 };
 </script>
