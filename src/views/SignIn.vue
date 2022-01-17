@@ -1,6 +1,6 @@
 <template>
   <Loading
-  class="loading-position"
+    class="loading-position"
     :active="loaded"
     color="rgb(86, 76, 175)"
     loader="spinner"
@@ -22,19 +22,17 @@
       <img class="logo" src="../assets/logo.png" alt="" />
       <h4 class="uk-text-light">Entrar a su cuenta</h4>
       <span class="uk-text-muted" style="margin-bottom: 30px; display: block"
-        >Ingrese su número de móvil y contraseña y presione iniciar seción para
+        >Ingrese su número de móvil y contraseña y presione iniciar sesión para
         ingresar a su cuenta</span
       >
 
-
-
       <div class="uk-margin uk-text-left">
-        <label class="uk-text-emphasis" for="email">Email / Telefono</label>
+        <label class="uk-text-emphasis" for="email">Email / Teléfono</label>
         <div class="uk-input uk-flex form-login" style="align-items: center">
           <input
             class="uk-form-width-medium formLogin"
             v-model="login.email"
-            type="number"
+            type="text"
             placeholder="ejemplo@email.com"
             required
           />
@@ -62,7 +60,7 @@
       <div class="uk-margin uk-flex uk-flex-between">
         <label class="terms uk-text-light"
           ><input
-            v-model="login.rememberPassword"
+            v-model="rememberPassword"
             style="margin-right: 5px"
             class="uk-checkbox"
             type="checkbox"
@@ -73,13 +71,13 @@
           >¿Olvidaste tu contraseña?</router-link
         >
       </div>
-       <div v-if="showError" class="uk-alert-warning" uk-alert>
-            <a class="uk-alert-close" uk-close></a>
-            <p>{{showErrorText}}</p>
-        </div>
+      <div v-if="showError" class="uk-alert-warning" uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <p>{{ showErrorText }}</p>
+      </div>
       <button
         type="button"
-        :class="{disabled: disabled}"
+        :class="{ disabled: disabled }"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
         @click="changeRoute('home')"
         style="margin-top: 15px"
@@ -105,65 +103,93 @@ export default {
       disabled: false,
       showErrorText: null,
       login: {
-        email: "8094034881",
-        password: "1",
-        rememberPassword: false,
+        email: "",
+        password: "",
       },
+      rememberPassword: false,
+
       AutoLogin: {
         email: "",
         password: "",
       },
-      ejemplo: null
+      ejemplo: null,
     };
   },
   watch: {
-      'login.email': function (newVal) {
-          if (newVal) {
-              this.showError = false
-              
-          }
-      },
-        'login.password': function (newVal) {
-          if (newVal) {
-              this.showError = false
-              
-          }
+    "login.email": function (newVal) {
+      if (newVal) {
+        this.showError = false;
       }
+    },
+    "login.password": function (newVal) {
+      if (newVal) {
+        this.showError = false;
+      }
+    },
+    rememberPassword: {
+      handler: function (newVal) {
+        if (newVal === true) {
+          localStorage.removeItem("rememberData");
+          localStorage.removeItem("rememberPassword");
+          localStorage.setItem(
+            "rememberData",
+            JSON.stringify(this.login.email)
+          );
+          localStorage.setItem(
+            "rememberPassword",
+            JSON.stringify(this.login.password)
+          );
+    
+        } else {
+          localStorage.removeItem("rememberData");
+          localStorage.removeItem("rememberPassword");
+        }
+      },
+      deep: true,
+    },
   },
-  mounted(){
-    console.log(window.color)
+  mounted() {
+    console.log(window.color);
+    if (JSON.parse(localStorage.getItem("rememberData"))) {
+      this.rememberPassword = true;
+      this.login.email = JSON.parse(localStorage.getItem("rememberData"));
+      this.login.password = JSON.parse(
+        localStorage.getItem("rememberPassword")
+      );
+    }
   },
   methods: {
     async changeRoute(path) {
-      this.disabled = true
+      this.disabled = true;
       try {
         if (path == "home") {
           if (this.login.email !== "" && this.login.password !== "") {
+            // console.log(typeof(this.login.email), '(this.login.email') var c = a.split('').find(x => x === '@')
             this.loaded = true;
-            this.AutoLogin.email = this.login.email;
-            this.AutoLogin.password = this.login.password;
-            this.ejemplo = 'busca '
+            this.AutoLogin.email = String(this.login.email);
+            this.AutoLogin.password = String(this.login.password);
+            this.ejemplo = "busca ";
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
             this.loaded = true;
             this.$store.commit("setUserData", resultLogin);
-            if (resultLogin)
-              this.$router.push({ name: path }).catch(() => {});
-          } 
+            if (resultLogin) this.$router.push({ name: path }).catch(() => {});
+          }
         } else {
           this.$router.push({ name: path }).catch(() => {});
         }
       } catch (error) {
         this.loaded = false;
-        this.disabled = false
-        if (error.message === 'Request failed with status code 401') {
-          this.showErrorText = 'Error al introducir los datos'
-        }else if (error.message === 'Network Error') {
-          this.showErrorText = 'Error de conexion, verifique que este conectado'
-          this.ejemplo = error
+        this.disabled = false;
+        if (error.message === "Request failed with status code 401") {
+          this.showErrorText = "Error al introducir los datos";
+        } else if (error.message === "Network Error") {
+          this.showErrorText =
+            "Error de conexion, verifique que este conectado";
+          this.ejemplo = error;
         }
-       this.showError = true
+        this.showError = true;
       }
     },
     showPassword() {
@@ -227,14 +253,14 @@ export default {
 .form-login {
   border: 1px solid #b1b1b1;
 }
-.loading-position{
+.loading-position {
   position: absolute;
   z-index: 1;
   top: 278px;
   right: 11px;
   width: 92%;
 }
-.disabled{
+.disabled {
   pointer-events: none;
 }
 </style>
