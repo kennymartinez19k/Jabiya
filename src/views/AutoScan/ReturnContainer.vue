@@ -117,7 +117,7 @@ import { IonLoading } from "@ionic/vue";
 
 export default {
   name: "DeliveryActions",
-  alias: 'Procesar Entrega',
+  alias: 'Retornar Contenedor',
 
   components: {
     timeline,
@@ -159,12 +159,12 @@ export default {
     ]),
   },
   async mounted() {
+    this.getLocation()
     if(this.loadStore){
        this.load = this.loadStore;
        this.orders = this.load.Orders.filter(x => x.isReturn)
        console.log(this.orders)
     }
-    console.log(this.orders)
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -182,10 +182,7 @@ export default {
           this.firm = newVal;
           await this.uploadOrDownload(this.load)
           await this.postImages()
-          let load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
-          
           setTimeout(()=> {
-            localStorage.removeItem(`startLoad${load.loadMapId}`)
             this.$router.push({ name: 'home'}).catch(() => {})
           },1000)
         }
@@ -310,6 +307,7 @@ export default {
 
     async postImages() {
       let order = this.orders.find(x => x)
+      console.log(order)
       let images = []
       images.push(... this.imagiElement, this.firm)
       await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
