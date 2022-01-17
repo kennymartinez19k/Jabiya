@@ -27,7 +27,7 @@
         class="stepTwo"
         :class="{
          
-          active: imagiElement.length !== 0 && imagiElement.length >= 3,
+          active: imagiElement.length !== 0 && imagiElement.length >= 1,
         }"
         @click="getShow('camera')"
       >
@@ -39,9 +39,9 @@
       <li
         v-if="exception"
         :class="{
-          'uk-disabled': (imagiElement.length === 0) || (imagiElement.length !== 3),
+          'uk-disabled': (imagiElement.length === 0) || (imagiElement.length !== 1),
           active:
-            imagiElement.length >= 3 &&
+            imagiElement.length >= 1 &&
             textException !== null && showException === false,
         }"
         @click="getShow('exception')"

@@ -136,6 +136,7 @@ export default {
       else contDate = this.date
       var date = moment(contDate).format("MM/DD/YYYY");
       this.loads = await this.$services.loadsServices.getLoadsbyDate(date);
+      this.setOpen(true);
       this.loads.forEach(async (x) => {
         const resultByDate =
           await this.$services.loadsServices.getLoadDetails(x.loadMapId);

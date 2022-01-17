@@ -46,7 +46,7 @@
       </p>
       <p>
         <strong>Fecha:</strong>
-        {{ load?.date}}
+        {{ load?.dateTime?.date }}
       </p>
       
       <div>
@@ -109,7 +109,7 @@
           <button
             href="#modal-group-1"
             @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECT')"
-            class="uk-button uk-button-primary uk-modal-close"
+            class="uk-button button-reject uk-modal-close"
             uk-toggle
           >
             Rechazar
@@ -255,7 +255,10 @@ p {
   align-items: center;
   display: flex;
 }
-
+.button-reject{
+  background: #930404;
+    color: #fff;
+}
 .uk-card {
   padding: 5px 10px;
 }

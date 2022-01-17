@@ -19,11 +19,11 @@
           para recuperar su contraseña.
         </span>
         <div class="uk-margin uk-text-left">
-          <label class="uk-text-emphasis" for="email">Teléfono</label>
+          <label class="uk-text-emphasis" for="email">Email / Teléfono</label>
           <div class="uk-input uk-flex form-login" style="align-items: center">
                 <input 
                   class="uk-form-width-medium"
-                  type="email"
+                  type="text"
                   placeholder="ejemplo@email.com"
                   v-model="accountRecovery.email"
                   required
