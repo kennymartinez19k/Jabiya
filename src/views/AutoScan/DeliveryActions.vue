@@ -264,7 +264,7 @@ export default {
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
-      if (this.imagiElement.length >= 3) {
+      if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
         this.step = 2;
       }
       this.cont = this.cont + 1;
@@ -313,7 +313,17 @@ export default {
   
     async postImages() {
       let order = this.orders.find(x => x)
+      let contImage = 0;
       let images = []
+      if (this.imagiElement.length === 1) {
+        contImage = 3
+      } else if (this.imagiElement.length === 2) {
+        contImage = 2
+      }
+      for (let i = 1; i < contImage; i++) {
+       images.push(this.imagiElement[0])
+      }
+      console.log(this.imagiElement, 'fuera')
       images.push(... this.imagiElement, this.firm)
       await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
     },
