@@ -83,9 +83,8 @@
             <h6>{{messageStatus.dispatch}}</h6>
           </div>
           <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
+            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.truckLoaded" src="../assets/checklist-checked-box.png" />
           </div>
           <div class="disabled-container"></div>
         </li>
@@ -111,16 +110,17 @@
           :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
           <div class="info"><span>5</span></div>
           <div   
-            @click="changeRoute('Delivered')"
+            @click="changeRoute('return-container')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
             <h6>{{messageStatus.returnContainer}}</h6>
           </div>
           <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Delivered')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
+            <font-awesome-icon class="icon" @click="changeRoute('return-container')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.returnContainer" src="../assets/checklist.png" />
             <img v-if="loadStatus.step > step.returnContainer" src="../assets/checklist-checked-box.png" />
           </div>
+          <div class="disabled-container"></div>
         </li>
 
      
@@ -132,8 +132,6 @@
 <script>
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-
-
 
 export default {
   alias: "Manejo de Viaje",
@@ -150,14 +148,16 @@ export default {
       isReturn: false,
       statusDelivered: false,
       load: [],
+      loadStartRoute: null
     };
   },
  
   mixins: [Mixins],
   computed: {
-    ...mapGetters(["loadStore", "startRoute", "finishDelivered"]),
+    ...mapGetters(["loadStore", "startRoute"]),
     loadStatus() {
       let statusLoad = {};
+    
       
       if (this.load?.loadingStatus?.text == "Expecting Approval"){
         statusLoad.expectingApproval = true;
@@ -166,20 +166,25 @@ export default {
       if (this.load?.loadingStatus?.text == "Approved" || this.load?.loadingStatus?.text == "Driver Arrival" || this.load?.loadingStatus?.text == "Loading Truck" ){
         statusLoad.approved = true;
         statusLoad.step = 2;
+
       }
-      if (this.load?.loadingStatus?.text == "Dispatched" && !this.startRoute){
+      if (this.load?.loadingStatus?.text == "Dispatched" && !this.loadStartRoute){
         statusLoad.dispatch = true;
         statusLoad.step = 3;
+        return statusLoad;
+
       }
-      if (this.load?.loadingStatus?.text == "Dispatched" && this.startRoute == 1){
+      if (this.load?.loadingStatus?.text == "Dispatched"){
         statusLoad.delivered = true;
         statusLoad.step = 4;
+        return statusLoad;
+
       }
       if ( this.load?.loadingStatus?.text == 'Delivered'){
         statusLoad.returnContainer = true;
         statusLoad.step = 5;
+        return statusLoad;
       }
-
       return statusLoad;
     },
     messageStatus(){
@@ -201,11 +206,16 @@ export default {
   async mounted() {
     this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
     this.isReturn = this.load.Orders[0].isReturn
+    let id = `startLoad${this.load.loadMapId}`
+    this.loadStartRoute = localStorage.getItem(id)
   },
   methods: {
     async changeRoute(val) {
-      
-      this.changeRouteLoads(val, this.load);
+      await this.changeRouteLoads(val, this.load);
+      let id = `startLoad${this.load.loadMapId}`
+      if(val == 'Dispatched' || val == 'Delivered'){
+          this.loadStartRoute = localStorage.getItem(id)
+      }
     },
     setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-class ImagesService {
+class deliverServices {
     constructor (http) {
       this.http = http
     }
@@ -16,7 +16,7 @@ class ImagesService {
              console.log(formData, 'formdata')
          }
                formData.append('lat',lat);
-               formData.append('lgn',lng);
+               formData.append('lng',lng);
             let token = localStorage.getItem('auth')
           const result =  await axios.post(`http://preprod.flai.com.do:8756/exo/orders/${id}/images`, formData, {
           headers: {
@@ -27,8 +27,22 @@ class ImagesService {
       )
       return result
     }
+
+    async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){
+      const params = {
+        "actionName": "deliverBox",
+        "params": {
+          "loadScanningCounter": loadCounter,
+          "boxId": boxId,
+          "qrCode": qrCode
+        }
+      }
+      
+      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
+      return result
+    }
  
   
 }
-  export default ImagesService
+  export default deliverServices
   
