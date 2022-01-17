@@ -46,7 +46,7 @@
       </p>
       <p>
         <strong>Fecha:</strong>
-        {{ new Date(load?.date) }}
+        {{ load?.date}}
       </p>
       
       <div>

@@ -116,7 +116,7 @@ import { IonLoading } from "@ionic/vue";
 
 export default {
   name: "DeliveryActions",
-  alias: 'Procesar Entrega',
+  alias: 'Realizar Entrega',
 
   components: {
     timeline,
@@ -187,6 +187,7 @@ export default {
             let isReturn = load.Orders[0].isReturn
 
             if(isReturn){
+              localStorage.setItem(`loadStatus${load.loadMapId}`, 5)
               this.$router.push({ name: 'load-status'}).catch(() => {})
             }else{
               localStorage.removeItem(`startLoad${load.loadMapId}`)
@@ -312,7 +313,7 @@ export default {
     },
   
     async postImages() {
-      let order = this.orders.find(x => x)
+      let order = this.orders.find(x => !x.isReturn)
       let images = []
       images.push(... this.imagiElement, this.firm)
       await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
@@ -328,18 +329,27 @@ export default {
       for(let cont = 0; cont < val.Orders.length; cont++){
         let load = val.Orders[cont]
         let orders =  await this.$services.loadsScanServices.getProduct(load._id);
-        let order = orders.find(x => x)
+        let order = orders.find(x => !x.isReturn)
         totalOfBoxes += load.no_of_boxes
         for(var i = 0; i < order.products.length; i++){
           let prod = order.products[i]
-          if(prod.scanOneByOne === "no") {
-            const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-            console.log(resultScanning)
-          }
-          else {
-            for(let i = 0; i <= prod.quantity; i++){
+          try {
+            if(prod.scanOneByOne === "no") {
               const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
               console.log(resultScanning)
+            }
+            else {
+              for(let i = 0; i <= prod.quantity; i++){
+                const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+                console.log(resultScanning)
+              }
+            }
+          } catch(error){
+            console.log(error, 'hola')
+            if (error.message === 'Request failed with status code 401') {
+              console.log('Error al introducir los datos')
+            }else if (error.message === 'Network Error') {
+              console.log('Error de conexion, verifique que este conectado')
             }
           }
         }

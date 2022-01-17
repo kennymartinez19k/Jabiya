@@ -22,14 +22,8 @@ export const Mixins = {
                  if(val == 'Approved') router.push({name: 'drayage-orden'})
                  if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
                  if(val == 'Dispatched') await this.setMap(load)
-                 if(val == 'Deliver-Load') {
-                    router.push({name: 'delivery-actions-auto'})
-                 } 
-                 if(val == 'return-container') {
-                    let id = `startLoad${load.loadMapId}`
-                    localStorage.removeItem(id)
-                     router.push({name: 'return-container'})
-                 }
+                 if(val == 'Deliver-Load') router.push({name: 'delivery-actions-auto'}) 
+                 if(val == 'return-container')  router.push({name: 'return-container'})
              }
              else {
                 if(val == 'Approved' || val == 'Loading Truck') router.push({name: 'orders'})
@@ -40,13 +34,14 @@ export const Mixins = {
          },
 
          async setMap(val){
-            let latitude = val?.Orders[0].latitude
-            let longitude = val?.Orders[0].longitude
+            let order = val.Orders.find(x => !x.isReturn)
+            if(!order) order = val.Orders.find(x => x.isReturn)
+
+            let latitude = order.latitude
+            let longitude = order.longitude
             let myLocation = await this.location()
             window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
-            this.$store.commit("setStartRoute", true);
-            let id = `startLoad${val.loadMapId}`
-            localStorage.setItem(id, 1)
+            localStorage.setItem(`loadStatus${val.loadMapId}`, 4)
 
          },
          async location () {

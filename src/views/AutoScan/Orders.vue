@@ -133,7 +133,10 @@ export default {
     console.log(this.loadStore)
     if(this.loadStore){
       this.load = this.loadStore;
-      this.orders = this.loadStore.Orders.filter(x => !x.isReturn)
+      this.orders = this.load.Orders.filter(x => !x.isReturn)
+      if(this.orders.length == 0){
+         this.orders = this.load.Orders.filter(x => x.isReturn)
+      }
       console.log(this.load)
     }
     if (this.orderScan) {
