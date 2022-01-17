@@ -88,7 +88,8 @@
           </div>
           <div class="disabled-container"></div>
         </li>
-        <li 
+        <li
+          v-if="!allOrderIsReturn"
           :class="{active: loadStatus.step == step.delivered, 'completed-status': loadStatus.step > step.delivered}">
           
           <div class="info"><span>4</span></div>
@@ -106,7 +107,7 @@
           <div class="disabled-container"></div>
         </li>
         <li 
-          v-if="isReturn"
+          v-if="isReturnOrder"
           :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
           <div class="info"><span>5</span></div>
           <div   
@@ -145,10 +146,13 @@ export default {
         delivered: 4,
         returnContainer: 5
       },
-      isReturn: false,
+      isReturnOrder: false,
       statusDelivered: false,
       load: [],
-      loadStartRoute: null
+      loadStartRoute: null,
+      LoadReturn: null,
+      currentStatusLoad: null,
+      allOrderIsReturn: null
     };
   },
  
@@ -168,23 +172,46 @@ export default {
         statusLoad.step = 2;
 
       }
-      if (this.load?.loadingStatus?.text == "Dispatched" && !this.loadStartRoute){
+      if (this.load?.loadingStatus?.text == "Dispatched" && !this.currentStatusLoad){
         statusLoad.dispatch = true;
         statusLoad.step = 3;
         return statusLoad;
-
       }
-      if (this.load?.loadingStatus?.text == "Dispatched"){
-        statusLoad.delivered = true;
-        statusLoad.step = 4;
+      if(this.allOrderIsReturn){
+        if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
+          statusLoad.delivered = true;
+          statusLoad.step = 5;
+          return statusLoad;
+        }
+         if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
+          statusLoad.returnContainer = true;
+          statusLoad.step = 6;
+          return statusLoad;
+      }
+       if (this.load?.loadingStatus?.text == 'Delivered'){
+        statusLoad.step = 7;
         return statusLoad;
-
       }
-      if ( this.load?.loadingStatus?.text == 'Delivered'){
+        
+      }
+      if(!this.allOrderIsReturn){
+        if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
+          statusLoad.delivered = true;
+          statusLoad.step = 4;
+          return statusLoad;
+        }
+        if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
         statusLoad.returnContainer = true;
         statusLoad.step = 5;
         return statusLoad;
       }
+      if (this.load?.loadingStatus?.text == 'Delivered'){
+        statusLoad.step = 6;
+        return statusLoad;
+      }
+      }
+     
+      
       return statusLoad;
     },
     messageStatus(){
@@ -205,17 +232,14 @@ export default {
   },
   async mounted() {
     this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
-    this.isReturn = this.load.Orders[0].isReturn
-    let id = `startLoad${this.load.loadMapId}`
-    this.loadStartRoute = localStorage.getItem(id)
+    this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
+    this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
+    this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
   },
   methods: {
     async changeRoute(val) {
       await this.changeRouteLoads(val, this.load);
-      let id = `startLoad${this.load.loadMapId}`
-      if(val == 'Dispatched' || val == 'Delivered'){
-          this.loadStartRoute = localStorage.getItem(id)
-      }
+      this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
     },
     setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});
