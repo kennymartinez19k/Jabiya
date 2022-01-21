@@ -1,4 +1,6 @@
-import axios from 'axios'
+import {add} from '../queue'
+
+
 
 class deliverServices {
     constructor (http) {
@@ -6,30 +8,29 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
-          let formData = new FormData();
+         
+         let form = {images, lat, lng}
+         let url = 'http://preprod.flai.com.do:8756/exo/orders/'+id+'/images'
 
-         for( var i = 0; i <  images.length; i++ ){
-             let file = images[i];
-             const img = await fetch(file)
-             const blob = await img.blob()
-             formData.append('images', blob);
-             console.log(formData, 'formdata')
-         }
-               formData.append('lat',lat);
-               formData.append('lng',lng);
-            let token = localStorage.getItem('auth')
-          const result =  await axios.post(`http://preprod.flai.com.do:8756/exo/orders/${id}/images`, formData, {
-          headers: {
-              'Content-Type': 'multipart/form-data',
-              auth: token
-           },
-        }
-      )
-      return result
+         let token = localStorage.getItem('auth')
+          let hdr = {
+                 'Content-Type': 'multipart/form-data',
+                 auth: token,
+          }
+          
+          let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
+          add(json)
+
+
+          // const result =  await this.http.post(url, formData, hdr)
+          // console.log(url, formData, headers, callback)
+          // this.http.post(url, formData, headers, callback)
+
     }
 
     async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){
-      const params = {
+      console.log(orderId, boxId, loadCounter, productId, qrCode)
+      const body = {        
         "actionName": "deliverBox",
         "params": {
           "loadScanningCounter": loadCounter,
@@ -37,9 +38,18 @@ class deliverServices {
           "qrCode": qrCode
         }
       }
+      const url = `http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`
       
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
-      return result
+      const json = {'method': 'post', 'url': url, 'body': body}
+      add(json)
+      
+      // let result = await this.http.post(url, params)
+      // console.log(result)
+
+      // this.http.post(url, json, null, callback)
+      // console.log(url, params, null, callback)    
+      // this.http.post(url, params, null, callback)
+      
     }
  
   

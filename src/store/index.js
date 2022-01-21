@@ -16,10 +16,14 @@ const storeModule = {
       ...orders.state,
       ...profiles.state,
       ...invoicesStore.state,
+      queue: [] 
 
     }
   ),
   mutations: {
+    addQueue(state, val){
+      state.queue.push(val)
+    },
     ...currentPage.mutations,
     ...loads.mutations,
     ...timelineStore.mutations,
@@ -30,6 +34,9 @@ const storeModule = {
     
   },
   actions: {
+    changeQueue({commit}, val){
+      commit('addQueue', val)
+    },
     ...currentPage.actions,
     ...loads.actions,
     ...timelineStore.actions,

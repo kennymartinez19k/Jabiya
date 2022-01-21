@@ -48,7 +48,7 @@
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.expectingApproval" src="../assets/checklist-checked-box.png" />
+            <img v-if="loadStatus.step > step.expectingApproval" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
         </li>
@@ -67,7 +67,7 @@
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Approved')" v-if="loadStatus.step == step.approved" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.approved" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.approved" src="../assets/checklist-checked-box.png" />
+            <img v-if="loadStatus.step > step.approved" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
 
@@ -78,7 +78,7 @@
           </div>
           <div
             @click="changeRoute('Dispatched')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+            class="uk-card action on-way  uk-card-default uk-card-body uk-width-1-2@m item"
           >
             <h6>{{messageStatus.dispatch}}</h6>
           </div>
@@ -102,7 +102,7 @@
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Deliver-Load')" v-if="loadStatus.step == step.delivered" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.delivered" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.delivered" src="../assets/checklist-checked-box.png" />
+            <img v-if="loadStatus.step > step.delivered" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
         </li>
@@ -119,7 +119,7 @@
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('return-container')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.returnContainer" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.returnContainer" src="../assets/checklist-checked-box.png" />
+            <img v-if="loadStatus.step > step.returnContainer" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
         </li>
@@ -224,7 +224,7 @@ export default {
       }
       if(this.loadStatus.step > 1) message.expectingApproval = 'Viaje Aprobado'
       if(this.loadStatus.step > 2) message.approved = 'Viaje Montado'
-      if(this.loadStatus.step > 3) message.dispatch = 'Ruta Iniciada'
+      if(this.loadStatus.step > 3) message.dispatch = 'Ver Ruta'
       if(this.loadStatus.step > 4) message.delivered = 'Contenedor Entregado'
       if(this.loadStatus.step > 5) message.returnContainer = 'Contenedor Retornado'
       return message
@@ -232,6 +232,7 @@ export default {
   },
   async mounted() {
     this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+  
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
@@ -400,6 +401,9 @@ ul {
 }
 .progressbar .completed-status .action h6{
   color: green
+}
+.progressbar .completed-status .on-way{
+  pointer-events:initial !important;
 }
 
 .progressbar li .active h6{

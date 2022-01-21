@@ -163,6 +163,7 @@ export default {
     if(this.loadStore){
        this.load = this.loadStore;
        this.orders = this.load.Orders.filter(x => !x.isReturn)
+       console.log(this.orders)
     }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -179,22 +180,18 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-          await this.uploadOrDownload(this.load)
-          await this.postImages()
-          let load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+          this.uploadOrDownload(this.load)
+          this.postImages()
           
-          setTimeout(()=> {
-            let isReturn = load.Orders[0].isReturn
+            let isReturn = this.load.Orders[0].isReturn
 
             if(isReturn){
-              localStorage.setItem(`loadStatus${load.loadMapId}`, 5)
+              localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
               this.$router.push({ name: 'load-status'}).catch(() => {})
             }else{
-              localStorage.removeItem(`startLoad${load.loadMapId}`)
+              localStorage.removeItem(`startLoad${this.load.loadMapId}`)
               this.$router.push({ name: 'home'}).catch(() => {})
             }
-          },1000)
-
         }
       },
     },
@@ -312,24 +309,26 @@ export default {
 
     },
   
-    async postImages() {
-      let order = this.orders.find(x => !x.isReturn)
-      let images = []
-       let contImage = 0;
-      if (this.imagiElement.length === 1) {
-        contImage = 3
-      } else if (this.imagiElement.length === 2) {
-        contImage = 2
+    postImages() {
+      let orders = this.orders.filter(x => !x.isReturn)
+      for(var it = 0; it < orders.length; it++){
+        let order = orders[it]
+        let images = []
+         let contImage = 0;
+        if (this.imagiElement.length === 1) {
+          contImage = 3
+        } else if (this.imagiElement.length === 2) {
+          contImage = 2
+        }
+        for (let i = 1; i < contImage; i++) {
+         images.push(this.imagiElement[0])
+        }
+        images.push(... this.imagiElement, this.firm)
+        this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
-      for (let i = 1; i < contImage; i++) {
-       images.push(this.imagiElement[0])
-      }
-      console.log(this.imagiElement, 'fuera')
-      images.push(... this.imagiElement, this.firm)
-      await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
     },
-    async uploadOrDownload(val){
-      await this.setLoadTruck(val)
+     uploadOrDownload(val){
+      this.setLoadTruck(val)
 
     },
     async setLoadTruck(val){
@@ -337,21 +336,17 @@ export default {
       this.setOpen(true);
       let totalOfBoxes = 0
       for(let cont = 0; cont < val.Orders.length; cont++){
-        let load = val.Orders[cont]
-        let orders =  await this.$services.loadsScanServices.getProduct(load._id);
-        let order = orders.find(x => !x.isReturn)
-        totalOfBoxes += load.no_of_boxes
+        let order = val.Orders[cont]
+        totalOfBoxes += order.no_of_boxes
         for(var i = 0; i < order.products.length; i++){
           let prod = order.products[i]
           try {
             if(prod.scanOneByOne === "no") {
-              const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-              console.log(resultScanning)
+              await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
             }
             else {
               for(let i = 0; i <= prod.quantity; i++){
-                const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-                console.log(resultScanning)
+                await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
               }
             }
           } catch(error){

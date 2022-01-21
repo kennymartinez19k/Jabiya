@@ -4,8 +4,8 @@ import LoadsServices from './LoadsServices'
 import LoadsScanServices from './LoadScanServices'
 import InvoicesSevices from './InvoicesSevices'
 import DeliverServices from './DeliverServices'
-
-// let axiosInstance = new AxiosInstance()
+import RequestServices from './RequestServices'
+import QueueServices from './QueueServices'
 
 export default {
     axiosInstance: axiosInstance,
@@ -14,4 +14,7 @@ export default {
     loadsScanServices: new LoadsScanServices(axiosInstance),
     invoicesSevices: new InvoicesSevices(axiosInstance),
     deliverServices: new DeliverServices(axiosInstance),
+    requestServices: new RequestServices(axiosInstance),
+    queueServices: new QueueServices()
+    
 }
