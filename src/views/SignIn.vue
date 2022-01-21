@@ -112,7 +112,6 @@ export default {
         email: "",
         password: "",
       },
-      ejemplo: null,
     };
   },
   watch: {
@@ -168,7 +167,6 @@ export default {
             this.loaded = true;
             this.AutoLogin.email = String(this.login.email);
             this.AutoLogin.password = String(this.login.password);
-            this.ejemplo = "busca ";
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );
@@ -185,9 +183,7 @@ export default {
         if (error.message === "Request failed with status code 401") {
           this.showErrorText = "Error al introducir los datos";
         } else if (error.message === "Network Error") {
-          this.showErrorText =
-            "Error de conexion, verifique que este conectado";
-          this.ejemplo = error;
+          this.showErrorText = "Error de conexion, verifique que este conectado";
         }
         this.showError = true;
       }

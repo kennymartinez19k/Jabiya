@@ -154,7 +154,7 @@ export default {
       "exceptionStore",
       "digitalFirmStore",
       "settings",
-      'allLoads',
+      'allLoadsStore',
 
     ]),
   },
@@ -305,13 +305,31 @@ export default {
 
          },
 
+    // async postImages() {
+    //   let order = this.orders.find(x => x)
+    //   console.log(order)
+    //   let images = []
+    //   images.push(... this.imagiElement, this.firm)
+    //   await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+    // },
+
     async postImages() {
       let order = this.orders.find(x => x)
-      console.log(order)
       let images = []
-      images.push(... this.imagiElement, this.firm)
+      images.push(...this.imagiElement)
+       let numberOfImages = 3;
+      if (this.imagiElement.length === 1) {
+        numberOfImages = 1
+      } else if (this.imagiElement.length === 2) {
+        numberOfImages = 2
+      } 
+      for (let i = numberOfImages; i < 3; i++) {
+       images.push(this.imagiElement[0])
+      }
+      images.push(this.firm)
       await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
     },
+
     async uploadOrDownload(val){
       await this.setLoadTruck(val)
 

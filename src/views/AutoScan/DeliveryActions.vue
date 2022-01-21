@@ -154,14 +154,23 @@ export default {
       "exceptionStore",
       "digitalFirmStore",
       "settings",
-      'allLoads',
+      'allLoadsStore',
 
     ]),
   },
   async mounted() {
+        let loadsMounted = null
+    if (this.loadStore) {
+       loadsMounted = this.loadStore
+    } else {
+      loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+      console.log(loadsMounted, 'this.loadStore')
+    }
+      this.$store.commit("setloadStore", loadsMounted);
+
     await this.getLocation()
-    if(this.loadStore){
-       this.load = this.loadStore;
+    if(loadsMounted){
+       this.load = loadsMounted;
        this.orders = this.load.Orders.filter(x => !x.isReturn)
     }
     if (this.orderScan?.length > 1) {
@@ -207,6 +216,7 @@ export default {
 
   methods: {
      async getLocation () {
+       console.log(this.checkPermissions())
         try {
           const geo = await Geolocation.getCurrentPosition();
           this.location.latitude = geo.coords.latitude
@@ -215,6 +225,9 @@ export default {
           console.log(e)
         
         }
+    },
+    async checkPermissions() {
+       return await Geolocation.checkPermissions()
     },
     getShow(value) {
       this.show = value;
@@ -315,19 +328,20 @@ export default {
     async postImages() {
       let order = this.orders.find(x => !x.isReturn)
       let images = []
-       let contImage = 0;
+      images.push(...this.imagiElement)
+       let numberOfImages = 3;
       if (this.imagiElement.length === 1) {
-        contImage = 3
+        numberOfImages = 1
       } else if (this.imagiElement.length === 2) {
-        contImage = 2
-      }
-      for (let i = 1; i < contImage; i++) {
+        numberOfImages = 2
+      } 
+      for (let i = numberOfImages; i < 3; i++) {
        images.push(this.imagiElement[0])
       }
-      console.log(this.imagiElement, 'fuera')
-      images.push(... this.imagiElement, this.firm)
+      images.push(this.firm)
       await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
     },
+    
     async uploadOrDownload(val){
       await this.setLoadTruck(val)
 

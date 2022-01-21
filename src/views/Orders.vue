@@ -115,7 +115,7 @@ export default {
   },
   
   computed: {
-    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoads", "products", "structureToScan"])
+    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoadsStore", "products", "structureToScan"])
   },
   watch:{
     selectAllOrders: function(newVal){
@@ -156,7 +156,7 @@ export default {
       this.load.firstOrdenSector = this.orders[0]?.sector
       console.log(this.load)
     }else{
-      this.load = this.allLoads
+      this.load = this.allLoadsStore
     this.orders = this.load.orders
 
     }

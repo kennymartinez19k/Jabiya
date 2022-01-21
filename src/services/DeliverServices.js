@@ -4,16 +4,15 @@ class deliverServices {
     constructor (http) {
       this.http = http
     }
-
-    async postImages (images, lat, lng ,id) {
+    async postImages (images, lat, lng , id) {
           let formData = new FormData();
-
+          let file = null
          for( var i = 0; i <  images.length; i++ ){
-             let file = images[i];
-             const img = await fetch(file)
-             const blob = await img.blob()
-             formData.append('images', blob);
-             console.log(formData, 'formdata')
+              file = images[i];
+             let img = await fetch(file)
+             let blob = await img.blob()
+             let name = `item ${i}`
+             formData.append('images', blob, name);
          }
                formData.append('lat',lat);
                formData.append('lng',lng);
