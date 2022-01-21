@@ -1,7 +1,7 @@
 const Loads = {
     state: {
       load: null,
-      allLoads: [],
+      allLoadsStore: [],
       loads: [],
       products:[],
       startRoute: true,
@@ -15,8 +15,8 @@ const Loads = {
         setStartRoute(state, startRoute){
           state.startRoute = startRoute
         },
-        setAllLoads(state, val){
-          state.allLoads = val
+        setAllLoadStore(state, val){
+          state.allLoadsStore = val
         },
         chargeLoads(state, val){
           state.loads = val
@@ -27,7 +27,7 @@ const Loads = {
     },
     getters: {
       loadStore: state => state.load,
-      allLoads: state => state.allLoads,
+      allLoadsStore: state => state.allLoadsStore,
       loads: state => state.loads,
       products: state => state.products,
       startRoute: state => state.startRoute,

@@ -8,16 +8,16 @@ class RequestServices {
 
       if(infoRequest.formInfo){
         const {images, lng, lat } = infoRequest.formInfo
-  
-           for( var i = 0; i <  images.length; i++ ){
-               let file = images[i];
-               const img = await fetch(file)
-               const blob = await img.blob()
-               formData.append('images', blob);
-           }
-           
-           formData.append('lat',lat);
-           formData.append('lng',lng);
+           let file = null
+          for( var i = 0; i <  images.length; i++ ){
+               file = images[i];
+              let img = await fetch(file)
+              let blob = await img.blob()
+              let name = `item ${i}`
+              formData.append('images', blob, name);
+          }
+                formData.append('lat',lat);
+                formData.append('lng',lng);
       }
 
       if (infoRequest.method === "post") {

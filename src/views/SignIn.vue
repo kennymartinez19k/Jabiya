@@ -183,9 +183,7 @@ export default {
         if (error.message === "Request failed with status code 401") {
           this.showErrorText = "Error al introducir los datos";
         } else if (error.message === "Network Error") {
-          this.showErrorText =
-            "Error de conexion, verifique que este conectado";
-          this.ejemplo = error;
+          this.showErrorText = "Error de conexion, verifique que este conectado";
         }
         this.showError = true;
       }

@@ -130,7 +130,7 @@ export default {
     async setLoad(valueOrder) {
       await this.getLoadsId(valueOrder.loadId)
       this.$store.commit("setloadStore", valueOrder);
-      if(this.settings?.AutoScan){
+       if(this.settings?.AutoScan){
         if(valueOrder?.status == 'Driver Assigned') this.changeRoute('orders-auto-scan');
         if(valueOrder?.status == 'Driver Arrival') this.changeRoute('delivery-actions-auto');
       } else {

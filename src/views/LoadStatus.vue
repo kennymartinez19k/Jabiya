@@ -231,9 +231,14 @@ export default {
     }
   },
   async mounted() {
-
-    this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
-  
+    let loadsMounted = null
+    if (this.loadStore) {
+       loadsMounted = this.loadStore
+    } else {
+      loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+    }
+      this.$store.commit("setloadStore", loadsMounted);
+    this.load = await this.$services.loadsServices.getLoadDetails(loadsMounted?.loadMapId);
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
