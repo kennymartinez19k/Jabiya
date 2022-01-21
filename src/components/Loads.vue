@@ -114,16 +114,49 @@ export default {
   async beforeMount() {
     this.setOpen(true);
   },
+  
   async mounted() {
+          if (this.allLoadsStore) {
+        this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
+      }
     window.location.href = "#Hoy";
     moment.locale("es");
+    // await this.getLocation()
     await this.currentDate();
+      localStorage.removeItem('DeliveryCharges');
+
+      // localStorage.removeItem('AllLoadS');
+
   },
   computed: {
-    ...mapGetters(["allLoads", "settings"]),
+    ...mapGetters(["allLoadsStore", "settings"]),
   },
 
   methods: {
+
+    // async getLocation () {
+    //    console.log(await this.checkPermissions())
+    //   //  console.log(await  this.requestPermissions ())
+
+    //     try {
+    //       const geo = await Geolocation.getCurrentPosition();
+    //       this.location.latitude = geo.coords.latitude
+    //       this.location.longitude = geo.coords.longitude
+    //     } catch (e) {
+    //       console.log(e)
+        
+    //     }
+    // },
+    // async checkPermissions() {
+    //    return await Geolocation.checkPermissions()
+    // },
+    // async requestPermissions () {
+    //   return await Geolocation.requestPermissions('location' | 'coarseLocation')
+    // },
+
+
+
+
     setOpe(val) {
       this.loaded = val;
       setTimeout(() => {
@@ -151,7 +184,10 @@ export default {
         this.showloader = false;
       }, 1000);
       console.log(this.loads);
-      localStorage.setItem('Loads', JSON.stringify(this.loads))
+      this.$store.commit("setAllLoadStore", this.loads);
+      localStorage.setItem('AllLoadS', JSON.stringify(this.loads));
+
+// localStorage.setItem('Loads', JSON.stringify(this.loads)) kenny
     },
     async setLoad(val) {
       console.log(val);
@@ -160,6 +196,8 @@ export default {
           Object.assign(val.Orders[i], order[0])
         }
       this.$store.commit("setloadStore", val);
+      localStorage.setItem('DeliveryCharges', JSON.stringify(val));
+      
       this.$router.push({ name: "load-status" }).catch(() => {});
     },
     changeRoute(path) {

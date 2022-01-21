@@ -148,7 +148,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["orderScan", "loadStore", "allLoads", "structureToScan"]),
+    ...mapGetters(["orderScan", "loadStore", "allLoadsStore", "structureToScan"]),
     completedOrder: function(){
       if(this.orders.every(x => x.completed == true)){
         return 'TODAS LAS ORDENES HAN SIDO CARGADAS'

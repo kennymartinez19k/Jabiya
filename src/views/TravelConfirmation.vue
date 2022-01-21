@@ -135,7 +135,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan", "loads", "allLoads", "products"]),
+    ...mapGetters(["loadStore", "orderScan", "loads", "allLoadsStore", "products"]),
 
      productsBox: function () {
       if (this.products?.length !== 0) {
@@ -154,7 +154,7 @@ export default {
       this.load = this.loadStore;
       this.orders = this.orderScan
     }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
+      this.load = this.allLoadsStore.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
     this.orders = this.load.orders
     }
     console.log(this.orders)

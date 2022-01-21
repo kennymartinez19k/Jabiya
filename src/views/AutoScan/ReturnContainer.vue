@@ -1,5 +1,8 @@
 <template>
-  <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+  <div
+    class="uk-container uk-flex uk-flex-column uk-flex-between"
+    :class="{ backg: resultScan }"
+  >
     <ion-loading
       :is-open="isOpenRef"
       cssClass="my-custom-class"
@@ -9,10 +12,8 @@
     >
     </ion-loading>
     <div class="stiky">
-      <p
-        style=" font-size: 13px !important; font-weight: 500"
-      >
-        {{load?.loadNumber}}
+      <p style="font-size: 13px !important; font-weight: 500">
+        {{ load?.loadNumber }}
       </p>
       <div
         class="
@@ -23,76 +24,84 @@
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center;"
+        style="align-items: center"
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
+            <span class="font-weight-medium">Shipper: </span
+            ><span>&nbsp; {{ shipperName(load) }}</span>
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector.sector }}</span>
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ load?.firstOrdenSector.sector }}</span>
           </p>
         </div>
       </div>
     </div>
-    <div 
-      class="result-info"
-      >
-      <ul
-        class="uk-list uk-list-divider"
-        style="list-style: none"
-      >
-      <div
-        v-for="order in orders"
-        :key="order"
-        class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed }"
-      >
-        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-          <div class="btn uk-flex">
-            <div class="uk-flex uk-flex-column uk-text-left">
-              <p
-                class="uk-width-1-1"
-              >
-              <span class="font-weight-medium">Cliente: </span>
-                <span>{{ order.client_name }}</span>
-              </p>
-            </div>
-          </div>
-          <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
-          </p>
-          <p class="">
-            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.no_of_boxes}}<span></span>
-          </p>
-          <p class="uk-width-1-1">
-            <span class="font-weight-medium">Destino: </span> 
-            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
-          </p>
-        </div>
-        <div class="uk-width-1-2">
-              <div
-                @click="setMap(order)"
-                class="uk-flex-column"
-                style="align-items: center; display: inline-flex"
-              >
-                <img src="../../assets/map.png" class="img-scan" alt="" />
-                <span>Ver Ruta</span>
+    <div class="result-info">
+      <ul class="uk-list uk-list-divider" style="list-style: none">
+        <div
+          v-for="order in orders"
+          :key="order"
+          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+          :class="{ ordenCompleted: order.completed }"
+        >
+          <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+            <div class="btn uk-flex">
+              <div class="uk-flex uk-flex-column uk-text-left">
+                <p class="uk-width-1-1">
+                  <span class="font-weight-medium">Cliente: </span>
+                  <span>{{ order.client_name }}</span>
+                </p>
               </div>
             </div>
-      </div>
-      <div class="uk-flex" style="margin-top: 10px" >
-              <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
-              <img class="img-result" :src="firm" alt="Fima Digital" />
+            <p style="margin-right: 10px !important">
+              <span class="font-weight-medium">Orden: </span
+              ><span>{{ order.order_num }}</span>
+            </p>
+            <p class="">
+              <span class="font-weight-medium">Cajas / Pallets: </span
+              >{{ order?.no_of_boxes }}<span></span>
+            </p>
+            <p class="uk-width-1-1">
+              <span class="font-weight-medium">Destino: </span>
+              <span>
+                <font-awesome-icon icon="map-marker-alt" />
+                {{ order.sector }}</span
+              >
+            </p>
           </div>
+          <div class="uk-width-1-2">
+            <div
+              @click="setMap(order)"
+              class="uk-flex-column"
+              style="align-items: center; display: inline-flex"
+            >
+              <img src="../../assets/map.png" class="img-scan" alt="" />
+              <span>Ver Ruta</span>
+            </div>
+          </div>
+        </div>
+        <div class="uk-flex" style="margin-top: 10px">
+          <img
+            class="img-result"
+            v-for="src in imagiElement"
+            :key="src"
+            :src="src"
+            alt="Red dot"
+          />
+          <img class="img-result" :src="firm" alt="Fima Digital" />
+        </div>
       </ul>
     </div>
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 15px 0px  !important;"
+      style="z-index: 0; padding: 15px 0px !important"
     >
-      <h6 style="margin: 0px 0px 15px; font-size: 14px ">Click Para Tomar las Fotos y Firma</h6>
+      <h6 style="margin: 0px 0px 15px; font-size: 14px">
+        Click Para Tomar las Fotos y Firma
+      </h6>
       <timeline
         :step="step"
         :exception="exception"
@@ -109,19 +118,17 @@ import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import { Geolocation } from '@capacitor/geolocation';
+import { Geolocation } from "@capacitor/geolocation";
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 
-
-
 export default {
   name: "DeliveryActions",
-  alias: 'Retornar Contenedor',
+  alias: "Retornar Contenedor",
 
   components: {
     timeline,
-    IonLoading
+    IonLoading,
   },
   setup() {
     const isOpenRef = ref(false);
@@ -140,11 +147,11 @@ export default {
       step: 1,
       exception: false,
       firm: null,
-       location : {
+      location: {
         latitude: null,
-        longitude: null  
+        longitude: null,
       },
-      timeOut: null
+      timeOut: null,
     };
   },
   computed: {
@@ -154,16 +161,15 @@ export default {
       "exceptionStore",
       "digitalFirmStore",
       "settings",
-      'allLoads',
-
+      "allLoadsStore",
     ]),
   },
   async mounted() {
-    this.getLocation()
-    if(this.loadStore){
-       this.load = this.loadStore;
-       this.orders = this.load.Orders.filter(x => x.isReturn)
-       console.log(this.orders)
+    this.getLocation();
+    if (this.loadStore) {
+      this.load = this.loadStore;
+      this.orders = this.load.Orders.filter((x) => x.isReturn);
+      console.log(this.orders);
     }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -173,26 +179,25 @@ export default {
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
     }
-
   },
   watch: {
     digitalFirmStore: {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-          await this.uploadOrDownload(this.load)
-          await this.postImages()
-          setTimeout(()=> {
-            this.$router.push({ name: 'home'}).catch(() => {})
-          },1000)
+          await this.uploadOrDownload(this.load);
+          await this.postImages();
+          setTimeout(() => {
+            this.$router.push({ name: "home" }).catch(() => {});
+          }, 1000);
         }
       },
     },
-     $route: function(newVal){
-      if (newVal){
-        this.stopScan()
+    $route: function (newVal) {
+      if (newVal) {
+        this.stopScan();
       }
-    }
+    },
   },
 
   methods: {
@@ -202,34 +207,31 @@ export default {
         this.scanOrder();
       } else if (value === "camera" && this.imagiElement.length <= 6) {
         this.getCam();
-
       } else if (value === "firm") {
         this.serieA = value;
         this.step++;
       }
     },
-     async getLoadsId (val) {
-      const result = await this.$services.loadsServices.getOrdersByLoadId(val)
-      this.orders = result
-
+    async getLoadsId(val) {
+      const result = await this.$services.loadsServices.getOrdersByLoadId(val);
+      this.orders = result;
     },
 
-    async getLocation () {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location.latitude = geo.coords.latitude
-          this.location.longitude = geo.coords.longitude
-        } catch (e) {
-          console.log(e)
-        
-        }
+    async getLocation() {
+      try {
+        const geo = await Geolocation.getCurrentPosition();
+        this.location.latitude = geo.coords.latitude;
+        this.location.longitude = geo.coords.longitude;
+      } catch (e) {
+        console.log(e);
+      }
     },
-      verificacion(orders, result) {
-        for (let i = 0; i < orders.length; i++) {
-          if (i?.numberOfOrders === result.content) {
-            return true
-          }
+    verificacion(orders, result) {
+      for (let i = 0; i < orders.length; i++) {
+        if (i?.numberOfOrders === result.content) {
+          return true;
         }
+      }
     },
     async stopScan() {
       await BarcodeScanner.showBackground();
@@ -256,8 +258,8 @@ export default {
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
 
-      if (this.imagiElement.length === 3) {
-        this.step++;
+      if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
+        this.step = 2;
       }
       this.cont = this.cont + 1;
     },
@@ -277,13 +279,15 @@ export default {
     },
 
     async getCheckPermissions() {
-      const permissions = Camera.checkPermissions(['prompt' | 'prompt-with-rationale' | 'granted' | 'denied']);
+      const permissions = Camera.checkPermissions([
+        "prompt" | "prompt-with-rationale" | "granted" | "denied",
+      ]);
       console.log(permissions);
       this.getRequestPermissions();
     },
-    shipperName(val){
-      var shipper = val?.shipper?.find(x => x.name)
-      return shipper?.name
+    shipperName(val) {
+      var shipper = val?.shipper?.find((x) => x.name);
+      return shipper?.name;
     },
 
     async getRequestPermissions() {
@@ -296,53 +300,86 @@ export default {
         console.log(error, "error");
       }
     },
-    async setMap(val){
-            let latitude = val.latitude
-            let longitude = val.longitude
-            let myLocation = await this.location()
-            window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
-            this.$store.commit("setStartRoute", false);
-
-         },
-
-    async postImages() {
-      let order = this.orders.find(x => x)
-      console.log(order)
-      let images = []
-      images.push(... this.imagiElement, this.firm)
-      await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id,  
-      (response) => {
-        console.log("PostImages ", response)
-      });
+    async setMap(val) {
+      let latitude = val.latitude;
+      let longitude = val.longitude;
+      let myLocation = await this.location();
+      window.open(
+        `https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`
+      );
+      this.$store.commit("setStartRoute", false);
     },
-    async uploadOrDownload(val){
-      await this.setLoadTruck(val)
 
+    // async postImages() {
+    //   let order = this.orders.find(x => x)
+    //   console.log(order)
+    //   let images = []
+    //   images.push(... this.imagiElement, this.firm)
+    //   await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+    // },
+
+     async postImages() {
+        let unreturnedOrders = this.orders.filter((x) => x.isReturn);
+      for (var it = 0; it < unreturnedOrders.length; it++) {
+        let order = unreturnedOrders[it];
+        let images = [];
+        images.push(...this.imagiElement);
+        let numberOfImages = 3;
+        if (this.imagiElement.length === 1) {
+          numberOfImages = 1;
+        } else if (this.imagiElement.length === 2) {
+          numberOfImages = 2;
+        }
+        for (let i = numberOfImages; i < 3; i++) {
+          images.push(this.imagiElement[0]);
+        }
+        images.push(this.firm);
+        this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+      }
     },
-    async setLoadTruck(val){
-      this.timeOut = 20000
+
+    async uploadOrDownload(val) {
+      await this.setLoadTruck(val);
+    },
+    async setLoadTruck(val) {
+      this.timeOut = 20000;
       this.setOpen(true);
-      let totalOfBoxes = 0
-      for(let cont = 0; cont < val.Orders.length; cont++){
-        let load = val.Orders[cont]
-        let orders =  await this.$services.loadsScanServices.getProduct(load._id);
-        let order = orders.find(x => x)
-        totalOfBoxes += load.no_of_boxes
-        for(var i = 0; i < order.products.length; i++){
-          let prod = order.products[i]
-          if(prod.scanOneByOne === "no") {
-            const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-            console.log(resultScanning)
-          }
-          else {
-            for(let i = 0; i <= prod.quantity; i++){
-              const resultScanning =  await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-              console.log(resultScanning)
+      let totalOfBoxes = 0;
+      for (let cont = 0; cont < val.Orders.length; cont++) {
+        let load = val.Orders[cont];
+        let orders = await this.$services.loadsScanServices.getProduct(
+          load._id
+        );
+        let order = orders.find((x) => x);
+        totalOfBoxes += load.no_of_boxes;
+        for (var i = 0; i < order.products.length; i++) {
+          let prod = order.products[i];
+          if (prod.scanOneByOne === "no") {
+            const resultScanning =
+              await this.$services.deliverServices.deliverProduct(
+                order._id,
+                prod._id,
+                prod.loadScanningCounter,
+                prod.product._id,
+                prod.qrCode
+              );
+            console.log(resultScanning);
+          } else {
+            for (let i = 0; i <= prod.quantity; i++) {
+              const resultScanning =
+                await this.$services.deliverServices.deliverProduct(
+                  order._id,
+                  prod._id,
+                  prod.loadScanningCounter,
+                  prod.product._id,
+                  prod.qrCode
+                );
+              console.log(resultScanning);
             }
           }
         }
       }
-      return totalOfBoxes
+      return totalOfBoxes;
     },
   },
 };
@@ -352,7 +389,7 @@ export default {
 .qr {
   width: 60%;
 }
-p{
+p {
   margin: 2px 0px !important;
 }
 .circle {
@@ -420,11 +457,9 @@ p{
 }
 .uk-container {
   margin: 0px -16px;
-
 }
 .backg {
-    background-color: rgb(255, 255, 255);
-
+  background-color: rgb(255, 255, 255);
 }
 .result-info {
   overflow: scroll;
@@ -434,12 +469,12 @@ p{
 .stiky {
   color: rgb(255, 255, 255) !important;
   z-index: 2;
-    border-top: 1px solid #313575;
+  border-top: 1px solid #313575;
   font-size: 12px !important;
   padding: 0px 10px 5px !important;
- background: #2a307c;
- font-weight: 300 !important;
- text-align: center;
+  background: #2a307c;
+  font-weight: 300 !important;
+  text-align: center;
 }
 .info-header {
   width: 30%;
@@ -490,11 +525,10 @@ li::before {
   top: -2px;
   margin-left: 5px;
 }
-.uk-card-body{
+.uk-card-body {
   padding: 16px 15px;
 }
-.cont{
+.cont {
   border-top: 1px solid #ccc;
 }
-
 </style>

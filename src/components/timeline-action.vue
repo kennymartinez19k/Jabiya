@@ -51,7 +51,7 @@
         <span style="color: #000">Camara</span>
         <div
           :class="{
-            disabled: (imagiElement.length === 0) || (imagiElement.length !== 3),
+            disabled: (imagiElement.length === 0) || (imagiElement.length !== 1),
           }"
         ></div>
       </li>
