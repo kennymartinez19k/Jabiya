@@ -14,6 +14,7 @@ export const Mixins = {
                 Orders:{},
                 deliveryActions:{}
             },
+            myLocation: null
         }
     },
     methods: {
@@ -46,10 +47,9 @@ export const Mixins = {
                 latitude = order.latitude
                 longitude = order.longitude
             }
-            let myLocation = await this.location()
-            console.log(myLocation)
-            if(myLocation){
-                window.open(`https://www.google.com/maps/dir/${myLocation.latitude},${myLocation.longitude}/${latitude},${longitude}/`)
+            this.myLocation =  await this.location()
+            if(this.myLocation){
+                window.open(`https://www.google.com/maps/dir/${this.myLocation.latitude},${this.myLocation.longitude}/${latitude},${longitude}/`)
                 localStorage.setItem(`loadStatus${val.loadMapId}`, 4)
             }
 

@@ -231,11 +231,13 @@ export default {
     }
   },
   async mounted() {
+
     this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
   
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
+    
   },
   methods: {
     async changeRoute(val) {

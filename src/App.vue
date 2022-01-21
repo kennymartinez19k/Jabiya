@@ -47,23 +47,17 @@ async mounted(){
         await this.$services.queueServices.enqueue(enqueueItem)
       }
       let queueItem = await this.$services.queueServices.peek()
-      console.log(queueItem)
       if(queueItem){
-        console.log('there something in queue')
         let network = await this.offlineStatus()
         if(network.connected){
-          console.log('Network connected')
-          console.log(queueItem)
           let res = await this.$services.requestServices.request(queueItem)
-          console.log(res)
 
           if(res){
             await this.$services.queueServices.dequeue()
-            console.log('put out of the queue')
           }
         }
       }
-  }, 2000)
+  }, 500)
   
 
   
