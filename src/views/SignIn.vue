@@ -103,16 +103,15 @@ export default {
       disabled: false,
       showErrorText: null,
       login: {
-        email: "",
-        password: "",
+        email: "8094034881",
+        password: "1",
       },
-      rememberPassword: false,
+      rememberPassword: true,
 
       AutoLogin: {
         email: "",
         password: "",
       },
-      ejemplo: null,
     };
   },
   watch: {
@@ -149,7 +148,6 @@ export default {
     },
   },
   mounted() {
-    console.log(window.color);
     if (JSON.parse(localStorage.getItem("rememberData"))) {
       this.rememberPassword = true;
       this.login.email = JSON.parse(localStorage.getItem("rememberData"));
@@ -164,11 +162,11 @@ export default {
       try {
         if (path == "home") {
           if (this.login.email !== "" && this.login.password !== "") {
+
             // console.log(typeof(this.login.email), '(this.login.email') var c = a.split('').find(x => x === '@')
             this.loaded = true;
             this.AutoLogin.email = String(this.login.email);
             this.AutoLogin.password = String(this.login.password);
-            this.ejemplo = "busca ";
             const resultLogin = await this.$services.singInServices.getToken(
               this.AutoLogin
             );

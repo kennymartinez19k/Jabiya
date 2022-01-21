@@ -6,6 +6,7 @@ import { Geolocation } from '@capacitor/geolocation';
 export const Mixins = {
     data(){
         return{
+            netQueue: [],
             container:{
                 Loads:{
                     ButtonSendActionMessage: 'Iniciar Ruta',
@@ -35,13 +36,22 @@ export const Mixins = {
 
          async setMap(val){
             let order = val.Orders.find(x => !x.isReturn)
-            if(!order) order = val.Orders.find(x => x.isReturn)
-
-            let latitude = order.latitude
-            let longitude = order.longitude
+            let latitude
+            let longitude
+            if(!order) {
+                latitude = val.warehouse.location.lat
+                longitude = val.warehouse.location.lng
+            }
+            else{
+                latitude = order.latitude
+                longitude = order.longitude
+            }
             let myLocation = await this.location()
-            window.open(`https://www.google.com/maps/dir/'${myLocation.latitude},${myLocation.longitude}'/${latitude},${longitude}/`)
-            localStorage.setItem(`loadStatus${val.loadMapId}`, 4)
+            console.log(myLocation)
+            if(myLocation){
+                window.open(`https://www.google.com/maps/dir/${myLocation.latitude},${myLocation.longitude}/${latitude},${longitude}/`)
+                localStorage.setItem(`loadStatus${val.loadMapId}`, 4)
+            }
 
          },
          async location () {
@@ -53,6 +63,7 @@ export const Mixins = {
             
             }
          },
+
          profile(user){
              if(user == 'container'){
                  return this.container

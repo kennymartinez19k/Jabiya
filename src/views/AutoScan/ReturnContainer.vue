@@ -310,7 +310,10 @@ export default {
       console.log(order)
       let images = []
       images.push(... this.imagiElement, this.firm)
-      await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+      await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id,  
+      (response) => {
+        console.log("PostImages ", response)
+      });
     },
     async uploadOrDownload(val){
       await this.setLoadTruck(val)

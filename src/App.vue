@@ -5,6 +5,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
+import { Network } from '@capacitor/network';
+import {queue, remove} from './queue'
+
 
 export default {
   data(){
@@ -37,10 +40,45 @@ export default {
       return ''
     },
 },
+async mounted(){
+  setInterval( async () => {
+      if(queue.length > 0){
+        let enqueueItem = remove()
+        await this.$services.queueServices.enqueue(enqueueItem)
+      }
+      let queueItem = await this.$services.queueServices.peek()
+      console.log(queueItem)
+      if(queueItem){
+        console.log('there something in queue')
+        let network = await this.offlineStatus()
+        if(network.connected){
+          console.log('Network connected')
+          console.log(queueItem)
+          let res = await this.$services.requestServices.request(queueItem)
+          console.log(res)
+
+          if(res){
+            await this.$services.queueServices.dequeue()
+            console.log('put out of the queue')
+          }
+        }
+      }
+  }, 2000)
+  
+
+  
+},
 methods:{
   setName(val){
     this.nameOrder = val
   },
+  async offlineStatus(){
+      Network.addListener('networkStatusChange', status => {
+        console.log('Network status changed', status);
+      });
+      let status = await Network.getStatus();
+      return status
+    },
 }
 }
 </script>

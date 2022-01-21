@@ -71,10 +71,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <div ref="infinitescrolltrigger" id="scoll-trigger"></div>
-      <div class="circle-loader" v-if="showloader"></div>
-    </footer>
+    
   </div>
 </template>
 
@@ -85,6 +82,9 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import {Geolocation} from '@capacitor/geolocation'
+
+
 
 export default {
   components: {
@@ -151,12 +151,15 @@ export default {
         this.showloader = false;
       }, 1000);
       console.log(this.loads);
-  
+      localStorage.setItem('Loads', JSON.stringify(this.loads))
     },
     async setLoad(val) {
       console.log(val);
+        for(var i = 0; i < val.Orders.length; i++){
+          let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
+          Object.assign(val.Orders[i], order[0])
+        }
       this.$store.commit("setloadStore", val);
-      
       this.$router.push({ name: "load-status" }).catch(() => {});
     },
     changeRoute(path) {
@@ -192,6 +195,23 @@ export default {
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") return "Entregada";
     },
+    async location() {
+      const request = await Geolocation.checkPermissions()      
+      console.log(request)
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          let latitude = geo.coords.latitude;
+          let longitude = geo.coords.longitude;
+          console.log(latitude, longitude)
+        } catch (e) {
+          if (e.code === 1 || e.message === "location disabled") {
+            alert("Debe activar la localización.");
+          } else {
+            alert("Error inesperado. Favor contactese con el Administrador.");
+          }
+          console.log(e);
+        }
+      },
   },
 };
 </script>
