@@ -53,6 +53,7 @@ async mounted(){
           let res = await this.$services.requestServices.request(queueItem)
 
           if(res){
+            console.log('Se hizo el post correctamente')
             await this.$services.queueServices.dequeue()
           }
         }

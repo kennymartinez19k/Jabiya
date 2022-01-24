@@ -242,7 +242,7 @@ export default {
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
-    
+    console.log(this.load)  
   },
   methods: {
     async changeRoute(val) {
@@ -389,8 +389,12 @@ ul {
   color: white !important;
 }
 .progressbar .active .action{
-  background: #017625;
+  background: #0f7ae5;
+  text-transform: uppercase;
 
+}
+.progressbar .active .icon-item{
+  color: #0f7ae5;
 }
 .progressbar .active .action h6{
   color: #fff;
