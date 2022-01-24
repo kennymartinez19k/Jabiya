@@ -185,11 +185,9 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-          await this.uploadOrDownload(this.load);
-          await this.postImages();
-          setTimeout(() => {
-            this.$router.push({ name: "home" }).catch(() => {});
-          }, 1000);
+          this.uploadOrDownload(this.load);
+          this.postImages();
+          this.$router.push({ name: "home" }).catch(() => {});
         }
       },
     },
@@ -310,18 +308,11 @@ export default {
       this.$store.commit("setStartRoute", false);
     },
 
-    // async postImages() {
-    //   let order = this.orders.find(x => x)
-    //   console.log(order)
-    //   let images = []
-    //   images.push(... this.imagiElement, this.firm)
-    //   await this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
-    // },
-
      async postImages() {
-        let unreturnedOrders = this.orders.filter((x) => x.isReturn);
-      for (var it = 0; it < unreturnedOrders.length; it++) {
-        let order = unreturnedOrders[it];
+      let returnedOrders = this.orders.filter((x) => x.isReturn);
+      console.log(returnedOrders)
+      for (var it = 0; it < returnedOrders.length; it++) {
+        let order = returnedOrders[it];
         let images = [];
         images.push(...this.imagiElement);
         let numberOfImages = 3;
@@ -334,52 +325,44 @@ export default {
           images.push(this.imagiElement[0]);
         }
         images.push(this.firm);
+        console.log(order)
         this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
     },
 
-    async uploadOrDownload(val) {
-      await this.setLoadTruck(val);
+    uploadOrDownload(val) {
+      this.setLoadTruck(val);
     },
-    async setLoadTruck(val) {
-      this.timeOut = 20000;
+   setLoadTruck(val){
+      this.timeOut = 5000
       this.setOpen(true);
-      let totalOfBoxes = 0;
-      for (let cont = 0; cont < val.Orders.length; cont++) {
-        let load = val.Orders[cont];
-        let orders = await this.$services.loadsScanServices.getProduct(
-          load._id
-        );
-        let order = orders.find((x) => x);
-        totalOfBoxes += load.no_of_boxes;
-        for (var i = 0; i < order.products.length; i++) {
-          let prod = order.products[i];
-          if (prod.scanOneByOne === "no") {
-            const resultScanning =
-              await this.$services.deliverServices.deliverProduct(
-                order._id,
-                prod._id,
-                prod.loadScanningCounter,
-                prod.product._id,
-                prod.qrCode
-              );
-            console.log(resultScanning);
-          } else {
-            for (let i = 0; i <= prod.quantity; i++) {
-              const resultScanning =
-                await this.$services.deliverServices.deliverProduct(
-                  order._id,
-                  prod._id,
-                  prod.loadScanningCounter,
-                  prod.product._id,
-                  prod.qrCode
-                );
-              console.log(resultScanning);
+      let totalOfBoxes = 0
+      let orders = val.Orders.filter(x => x.isReturn)
+      for(let cont = 0; cont < orders.length; cont++){
+        let order = orders[cont]
+        totalOfBoxes += order.no_of_boxes
+        for(var i = 0; i < order.products.length; i++){
+          let prod = order.products[i]
+          try {
+            if(prod.scanOneByOne === "no") {
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
+            }
+            else {
+              for(let i = 0; i <= prod.quantity; i++){
+                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+              }
+            }
+          } catch(error){
+            console.log(error, 'hola')
+            if (error.message === 'Request failed with status code 401') {
+              console.log('Error al introducir los datos')
+            }else if (error.message === 'Network Error') {
+              console.log('Error de conexion, verifique que este conectado')
             }
           }
         }
       }
-      return totalOfBoxes;
+      return totalOfBoxes
     },
   },
 };

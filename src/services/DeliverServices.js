@@ -8,7 +8,7 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
-         
+         console.log(images, lat, lng ,id)
          let form = {images, lat, lng}
          let url = 'http://preprod.flai.com.do:8756/exo/orders/'+id+'/images'
 
@@ -22,9 +22,6 @@ class deliverServices {
           add(json)
 
 
-          // const result =  await this.http.post(url, formData, hdr)
-          // console.log(url, formData, headers, callback)
-          // this.http.post(url, formData, headers, callback)
 
     }
 
@@ -42,13 +39,6 @@ class deliverServices {
       
       const json = {'method': 'post', 'url': url, 'body': body}
       add(json)
-      
-      // let result = await this.http.post(url, params)
-      // console.log(result)
-
-      // this.http.post(url, json, null, callback)
-      // console.log(url, params, null, callback)    
-      // this.http.post(url, params, null, callback)
       
     }
  
