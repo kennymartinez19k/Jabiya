@@ -112,6 +112,8 @@ import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import { IonLoading } from "@ionic/vue";
+import { Network } from '@capacitor/network';
+
 
 
 export default {
@@ -159,6 +161,7 @@ export default {
     ]),
   },
   async mounted() {
+    console.log(this.loadStore)
         let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore
@@ -192,15 +195,16 @@ export default {
           this.uploadOrDownload(this.load)
           this.postImages()
           
-            let isReturn = this.load.Orders[0].isReturn
+            let isReturn = this.load.Orders.find(x => x.isReturn)
 
-            if(isReturn){
-              localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
-              this.$router.push({ name: 'load-status'}).catch(() => {})
-            }else{
-              localStorage.removeItem(`startLoad${this.load.loadMapId}`)
-              this.$router.push({ name: 'home'}).catch(() => {})
-            }
+                if(isReturn){
+                  localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
+                  this.$router.push({ name: 'load-status'}).catch(() => {})
+                }else{
+                  localStorage.removeItem(`startLoad${this.load.loadMapId}`)
+                  this.$router.push({ name: 'home'}).catch(() => {})
+                }
+
         }
       },
     },
@@ -212,6 +216,13 @@ export default {
   },
 
   methods: {
+   async offlineStatus(){
+      Network.addListener('networkStatusChange', status => {
+        console.log('Network status changed', status);
+      });
+      let status = await Network.getStatus();
+      return status
+    },
      async getLocation () {
        console.log(this.checkPermissions())
         try {
@@ -338,30 +349,31 @@ export default {
           images.push(this.imagiElement[0]);
         }
         images.push(this.firm);
-        this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+          this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
     },
     
-    async uploadOrDownload(val){
-      await this.setLoadTruck(val)
+    uploadOrDownload(val){
+      this.setLoadTruck(val)
 
     },
-    async setLoadTruck(val){
-      this.timeOut = 20000
+    setLoadTruck(val){
+      this.timeOut = 5000
       this.setOpen(true);
       let totalOfBoxes = 0
-      for(let cont = 0; cont < val.Orders.length; cont++){
-        let order = val.Orders[cont]
+      let orders = val.Orders.filter(x => !x.isReturn)
+      for(let cont = 0; cont < orders.length; cont++){
+        let order = orders[cont]
         totalOfBoxes += order.no_of_boxes
         for(var i = 0; i < order.products.length; i++){
           let prod = order.products[i]
           try {
             if(prod.scanOneByOne === "no") {
-              await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
             }
             else {
               for(let i = 0; i <= prod.quantity; i++){
-                await this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
               }
             }
           } catch(error){

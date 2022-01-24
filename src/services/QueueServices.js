@@ -1,8 +1,8 @@
 class QueueServices {
-    constructor (queueId) {
-        this.queueId = "Queue_" + queueId
-        if (!localStorage.getItem(this.queueId)) {
-          localStorage.setItem(this.queueId, "[]")
+    constructor () {
+        this.queueId = "Queue"
+        if (!localStorage.getItem('Queue')) {
+          // localStorage.setItem('Queue', "[]")
         }
     }
    

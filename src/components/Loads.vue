@@ -14,7 +14,7 @@
       <p class="uk-text-meta uk-margin-remove-top date">
         <time
           class="uk-text-bold uk-text-uppercase"
-          style="font-size: 12px"
+          style="font-size: 14px"
           >{{dateMoment}}</time
         >
       </p>      
@@ -36,31 +36,43 @@
             class="uk-card uk-card-default uk-card-body"
             @click="setLoad(load)"
           >
-            <p class="uk-text-left uk-margin-remove" style="width: 100%">
-              <strong>{{ load.loadNumber }}</strong>
+           <p class="uk-flex status-load">
+                <span class="uk-text-bold">{{ loadStatus(load) }}</span>
             </p>
+            <div>
+              <div class="uk-flex uk-flex-middle uk-margin-top">
+                <span style="font-size: 16px">{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.start}}</span>
+              </div>
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Chofer:&nbsp;</p>
+                <span v-for="info of load.Vehicles" :key="info">{{info?.driver}}</span>
+              </div>
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                <span v-for="info of load.Vehicles" :key="info">{{info?.brand}} {{info?.model}} {{info?.color}}, Placa: {{info?.license_no}} </span>
+              </div>
+              
+            </div>
             <div class="uk-flex uk-flex-between">
               <div class="uk-text-left info-user">
-                <p>
-                  <strong>No. de Orden(es): </strong
-                  ><span>{{ load?.Orders?.length }}</span>
-                </p>
-                <p>
-                  <strong>Cliente: </strong>
-                  <span v-for="info in load.shipper" :key="info">
-                    {{ info.name }}
-                  </span>
-                </p>
-                <p>
-                  <strong>Sector 1a Orden: </strong>
-                  <span>{{ load?.firstOrdenSector?.sector }}</span>
-                </p>
-                <p>
-                  <strong>Estado </strong>
-                  <span>{{ loadStatus(load) }}</span>
-                </p>
+                <div>
+                  <p class="uk-text-bold">Shipper:</p>
+                  <p>
+                    <span v-for="info in load.shipper" :key="info">
+                      {{ info?.name }}
+                    </span>
+                  </p>
+                  <p>{{load?.warehouse?.location?.address}}</p>
+
+                </div>
+                <div>
+                  <p class="uk-text-bold">Cliente:</p>
+                  <p>{{load?.firstOrdenSector?.client_name}}</p>
+                  <p>{{load?.firstOrdenSector?.address}}</p>
+                </div>
+              
               </div>
-              <div style="padding-right: 5px">
+              <div class="start-load">
                 <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
               </div>
             </div>
@@ -82,6 +94,8 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { Network } from '@capacitor/network';
+
 import {Geolocation} from '@capacitor/geolocation'
 
 
@@ -116,12 +130,11 @@ export default {
   },
   
   async mounted() {
-          if (this.allLoadsStore) {
-        this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
-      }
-    // window.location.href = "#Hoy";
-    // moment.locale("es");
-    await this.currentDate();
+        // this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
+    
+      window.location.href = "#Hoy";
+      moment.locale("es");
+      await this.currentDate();
       localStorage.removeItem('DeliveryCharges');
 
   },
@@ -130,6 +143,13 @@ export default {
   },
 
   methods: {
+    async offlineStatus(){
+      Network.addListener('networkStatusChange', status => {
+        console.log('Network status changed', status);
+      });
+      let status = await Network.getStatus();
+      return status
+    },
     setOpe(val) {
       this.loaded = val;
       setTimeout(() => {
@@ -160,7 +180,6 @@ export default {
       this.$store.commit("setAllLoadStore", this.loads);
       localStorage.setItem('AllLoadS', JSON.stringify(this.loads));
 
-// localStorage.setItem('Loads', JSON.stringify(this.loads)) kenny
     },
     async setLoad(val) {
       console.log(val);
@@ -199,12 +218,12 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      if (val?.loadingStatus?.text == "Expecting Approval") return "Esperando Aprobacion";
-      if (val?.loadingStatus?.text == "Approved") return "Aprobada";
+      if (val?.loadingStatus?.text == "Expecting Approval") return "Esperando Tu Aprobación";
+      if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "LLegada del Conductor";
-      if (val?.loadingStatus?.text == "Dispatched") return "Despachada";
+      if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
-      if (val?.loadingStatus?.text == "Delivered") return "Entregada";
+      if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
     },
     async location() {
       const request = await Geolocation.checkPermissions()      
@@ -263,7 +282,10 @@ p {
 .info-user {
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.info-user div{
+  width: 45%;
 }
 .info-user p {
   margin-right: 10px !important;
@@ -459,5 +481,18 @@ footer #scroll-trigger {
 .uk-pagination{
   justify-content: center;
       align-items: center;
+}
+.status-load{
+  justify-content: flex-end;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+.status-load span{
+    font-size: 16px !important;
+
+}
+.start-load{
+  padding-right: 5px ;
 }
 </style>
