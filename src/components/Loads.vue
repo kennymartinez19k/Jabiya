@@ -119,13 +119,10 @@ export default {
           if (this.allLoadsStore) {
         this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
       }
-    window.location.href = "#Hoy";
-    moment.locale("es");
-    // await this.getLocation()
+    // window.location.href = "#Hoy";
+    // moment.locale("es");
     await this.currentDate();
       localStorage.removeItem('DeliveryCharges');
-
-      // localStorage.removeItem('AllLoadS');
 
   },
   computed: {
@@ -133,30 +130,6 @@ export default {
   },
 
   methods: {
-
-    // async getLocation () {
-    //    console.log(await this.checkPermissions())
-    //   //  console.log(await  this.requestPermissions ())
-
-    //     try {
-    //       const geo = await Geolocation.getCurrentPosition();
-    //       this.location.latitude = geo.coords.latitude
-    //       this.location.longitude = geo.coords.longitude
-    //     } catch (e) {
-    //       console.log(e)
-        
-    //     }
-    // },
-    // async checkPermissions() {
-    //    return await Geolocation.checkPermissions()
-    // },
-    // async requestPermissions () {
-    //   return await Geolocation.requestPermissions('location' | 'coarseLocation')
-    // },
-
-
-
-
     setOpe(val) {
       this.loaded = val;
       setTimeout(() => {
