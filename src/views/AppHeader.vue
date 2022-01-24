@@ -1,11 +1,12 @@
 <template>
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
-      <font-awesome-icon
+    <back-button class="uk-flex uk-flex-middle"></back-button>
+      <!-- <font-awesome-icon
         :icon="iconType"
         @click="setCurrentPage(action)"
         style="font-size: 20px; margin: 0px 15px"
-      />
+      /> -->
       <h6
         class="uk-margin-remove"
         style="font-size: 14px; margin: 0px 10px !important"
@@ -60,7 +61,11 @@
 <script>
 import { mapGetters } from "vuex";
 import Uikit from "uikit";
+import BackButton from '../components/Buttons/BackButton.vue'
 export default {
+  components: {
+    BackButton
+  },
   props: {
     nameComponent: String,
   },
@@ -102,13 +107,14 @@ export default {
       this.positionSticky = false;
       Uikit.offcanvas("#offcanvas-overlay").hide();
     },
-    setCurrentPage(val) {
-      if (val == "back") this.$router.go(-1);
-      else {
-        this.$router.push({ name: val }).catch(() => {});
-        this.hideMenu();
-      }
-    },
+    // setCurrentPage(val) {
+    //   val
+    //   // if (val == "back") this.$router.go(-1);
+    //   // else {
+    //   //   this.$router.push({ name: val }).catch(() => {});
+    //   //   this.hideMenu();
+    //   // }
+    // },
   },
 };
 </script>

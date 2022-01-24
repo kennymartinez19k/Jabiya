@@ -130,6 +130,7 @@ export default {
   },
   
   async mounted() {
+        // this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
     
       window.location.href = "#Hoy";
       moment.locale("es");
