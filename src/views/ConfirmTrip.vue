@@ -28,29 +28,64 @@
         </div>
       </div>
     </div>
-    <div
-      class="
-        uk-padding-small uk-width-1-2@m uk-card uk-card-default uk-text-left
-      "
-      style="margin-bottom: 50px !important"
-    >
-      <h6 class="uk-text-center">Detalles del Viaje</h6>
-      <p>
-        <strong>Estado del Viaje:</strong>
-        {{loadStatus(load)}}
-      </p>
-
-      <p>
-        <strong>Sector:</strong>
-        {{ load?.firstOrdenSector?.sector }}
-      </p>
-      <p>
-        <strong>Fecha:</strong>
-        {{ load?.dateTime?.date }}
-      </p>
+    <div class="uk-card uk-card-default uk-width-1-2@m container">
       
-      <div>
-        <h6  class="font-weight-medium" style="font-size: 14px">Ordenes: {{orders?.length}}</h6>
+        <div>
+          <div
+            class="uk-card uk-card-default uk-card-body"
+            @click="setLoad(load)"
+          >
+            <h6 class="uk-text-center">Detalles del Viaje</h6>
+           
+            <div class="uk-margin-top">
+        
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Estado del Viaje:&nbsp;</p>
+                <span>{{loadStatus(load)}}</span>
+              </div>
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
+                <span>{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.start}}</span>
+              </div>
+
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                <span>{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.end}}</span>
+              </div>
+              
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Chofer:&nbsp;</p>
+                <span v-for="info of load?.Vehicles" :key="info">{{info?.driver}}</span>
+              </div> 
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                <span v-for="info of load?.Vehicles" :key="info">{{info?.brand}} {{info?.model}} {{info?.color}}, Placa: {{info?.license_no}} </span>
+              </div>
+              
+            </div>
+            <div class="uk-flex uk-flex-between">
+              <div class="uk-text-left info-user">
+                <div>
+                  <p class="uk-text-bold">Recoger en:</p>
+                  <p>
+                    <span v-for="info in load?.shipper" :key="info">
+                      {{ info?.name }}
+                    </span>
+                  </p>
+                  <p>{{load?.warehouse?.location?.address}}</p>
+
+                </div>
+                <div>
+                  <p class="uk-text-bold">Entregar en:</p>
+                  <p>{{load?.firstOrdenSector?.client_name}}</p>
+                  <p>{{load?.firstOrdenSector?.address}}</p>
+                </div>
+              
+              </div>
+              
+            </div>
+            <div>
+        <h6  class="font-weight-medium" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
       </div>
 
       <div
@@ -60,21 +95,17 @@
         :class="{ ordenCompleted: order?.completed }"
       >
         <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-          <p style="margin-right: 10px !important">
+          <p class="uk-width-1-1" style="margin-right: 10px !important">
                 <span class="font-weight-medium">Cliente: </span>
                 <span>{{ order.client_name }}</span>
               </p>
-          <p class="uk-width-1-2">
+          <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Orden: </span
             ><span>{{ order.order_num }}</span>
           </p>
-          <p style="margin-right: 10px !important">
+          <p>
             <span class="font-weight-medium">Cajas / Pallets: </span
             >{{ order.products?.length }}<span></span>
-          </p>
-          <p class="">
-            <span class="font-weight-medium">Conductor: </span
-            >{{ order.loadDetails.driverName }}<span></span>
           </p>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span>
@@ -84,6 +115,18 @@
           </p>
         </div>
       </div>
+          </div>
+        </div>
+      </div>
+    <div
+      class="
+        uk-padding-small uk-width-1-2@m uk-card uk-card-default uk-text-left
+      "
+      style="margin-bottom: 50px !important"
+    >
+  
+      
+      
     </div>
 
     <div id="modal-center" class="uk-flex-top" uk-modal>
@@ -124,7 +167,7 @@
       </a>
       <button
         @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'ACCEPTED')"
-        class="uk-button uk-button-green"
+        class="uk-button uk-button-blue"
       >
         Aceptar Viaje &nbsp;
         <font-awesome-icon icon="check" style="color: #fff; font-size: 14px" />
@@ -163,6 +206,7 @@ export default {
   mounted() {
     if (this.loadStore) {
       this.load = this.loadStore;
+      console.log(this.load)
       this.orders = this.loadStore.Orders
       console.log(this.orders)
     }

@@ -8,6 +8,7 @@
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
   <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
+
     <form
       class="
         uk-card
@@ -23,7 +24,7 @@
       <h4 class="uk-text-light">Entrar a su cuenta</h4>
       <span class="uk-text-muted" style="margin-bottom: 30px; display: block"
         >Ingrese su número de móvil y contraseña y presione iniciar sesión para
-        ingresar a su cuenta</span
+        ingresar a su cuenta {{storage}}</span
       >
 
       <div class="uk-margin uk-text-left">
@@ -90,10 +91,13 @@
 
 <script>
 import Loading from "vue-loading-overlay";
+import { LocalStorage } from "../mixins/LocalStorage";
+
 export default {
   components: {
     Loading,
   },
+  mixins: [LocalStorage],
   data() {
     return {
       loaded: false,
@@ -106,12 +110,15 @@ export default {
         email: "8094034881",
         password: "1",
       },
+      storage: 0,
       rememberPassword: true,
 
       AutoLogin: {
         email: "",
         password: "",
       },
+      result: 0
+
     };
   },
   watch: {
@@ -188,6 +195,7 @@ export default {
         this.showError = true;
       }
     },
+
     showPassword() {
       if (this.type === "password") {
         this.type = "text";
@@ -196,7 +204,7 @@ export default {
         this.type = "password";
         this.iconType = "eye";
       }
-    },
+    }
   },
 };
 </script>

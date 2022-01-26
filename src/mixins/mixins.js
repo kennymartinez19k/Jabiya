@@ -1,12 +1,15 @@
 import orders from '../store/Orders'
 import router from '../router'
+import services from '../services/index'
 import { Geolocation } from '@capacitor/geolocation';
+import { LocalStorage } from '../mixins/LocalStorage';
+import { Storage} from '@ionic/storage'
+
 
 
 export const Mixins = {
     data(){
         return{
-            netQueue: [],
             container:{
                 Loads:{
                     ButtonSendActionMessage: 'Iniciar Ruta',
@@ -14,18 +17,34 @@ export const Mixins = {
                 Orders:{},
                 deliveryActions:{}
             },
-            myLocation: null
+            currentLocation: null,
+            myLocation: null,
+            load: null,
+            localStorageGps: new Storage(),
+
         }
+    },
+    mixins: [LocalStorage],
+    mounted() {
+        this.localStorageGps.create();
+        setInterval(async () => {
+            if( !await this.localStorageGps.get(`gps ${this.load?.loadMapId}`)){
+                let location = await this.location()
+                console.log(location)
+            }
+         },30000)
     },
     methods: {
          async changeRouteLoads(val, load = null){
              var autoScan = orders.state.settings.AutoScan
              if(autoScan){
                  if(val == 'Approved') router.push({name: 'drayage-orden'})
+                 if(val == 'Driver Arrival') await this.driverArrival(load)
                  if(val == 'Expecting Approval') router.push({name: 'confirm-trip'})
                  if(val == 'Dispatched') await this.setMap(load)
                  if(val == 'Deliver-Load') router.push({name: 'delivery-actions-auto'}) 
                  if(val == 'return-container')  router.push({name: 'return-container'})
+                 if(val == 'Delivered') this.localStorageGps.remove(`gps ${this.load?.loadMapId}`)
              }
              else {
                 if(val == 'Approved' || val == 'Loading Truck') router.push({name: 'orders'})
@@ -33,6 +52,12 @@ export const Mixins = {
                 if(val == 'Dispatched') this.setMap(load)
                 if(val == 'Deliver-Load') router.push({name: 'delivery-routes'})
              }
+         },
+         async driverArrival(val){
+            localStorage.setItem(`loadStatus${val.loadMapId}`, 3)
+            await services.loadsScanServices.driverArrival(val.loadMapId);
+            this.localStorageGps.set(`gps ${val.loadMapId}`, true)
+            this.load = val
          },
 
          async setMap(val){
@@ -50,7 +75,7 @@ export const Mixins = {
             this.myLocation =  await this.location()
             if(this.myLocation){
                 window.open(`https://www.google.com/maps/dir/${this.myLocation.latitude},${this.myLocation.longitude}/${latitude},${longitude}/`)
-                localStorage.setItem(`loadStatus${val.loadMapId}`, 4)
+                localStorage.setItem(`loadStatus${val.loadMapId}`, 5)
             }
 
          },
@@ -63,12 +88,7 @@ export const Mixins = {
             
             }
          },
-
-         profile(user){
-             if(user == 'container'){
-                 return this.container
-             }
-         },
+         
          loadStatus(val){
             if(val == 'Expecting Approval') return 'Esperando Aprobacion'
             if(val == 'Approved') return 'Aprobada'

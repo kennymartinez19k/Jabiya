@@ -87,8 +87,8 @@
     </div>
     <div></div>
     <div class="button-opt ">
-      <button @click="uploadOrDownload(load)" class="uk-button uk-width-1-1 uk-button-green">{{messageStatusLoad}}
-          <img src="../../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
+      <button @click="uploadOrDownload(load)" class="uk-button uk-width-1-1 uk-button-blue">{{messageStatusLoad}}
+          <!-- <img src="../../assets/container.png" style="width: 25px; margin-left: 5px "> -->
       </button>
       
     </div>
@@ -231,10 +231,6 @@ p {
   padding: 10px;
   position: absolute;
   bottom: 0px;
-}
-.button-opt button{
-    padding: 5px 5px !important;
-    align-items: center;
 }
 
 .uk-card {
