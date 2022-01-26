@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="serieA === 'firm'" class="uk-padding-small">
+    <div v-if="showSingnature === 'firm'" class="uk-padding-small">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
     </div>
 
@@ -93,7 +93,7 @@ export default {
     digitalFirm: {
       handler: function (newVal) {
         if (newVal !== null) {
-          this.serieA = null;
+          this.showSingnature = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
           setTimeout(()=> {
             this.$router.push({ name: 'direct-access'}).catch(() => {})
@@ -121,7 +121,7 @@ export default {
     return {
       textException: null,
       showException: null,
-      serieA: null,
+      showSingnature: null,
       digitalFirm: null
 
     };
@@ -140,7 +140,7 @@ export default {
         this.showException = true;
       }
       if (value === "firm") {
-        this.serieA = value;
+        this.showSingnature = value;
         
       }
     },

@@ -2,7 +2,7 @@ class QueueServices {
     constructor () {
         this.queueId = "Queue"
         if (!localStorage.getItem('Queue')) {
-          // localStorage.setItem('Queue', "[]")
+          localStorage.setItem('Queue', "[]")
         }
     }
    
@@ -21,12 +21,12 @@ class QueueServices {
   
     isEmpty = function () {
       let elements = JSON.parse(localStorage.getItem(this.queueId))
-      return elements.length == 0;
+      return elements?.length == 0;
     }
   
     peek = function () {
       let elements = JSON.parse(localStorage.getItem(this.queueId))
-      return elements.length > 0 ? elements[0] : undefined;
+      return elements?.length > 0 ? elements[0] : undefined;
     }
     
   
