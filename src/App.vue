@@ -1,12 +1,13 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
+ 
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
 <script>
 import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
-import { Network } from '@capacitor/network';
 import {queue, remove} from './queue'
+import {LocalStorage} from './mixins/LocalStorage'
 
 
 export default {
@@ -18,12 +19,15 @@ export default {
         'sign-up',
         'recover-password'
       ],
-      nameOrder: null
+      nameOrder: null,
+      result: 0,
+      sendingBI: false
     }
   },
   components:{
     AppHeader
   },
+  mixins: [LocalStorage],
   computed:{
     ...mapGetters([
       'settingsStore'
@@ -40,40 +44,33 @@ export default {
       return ''
     },
 },
-async mounted(){
-  setInterval( async () => {
+  async mounted(){
+    
+    setInterval( async () => {
       if(queue.length > 0){
         let enqueueItem = remove()
-        await this.$services.queueServices.enqueue(enqueueItem)
+        await this.enqueue(enqueueItem)
       }
-      let queueItem = await this.$services.queueServices.peek()
-      if(queueItem){
-        let network = await this.offlineStatus()
-        if(network.connected){
-          let res = await this.$services.requestServices.request(queueItem)
-
-          if(res){
-            console.log('Se hizo el post correctamente')
-            await this.$services.queueServices.dequeue()
+      let queueItem = await this.peek()
+      if(queueItem && !this.sendingBI){
+        this.sendingBI = true
+          try{
+            let res = await this.$services.requestServices.request(queueItem)
+            if(res){
+              this.dequeue()
+            }
+          } 
+          catch(error){
+            console.log(error)
           }
-        }
+          this.sendingBI = false
       }
-  }, 500)
-  
-
-  
+  }, 1000)
 },
 methods:{
   setName(val){
     this.nameOrder = val
   },
-  async offlineStatus(){
-      Network.addListener('networkStatusChange', status => {
-        console.log('Network status changed', status);
-      });
-      let status = await Network.getStatus();
-      return status
-    },
 }
 }
 </script>
@@ -180,6 +177,10 @@ strong{
 }
 .uk-button-green{
   background: green;
+  color: #fff
+}
+.uk-button-blue{
+  background: #0f7ae5;
   color: #fff
 }
 </style>
