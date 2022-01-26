@@ -52,11 +52,31 @@
           </div>
           <div class="disabled-container"></div>
         </li>
+        <li 
+          :class="{active: loadStatus.step == step.driverArrival, 'completed-status': loadStatus.step > step.driverArrival}"
+        >
+          <div  
+            class="info"><span>2</span>
+          </div>
+
+          <div
+            @click="changeRoute('Driver Arrival')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus.driverArrival}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Driver Arrival')" v-if="loadStatus.step == step.driverArrival" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.driverArrival" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.driverArrival" src="../assets/check.png" />
+          </div>
+          <div class="disabled-container"></div>
+        </li>
         <li
           :class="{active: loadStatus.step == step.approved, 'completed-status': loadStatus.step > step.approved}"
         >
            <div  
-            class="info"><span>2</span>
+            class="info"><span>3</span>
           </div>
           <div
             @click="changeRoute('Approved')"
@@ -74,7 +94,7 @@
         </li>
         <li :class="{active: loadStatus.step == step.truckLoaded, 'completed-status': loadStatus.step > step.truckLoaded}">
           <div  
-            class="info"><span>3</span>
+            class="info"><span>4</span>
           </div>
           <div
             @click="changeRoute('Dispatched')"
@@ -92,7 +112,7 @@
           v-if="!allOrderIsReturn"
           :class="{active: loadStatus.step == step.delivered, 'completed-status': loadStatus.step > step.delivered}">
           
-          <div class="info"><span>4</span></div>
+          <div class="info"><span>5</span></div>
           <div   
             @click="changeRoute('Deliver-Load')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
@@ -109,7 +129,7 @@
         <li 
           v-if="isReturnOrder"
           :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
-          <div class="info"><span>5</span></div>
+          <div class="info"><span>6</span></div>
           <div   
             @click="changeRoute('return-container')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
@@ -141,10 +161,11 @@ export default {
     return {
       step:{
         expectingApproval: 1,
-        approved: 2,
-        truckLoaded: 3,
-        delivered: 4,
-        returnContainer: 5
+        driverArrival: 2,
+        approved: 3,
+        truckLoaded: 4,
+        delivered: 5,
+        returnContainer: 6
       },
       isReturnOrder: false,
       statusDelivered: false,
@@ -161,35 +182,38 @@ export default {
     ...mapGetters(["loadStore", "startRoute"]),
     loadStatus() {
       let statusLoad = {};
-    
       
       if (this.load?.loadingStatus?.text == "Expecting Approval"){
         statusLoad.expectingApproval = true;
         statusLoad.step = 1;
       }
-      if (this.load?.loadingStatus?.text == "Approved" || this.load?.loadingStatus?.text == "Driver Arrival" || this.load?.loadingStatus?.text == "Loading Truck" ){
-        statusLoad.approved = true;
+      if (this.load?.loadingStatus?.text == "Approved"){
+        statusLoad.driverArrival = true;
         statusLoad.step = 2;
+      }
+      if (this.load?.loadingStatus?.text == "Approved" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Driver Arrival" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Loading Truck" && this.currentStatusLoad == this.step.approved){
+        statusLoad.approved = true;
+        statusLoad.step = 3;
 
       }
-      if (this.load?.loadingStatus?.text == "Dispatched" && !this.currentStatusLoad){
+      if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad < this.step.delivered){
         statusLoad.dispatch = true;
-        statusLoad.step = 3;
+        statusLoad.step = 4;
         return statusLoad;
       }
       if(this.allOrderIsReturn){
         if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
           statusLoad.delivered = true;
-          statusLoad.step = 5;
+          statusLoad.step = 6;
           return statusLoad;
         }
          if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
           statusLoad.returnContainer = true;
-          statusLoad.step = 6;
+          statusLoad.step = 7;
           return statusLoad;
       }
        if (this.load?.loadingStatus?.text == 'Delivered'){
-        statusLoad.step = 7;
+        statusLoad.step = 8;
         return statusLoad;
       }
         
@@ -197,36 +221,37 @@ export default {
       if(!this.allOrderIsReturn){
         if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
           statusLoad.delivered = true;
-          statusLoad.step = 4;
+          statusLoad.step = 5;
           return statusLoad;
         }
         if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
         statusLoad.returnContainer = true;
-        statusLoad.step = 5;
-        return statusLoad;
-      }
-      if (this.load?.loadingStatus?.text == 'Delivered'){
         statusLoad.step = 6;
         return statusLoad;
       }
+      if (this.load?.loadingStatus?.text == 'Delivered'){
+        this.deliveredLoad(this.load)
+        statusLoad.step = 7;
+        return statusLoad;
       }
-     
-      
+      }
       return statusLoad;
     },
     messageStatus(){
       let message = {
         expectingApproval: 'Aprobar Viaje',
+        driverArrival: 'Registrar LLegada a Recoger',
         approved: 'Montar Viaje',
         dispatch: 'Iniciar Ruta',
         delivered: 'Entregar al Cliente',
         returnContainer: 'Devolver Contenedor'
       }
-      if(this.loadStatus.step > 1) message.expectingApproval = 'Viaje Aprobado'
-      if(this.loadStatus.step > 2) message.approved = 'Viaje Montado'
-      if(this.loadStatus.step > 3) message.dispatch = 'Ver Ruta'
-      if(this.loadStatus.step > 4) message.delivered = 'Contenedor Entregado'
-      if(this.loadStatus.step > 5) message.returnContainer = 'Contenedor Retornado'
+      if(this.loadStatus.step > 1) message.expectingApproval = 'Aprobó el Viaje'
+      if(this.loadStatus.step > 2) message.driverArrival = 'Llegó a Recoger'
+      if(this.loadStatus.step > 3) message.approved = 'Montó el Viaje'
+      if(this.loadStatus.step > 4) message.dispatch = 'Ver Ruta'
+      if(this.loadStatus.step > 5) message.delivered = 'Contenedor Entregado'
+      if(this.loadStatus.step > 6) message.returnContainer = 'Contenedor Retornado'
       return message
     }
   },
@@ -237,7 +262,7 @@ export default {
     } else {
       loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
     }
-      this.$store.commit("setloadStore", loadsMounted);
+    this.$store.commit("setloadStore", loadsMounted);
     this.load = await this.$services.loadsServices.getLoadDetails(loadsMounted?.loadMapId);
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
@@ -256,6 +281,11 @@ export default {
       var shipper = val?.shipper?.find((x) => x.name);
       return shipper?.name;
     },
+    deliveredLoad(val){
+      localStorage.removeItem(`loadStatus${val.loadMapId}`)
+      this.changeRouteLoads('Delivered')
+      
+    }
   },
 };
 </script>
@@ -382,7 +412,9 @@ ul {
   background: #017625 !important;
   color: white !important;
 }
-
+.progressbar .action{
+  border-radius: 5px;
+}
 .progressbar .completed-status .info{
   border-color: #017625 !important;
   background: #017625 !important;
@@ -393,6 +425,7 @@ ul {
   text-transform: uppercase;
 
 }
+
 .progressbar .active .icon-item{
   color: #0f7ae5;
 }

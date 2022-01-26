@@ -22,12 +22,12 @@
     <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
     
 </ul>
-    <div v-if="loads.length == 0" style="height: 50px">
+    <div v-if="assignedLoads == 0" style="height: 50px">
       <span>No Tiene Viajes Asignados Para Este Día</span>
     </div>
     <div
+      v-show="assignedLoads > 0"
       v-for="(load, i) in loads"
-      v-else
       :key="i"
     >
       <div class="uk-card uk-card-default uk-width-1-2@m container">
@@ -39,10 +39,25 @@
            <p class="uk-flex status-load">
                 <span class="uk-text-bold">{{ loadStatus(load) }}</span>
             </p>
-            <div>
-              <div class="uk-flex uk-flex-middle uk-margin-top">
-                <span style="font-size: 16px">{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.start}}</span>
+            <div class="uk-margin-top">
+              <div class="uk-flex uk-flex-middle" style="font-size: 16px !important">
+                <p class="uk-text-bold">No de Orden:&nbsp;</p>
+                <span v-for="order of load.Orders" :key="order">{{order.order_num}}</span>
               </div>
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Tipo:&nbsp;</p>
+                <span>{{ordenIsReturn(load)}}</span>
+              </div>
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
+                <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
+              </div>
+
+              <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
+              </div>
+              
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of load.Vehicles" :key="info">{{info?.driver}}</span>
@@ -54,9 +69,25 @@
               
             </div>
             <div class="uk-flex uk-flex-between">
-              <div class="uk-text-left info-user">
+              <div v-if="isReturnLoad(load)" class="uk-text-left info-user">             
                 <div>
-                  <p class="uk-text-bold">Shipper:</p>
+                  <p class="uk-text-bold">Recoger en:</p>
+                  <p>{{load?.firstOrdenSector?.client_name}}</p>
+                  <p>{{load?.firstOrdenSector?.address}}</p>
+                </div>
+                <div >
+                  <p class="uk-text-bold">Entregar en: </p>
+                  <p>
+                    <span v-for="info in load.shipper" :key="info">
+                      {{ info?.name }}
+                    </span>
+                  </p>
+                  <p>{{load?.warehouse?.location?.address}}</p>
+                </div>
+              </div>
+              <div v-else class="uk-text-left info-user">
+                <div >
+                  <p class="uk-text-bold">Recoger en: </p>
                   <p>
                     <span v-for="info in load.shipper" :key="info">
                       {{ info?.name }}
@@ -66,7 +97,7 @@
 
                 </div>
                 <div>
-                  <p class="uk-text-bold">Cliente:</p>
+                  <p class="uk-text-bold">Entregar en:</p>
                   <p>{{load?.firstOrdenSector?.client_name}}</p>
                   <p>{{load?.firstOrdenSector?.address}}</p>
                 </div>
@@ -96,9 +127,6 @@ import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
 import { Network } from '@capacitor/network';
 
-import {Geolocation} from '@capacitor/geolocation'
-
-
 
 export default {
   components: {
@@ -115,7 +143,8 @@ export default {
       loads: [],
       dateAvalaible: [],
       date: new Date(),
-      dateMoment: null
+      dateMoment: null,
+      assignedLoads: -1
     };
   },
 
@@ -131,9 +160,8 @@ export default {
   
   async mounted() {
         // this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
-    
+      moment.locale('en');
       window.location.href = "#Hoy";
-      moment.locale("es");
       await this.currentDate();
       localStorage.removeItem('DeliveryCharges');
 
@@ -157,6 +185,7 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
+      this.assignedLoads = -1
       let contDate
       if(val) contDate = this.date.setDate(this.date.getDate() + val);   
       else contDate = this.date
@@ -166,16 +195,14 @@ export default {
       this.loads.forEach(async (x) => {
         const resultByDate =
           await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-          x.firstOrdenSector = x.Orders.find((order) => order);
+          x.firstOrdenSector = x.Orders?.find((order) => order);
           Object.assign(x, resultByDate);
       });
       if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
       
-      this.showloader = true;
-      setTimeout(() => {
-        this.showloader = false;
-      }, 1000);
+      this.assignedLoads = this.loads.length
+
       console.log(this.loads);
       this.$store.commit("setAllLoadStore", this.loads);
       localStorage.setItem('AllLoadS', JSON.stringify(this.loads));
@@ -225,23 +252,18 @@ export default {
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
     },
-    async location() {
-      const request = await Geolocation.checkPermissions()      
-      console.log(request)
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          let latitude = geo.coords.latitude;
-          let longitude = geo.coords.longitude;
-          console.log(latitude, longitude)
-        } catch (e) {
-          if (e.code === 1 || e.message === "location disabled") {
-            alert("Debe activar la localización.");
-          } else {
-            alert("Error inesperado. Favor contactese con el Administrador.");
-          }
-          console.log(e);
-        }
-      },
+   
+    setLocaleDate(val){
+      return moment(val).format('LT')
+    },
+    ordenIsReturn(val){
+      let res = val.Orders.find(x => x)
+      if(res.isReturn) return 'Devolver Contenedor'
+      return 'Entregar Contenedor'
+    },
+    isReturnLoad(val){
+      return val.Orders.find(x => x.isReturn)
+    }
   },
 };
 </script>

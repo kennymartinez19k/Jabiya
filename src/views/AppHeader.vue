@@ -1,12 +1,14 @@
 <template>
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
-    <back-button class="uk-flex uk-flex-middle"></back-button>
-      <!-- <font-awesome-icon
-        :icon="iconType"
-        @click="setCurrentPage(action)"
-        style="font-size: 20px; margin: 0px 15px"
-      /> -->
+      <div style="width: 50px">
+        <font-awesome-icon
+            :icon="iconType"
+            @click="setCurrentPage(action)"
+            style="font-size: 20px; margin: 0px 15px"
+          />
+      </div>
+      
       <h6
         class="uk-margin-remove"
         style="font-size: 14px; margin: 0px 10px !important"
@@ -49,8 +51,8 @@
           <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
             <li @click="setCurrentPage('settings')">Configuracion</li>
-            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
             <li @click="setCurrentPage('about')">Version app</li>
+            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>
         </div>
       </div>
@@ -61,10 +63,10 @@
 <script>
 import { mapGetters } from "vuex";
 import Uikit from "uikit";
-import BackButton from '../components/Buttons/BackButton.vue'
+// import BackButton from '../components/Buttons/BackButton.vue'
 export default {
   components: {
-    BackButton
+    // BackButton
   },
   props: {
     nameComponent: String,
@@ -79,9 +81,9 @@ export default {
   watch: {
     $route: function (newVal) {
       newVal.name == "home"
-        ? ((this.action = "sign-in"), (this.iconType = "sign-out-alt"))
-        : newVal.name == "home"
-        ? ((this.action = "home"), (this.iconType = "home"))
+        ? ((this.action = "sign-in"), (this.iconType = "none"))
+        : newVal.name == "load-status"
+        ? ((this.action = "home"), (this.iconType = "arrow-left"))
         : ((this.action = "back"), (this.iconType = "arrow-left"));
     },
   },
@@ -107,14 +109,14 @@ export default {
       this.positionSticky = false;
       Uikit.offcanvas("#offcanvas-overlay").hide();
     },
-    // setCurrentPage(val) {
-    //   val
-    //   // if (val == "back") this.$router.go(-1);
-    //   // else {
-    //   //   this.$router.push({ name: val }).catch(() => {});
-    //   //   this.hideMenu();
-    //   // }
-    // },
+    setCurrentPage(val) {
+      val
+      if (val == "back") this.$router.go(-1);
+      else {
+        this.$router.push({ name: val }).catch(() => {});
+        this.hideMenu();
+      }
+    },
   },
 };
 </script>
