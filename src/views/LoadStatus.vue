@@ -104,8 +104,10 @@
             <h6>{{messageStatus.dispatch}}</h6>
           </div>
           <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right"/>
+            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
+            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="setting?.maps && loadStatus.step > step.truckLoaded" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
+            <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
         </li>
@@ -175,6 +177,7 @@ export default {
       LoadReturn: null,
       currentStatusLoad: null,
       allOrderIsReturn: null,
+      setting: {}
     };
   },
  
@@ -256,7 +259,7 @@ export default {
     }
   },
   async mounted() {
-
+    this.setting = localStorage.getItem('setting')
     let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore
