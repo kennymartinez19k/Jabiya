@@ -98,6 +98,8 @@
 <script>
 import { mapGetters } from "vuex";
 import Loading from "vue-loading-overlay";
+import { Storage} from '@ionic/storage'
+
 
 export default {
   alias: `Montar Viaje`,
@@ -111,7 +113,9 @@ export default {
       load: null,
       completed: "background-color: #2a307c !important",
       orders: null,
-      loaded: false
+      loaded: false,
+      localStorageGps: new Storage(),
+
     };
   },
   computed: {
@@ -131,6 +135,8 @@ export default {
   },
   mounted() {
     console.log(this.loadStore)
+    this.localStorageGps.create();
+
     if(this.loadStore){
       this.load = this.loadStore;
       this.orders = this.load.Orders.filter(x => !x.isReturn)
@@ -171,7 +177,7 @@ export default {
     },
     async uploadOrDownload(val){
       this.loaded = true
-      await this.$services.loadsScanServices.driverArrival(val.loadMapId);
+      this.localStorageGps.remove(`gps ${val.loadMapId}`)
       let totalOfBoxes = await this.setLoadTruck(val)
       await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, totalOfBoxes ) 
       this.$router.push({name: 'load-status'})

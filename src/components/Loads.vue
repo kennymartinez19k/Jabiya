@@ -125,7 +125,6 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-import { Network } from '@capacitor/network';
 
 
 export default {
@@ -159,25 +158,16 @@ export default {
   },
   
   async mounted() {
-        // this.loads = JSON.parse(localStorage.getItem('AllLoadS'))
       moment.locale('en');
       window.location.href = "#Hoy";
       await this.currentDate();
       localStorage.removeItem('DeliveryCharges');
-
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings"]),
   },
 
   methods: {
-    async offlineStatus(){
-      Network.addListener('networkStatusChange', status => {
-        console.log('Network status changed', status);
-      });
-      let status = await Network.getStatus();
-      return status
-    },
     setOpe(val) {
       this.loaded = val;
       setTimeout(() => {
@@ -197,6 +187,7 @@ export default {
           await this.$services.loadsServices.getLoadDetails(x.loadMapId);
           x.firstOrdenSector = x.Orders?.find((order) => order);
           Object.assign(x, resultByDate);
+          this.IsDelivered(x)
       });
       if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
@@ -263,6 +254,12 @@ export default {
     },
     isReturnLoad(val){
       return val.Orders.find(x => x.isReturn)
+    },
+    IsDelivered(load){
+      let val = 'Delivered'
+      if(load.loadingStatus.text == val){
+        this.changeRouteLoads(val, load)
+      }
     }
   },
 };
