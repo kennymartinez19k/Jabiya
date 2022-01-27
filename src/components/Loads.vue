@@ -33,7 +33,7 @@ pre<template>
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div>
           <div
-          :class="{ 'load-edges': load.loadNumber === loadingProgress }"
+          :class="{ 'load-edges': load.loadMapId === loadingProgress }"
             class="uk-card uk-card-default uk-card-body"
             @click="setLoad(load)"
           >
@@ -127,6 +127,7 @@ export default {
       moment.locale('en');
       window.location.href = "#Hoy";
       await this.currentDate();
+      this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
   },
   computed: {
@@ -235,7 +236,16 @@ export default {
       if(load.loadingStatus.text == val){
         this.changeRouteLoads(val, load)
       }
-    }
+    },
+    sortLoads() {
+      this.loads?.sort((load) => {
+        if (load?.loadMapId !== this.loadingProgress) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+    },
   },
 };
 </script>
