@@ -1,4 +1,4 @@
-<template>
+pre<template>
   <div class="">
     <ion-loading
       :is-open="isOpenRef"
@@ -33,13 +33,21 @@
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div>
           <div
+          :class="{ 'load-edges': load.loadNumber === loadingProgress }"
             class="uk-card uk-card-default uk-card-body"
             @click="setLoad(load)"
           >
            <p class="uk-flex status-load">
                 <span class="uk-text-bold">{{ loadStatus(load) }}</span>
             </p>
+          <div class="uk-flex uk-flex-between uk-flex-middle">
+
             <div class="uk-margin-top">
+              <div>
+                  <p class="uk-flex uk-flex-right">
+                    <span>{{ load.loadNumber }}</span>
+                  </p>
+              </div>
               <div class="uk-flex uk-flex-middle" style="font-size: 16px !important">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
                 <span v-for="order of load.Orders" :key="order">{{order.order_num}}</span>
@@ -57,55 +65,13 @@
                 <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
                 <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
               </div>
-              
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Chofer:&nbsp;</p>
-                <span v-for="info of load.Vehicles" :key="info">{{info?.driver}}</span>
-              </div>
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Vehiculo:&nbsp;</p>
-                <span v-for="info of load.Vehicles" :key="info">{{info?.brand}} {{info?.model}} {{info?.color}}, Placa: {{info?.license_no}} </span>
-              </div>
-              
-            </div>
-            <div class="uk-flex uk-flex-between">
-              <div v-if="isReturnLoad(load)" class="uk-text-left info-user">             
-                <div>
-                  <p class="uk-text-bold">Recoger en:</p>
-                  <p>{{load?.firstOrdenSector?.client_name}}</p>
-                  <p>{{load?.firstOrdenSector?.address}}</p>
-                </div>
-                <div >
-                  <p class="uk-text-bold">Entregar en: </p>
-                  <p>
-                    <span v-for="info in load.shipper" :key="info">
-                      {{ info?.name }}
-                    </span>
-                  </p>
-                  <p>{{load?.warehouse?.location?.address}}</p>
-                </div>
-              </div>
-              <div v-else class="uk-text-left info-user">
-                <div >
-                  <p class="uk-text-bold">Recoger en: </p>
-                  <p>
-                    <span v-for="info in load.shipper" :key="info">
-                      {{ info?.name }}
-                    </span>
-                  </p>
-                  <p>{{load?.warehouse?.location?.address}}</p>
-
-                </div>
-                <div>
-                  <p class="uk-text-bold">Entregar en:</p>
-                  <p>{{load?.firstOrdenSector?.client_name}}</p>
-                  <p>{{load?.firstOrdenSector?.address}}</p>
-                </div>
-              
-              </div>
+               </div>
               <div class="start-load">
                 <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
               </div>
+
+            </div>
+            <div class="uk-flex uk-flex-between">
             </div>
           </div>
           <div v-show="load.length <= 1" style="height: 50px">
@@ -126,7 +92,6 @@ import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
 
-
 export default {
   components: {
     IonLoading,
@@ -143,7 +108,7 @@ export default {
       dateAvalaible: [],
       date: new Date(),
       dateMoment: null,
-      assignedLoads: -1
+      assignedLoads: -1,
     };
   },
 
@@ -155,6 +120,7 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
+
   },
   
   async mounted() {
@@ -165,6 +131,11 @@ export default {
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings"]),
+
+    loadingProgress: function () {
+     
+      return JSON.parse(localStorage.getItem('loadingProgress'));
+    },
   },
 
   methods: {
@@ -177,7 +148,10 @@ export default {
     async currentDate(val = null) {
       this.assignedLoads = -1
       let contDate
-      if(val) contDate = this.date.setDate(this.date.getDate() + val);   
+      if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
+        contDate = JSON.parse(localStorage.getItem('dateCheck'));
+        this.date = new Date(contDate);
+      }else if(val) contDate = this.date.setDate(this.date.getDate() + val);   
       else contDate = this.date
       var date = moment(contDate).format("MM/DD/YYYY");
       this.loads = await this.$services.loadsServices.getLoadsbyDate(date);
@@ -206,9 +180,10 @@ export default {
           Object.assign(val.Orders[i], order[0])
         }
       this.$store.commit("setloadStore", val);
+      this.$store.commit("setDetailsLoadsStore", val);
       localStorage.setItem('DeliveryCharges', JSON.stringify(val));
       
-      this.$router.push({ name: "load-status" }).catch(() => {});
+      this.$router.push({ name: "details-load" }).catch(() => {});
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
@@ -283,11 +258,6 @@ p {
   padding: 5px 14px 5px;
   box-shadow: 0px 0px;
 }
-.uk-button {
-  padding: 10px 5px !important;
-  font-size: 12px;
-}
-
 .date {
   background: #2535ff21;
   color: #000;
@@ -513,5 +483,9 @@ footer #scroll-trigger {
 }
 .start-load{
   padding-right: 5px ;
+}
+.load-edges{
+  /* border: 4.1px solid #f92b2b; */
+  box-shadow: 0px 0px 16px #f92b2b;
 }
 </style>
