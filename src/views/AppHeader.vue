@@ -3,6 +3,7 @@
     <div class="uk-navbar-left">
       <div style="width: 50px">
         <font-awesome-icon
+            v-if="iconType"
             :icon="iconType"
             @click="setCurrentPage(action)"
             style="font-size: 20px; margin: 0px 15px"
@@ -81,7 +82,7 @@ export default {
   watch: {
     $route: function (newVal) {
       newVal.name == "home"
-        ? ((this.action = "sign-in"), (this.iconType = "none"))
+        ? ((this.action = "sign-in"), (this.iconType = false))
         : newVal.name == "load-status"
         ? ((this.action = "home"), (this.iconType = "arrow-left"))
         : ((this.action = "back"), (this.iconType = "arrow-left"));

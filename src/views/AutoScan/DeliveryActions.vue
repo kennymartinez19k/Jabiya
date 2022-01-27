@@ -219,6 +219,7 @@ export default {
   },
 
   methods: {
+   
      async getLocation () {
        console.log(this.checkPermissions())
         try {

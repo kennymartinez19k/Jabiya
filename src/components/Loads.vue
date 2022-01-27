@@ -161,6 +161,7 @@ export default {
           await this.$services.loadsServices.getLoadDetails(x.loadMapId);
           x.firstOrdenSector = x.Orders?.find((order) => order);
           Object.assign(x, resultByDate);
+          this.IsDelivered(x)
       });
       if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
@@ -228,6 +229,12 @@ export default {
     },
     isReturnLoad(val){
       return val.Orders.find(x => x.isReturn)
+    },
+    IsDelivered(load){
+      let val = 'Delivered'
+      if(load.loadingStatus.text == val){
+        this.changeRouteLoads(val, load)
+      }
     }
   },
 };

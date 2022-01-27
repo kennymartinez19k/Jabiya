@@ -24,7 +24,7 @@
       <h4 class="uk-text-light">Entrar a su cuenta</h4>
       <span class="uk-text-muted" style="margin-bottom: 30px; display: block"
         >Ingrese su número de móvil y contraseña y presione iniciar sesión para
-        ingresar a su cuenta {{storage}}</span
+        ingresar a su cuenta</span
       >
 
       <div class="uk-margin uk-text-left">
@@ -107,17 +107,15 @@ export default {
       disabled: false,
       showErrorText: null,
       login: {
-        email: "8094034881",
-        password: "1",
+        email: "",
+        password: "",
       },
-      storage: 0,
-      rememberPassword: true,
+      rememberPassword: false,
 
       AutoLogin: {
         email: "",
         password: "",
       },
-      result: 0
 
     };
   },
@@ -165,26 +163,22 @@ export default {
   },
   methods: {
     async changeRoute(path) {
-      this.disabled = true;
-      try {
-        if (path == "home") {
-          if (this.login.email !== "" && this.login.password !== "") {
-
-            // console.log(typeof(this.login.email), '(this.login.email') var c = a.split('').find(x => x === '@')
-            this.loaded = true;
-            this.AutoLogin.email = String(this.login.email);
-            this.AutoLogin.password = String(this.login.password);
-            const resultLogin = await this.$services.singInServices.getToken(
-              this.AutoLogin
-            );
-            this.loaded = true;
-            this.$store.commit("setUserData", resultLogin);
-            if (resultLogin) this.$router.push({ name: path }).catch(() => {});
-          }
-        } else {
-          this.$router.push({ name: path }).catch(() => {});
+      if (path == "home") {
+        if (this.login.email !== "" && this.login.password !== "") {
+          this.loaded = true;
+          this.AutoLogin.email = String(this.login.email);
+          this.AutoLogin.password = String(this.login.password); 
         }
-      } catch (error) {
+      }
+      this.disabled = true;
+      this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
+        const resultLogin = res
+        console.log(res)
+        this.loaded = true;
+        this.$store.commit("setUserData", resultLogin);
+        if (resultLogin) this.$router.push({ name: path }).catch(() => {});
+
+      }) .catch((error) => {
         this.loaded = false;
         this.disabled = false;
         if (error.message === "Request failed with status code 401") {
@@ -193,7 +187,39 @@ export default {
           this.showErrorText = "Error de conexion, verifique que este conectado";
         }
         this.showError = true;
-      }
+      })
+     
+
+      // try {
+      //   if (path == "home") {
+      //     if (this.login.email !== "" && this.login.password !== "") {
+      //       alert(1)
+      //       this.loaded = true;
+      //       this.AutoLogin.email = String(this.login.email);
+      //       alert(2)
+      //       this.AutoLogin.password = String(this.login.password);
+      //       alert(3)
+      //       const resultLogin = await this.$services.singInServices.getToken(
+      //         this.AutoLogin
+      //       );
+      //       alert(4)
+      //       this.loaded = true;
+      //       this.$store.commit("setUserData", resultLogin);
+      //       if (resultLogin) this.$router.push({ name: path }).catch(() => {});
+      //     }
+      //   } else {
+      //     this.$router.push({ name: path }).catch(() => {});
+      //   }
+      // } catch (error) {
+      //   this.loaded = false;
+      //   this.disabled = false;
+      //   if (error.message === "Request failed with status code 401") {
+      //     this.showErrorText = "Error al introducir los datos";
+      //   } else if (error.message === "Network Error") {
+      //     this.showErrorText = "Error de conexion, verifique que este conectado";
+      //   }
+      //   this.showError = true;
+      // }
     },
 
     showPassword() {

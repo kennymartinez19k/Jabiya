@@ -3,7 +3,10 @@ const orders = {
       scanOrder: null,
       registrationForScan: null,
       settings: {
-        AutoScan: true
+        AutoScan: true,
+        language: null,
+        profile: null,
+        maps: false
       },
       language: null,
     },
@@ -16,6 +19,7 @@ const orders = {
       console.log(state.registrationForScan)
     },
     setSettings(state, val){
+      localStorage.setItem('setting', JSON.stringify(val))
       state.settings = val
     },
     setLanguageStore (state, lang) {
@@ -29,6 +33,11 @@ const orders = {
       let name = JSON.stringify(val.name)
       console.log(name)
       localStorage.setItem(name,JSON.stringify(val))
+    },
+    SettingStorage(state){
+      if(!localStorage.getItem('setting')){
+        localStorage.setItem('setting', JSON.stringify(state.state.settings))
+      }
     }
   },
 

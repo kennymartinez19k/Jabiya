@@ -24,6 +24,10 @@
             </select>
         </div>
       </label>
+       <label class="item" for="maps">
+        <h6>Mostrar Mapa</h6>
+        <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
+      </label>
     </div>
     <div class="btn">
         <button class="uk-button uk-button-transparent" @click="saveSettings()">Guardar Cambios</button>
@@ -34,12 +38,14 @@
 <script>
 import { mapGetters } from 'vuex';
 export default {
+  alias: 'Configuracion',
   data() {
     return {
       settings: {
         AutoScan: true,
         language: null,
-        profile: null
+        profile: null,
+        maps: false
       },
     };
   },
@@ -54,8 +60,7 @@ export default {
   methods: {
     saveSettings() {
       this.$store.commit("setSettings", this.settings);
-      this.$store.commit("changeRol", this.profile );
-
+      this.$store.commit("changeRol", this.settings.profile );
       this.$router.push({ name: "home" });
     },
   },

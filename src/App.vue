@@ -57,11 +57,13 @@ export default {
           try{
             let res = await this.$services.requestServices.request(queueItem)
             if(res){
+              console.log(res)
               this.dequeue()
             }
           } 
           catch(error){
             console.log(error)
+            this.dequeue()
           }
           this.sendingBI = false
       }

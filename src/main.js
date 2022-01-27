@@ -26,6 +26,7 @@ library.add(faEyeSlash);
 library.add(faMinus, faPlus)
 library.add(faArrowRight)
 library.add(faHome)
+library.add('')
 
 
 
