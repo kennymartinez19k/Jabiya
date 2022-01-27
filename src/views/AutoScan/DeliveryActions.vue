@@ -113,7 +113,6 @@ import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import { IonLoading } from "@ionic/vue";
-import { Network } from '@capacitor/network';
 
 
 
@@ -220,13 +219,6 @@ export default {
   },
 
   methods: {
-   async offlineStatus(){
-      Network.addListener('networkStatusChange', status => {
-        console.log('Network status changed', status);
-      });
-      let status = await Network.getStatus();
-      return status
-    },
      async getLocation () {
        console.log(this.checkPermissions())
         try {

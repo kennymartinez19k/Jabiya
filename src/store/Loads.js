@@ -5,7 +5,7 @@ const Loads = {
       loads: [],
       products:[],
       startRoute: true,
-
+      detailsLoads:[],
     },
     mutations: {
         setloadStore (state, load) {
@@ -17,6 +17,9 @@ const Loads = {
         },
         setAllLoadStore(state, val){
           state.allLoadsStore = val
+        },
+        setDetailsLoadsStore(state, val){
+          state.detailsLoads = val
         },
         chargeLoads(state, val){
           state.loads = val
@@ -31,6 +34,7 @@ const Loads = {
       loads: state => state.loads,
       products: state => state.products,
       startRoute: state => state.startRoute,
+      detailsLoadsStore: state => state.detailsLoads
     }
   
   }
