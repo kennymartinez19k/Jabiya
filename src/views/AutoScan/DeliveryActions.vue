@@ -98,6 +98,7 @@
         :exception="exception"
         :resultScan="resultScan"
         :imagiElement="imagiElement"
+        :showSignaturform="showSignaturform"
         @action="getShow($event)"
       />
     </div>
@@ -145,7 +146,9 @@ export default {
         latitude: null,
         longitude: null  
       },
-      timeOut: null
+      timeOut: null,
+      showSignaturform: false,
+
     };
   },
   computed: {
@@ -174,6 +177,7 @@ export default {
     if(loadsMounted){
        this.load = loadsMounted;
        this.orders = this.load.Orders.filter(x => !x.isReturn)
+             this.showSignaturform = this.orders.some(x =>  x.isReturn);
        console.log(this.orders)
     }
     if (this.orderScan?.length > 1) {

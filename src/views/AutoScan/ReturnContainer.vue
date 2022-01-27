@@ -91,7 +91,7 @@
             :src="src"
             alt="Red dot"
           />
-          <img class="img-result" :src="firm" alt="Fima Digital" />
+          <img class="img-result" :src="singnature" alt="Fima Digital" />
         </div>
       </ul>
     </div>
@@ -107,6 +107,7 @@
         :exception="exception"
         :resultScan="resultScan"
         :imagiElement="imagiElement"
+        :showSignaturform="showSignaturform"
         @action="getShow($event)"
       />
     </div>
@@ -146,12 +147,13 @@ export default {
       imagiElement: [],
       step: 1,
       exception: false,
-      firm: null,
+      singnature: null,
       location: {
         latitude: null,
         longitude: null,
       },
       timeOut: null,
+      showSignaturform: true,
     };
   },
   computed: {
@@ -169,7 +171,8 @@ export default {
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.load.Orders.filter((x) => x.isReturn);
-      console.log(this.orders);
+      console.log(this.orders, 'retu');
+      this.showSignaturform = this.orders.some(x =>  x.isReturn );
     }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -184,7 +187,7 @@ export default {
     digitalFirmStore: {
       handler: async function (newVal) {
         if (newVal !== null) {
-          this.firm = newVal;
+          this.singnature = newVal;
           this.uploadOrDownload(this.load);
           this.postImages();
           this.$router.push({ name: "home" }).catch(() => {});
@@ -206,7 +209,6 @@ export default {
       } else if (value === "camera" && this.imagiElement.length <= 6) {
         this.getCam();
       } else if (value === "firm") {
-        this.serieA = value;
         this.step++;
       }
     },
@@ -311,9 +313,16 @@ export default {
      async postImages() {
       let returnedOrders = this.orders.filter((x) => x.isReturn);
       console.log(returnedOrders)
+      let accountant = null;
       for (var it = 0; it < returnedOrders.length; it++) {
         let order = returnedOrders[it];
         let images = [];
+        if (this.singnature !== null && typeof this.singnature === 'boolean' ) {
+          accountant = 4
+        } else {
+          accountant = 3
+          images.push(this.singnature);
+        }
         images.push(...this.imagiElement);
         let numberOfImages = 3;
         if (this.imagiElement.length === 1) {
@@ -321,10 +330,9 @@ export default {
         } else if (this.imagiElement.length === 2) {
           numberOfImages = 2;
         }
-        for (let i = numberOfImages; i < 3; i++) {
+        for (let i = numberOfImages; i < accountant; i++) {
           images.push(this.imagiElement[0]);
         }
-        images.push(this.firm);
         console.log(order)
         this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }

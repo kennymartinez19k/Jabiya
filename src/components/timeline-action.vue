@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="serieA === 'firm'" class="uk-padding-small">
+    <div v-if="showSingnature === 'firm'" class="uk-padding-small">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
     </div>
 
@@ -36,7 +36,7 @@
         <span style="color: #000">Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
-      <li
+      <!-- <li
         v-if="exception"
         :class="{
           'uk-disabled': (imagiElement.length === 0) || (imagiElement.length !== 1),
@@ -54,8 +54,9 @@
             disabled: (imagiElement.length === 0) || (imagiElement.length !== 1),
           }"
         ></div>
-      </li>
+      </li> -->
       <li
+      v-if="showSignaturform === false"
         class="stepThree"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('firm')"
@@ -63,6 +64,17 @@
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span style="color: #000">Firma</span>
+        <div :class="{ disabled: step < 2 }"></div>
+      </li>
+       <li
+      v-if="showSignaturform === true"
+        class="stepFour"
+        :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
+        @click="getShow('save')"
+      >
+        <div class="info"><font-awesome-icon icon="check" /></div>
+        <div><img src="../assets/check.png" alt="" srcset="" /></div>
+        <span>Guardar</span>
         <div :class="{ disabled: step < 2 }"></div>
       </li>
     </ul>
@@ -87,9 +99,9 @@ export default {
     digitalFirm: {
       handler: async function (newVal) {
         if (newVal !== null) {
-          this.serieA = null;
+          this.showSingnature = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
-          
+
         }
       },
     },
@@ -106,13 +118,13 @@ export default {
     step: Number,
     exception: Boolean,
     imagiElement: Array,
-    // digitalFirm: String,
+    showSignaturform: Boolean
   },
   data() {
     return {
       textException: null,
       showException: null,
-      serieA: null,
+      showSingnature: null,
       digitalFirm: null
 
     };
@@ -126,12 +138,16 @@ export default {
         this.showException = true;
       }
       if (value === "firm") {
-        this.serieA = value;
+        this.showSingnature = value;
         
       }
+     if (value === 'save' ) {
+          this.digitalFirm = true;
+          this.$store.commit("setDigitalFirm", this.digitalFirm);
+     }
+      console.log(value, 'value')
     },
     resetTextException() {
-      // UIkit.toggle("#toggle-usage").hide();
       UIkit.modal("#modal-sections").hide();
       this.textException = null;
     },
