@@ -115,9 +115,9 @@
            <div class="uk-text-left">
               <p class="uk-text-bold " style="font-size: 16px !important">Información Adicional:</p>
               <ul>
-                <li><a style="color: red;" href="https://docs.google.com/document/d/13312UB7czRpIvzRHHQoVmtnYmBbmgwPzpriT8VuTNkY/edit?usp=sharing">Estamos en Facebook</a></li>
-                <li><a style="color: red;" href="https://www.facebook.com/pagina">Estamos en Facebook</a></li>
-                <li><a style="color: red;" href="https://www.facebook.com/pagina">Estamos en Facebook</a></li>
+                <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
+                <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
+                <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
               </ul>
             </div>
         </div>
