@@ -275,7 +275,7 @@ export default {
   methods: {
     async changeRoute(val) {
       localStorage.removeItem('loadingProgress');
-      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadNumber));
+      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
       await this.changeRouteLoads(val, this.load);
       this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
     },
