@@ -92,7 +92,8 @@
           <div class="disabled-container"></div>
 
         </li>
-        <li :class="{active: loadStatus.step == step.truckLoaded, 'completed-status': loadStatus.step > step.truckLoaded}">
+        <li
+        :class="{active: loadStatus.step == step.truckLoaded, 'completed-status': loadStatus.step > step.truckLoaded}">
           <div  
             class="info"><span>4</span>
           </div>
@@ -173,7 +174,7 @@ export default {
       loadStartRoute: null,
       LoadReturn: null,
       currentStatusLoad: null,
-      allOrderIsReturn: null
+      allOrderIsReturn: null,
     };
   },
  
@@ -182,7 +183,6 @@ export default {
     ...mapGetters(["loadStore", "startRoute"]),
     loadStatus() {
       let statusLoad = {};
-      
       if (this.load?.loadingStatus?.text == "Expecting Approval"){
         statusLoad.expectingApproval = true;
         statusLoad.step = 1;
@@ -256,6 +256,7 @@ export default {
     }
   },
   async mounted() {
+
     let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore
