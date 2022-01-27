@@ -44,7 +44,7 @@ pre<template>
 
             <div class="uk-margin-top">
               <div>
-                  <p class="uk-flex uk-flex-right">
+                  <p class="uk-flex">
                     <span>{{ load.loadNumber }}</span>
                   </p>
               </div>
@@ -495,7 +495,6 @@ footer #scroll-trigger {
   padding-right: 5px ;
 }
 .load-edges{
-  /* border: 4.1px solid #f92b2b; */
-  box-shadow: 0px 0px 16px #f92b2b;
+  border: 4.1px solid #f92b2b;
 }
 </style>

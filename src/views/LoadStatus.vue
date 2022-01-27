@@ -104,10 +104,15 @@
             <h6>{{messageStatus.dispatch}}</h6>
           </div>
           <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
-            <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="setting?.maps && loadStatus.step > step.truckLoaded" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
-            <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />
+            <span v-if="setting.maps" class="ddd">
+              <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right"/>
+              <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
+            </span>
+            <span v-if="!setting.maps" class="ss">
+              <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
+              <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
+              <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />
+            </span>
           </div>
           <div class="disabled-container"></div>
         </li>
@@ -252,14 +257,18 @@ export default {
       if(this.loadStatus.step > 1) message.expectingApproval = 'Aprobó el Viaje'
       if(this.loadStatus.step > 2) message.driverArrival = 'Llegó a Recoger'
       if(this.loadStatus.step > 3) message.approved = 'Montó el Viaje'
-      if(this.loadStatus.step > 4) message.dispatch = 'Ver Ruta'
+      if(this.loadStatus.step > 4) {
+        if(this.setting.maps) message.dispatch = 'Ver Ruta'
+        else message.dispatch = 'Comenzó la Ruta'
+      } 
       if(this.loadStatus.step > 5) message.delivered = 'Contenedor Entregado'
       if(this.loadStatus.step > 6) message.returnContainer = 'Contenedor Retornado'
       return message
     }
   },
   async mounted() {
-    this.setting = localStorage.getItem('setting')
+    this.setting = JSON.parse(localStorage.getItem('setting'))
+    console.log(this.setting)
     let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore

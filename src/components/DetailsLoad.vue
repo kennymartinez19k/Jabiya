@@ -19,7 +19,7 @@
             </p>
             <div class="uk-margin-top">
               <div>
-                  <p class="uk-flex uk-flex-center">
+                  <p class="uk-flex">
                     <span>{{ detailsLoads.loadNumber }}</span>
                   </p>
               </div>
@@ -231,8 +231,8 @@ export default {
       return moment(val).format("LT");
     },
     ordenIsReturn(val) {
-      let res = val.Orders.find((x) => x);
-      if (res.isReturn) return "Devolver Contenedor";
+      let res = val?.Orders?.find((x) => x);
+      if (res?.isReturn) return "Devolver Contenedor";
       return "Entregar Contenedor";
     },
     isReturnLoad(val) {

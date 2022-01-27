@@ -33,7 +33,7 @@ export const Mixins = {
     mixins: [LocalStorage],
     mounted() {
         this.$store.dispatch('SettingStorage')
-        this.setting = localStorage.getItem('setting')
+        this.setting = JSON.parse(localStorage.getItem('setting'))
 
         this.user = JSON.parse(localStorage.getItem('userInfo'))
         this.localStorageGps.create();
