@@ -33,7 +33,7 @@ export const Mixins = {
     mixins: [LocalStorage],
     mounted() {
         this.$store.dispatch('SettingStorage')
-        this.setting = localStorage.getItem('setting')
+        this.setting = JSON.parse(localStorage.getItem('setting'))
 
         this.user = JSON.parse(localStorage.getItem('userInfo'))
         this.localStorageGps.create();
@@ -74,7 +74,7 @@ export const Mixins = {
          },
          async driverArrival(val){
             localStorage.setItem(`loadStatus${val.loadMapId}`, 3)
-            await services.loadsScanServices.driverArrival(val.loadMapId);
+            services.loadsScanServices.driverArrival(val.loadMapId);
             let location = await this.location()
             this.localStorageGps.set(`gps ${val.loadMapId}`, true)
             this.load = val

@@ -1,3 +1,4 @@
+import {add} from '../queue'
 
 class LoadsScanServices {
     constructor (http) {
@@ -11,8 +12,10 @@ class LoadsScanServices {
           "statusType": "Arrival",   
         }
       }
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions`, params)
-      return result.data
+      let url = `http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions` 
+      let json = {'method': 'post', 'body': params, 'url': url}
+      add(json)
+
     }
 
     async getProduct(orderId){    

@@ -171,14 +171,29 @@ export default {
         }
       }
       this.disabled = true;
+
+      // let result = await axios.post('http://preprod.flai.com.do:8756/exo/authenticate', this.AutoLogin, 
+      // {
+      //   credential :"same-origin",
+      //   headers: { 
+      //   'Content-Type': 'application/json', 
+      //   }
+      // })
+      // this.$store.commit("setUserData", result);
+      //  localStorage.setItem('auth', result.data.data.cookie[0]);
+      // localStorage.setItem('userInfo', JSON.stringify(result.data.data)); 
+      // if(result){
+      //    this.$router.push({ name: path }).catch(() => {});
+      // }
+
       this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
         const resultLogin = res
-        console.log(res)
         this.loaded = true;
         this.$store.commit("setUserData", resultLogin);
         if (resultLogin) this.$router.push({ name: path }).catch(() => {});
 
       }) .catch((error) => {
+        alert(error)
         this.loaded = false;
         this.disabled = false;
         if (error.message === "Request failed with status code 401") {
@@ -189,37 +204,6 @@ export default {
         this.showError = true;
       })
      
-
-      // try {
-      //   if (path == "home") {
-      //     if (this.login.email !== "" && this.login.password !== "") {
-      //       alert(1)
-      //       this.loaded = true;
-      //       this.AutoLogin.email = String(this.login.email);
-      //       alert(2)
-      //       this.AutoLogin.password = String(this.login.password);
-      //       alert(3)
-      //       const resultLogin = await this.$services.singInServices.getToken(
-      //         this.AutoLogin
-      //       );
-      //       alert(4)
-      //       this.loaded = true;
-      //       this.$store.commit("setUserData", resultLogin);
-      //       if (resultLogin) this.$router.push({ name: path }).catch(() => {});
-      //     }
-      //   } else {
-      //     this.$router.push({ name: path }).catch(() => {});
-      //   }
-      // } catch (error) {
-      //   this.loaded = false;
-      //   this.disabled = false;
-      //   if (error.message === "Request failed with status code 401") {
-      //     this.showErrorText = "Error al introducir los datos";
-      //   } else if (error.message === "Network Error") {
-      //     this.showErrorText = "Error de conexion, verifique que este conectado";
-      //   }
-      //   this.showError = true;
-      // }
     },
 
     showPassword() {
