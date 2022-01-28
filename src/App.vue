@@ -1,10 +1,14 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
-  <router-view class="view-header" @deliveryActions="setName($event)" :class="{view: !currentPage}"/>
+
+  <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
 <script>
 import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
+import {queue, remove} from './queue'
+import {LocalStorage} from './mixins/LocalStorage'
+
 
 export default {
   data(){
@@ -15,15 +19,18 @@ export default {
         'sign-up',
         'recover-password'
       ],
-      nameOrder: null
+      nameOrder: null,
+      result: 0,
+      sendingBI: false
     }
   },
   components:{
     AppHeader
   },
+  mixins: [LocalStorage],
   computed:{
     ...mapGetters([
-      'settings'
+      'settingsStore'
     ]),
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)
@@ -36,6 +43,31 @@ export default {
       }
       return ''
     },
+},
+  async mounted(){
+    
+    setInterval( async () => {
+      if(queue.length > 0){
+        let enqueueItem = remove()
+        await this.enqueue(enqueueItem)
+      }
+      let queueItem = await this.peek()
+      if(queueItem && !this.sendingBI){
+        this.sendingBI = true
+          try{
+            let res = await this.$services.requestServices.request(queueItem)
+            if(res){
+              console.log(res)
+              this.dequeue()
+            }
+          } 
+          catch(error){
+            console.log(error)
+            this.dequeue()
+          }
+          this.sendingBI = false
+      }
+  }, 1000)
 },
 methods:{
   setName(val){
@@ -91,8 +123,8 @@ button{
 }
 .view-header{
   height: 100%;
-  overflow: scroll;
-  /* background: #fff; */
+  overflow-y: scroll;
+    overflow-x: hidden;
 }
 html body{
   height: 100vh;
@@ -115,7 +147,7 @@ strong{
   font-weight: 500 !important;
 }
 .cnt {
-  height: 100%;
+  height: 100% !important;
   overflow: scroll;
 }
 .uk-button-transparent{
@@ -123,5 +155,34 @@ strong{
     background: white;
     border: 1px solid;
     border: 1px solid #4a4a4a;
+}
+.uk-button{
+  line-height: 15px;
+  font-size: 10px;
+  padding: 10px 10px;
+}
+
+:focus:not([tabindex^='-']) {
+    outline: 0px dotted #333;
+    outline-offset: 1px;
+}
+.stiky {
+  color: rgb(255, 255, 255) !important;
+  z-index: 2;
+    border-top: 1px solid #313575;
+  font-size: 12px !important;
+  padding: 0px 10px 5px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: center;
+  box-shadow: 1px 0px 5px #898989;
+}
+.uk-button-green{
+  background: green;
+  color: #fff
+}
+.uk-button-blue{
+  background: #0f7ae5;
+  color: #fff
 }
 </style>

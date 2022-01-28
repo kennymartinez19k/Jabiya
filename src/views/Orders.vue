@@ -1,6 +1,5 @@
 <template>
   <div class="uk-flex uk-flex-column cnt">
-    
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -20,20 +19,20 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
-
+      <div class="uk-flex select-all">
+        <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
+        <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
+      </div>
       <div
         v-for="order in orders"
         :key="order"
@@ -70,64 +69,33 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.products?.length}}<span></span>
+            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.no_of_boxes}}<span></span>
           </p>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span> 
             <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
         </div>
-        <div
-          class="uk-flex uk-flex-column"
-          style="min-width: 83px; margin-left: 7px; align-items: flex-end"
-        >
-        <div
-            v-if="order.completed"
-            class="uk-flex uk-flex-column"
-            @click="downloadOrders(order)"
-            style="align-items: center"
-          >
-            <img src="../assets/road.png" class="img-scan" alt="" />
-            <span>Descargar Orden</span>
-          </div>
-          <div
-            v-else
-            class="uk-flex uk-flex-column"
-            @click="scan(order)"
-            style="align-items: center"
-          >
-            <img src="../assets/parcel.png" class="img-scan" alt="" />
-            <span v-if="order.completed">Descargar Orden</span>
-            <span v-else>Escanear Orden</span>
-          </div>
-          
+        <div>
+          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
         </div>
+        
       </div>
+      
     </div>
     <div></div>
-    <div class="button-opt">
-      <slide-unlock
-      ref="vueslideunlock"
-      :auto-width="true"
-      :circle="true"
-      :disabled="false"
-      :noanimate="false"
-      :width="400"
-      :height="40"
-      :completedBg="completed"
-      class="slide box-slide"
-      text="Cargar e Iniciar Ruta"
-      success-text="success"
-      @completed="scan(orders)"
-      textSize="10px"
-    />
-      </div>
+      <div class="button-opt">
+      <button @click="scan()" class="uk-button uk-button-transparent">Escanear y Cargar Camion
+          <img src="../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
+      </button>
+      
+      
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import SlideUnlock from "vue-slide-unlock";
 
 export default {
   alias: `Montar Viaje`,
@@ -139,27 +107,63 @@ export default {
       load: null,
       completed: "background-color: #2a307c !important",
       orders: null,
+      listOfOrders: [],
+      listOfOrderTotal: [],
+      listOrderDetails: [],
+      selectAllOrders: false
     };
   },
-   components: {
-    SlideUnlock,
-  },
+  
   computed: {
-    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoads", "products"]),
+    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoadsStore", "products", "structureToScan"])
+  },
+  watch:{
+    selectAllOrders: function(newVal){
+        if(newVal == true){
+            this.orders.forEach( x => {
+            if(!x.isSelected){
+              x.isSelected = true
+              this.orderForScan(x)
+            }
+          })
+        }else{
+            if(this.orders.every(order => order.isSelected)){
+              this.orders.map(x => x.isSelected = false)
+              this.orders.forEach(x => {
+                this.listOrderDetails = this.listOrderDetails.filter(p => p.order_num != x.order_num)
+                this.listOfOrders = this.listOfOrders.filter(p => p.order_num != x.order_num)
+                this.listOfOrderTotal = this.listOfOrderTotal.filter(p => p.order_num != x.order_num)
+              })
+              
+            }
+          }
+    },
+    orders:{
+      handler: function (newVal) {
+        if(newVal.every(x => x.isSelected == true)){
+          this.selectAllOrders = true
+        }else{
+          this.selectAllOrders = false
+        }
+      }, deep: true
+    }
   },
   mounted() {
     if(this.loadStore){
       this.load = this.loadStore;
-      this.orders = this.orderScan
+      this.orders = this.loadStore.Orders
+      this.orders.map(x => x.isSelected = false)
+      this.load.firstOrdenSector = this.orders[0]?.sector
+      console.log(this.load)
     }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
-    this.orders = this.load.orders 
+      this.load = this.allLoadsStore
+    this.orders = this.load.orders
 
     }
-    if (this.orderScan) {
-      this.completedOrden();
-    }
     this.orderObj();
+
+  
+      
   },
   methods: {
     orderObj() {
@@ -171,36 +175,71 @@ export default {
         }
       });
     },
-      downloadOrders(val){
-      if(val.completed){
-        val.completed = false
-      }
-    },
-    scan(val) {
-      let orderScan = []
-      if (val.length > 1) {
-        orderScan = val
-        this.$emit("deliveryActions", 'Escaneo Corrido');
-      } else if(val.length == 1) {
-        let obj = val.find(x => x)
-        this.$emit("deliveryActions", `Orden No: ${obj?.order_num}`);
-        orderScan.push(obj)
-      }else{
-        this.$emit("deliveryActions", `Orden No: ${val?.order_num}`);
-        orderScan.push(val)
-      }
-      this.$store.commit("scanOrder", orderScan);
+   
+    scan() {
+
+     this.$emit("setNameHeader", 'Escaneo Corrido');
+      this.$store.commit("scanOrder", this.listOrderDetails );
+      let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      this.$store.commit("setStructureToScan", structureInfo)
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
-    completedOrden() {
-      this.orders.forEach((x) => {
-        if (x.numberOfOrders == this.orderScan.numberOfOrders) {
-          x.completed = this.orderScan.completed;
-        } else x.completed = false;
-      });
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
     },
-  },
-};
+    firstOrderSector(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    async orderForScan(order, allOrders = false){
+      let firstProductInfo;
+      let totalOfOrders = 0;
+     if(this.listOfOrders.some(x => x.order_num == order.order_num) && !allOrders){
+       this.listOrderDetails = this.listOrderDetails.filter(x => x.order_num != order.order_num)
+       this.listOfOrders = this.listOfOrders.filter(x => x.order_num != order.order_num)
+       this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order.order_num)
+       console.log(this.listOfOrderTotal)
+     }else{
+       this.listOrderDetails.push(order)
+       order.products.forEach(async x => {
+         let {order_num, _id} = order
+         let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
+         firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
+         this.listOfOrders.unshift(firstProductInfo)
+       })
+     
+        this.listOfOrders.forEach( x => {
+         let {qrCode,  loadScanningCounter, order_num} = x
+          var productQrCode = this.listOfOrders.filter( p => p.qrCode == x.qrCode )
+           if(productQrCode){
+             productQrCode.forEach(product => {
+               totalOfOrders += product.quantity
+             })
+           }
+           let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
+             this.listOfOrderTotal.unshift(SecondProductInfo)
+             totalOfOrders = 0
+        })
+        
+        let products = []
+        this.listOfOrderTotal.forEach(x => {
+          let product = products.find(p => p.qrCode == x.qrCode)
+          if(product){
+              if(x.totalOfOrders > product.totalOfOrders){
+                  product.totalOfOrders = x.totalOfOrders
+              }   
+          }else{
+              products.push(x)
+          }
+        })
+        this.listOfOrderTotal = products
+        console.log(this.listOfOrders)
+        console.log(this.listOfOrderTotal)
+    }
+  }
+}
+}
 </script>
 
 <style scoped>
@@ -218,13 +257,18 @@ p {
 }
 .button-opt {
   background: #ffffff !important;
-  height: 70px;
   border-top: 1px solid #e2e2e2;
   width: 100%;
   position: absolute;
   bottom: 0px;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0px;
 }
-
+.button-opt button{
+  padding: 5px 5px;
+  line-height: 15px;
+}
 .uk-card {
   padding: 20px 10px;
 }
@@ -307,7 +351,6 @@ p {
   align-items: flex-end;
 }
 .info-user {
-  border-right: 1px solid #ccc;
   padding-right: 5px;
 }
 .ordenCompleted {
@@ -318,5 +361,18 @@ p {
     background-size: 25px 25px;
     background-repeat: no-repeat;
     background-position: 81%
+}
+.select-all{
+  align-items: center;
+  padding: 10px 5px;
+}
+.select-all input{
+  transform: scale(1.1);
+}
+.select-all input :focus-visible {
+    outline: 0px dotted #333;
+}
+.select-all label {
+  font-weight: 600;
 }
 </style>

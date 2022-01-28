@@ -1,12 +1,15 @@
 <template>
   <Loading
+    class="loading-position"
     :active="loaded"
     color="rgb(86, 76, 175)"
     loader="spinner"
-    :width="65"
+    :width="100"
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
-  <div class="uk-flex uk-flex-right uk-flex-column uk-flex-wrap cnt">
+
+  <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
+
     <form
       class="
         uk-card
@@ -21,17 +24,17 @@
       <img class="logo" src="../assets/logo.png" alt="" />
       <h4 class="uk-text-light">Entrar a su cuenta</h4>
       <span class="uk-text-muted" style="margin-bottom: 30px; display: block"
-        >Ingrese su número de móvil y contraseña y presione iniciar seción para
+        >Ingrese su número de móvil y contraseña y presione iniciar sesión para
         ingresar a su cuenta</span
       >
 
       <div class="uk-margin uk-text-left">
-        <label class="uk-text-emphasis" for="email">Email</label>
+        <label class="uk-text-emphasis" for="email">Email / Teléfono</label>
         <div class="uk-input uk-flex form-login" style="align-items: center">
           <input
             class="uk-form-width-medium formLogin"
             v-model="login.email"
-            type="email"
+            type="text"
             placeholder="ejemplo@email.com"
             required
           />
@@ -59,7 +62,7 @@
       <div class="uk-margin uk-flex uk-flex-between">
         <label class="terms uk-text-light"
           ><input
-            v-model="login.rememberPassword"
+            v-model="rememberPassword"
             style="margin-right: 5px"
             class="uk-checkbox"
             type="checkbox"
@@ -70,14 +73,15 @@
           >¿Olvidaste tu contraseña?</router-link
         >
       </div>
-       <div v-if="showError" class="uk-alert-warning" uk-alert>
-            <a class="uk-alert-close" uk-close></a>
-            <p>Revisar los datos</p>
-        </div>
+      <div v-if="showError" class="uk-alert-warning" uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <p>{{ showErrorText }}</p>
+      </div>
       <button
         type="button"
+        :class="{ disabled: disabled }"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="changeRoute('direct-access')"
+        @click="changeRoute('home')"
         style="margin-top: 15px"
       >
         Iniciar sesión
@@ -88,67 +92,108 @@
 
 <script>
 import Loading from "vue-loading-overlay";
+import { LocalStorage } from "../mixins/LocalStorage";
+
 export default {
   components: {
     Loading,
   },
+  mixins: [LocalStorage],
   data() {
     return {
       loaded: false,
       type: "password",
       iconType: "eye",
       showError: null,
+      disabled: false,
+      showErrorText: null,
       login: {
-        email: "admin@flai.com.do",
-        password: "1",
-        rememberPassword: false,
+        email: "",
+        password: "",
       },
+      rememberPassword: false,
+
       AutoLogin: {
         email: "",
         password: "",
       },
+      activeOrNot: null,
+      geo: null
+
     };
   },
   watch: {
-      'login.email': function (newVal) {
-          if (newVal) {
-              this.showError = false
-              
-          }
-      },
-        'login.password': function (newVal) {
-          if (newVal) {
-              this.showError = false
-              
-          }
+    "login.email": function (newVal) {
+      if (newVal) {
+        this.showError = false;
       }
+    },
+    "login.password": function (newVal) {
+      if (newVal) {
+        this.showError = false;
+      }
+    },
+    rememberPassword: {
+      handler: function (newVal) {
+        if (newVal === true) {
+          localStorage.removeItem("rememberData");
+          localStorage.removeItem("rememberPassword");
+          localStorage.setItem(
+            "rememberData",
+            JSON.stringify(this.login.email)
+          );
+          localStorage.setItem(
+            "rememberPassword",
+            JSON.stringify(this.login.password)
+          );
+    
+        } else {
+          localStorage.removeItem("rememberData");
+          localStorage.removeItem("rememberPassword");
+        }
+      },
+      deep: true,
+    },
+  },
+  mounted() {
+    if (JSON.parse(localStorage.getItem("rememberData"))) {
+      this.rememberPassword = true;
+      this.login.email = JSON.parse(localStorage.getItem("rememberData"));
+      this.login.password = JSON.parse(
+        localStorage.getItem("rememberPassword")
+      );
+    }
   },
   methods: {
     async changeRoute(path) {
-      try {
-        if (path == "direct-access") {
-          if (this.login.email !== "" && this.login.password !== "") {
-            this.loaded = true;
-            this.AutoLogin.email = this.login.email;
-            this.AutoLogin.password = this.login.password;
-            const resultLogin = await this.$services.singInServices.getToken(
-              this.AutoLogin
-            );
-            this.loaded = false;
-            this.$store.commit("setUserData", resultLogin);
-
-            if (resultLogin)
-              this.$router.push({ name: path }).catch(() => {});
-          }
-        } else {
-          this.$router.push({ name: path }).catch(() => {});
+      if (path == "home") {
+        if (this.login.email !== "" && this.login.password !== "") {
+          this.loaded = true;
+          this.AutoLogin.email = String(this.login.email);
+          this.AutoLogin.password = String(this.login.password); 
         }
-      } catch (error) {
-        this.loaded = false;
-       this.showError = true
-        // alert(error);
       }
+      this.disabled = true;
+
+      this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
+        const resultLogin = res
+        this.loaded = true;
+        this.$store.commit("setUserData", resultLogin);
+        if (resultLogin) this.$router.push({ name: path }).catch(() => {});
+
+      }) .catch((error) => {
+        this.loaded = false;
+        this.disabled = false;
+        if (error.message === "Request failed with status code 401") {
+          this.showErrorText = "Error al introducir los datos";
+        } else if (error.message === "Network Error") {
+          this.showErrorText = "Error de conexion, verifique que este conectado";
+        }
+        this.showError = true;
+      })
+     
     },
+
     showPassword() {
       if (this.type === "password") {
         this.type = "text";
@@ -158,6 +203,10 @@ export default {
         this.iconType = "eye";
       }
     },
+
+    active(){
+      this.activeOrNot = !!navigator.geolocation
+    }    
   },
 };
 </script>
@@ -209,5 +258,15 @@ export default {
 }
 .form-login {
   border: 1px solid #b1b1b1;
+}
+.loading-position {
+  position: absolute;
+  z-index: 1;
+  top: 278px;
+  right: 11px;
+  width: 92%;
+}
+.disabled {
+  pointer-events: none;
 }
 </style>

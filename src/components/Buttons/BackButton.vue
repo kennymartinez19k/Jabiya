@@ -1,16 +1,38 @@
 <template>
-    <span @click="goBack()" uk-icon="icon: arrow-left"></span><strong></strong>
-q   
+    <font-awesome-icon v-if="iconType" @click="goBack()" style="font-size: 20px; margin: 0px 10%" :icon="iconType" ></font-awesome-icon><strong></strong>
 </template>
 
 <script>
 export default {
   name: 'BackButton',
+  data() {
+    return {
+      iconType: 'arrow-left',
+      action: "sign-in",
+    }
+  },
+   watch: {
+    $route: function (newVal) {
+      newVal.name == "home"
+        ? ((this.iconType = false))
+        : newVal.name == "home"
+        ? ((this.iconType = "home"))
+        : ((this.iconType = "arrow-left"));
+    },
+  },
+
   methods: {
     goBack () {
       if(this.$route.name == 'recover-password'){
         this.$router.push({ name: 'sign-in' })
-      } else this.$router.go(-1)
+      } else if(this.$route.name == 'home'){
+       this.$router.push({ name: 'sign-in' })
+      } else if(this.$route.name == 'load-status'){
+        this.$router.push({ name: 'home' })
+
+      }else{
+        this.$router.push({ name: 'load-status' })
+      }  
     }
   }
 }

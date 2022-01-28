@@ -5,13 +5,19 @@ import LoadScan from '../views/LoadScan.vue'
 import Orders from '../views/Orders.vue'
 import DeliveryActions from '../views/DeliveryActions.vue'
 import DeliveryRoutes from "../views/DeliveryRoutes.vue";
-import DirectAccess from '../views/DirectAccess.vue'
 import RecoverPassword from '../views/RecoverPassword.vue'
 import Settings from '../views/Settings.vue'
-import Maps from '../views/MapsExample.vue'
 import OrdersAutoScan from '../views/AutoScan/Orders.vue'
 import DeliveryActionsAuto from '../views/AutoScan/DeliveryActions.vue'
-import About from '../views/About.vue'
+import ConfirmTrip from '../views/ConfirmTrip.vue'
+import LoadStatus from '../views/LoadStatus.vue'
+import InvoicesOrders from '../views/InvoicesOrders.vue'
+import DetailsInvoices from '../components/DetailsInvoices.vue'
+import ReconciliationWarehouse from '../components/ReconciliationWarehouse.vue'
+import ReturnContainer from '../views/AutoScan/ReturnContainer.vue'
+import DetailsLoad from "../components/DetailsLoad.vue";
+
+import about from '../views/About.vue'
 const routes = [
   {
     path: '/',
@@ -34,6 +40,12 @@ const routes = [
     path: "/home",
     name: "home",
     component: Home,
+   
+  },
+  {
+    path: "/details-load",
+    name: "details-load",
+    component: DetailsLoad,
   },
   {
     path: "/orders",
@@ -56,18 +68,8 @@ const routes = [
     component: LoadScan,
   },
   {
-    path: "/direct",
-    name: "direct-access",
-    component: DirectAccess,
-  },
-  {
-    path: "/maps",
-    name: "maps",
-    component: Maps,
-  },
-  {
-    path: "/orders-auto",
-    name: "orders-auto-scan",
+    path: "/drayage-orden",
+    name: "drayage-orden",
     component: OrdersAutoScan,
   },
   {
@@ -76,11 +78,41 @@ const routes = [
     component: DeliveryActionsAuto,
   },
   {
+    path: "/return-container",
+    name: "return-container",
+    component: ReturnContainer, 
+  },
+  {
+    path: "/confirm-trip",
+    name: "confirm-trip",
+    component: ConfirmTrip,
+  },
+
+  {
+    path: "/load-status",
+    name: "load-status",
+    component: LoadStatus,
+  },
+  {
+    path: "/invoice",
+    name: "invoices-orders",
+    component: InvoicesOrders,
+  },
+  {
+    path: "/details-invoices",
+    name: "details-invoices",
+    component: DetailsInvoices,
+  },
+  {
+    path: "/warehouse",
+    name: "reconciliation-warehouse",
+    component: ReconciliationWarehouse,
+  },
+  {
     path: "/about",
     name: "about",
-    component: About,
+    component: about,
   },
-  
  
 ];
 

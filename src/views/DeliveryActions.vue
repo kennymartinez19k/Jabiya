@@ -1,10 +1,8 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
     <div class="stiky">
-      <p
-        style=" font-size: 13px !important; font-weight: 500"
-      >
-        {{load?.loadNumber}}
+      <p style="font-size: 13px !important; font-weight: 500">
+        {{ load?.loadNumber }}
       </p>
       <div
         class="
@@ -15,20 +13,19 @@
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center;"
+        style="align-items: center"
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span
+            ><span>&nbsp; {{ shipperName(load) }}</span>
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span
+            ><span>&nbsp; {{ load?.firstOrdenSector?.sector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div class="result-info"
@@ -135,26 +132,20 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "allLoads",
-      "allOrders",
       "settings"
     ]),
   },
   mounted() {
     if(this.loadStore){
        this.load = this.loadStore;
-       this.orders = this.orderScan
-    }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
-      this.orders = this.load.orders
-      this.$store.commit("scanOrder", this.orders);
+       this.orders = this.load.Orders
     }
     this.getShow("scan");
     if (this.orderScan?.length > 1) {
-      this.$emit("deliveryActions", `Entrega de Ordenes`);
+      this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
       this.$emit(
-        "deliveryActions",
+        "setNameHeader",
         `Orden No. ${this.orderScan[0]?.order_num}`
       );
     }
@@ -289,6 +280,10 @@ export default {
         } else this.scanOrder()
         }, 1000)
 
+    },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
     }
   },
 };

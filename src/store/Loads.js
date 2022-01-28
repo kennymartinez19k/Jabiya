@@ -1,16 +1,25 @@
 const Loads = {
     state: {
       load: null,
-      allLoads: [],
+      allLoadsStore: [],
       loads: [],
-      products:[]
+      products:[],
+      startRoute: true,
+      detailsLoads:[],
     },
     mutations: {
         setloadStore (state, load) {
             state.load = load
         },
-        setAllLoads(state, val){
-          state.allLoads = val
+       
+        setStartRoute(state, startRoute){
+          state.startRoute = startRoute
+        },
+        setAllLoadStore(state, val){
+          state.allLoadsStore = val
+        },
+        setDetailsLoadsStore(state, val){
+          state.detailsLoads = val
         },
         chargeLoads(state, val){
           state.loads = val
@@ -21,9 +30,11 @@ const Loads = {
     },
     getters: {
       loadStore: state => state.load,
-      allLoads: state => state.allLoads,
+      allLoadsStore: state => state.allLoadsStore,
       loads: state => state.loads,
       products: state => state.products,
+      startRoute: state => state.startRoute,
+      detailsLoadsStore: state => state.detailsLoads
     }
   
   }

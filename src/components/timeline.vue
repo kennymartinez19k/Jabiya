@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="serieA === 'firm'" class="uk-padding-small">
+    <div v-if="showSingnature === 'firm'" class="uk-padding-small">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
     </div>
 
@@ -22,16 +22,6 @@
       </div>
     </div>
     <ul class="progressbar">
-      <li
-        v-if="!settings?.AutoScan"
-        class="stepOne"
-        :class="{ active: resultScan !== null }"
-        @click="getShow('scan')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
-        <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
-        <span>Escaner</span>
-      </li>
       <li
         class="stepTwo"
         :class="{
@@ -103,7 +93,7 @@ export default {
     digitalFirm: {
       handler: function (newVal) {
         if (newVal !== null) {
-          this.serieA = null;
+          this.showSingnature = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
           setTimeout(()=> {
             this.$router.push({ name: 'direct-access'}).catch(() => {})
@@ -129,17 +119,16 @@ export default {
   },
   data() {
     return {
-      stepCurrent: 0,
       textException: null,
       showException: null,
-      serieA: null,
+      showSingnature: null,
       digitalFirm: null
 
     };
   },
   computed: {
     ...mapGetters([
-      'settings'
+      'settingsStore'
     ])
   },
 
@@ -151,7 +140,7 @@ export default {
         this.showException = true;
       }
       if (value === "firm") {
-        this.serieA = value;
+        this.showSingnature = value;
         
       }
     },

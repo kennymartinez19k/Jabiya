@@ -1,8 +1,16 @@
 <template>
   <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+      <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeOut"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
     <div class="stiky">
       <p
-        style=" font-size: 13px; !important; font-weight: 500"
+        style=" font-size: 13px !important; font-weight: 500"
       >
         {{load?.loadNumber}}
       </p>
@@ -19,21 +27,17 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ load?.shipper }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.shipperZone }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector.sector }}</span>
           </p>
-          
-          
         </div>
-        
       </div>
     </div>
     <div 
       class="result-info"
-      v-if="resultScan"
       >
       <ul
         class="uk-list uk-list-divider"
@@ -43,38 +47,33 @@
         v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+        :class="{ ordenCompleted: order.completed }"
       >
         <div class="uk-text-left info-user uk-flex uk-flex-wrap">
           <div class="btn uk-flex">
-            <div class="uk-flex uk-flex-column uk-text-center">
+            <div class="uk-flex uk-flex-column uk-text-left">
               <p
-                style="font-size: 14px !important;"
                 class="uk-width-1-1"
               >
-              <span style="font-weight: 600">Cliente: </span>
-                <span>{{ order?.client_name }}</span>
+              <span class="font-weight-medium">Cliente: </span>
+                <span>{{ order.client_name }}</span>
               </p>
             </div>
-            <span>
-              <img src="../../assets/box.png" alt="" />
-            </span>
           </div>
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
+          </p>
+          <p class="">
+            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.no_of_boxes}}<span></span>
+          </p>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order?.sector }}</span>
+            <span class="font-weight-medium">Destino: </span> 
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
-          <p class="uk-width-1-2">
-            <strong> Orden: </strong
-            ><span>{{ order?.order_num }}</span>
-          </p>
-          <p class="uk-width-1-2">
-            <strong>Cajas / Pallets: </strong>{{ order?.products?.length }}<span></span>
-          </p>
-          <div
-            class="uk-flex uk-width-1-1 uk-flex-between"
-            style="margin-top: 10px"
-          >
-            <div class="uk-width-1-2">
+        </div>
+        <div class="uk-width-1-2">
               <div
+                @click="setMap(order)"
                 class="uk-flex-column"
                 style="align-items: center; display: inline-flex"
               >
@@ -82,8 +81,6 @@
                 <span>Ver Ruta</span>
               </div>
             </div>
-          </div>
-        </div>
       </div>
       <div class="uk-flex" style="margin-top: 10px" >
               <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
@@ -95,11 +92,13 @@
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 15px 0px  !important;"
     >
+      <h6 style="margin: 0px 0px 15px; font-size: 14px ">Click Para Tomar las Fotos y Firma</h6>
       <timeline
         :step="step"
         :exception="exception"
         :resultScan="resultScan"
         :imagiElement="imagiElement"
+        :showSignaturform="showSignaturform"
         @action="getShow($event)"
       />
     </div>
@@ -108,16 +107,28 @@
 
 <script>
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+import { ref } from "vue";
+import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
-import { Vibration } from "@ionic-native/vibration";
-import timeline from "../../components/timeline.vue";
+import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
+import { IonLoading } from "@ionic/vue";
+
+
+
 export default {
   name: "DeliveryActions",
-  alias: 'Procesar Entrega',
+  alias: 'Realizar Entrega',
 
   components: {
     timeline,
+    IonLoading
+  },
+  setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
   },
   data() {
     return {
@@ -127,9 +138,17 @@ export default {
       cont: 0,
       load: null,
       imagiElement: [],
-      step: 0,
+      imagiToApi: [],
+      step: 1,
       exception: false,
       firm: null,
+      location : {
+        latitude: null,
+        longitude: null  
+      },
+      timeOut: null,
+      showSignaturform: false,
+
     };
   },
   computed: {
@@ -139,39 +158,53 @@ export default {
       "exceptionStore",
       "digitalFirmStore",
       "settings",
-      'allLoads',
+      'allLoadsStore',
 
     ]),
   },
   async mounted() {
-    if(this.loadStore){
-       this.load = this.loadStore;
-       this.orders = this.orderScan
-    }else{
-      this.load = this.allLoads.find(x => x.status == "Driver Arrival" )
-      await this.getLoadsId(this.load.loadId)
+        let loadsMounted = null
+    if (this.loadStore) {
+       loadsMounted = this.loadStore
+    } else {
+      console.log(loadsMounted, 'this.loadStore')
     }
-    console.log(this.orders)
+      this.$store.commit("setloadStore", loadsMounted);
+
+    await this.getLocation()
+    if(loadsMounted){
+       this.load = loadsMounted;
+       this.orders = this.load.Orders.filter(x => !x.isReturn)
+             this.showSignaturform = this.orders.some(x =>  x.isReturn);
+    }
     if (this.orderScan?.length > 1) {
-      this.$emit("deliveryActions", `Entrega de Ordenes`);
+      this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
       this.$emit(
-        "deliveryActions",
+        "setNameHeader",
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
     }
-    if(!this.settings?.AutoScan){
-      this.getShow("scan")
-    }else{
-      this.step++
-      this.resultScan = true
-    }
+
   },
   watch: {
     digitalFirmStore: {
-      handler: function (newVal) {
+      handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
+          this.uploadOrDownload(this.load)
+          this.postImages()
+        
+            let isReturn = this.load.Orders.find(x => x.isReturn)
+
+                if(isReturn){
+                  localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
+                  this.$router.push({ name: 'load-status'}).catch(() => {})
+                }else{
+                  localStorage.removeItem(`startLoad${this.load.loadMapId}`)
+                  this.$router.push({ name: 'home'}).catch(() => {})
+                }
+
         }
       },
     },
@@ -183,6 +216,20 @@ export default {
   },
 
   methods: {
+   
+     async getLocation () {
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          this.location.latitude = geo.coords.latitude
+          this.location.longitude = geo.coords.longitude
+        } catch (e) {
+          console.log(e)
+        
+        }
+    },
+    async checkPermissions() {
+       return await Geolocation.checkPermissions()
+    },
     getShow(value) {
       this.show = value;
       if (value === "scan") {
@@ -196,31 +243,10 @@ export default {
       }
     },
      async getLoadsId (val) {
-      const result = await this.$services.loadsServices.getLoadsbyId(val)
+      const result = await this.$services.loadsServices.getOrdersByLoadId(val)
       this.orders = result
 
     },
-    async scanOrder() {
-             
-          if (await this.checkPermission()) {
-          BarcodeScanner.hideBackground();
-          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-          if (result.hasContent) {
-            BarcodeScanner.hideBackground();
-              this.resultScan = result
-                 this.step++;
-            var OrderElement = this.ordersScan.findIndex(x => x.numberOfOrders == result.content)
-            if (OrderElement > -1) {
-              console.log(OrderElement)
-            } else if (OrderElement ){
-              Vibration.vibrate(1000);
-              setTimeout(() => {
-                  this.scanOrder()
-              }, 1000)
-            }
-          }
-        }
-      },
 
       verificacion(orders, result) {
         for (let i = 0; i < orders.length; i++) {
@@ -253,9 +279,8 @@ export default {
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
-
-      if (this.imagiElement.length === 3) {
-        this.step++;
+      if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
+        this.step = 2;
       }
       this.cont = this.cont + 1;
     },
@@ -279,6 +304,10 @@ export default {
       console.log(permissions);
       this.getRequestPermissions();
     },
+    shipperName(val){
+      var shipper = val?.shipper?.find(x => x.name)
+      return shipper?.name
+    },
 
     async getRequestPermissions() {
       try {
@@ -290,6 +319,67 @@ export default {
         console.log(error, "error");
       }
     },
+    async setMap(val){
+      await this.getLocation()
+      window.open(`https://www.google.com/maps/dir/'${this.location.latitude},${this.location.longitude}'/${val.latitude},${val.longitude}/`)
+      this.$store.commit("setStartRoute", false);
+
+    },
+  
+    async postImages() {
+        let unreturnedOrders = this.orders.filter((x) => !x.isReturn);
+      for (var it = 0; it < unreturnedOrders.length; it++) {
+        let order = unreturnedOrders[it];
+        let images = [];
+        images.push(...this.imagiElement);
+        let numberOfImages = 3;
+        if (this.imagiElement.length === 1) {
+          numberOfImages = 1;
+        } else if (this.imagiElement.length === 2) {
+          numberOfImages = 2;
+        }
+        for (let i = numberOfImages; i < 3; i++) {
+          images.push(this.imagiElement[0]);
+        }
+        images.push(this.firm);
+          this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+      }
+    },
+    
+    uploadOrDownload(val){
+      this.setLoadTruck(val)
+
+    },
+    setLoadTruck(val){
+      this.timeOut = 5000
+      this.setOpen(true);
+      let totalOfBoxes = 0
+      let orders = val.Orders.filter(x => !x.isReturn)
+      for(let cont = 0; cont < orders.length; cont++){
+        let order = orders[cont]
+        totalOfBoxes += order.no_of_boxes
+        for(var i = 0; i < order.products.length; i++){
+          let prod = order.products[i]
+          try {
+            if(prod.scanOneByOne === "no") {
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
+            }
+            else {
+              for(let i = 0; i <= prod.quantity; i++){
+                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+              }
+            }
+          } catch(error){
+            if (error.message === 'Request failed with status code 401') {
+              console.log('Error al introducir los datos')
+            }else if (error.message === 'Network Error') {
+              console.log('Error de conexion, verifique que este conectado')
+            }
+          }
+        }
+      }
+      return totalOfBoxes
+    },
   },
 };
 </script>
@@ -297,6 +387,9 @@ export default {
 <style scoped>
 .qr {
   width: 60%;
+}
+p{
+  margin: 2px 0px !important;
 }
 .circle {
   background-color: rgb(25, 189, 33);
@@ -435,6 +528,9 @@ li::before {
 }
 .uk-card-body{
   padding: 16px 15px;
+}
+.cont{
+  border-top: 1px solid #ccc;
 }
 
 </style>

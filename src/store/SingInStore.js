@@ -3,9 +3,9 @@ const SingInStore = {
         userData: null,
     },
     mutations: {
-        setUserData (state, user) {
-            state.userData = user
-            // console.log(state.userData, 'ssssssss')
+        setUserData (state) {
+            state.userData = JSON.parse(localStorage.getItem('userInfo'))
+
         },
     
     },
