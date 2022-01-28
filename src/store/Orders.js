@@ -19,8 +19,13 @@ const orders = {
       console.log(state.registrationForScan)
     },
     setSettings(state, val){
-      localStorage.setItem('setting', JSON.stringify(val))
-      state.settings = val
+      if(!val){
+        localStorage.setItem('setting', JSON.stringify(state.settings))
+      }else{
+        state.settings = val
+        localStorage.setItem('setting', JSON.stringify(state.settings))
+
+      }
     },
     setLanguageStore (state, lang) {
       state.language = lang

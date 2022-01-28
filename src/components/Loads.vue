@@ -129,6 +129,9 @@ export default {
       await this.currentDate();
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
+      if(!localStorage.getItem('setting')){
+        this.$store.commit("setSettings", null);
+      }
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings"]),

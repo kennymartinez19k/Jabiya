@@ -163,12 +163,10 @@ export default {
     ]),
   },
   async mounted() {
-    console.log(this.loadStore)
         let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore
     } else {
-      loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
       console.log(loadsMounted, 'this.loadStore')
     }
       this.$store.commit("setloadStore", loadsMounted);
@@ -178,7 +176,6 @@ export default {
        this.load = loadsMounted;
        this.orders = this.load.Orders.filter(x => !x.isReturn)
              this.showSignaturform = this.orders.some(x =>  x.isReturn);
-       console.log(this.orders)
     }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -221,7 +218,6 @@ export default {
   methods: {
    
      async getLocation () {
-       console.log(this.checkPermissions())
         try {
           const geo = await Geolocation.getCurrentPosition();
           this.location.latitude = geo.coords.latitude
@@ -374,7 +370,6 @@ export default {
               }
             }
           } catch(error){
-            console.log(error, 'hola')
             if (error.message === 'Request failed with status code 401') {
               console.log('Error al introducir los datos')
             }else if (error.message === 'Network Error') {

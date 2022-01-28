@@ -1,21 +1,20 @@
 <template>
-    <font-awesome-icon @click="goBack()" style="font-size: 20px; margin: 0px 15px" :icon="iconType" ></font-awesome-icon><strong></strong>
+    <font-awesome-icon v-if="iconType" @click="goBack()" style="font-size: 20px; margin: 0px 10%" :icon="iconType" ></font-awesome-icon><strong></strong>
 </template>
-
 
 <script>
 export default {
   name: 'BackButton',
   data() {
     return {
-      iconType: "sign-out-alt",
+      iconType: 'arrow-left',
       action: "sign-in",
     }
   },
    watch: {
     $route: function (newVal) {
       newVal.name == "home"
-        ? ((this.iconType = "sign-out-alt"))
+        ? ((this.iconType = false))
         : newVal.name == "home"
         ? ((this.iconType = "home"))
         : ((this.iconType = "arrow-left"));
