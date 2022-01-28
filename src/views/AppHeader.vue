@@ -64,11 +64,8 @@
 <script>
 import { mapGetters } from "vuex";
 import Uikit from "uikit";
-// import BackButton from '../components/Buttons/BackButton.vue'
 export default {
-  components: {
-    // BackButton
-  },
+  
   props: {
     nameComponent: String,
   },
@@ -95,7 +92,7 @@ export default {
   },
   data() {
     return {
-      iconType: "sign-out-alt",
+      iconType: "arrow-left",
       action: "sign-in",
       positionSticky: false,
       userData: null,

@@ -7,6 +7,7 @@
     :width="100"
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
+
   <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
 
     <form
@@ -116,6 +117,8 @@ export default {
         email: "",
         password: "",
       },
+      activeOrNot: null,
+      geo: null
 
     };
   },
@@ -172,20 +175,6 @@ export default {
       }
       this.disabled = true;
 
-      // let result = await axios.post('http://preprod.flai.com.do:8756/exo/authenticate', this.AutoLogin, 
-      // {
-      //   credential :"same-origin",
-      //   headers: { 
-      //   'Content-Type': 'application/json', 
-      //   }
-      // })
-      // this.$store.commit("setUserData", result);
-      //  localStorage.setItem('auth', result.data.data.cookie[0]);
-      // localStorage.setItem('userInfo', JSON.stringify(result.data.data)); 
-      // if(result){
-      //    this.$router.push({ name: path }).catch(() => {});
-      // }
-
       this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
         const resultLogin = res
         this.loaded = true;
@@ -193,7 +182,6 @@ export default {
         if (resultLogin) this.$router.push({ name: path }).catch(() => {});
 
       }) .catch((error) => {
-        alert(error)
         this.loaded = false;
         this.disabled = false;
         if (error.message === "Request failed with status code 401") {
@@ -214,7 +202,11 @@ export default {
         this.type = "password";
         this.iconType = "eye";
       }
-    }
+    },
+
+    active(){
+      this.activeOrNot = !!navigator.geolocation
+    }    
   },
 };
 </script>

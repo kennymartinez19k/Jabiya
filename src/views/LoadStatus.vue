@@ -155,12 +155,17 @@
      
       </ul>
     </div>
+        <ion-alert-controller></ion-alert-controller>
   </div>
 </template>
 
 <script>
+
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { alertController } from '@ionic/vue';
+import { Geolocation} from '@capacitor/geolocation'
+
 
 export default {
   alias: "Manejo de Viaje",
@@ -286,10 +291,13 @@ export default {
   },
   methods: {
     async changeRoute(val) {
-      localStorage.removeItem('loadingProgress');
-      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
-      await this.changeRouteLoads(val, this.load);
-      this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
+      if(await this.ubication()){
+        localStorage.removeItem('loadingProgress');
+        localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
+        await this.changeRouteLoads(val, this.load);
+        this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
+
+      }
     },
     setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});
@@ -302,7 +310,30 @@ export default {
       localStorage.removeItem(`loadStatus${val.loadMapId}`)
       this.changeRouteLoads('Delivered')
       
-    }
+    },
+    async alertUbication(header, msg){
+        const alert = await alertController.create({
+          header: header,
+          message: msg,
+          buttons: [ 'Ok'],
+        });
+        await alert.present();
+    },
+    async ubication(){
+      try{
+        await Geolocation.getCurrentPosition()
+        return true
+      }catch(error){
+        if(error.message == 'location disabled'){
+          this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+        }
+        if(error.message == 'Location permission was denied'){
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion acceda a la ubicacion' )
+        }
+        return false
+      }
+    },
+
   },
 };
 </script>
