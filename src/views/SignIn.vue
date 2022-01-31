@@ -74,7 +74,7 @@
         >
       </div>
       <div v-if="showError" class="uk-alert-warning" uk-alert>
-        <a class="uk-alert-close" uk-close></a>
+        <a class="uk-alert-close" @click="showError = false" uk-close></a>
         <p>{{ showErrorText }}</p>
       </div>
       <button

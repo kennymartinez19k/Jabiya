@@ -330,6 +330,7 @@ export default {
         }
         for (let i = numberOfImages; i < accountant; i++) {
           images.push(this.imagiElement[0]);
+          
         }
         this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
