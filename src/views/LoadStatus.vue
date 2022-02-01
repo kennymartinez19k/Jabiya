@@ -279,7 +279,9 @@ export default {
     },
 
     messageStatus(){
+      console.log(this.currentProfile)
       let message = { ...this.currentProfile?.LoadStatus }
+      console.log(message)
 
       if(this.loadStatus.step > 0)
         message.expectingApprovalProvider.message = message?.expectingApprovalProvider?.pastMessage

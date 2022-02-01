@@ -12,9 +12,9 @@
 
       <table class="uk-table uk-table-striped">
         <thead>
-          <tr>
+          <tr class="">
             <th scope="col" style="width: 5px"></th>
-            <th scope="col">Nombre del Conductor</th>
+            <th scope="col" style="display: inline">Nombre del Conductor</th>
           </tr>
         </thead>
         <tbody>
@@ -77,8 +77,8 @@
         <thead>
           <tr>
             <th scope="col" style="width: 0.3%"></th>
-            <label class="uk-margin-remove uk-padding-remove">
-              <th scope="col">No. del Vehículo</th>
+            <label class="uk-margin-remove uk-padding-remove list">
+              <th scope="col" >No. del Vehículo</th>
               <th scope="col">Marca</th>
               <th scope="col">Costo</th>
             </label>
@@ -97,7 +97,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove" for="vehicleId6"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around " for="vehicleId6"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -115,7 +115,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove" for="vehicleId7"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around" for="vehicleId7"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -133,7 +133,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove" for="vehicleId8"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around" for="vehicleId8"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -188,7 +188,9 @@ h5 {
   color: #212529;
 }
 th {
-  font-size: 2vh;
+  font-size: 11px; 
+  font-weight: 600;
+  color: #666
 }
 td {
   font-size: 1.9vh;
@@ -197,5 +199,8 @@ td {
   table .vehicle {
     padding: 0px 0px 8px 2px;
   }
+}
+.list td{
+  width: 30%
 }
 </style>

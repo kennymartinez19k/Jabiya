@@ -27,15 +27,15 @@
               <div v-if="userData?.userType == userType?.provider">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span>{{detailsLoads.plannedProfitability.profitability.revenue}}</span>
+                  <span>{{detailsLoads?.plannedProfitability?.profitability?.revenue}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span>{{detailsLoads.plannedProfitability.profitability.profitability}}</span>
+                  <span>{{detailsLoads?.plannedProfitability?.profitability?.profitability}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
-                  <span>{{detailsLoads.plannedProfitability.profitability.transportCost}}</span>
+                  <span>{{detailsLoads?.plannedProfitability?.profitability?.transportCost}}</span>
                 </div>
               </div>
 

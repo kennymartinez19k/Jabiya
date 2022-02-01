@@ -77,7 +77,7 @@ export const Profile = {
       if (setting.profile == "container") {
         this.currentProfile = { ...this.container };
       }
-      if(setting.profile == "eCommerce"){
+      if (setting.profile == "eCommerce"){
         this.currentProfile = { ...this.container1 };
 
       }
