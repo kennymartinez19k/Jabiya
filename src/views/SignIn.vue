@@ -9,7 +9,7 @@
   ></Loading>
 
   <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
-
+    
     <form
       class="
         uk-card
@@ -29,13 +29,13 @@
       >
 
       <div class="uk-margin uk-text-left">
-        <label class="uk-text-emphasis" for="email">Email / Teléfono</label>
+        <label class="uk-text-emphasis" for="email">No. de Identificación / Teléfono / Email  </label>
         <div class="uk-input uk-flex form-login" style="align-items: center">
           <input
             class="uk-form-width-medium formLogin"
             v-model="login.email"
             type="text"
-            placeholder="ejemplo@email.com"
+            placeholder=""
             required
           />
           <font-awesome-icon icon="envelope" style="font-size: 15px" />
@@ -69,9 +69,9 @@
             checked
           />Recordar contraseña</label
         >
-        <router-link to="/recover" class="show-link"
+        <!-- <router-link to="/recover" class="show-link"
           >¿Olvidaste tu contraseña?</router-link
-        >
+        > -->
       </div>
       <div v-if="showError" class="uk-alert-warning" uk-alert>
         <a class="uk-alert-close" @click="showError = false" uk-close></a>
@@ -92,7 +92,9 @@
 
 <script>
 import Loading from "vue-loading-overlay";
+import { mapGetters } from 'vuex';
 import { LocalStorage } from "../mixins/LocalStorage";
+import { role, userType } from '../types'
 
 export default {
   components: {
@@ -101,6 +103,9 @@ export default {
   mixins: [LocalStorage],
   data() {
     return {
+      role,
+      userType,
+
       loaded: false,
       type: "password",
       iconType: "eye",
@@ -111,7 +116,7 @@ export default {
         email: "",
         password: "",
       },
-      rememberPassword: false,
+      rememberPassword: true,
 
       AutoLogin: {
         email: "",
@@ -164,8 +169,18 @@ export default {
       );
     }
   },
+  computed:{
+    ...mapGetters([
+      'userData'
+    ])
+  },
   methods: {
     async changeRoute(path) {
+    
+      if(this.rememberPassword){
+        localStorage.setItem("rememberData", JSON.stringify(this.login.email));
+        localStorage.setItem("rememberPassword", JSON.stringify(this.login.password));
+      }
       if (path == "home") {
         if (this.login.email !== "" && this.login.password !== "") {
           this.loaded = true;
@@ -176,10 +191,15 @@ export default {
       this.disabled = true;
 
       this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
-        const resultLogin = res
         this.loaded = true;
-        this.$store.commit("setUserData", resultLogin);
-        if (resultLogin) this.$router.push({ name: path }).catch(() => {});
+        this.$store.commit("setUserData");
+
+        if(res?.role == this.role?.transporter && res?.userType == this.userType?.transporter && res?.position == this.positionSPN?.transporter){
+          this.$router.push({ name: 'transporter-load' }).catch(() => {}) 
+        
+        }else if(res){
+          this.$router.push({ name: path }).catch(() => {});
+        }
 
       }) .catch((error) => {
         this.loaded = false;

@@ -17,12 +17,28 @@
             <p class="uk-flex status-load">
               <span class="uk-text-bold">{{ loadStatus(detailsLoads) }}</span>
             </p>
-            <div class="uk-margin-top">
+            <div class="uk-margin-top" style="margin-top: 25px !important">
               <div>
                   <p class="uk-flex">
                     <span>{{ detailsLoads.loadNumber }}</span>
                   </p>
               </div>
+              
+              <div v-if="userData?.userType == userType?.provider">
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Ingreso:&nbsp;</p>
+                  <span>{{detailsLoads.plannedProfitability.profitability.revenue}}</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
+                  <span>{{detailsLoads.plannedProfitability.profitability.profitability}}</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
+                  <span>{{detailsLoads.plannedProfitability.profitability.transportCost}}</span>
+                </div>
+              </div>
+
               <div
                 class="uk-flex uk-flex-middle"
                 style="font-size: 16px !important"
@@ -69,6 +85,7 @@
                   {{ info?.license_no }}
                 </span>
               </div>
+              
             </div>
             <div class="uk-flex uk-flex-between">
               <div
@@ -112,7 +129,7 @@
             </div>
            
           </div>
-           <div class="uk-text-left">
+           <div class="uk-text-left" v-if="userData?.userType == userType?.transporter && userData?.position == userPosition?.transporter">
               <p class="uk-text-bold " style="font-size: 16px !important">Información Adicional:</p>
               <ul>
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
@@ -133,6 +150,9 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { userType, userPosition } from '../types'
+
+
 
 export default {
   name: "DetailsLoad",
@@ -147,6 +167,9 @@ export default {
   mixins: [Mixins],
   data() {
     return {
+      userType,
+      userPosition,
+
       loaded: false,
       detailsLoads: [],
       dateAvalaible: [],
@@ -165,7 +188,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["detailsLoadsStore"]),
+    ...mapGetters(["detailsLoadsStore", "userData"]),
   },
 
   methods: {
@@ -215,15 +238,13 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      if (val?.loadingStatus?.text == "Expecting Approval")
-        return "Esperando Tu Aprobación";
+     
+       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
+      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
-      if (val?.loadingStatus?.text == "Driver Arrival")
-        return "LLegada del Conductor";
-      if (val?.loadingStatus?.text == "Dispatched")
-        return "Listo Para Entregar";
-      if (val?.loadingStatus?.text == "Loading truck")
-        return "Cargando Vehiculo";
+      if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
+      if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
+      if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
     },
 
