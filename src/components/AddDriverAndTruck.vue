@@ -143,7 +143,7 @@
       </table>
     </form>
     <div class="uk-margin-small-top">
-      <button type="button" class="uk-button uk-button-primary">Seleccionar conductor y Vehículo </button>
+      <button type="button" class="uk-button uk-button-primary" @click="selectDriverVehicle()">Seleccionar conductor y Vehículo </button>
     </div>
   </div>
 </template>
@@ -173,6 +173,9 @@ export default {
       console.log(value, "getCarrierSelection");
       console.log(this.carrierSelection, "getCarrierSelection");
     },
+    selectDriverVehicle () {
+      this.$router.push({ name: "home" }).catch(() => {});
+    }
   },
 };
 </script>
