@@ -14,6 +14,7 @@
             :class="{'load-delivered': detailsLoads.loadingStatus.text == 'Delivered'}" 
             class="uk-card uk-card-default uk-card-body load-default-status">
           <div
+            :class="{'disabled-event': detailsLoads.loadingStatus.text === 'Driver selection in progress'}"
             @click="setLoad(detailsLoads)"
           >
             <p class="uk-flex status-load">
@@ -126,7 +127,7 @@
                   <p>{{ detailsLoads?.firstOrdenSector?.address }}</p>
                 </div>
               </div>
-              <div class="start-load">
+              <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" class="start-load uk-flex-middle">
                 <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
               </div>
             </div>
@@ -273,6 +274,7 @@ export default {
     isReturnLoad(val) {
       return val.Orders.find((x) => x.isReturn);
     },
+  
   },
 };
 </script>
@@ -336,5 +338,8 @@ a {
 }
 .load-delivered .status-load{
   color: green !important;
+}
+.disabled-event {
+  pointer-events: none;
 }
 </style>
