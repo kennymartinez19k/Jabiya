@@ -1,10 +1,10 @@
-pre<template>
+<template>
   <div class="">
     <ion-loading
       :is-open="isOpenRef"
       cssClass="my-custom-class"
       message="Por favor Espere..."
-      :duration="timeout"
+      :duration="timeOut"
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
@@ -31,10 +31,10 @@ pre<template>
       :key="i"
     >
       <div class="uk-card uk-card-default uk-width-1-2@m container">
-        <div>
+        <div class="load-default-status" :class="{'load-delivered': load.loadingStatus.text == 'Delivered'}">
           <div
           :class="{ 'load-edges': load.loadMapId === loadingProgress }"
-            class="uk-card uk-card-default uk-card-body"
+            class="uk-card uk-card-body"
             @click="setLoad(load)"
           >
            <p class="uk-flex status-load">
@@ -42,13 +42,13 @@ pre<template>
             </p>
           <div class="uk-flex uk-flex-between uk-flex-middle">
 
-            <div class="uk-margin-top">
+            <div style="margin-top: 32px !important">
               <div>
                   <p class="uk-flex">
-                    <span>{{ load.loadNumber }}</span>
+                    <span>{{ load?.loadNumber }}</span>
                   </p>
               </div>
-              <div class="uk-flex uk-flex-middle" style="font-size: 16px !important">
+              <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
                 <span v-for="order of load.Orders" :key="order">{{order.order_num}}</span>
               </div>
@@ -65,6 +65,23 @@ pre<template>
                 <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
                 <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
               </div>
+
+              <div v-if="userInfo?.userType != userType?.driver">
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Chofer:&nbsp;</p>
+                   <span v-for="info of load?.Vehicles" :key="info">
+                     {{info?.driver}}
+                    </span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                    <span v-for="info of load?.Vehicles" :key="info">
+                      {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
+                      {{ info?.license_no }}
+                   </span>
+                </div>
+              </div>
+
                </div>
               <div class="start-load">
                 <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
@@ -91,17 +108,21 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { Profile } from "../mixins/Profile"
+import { userType, userPosition } from '../types'
+
 
 export default {
   components: {
     IonLoading,
   },
-  props: {
-    timeout: { type: Number, default: 1000 },
-  },
-  mixins: [Mixins],
+  
+  mixins: [Mixins, Profile],
+  alias: "Cargas Disponibles",
   data() {
     return {
+      userType,
+      userPosition,
 
       loaded: false,
       loads: [],
@@ -109,6 +130,8 @@ export default {
       date: new Date(),
       dateMoment: null,
       assignedLoads: -1,
+      timeOut: 20000,
+      userInfo: {}
     };
   },
 
@@ -124,9 +147,12 @@ export default {
   },
   
   async mounted() {
+      this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
       moment.locale('en');
       window.location.href = "#Hoy";
+      this.setProfile()
       await this.currentDate();
+      
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
       if(!localStorage.getItem('setting')){
@@ -134,7 +160,7 @@ export default {
       }
   },
   computed: {
-    ...mapGetters(["allLoadsStore", "settings"]),
+    ...mapGetters(["allLoadsStore", "settings", "userData"]),
 
     loadingProgress: function () {
      
@@ -151,6 +177,8 @@ export default {
     },
     async currentDate(val = null) {
       this.assignedLoads = -1
+     
+
       let contDate
       if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
         contDate = JSON.parse(localStorage.getItem('dateCheck'));
@@ -158,18 +186,33 @@ export default {
       }else if(val) contDate = this.date.setDate(this.date.getDate() + val);   
       else contDate = this.date
       var date = moment(contDate).format("MM/DD/YYYY");
-      this.loads = await this.$services.loadsServices.getLoadsbyDate(date);
-      this.setOpen(true);
-      this.loads.forEach(async (x) => {
-        const resultByDate =
-          await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-          x.firstOrdenSector = x.Orders?.find((order) => order);
-          Object.assign(x, resultByDate);
-          this.IsDelivered(x)
-      });
-      if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+
+       if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
+      this.setOpen(true);
       
+      let loadsCurrent = await this.$services.loadsServices.getLoadsbyDate(date);
+      let loads = [...loadsCurrent] 
+      console.log(loadsCurrent, 'Estoy en load')
+      for(let i = 0; i < loads.length; i++){
+        let x = loads[i]
+        
+          const resultByDate =  await this.$services.loadsServices.getLoadDetails(x.loadMapId);
+          console.log(this.userInfo)
+          if((!resultByDate.approvers[0]?.status && this.userInfo?.userType == this.userType?.driver )){
+            loads.splice(i, 1)
+            alert('lo borre')
+          }else{
+            alert('entre')
+            x.firstOrdenSector = x.Orders?.find((order) => order);
+            Object.assign(x, resultByDate);
+            this.IsDelivered(x)
+          }
+      }
+      
+      this.setOpen(false);
+
+      this.loads = loads
       this.assignedLoads = this.loads.length
 
       console.log(this.loads);
@@ -187,7 +230,11 @@ export default {
       this.$store.commit("setDetailsLoadsStore", val);
       localStorage.setItem('DeliveryCharges', JSON.stringify(val));
       
-      this.$router.push({ name: "details-load" }).catch(() => {});
+      if(val.loadingStatus.text == 'Expecting Approval' && !val.approvers[0].status){
+        this.$router.push({ name: "confirm-trip" }).catch(() => {});
+      }else{
+        this.$router.push({ name: "details-load" }).catch(() => {});
+      }
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});
@@ -215,9 +262,12 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      if (val?.loadingStatus?.text == "Expecting Approval") return "Esperando Tu Aprobación";
+      if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
+      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
+      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
+
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
-      if (val?.loadingStatus?.text == "Driver Arrival") return "LLegada del Conductor";
+      if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
       if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
@@ -499,5 +549,14 @@ footer #scroll-trigger {
 }
 .load-edges{
   border: 4.1px solid #f92b2b;
+}
+.load-delivered{
+  background: #fafffa
+}
+.load-default-status .status-load{
+  color: #286dd9;
+}
+.load-delivered .status-load{
+  color: green !important;
 }
 </style>

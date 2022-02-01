@@ -28,10 +28,30 @@
         </div>
       </div>
     </div>
-
     <div class="container">
       <h6>Seleccione el Siguiente Paso</h6>
       <ul class="progressbar">
+        <li
+          v-if="userData?.userType == userType?.provider" 
+          :class="{active: loadStatus.step == step.expectingApprovalProvider, 'completed-status': loadStatus.step > step.expectingApprovalProvider}"
+        >
+          <div  
+            class="info"><span>0</span>
+          </div>
+
+          <div
+            @click="changeRoute('Expecting Approval')"
+            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
+          >
+            <h6>{{messageStatus?.expectingApprovalProvider?.message}}</h6>
+          </div>
+          <div class="icon-item">
+            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApprovalProvider" icon="arrow-right"/>
+            <img v-if="loadStatus.step < step.expectingApprovalProvider" src="../assets/checklist.png" />
+            <img v-if="loadStatus.step > step.expectingApprovalProvider" src="../assets/check.png" />
+          </div>
+          <div class="disabled-container"></div>
+        </li>
         <li 
           :class="{active: loadStatus.step == step.expectingApproval, 'completed-status': loadStatus.step > step.expectingApproval}"
         >
@@ -43,7 +63,7 @@
             @click="changeRoute('Expecting Approval')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus.expectingApproval}}</h6>
+            <h6>{{messageStatus?.expectingApproval?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
@@ -63,7 +83,7 @@
             @click="changeRoute('Driver Arrival')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus.driverArrival}}</h6>
+            <h6>{{messageStatus?.driverArrival?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Driver Arrival')" v-if="loadStatus.step == step.driverArrival" icon="arrow-right"/>
@@ -82,7 +102,7 @@
             @click="changeRoute('Approved')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus.approved}}</h6>
+            <h6>{{messageStatus?.approved?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Approved')" v-if="loadStatus.step == step.approved" icon="arrow-right"/>
@@ -101,19 +121,22 @@
             @click="changeRoute('Dispatched')"
             class="uk-card action on-way  uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus.dispatch}}</h6>
+            <h6>{{messageStatus?.startRoute?.message}}</h6>
           </div>
+
           <div class="icon-item">
             <span v-if="setting.maps" class="ddd">
               <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right"/>
               <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
             </span>
+
             <span v-if="!setting.maps" class="ss">
               <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
               <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
               <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />
             </span>
           </div>
+
           <div class="disabled-container"></div>
         </li>
         <li
@@ -125,7 +148,7 @@
             @click="changeRoute('Deliver-Load')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus.delivered}}</h6>
+            <h6>{{messageStatus?.delivered?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Deliver-Load')" v-if="loadStatus.step == step.delivered" icon="arrow-right"/>
@@ -142,7 +165,7 @@
             @click="changeRoute('return-container')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus.returnContainer}}</h6>
+            <h6>{{messageStatus?.returnContainer?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('return-container')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
@@ -163,8 +186,11 @@
 
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { Profile } from '../mixins/Profile'
 import { alertController } from '@ionic/vue';
 import { Geolocation} from '@capacitor/geolocation'
+import { userType, userPosition } from '../types'
+
 
 
 export default {
@@ -172,7 +198,10 @@ export default {
  
   data() {
     return {
+      userType,
+      userPosition,
       step:{
+        expectingApprovalProvider: 0,
         expectingApproval: 1,
         driverArrival: 2,
         approved: 3,
@@ -191,37 +220,37 @@ export default {
     };
   },
  
-  mixins: [Mixins],
+  mixins: [Mixins, Profile],
   computed: {
-    ...mapGetters(["loadStore", "startRoute"]),
+    ...mapGetters(["loadStore", "startRoute", "userData"]),
+
     loadStatus() {
       let statusLoad = {};
-      if (this.load?.loadingStatus?.text == "Expecting Approval"){
-        statusLoad.expectingApproval = true;
+      if (this.load?.loadingStatus?.text == "Expecting Approval" && !this.load.approvers[0].status && this.userData.userType == this.userType.provider){
+        statusLoad.step = 0;
+        return statusLoad
+      }
+      if (this.load?.loadingStatus?.text == "Expecting Approval" && this.load?.approvers[0]?.status || this.userData?.userType != this.userType?.provider && this.load?.loadingStatus?.text == "Expecting Approval" ){
         statusLoad.step = 1;
+        return statusLoad
       }
       if (this.load?.loadingStatus?.text == "Approved"){
-        statusLoad.driverArrival = true;
         statusLoad.step = 2;
       }
       if (this.load?.loadingStatus?.text == "Approved" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Driver Arrival" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Loading Truck" && this.currentStatusLoad == this.step.approved){
-        statusLoad.approved = true;
         statusLoad.step = 3;
 
       }
       if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad < this.step.delivered){
-        statusLoad.dispatch = true;
         statusLoad.step = 4;
         return statusLoad;
       }
       if(this.allOrderIsReturn){
         if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
-          statusLoad.delivered = true;
           statusLoad.step = 6;
           return statusLoad;
         }
          if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
-          statusLoad.returnContainer = true;
           statusLoad.step = 7;
           return statusLoad;
       }
@@ -233,12 +262,10 @@ export default {
       }
       if(!this.allOrderIsReturn){
         if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
-          statusLoad.delivered = true;
           statusLoad.step = 5;
           return statusLoad;
         }
         if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
-        statusLoad.returnContainer = true;
         statusLoad.step = 6;
         return statusLoad;
       }
@@ -250,27 +277,36 @@ export default {
       }
       return statusLoad;
     },
+
     messageStatus(){
-      let message = {
-        expectingApproval: 'Aprobar Viaje',
-        driverArrival: 'Registrar LLegada a Recoger',
-        approved: 'Montar Viaje',
-        dispatch: 'Iniciar Ruta',
-        delivered: 'Entregar al Cliente',
-        returnContainer: 'Devolver Contenedor'
-      }
-      if(this.loadStatus.step > 1) message.expectingApproval = 'Aprobó el Viaje'
-      if(this.loadStatus.step > 2) message.driverArrival = 'Llegó a Recoger'
-      if(this.loadStatus.step > 3) message.approved = 'Montó el Viaje'
+      let message = { ...this.currentProfile?.LoadStatus }
+
+      if(this.loadStatus.step > 0)
+        message.expectingApprovalProvider.message = message?.expectingApprovalProvider?.pastMessage
+
+      if(this.loadStatus.step > 1)
+        message.expectingApproval.message = message?.expectingApproval?.pastMessage
+
+      if(this.loadStatus.step > 2) 
+        message.driverArrival.message = message?.driverArrival?.pastMessage
+
+      if(this.loadStatus.step > 3)
+        message.approved.message = message?.approved?.pastMessage
+
       if(this.loadStatus.step > 4) {
-        if(this.setting.maps) message.dispatch = 'Ver Ruta'
-        else message.dispatch = 'Comenzó la Ruta'
+        if(this.setting.maps) message.startRoute.message = message?.startRoute?.pastMessage 
+        else message.startRoute.message = 'Comenzó la Ruta'
       } 
-      if(this.loadStatus.step > 5) message.delivered = 'Contenedor Entregado'
-      if(this.loadStatus.step > 6) message.returnContainer = 'Contenedor Retornado'
+      if(this.loadStatus.step > 5)
+        message.delivered.message = message?.delivered?.pastMessage
+
+      if(this.loadStatus.step > 6) 
+       message.returnContainer.message = message?.returnContainer?.pastMessage 
+
       return message
     }
   },
+
   async mounted() {
     this.setting = JSON.parse(localStorage.getItem('setting'))
     console.log(this.setting)
@@ -289,6 +325,7 @@ export default {
     localStorage.removeItem('dateCheck');
     localStorage.setItem('dateCheck', JSON.stringify(this.load.dateTime.date));
   },
+
   methods: {
     async changeRoute(val) {
       if(await this.ubication()){

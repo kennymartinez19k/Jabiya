@@ -5,7 +5,7 @@ const orders = {
       settings: {
         AutoScan: true,
         language: null,
-        profile: null,
+        profile: 'container',
         maps: false
       },
       language: null,
@@ -18,14 +18,14 @@ const orders = {
       state.registrationForScan = val
       console.log(state.registrationForScan)
     },
-    setSettings(state, val){
+    async setSettings(state, val){
       if(!val){
         localStorage.setItem('setting', JSON.stringify(state.settings))
       }else{
         state.settings = val
         localStorage.setItem('setting', JSON.stringify(state.settings))
-
       }
+
     },
     setLanguageStore (state, lang) {
       state.language = lang

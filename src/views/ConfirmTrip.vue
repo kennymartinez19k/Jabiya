@@ -30,10 +30,10 @@
     </div>
     <div class="uk-card uk-card-default uk-width-1-2@m container">
       
-        <div>
+        <div >
           <div
             class="uk-card uk-card-default uk-card-body"
-            @click="setLoad(load)"
+            style="margin-bottom: 40px"
           >
             <h6 class="uk-text-center">Detalles del Viaje</h6>
            
@@ -151,7 +151,7 @@
           </button>
           <button
             href="#modal-group-1"
-            @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECT')"
+            @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECT', userData.userType)"
             class="uk-button button-reject uk-modal-close"
             uk-toggle
           >
@@ -166,7 +166,7 @@
         <font-awesome-icon icon="ban" style="color: #fff; font-size: 14px" />
       </a>
       <button
-        @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'ACCEPTED')"
+        @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'ACCEPTED', userData.userType)"
         class="uk-button uk-button-blue"
       >
         Aceptar Viaje &nbsp;
@@ -178,6 +178,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { Mixins } from '../mixins/mixins'
 export default {
   alias: `Aprobar Viaje`,
   data() {
@@ -188,8 +189,9 @@ export default {
       orders: null,
     };
   },
+  mixins: [Mixins],
   computed: {
-    ...mapGetters(["loadStore", "orderScan", "loads", "products"]),
+    ...mapGetters(["loadStore", "orderScan", "loads", "products", "userData"]),
 
     productsBox: function () {
       if (this.products?.length !== 0) {
@@ -210,7 +212,6 @@ export default {
       this.orders = this.loadStore.Orders
       console.log(this.orders)
     }
-    console.log(this.orders);
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -237,14 +238,14 @@ export default {
         } else x.completed = false;
       });
     },
-    async acceptOrRejectLoad(id, version, status) {
-      
+    async acceptOrRejectLoad(id, version, status, type) {
       var user = JSON.parse(localStorage.getItem("userInfo"));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,
         user.id,
-        status
+        status,
+        type
       );
       console.log(result);
       if (result) {
@@ -256,17 +257,7 @@ export default {
       var shipper = val?.shipper[0]?.name;
       return shipper;
     },
-    loadStatus(val){
-      if(val?.loadingStatus?.text == 'Delivered') return 'Entregada'
-      if(val?.loadingStatus?.text == 'Driver Arrival') return 'En Ruta'
-      if(val?.loadingStatus?.text == 'Dispatched') return 'Despacho Aprobado'
-      if(val?.loadingStatus?.text == 'Expecting Approval') return 'Esperando tu Aprobacion'
-      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.every(x => x.status == 'ACCEPTED'))
-        return 'Aprobada'
-      if(val?.loadingStatus?.text == 'Approved' && val?.approvers?.some(x => x.status != 'ACCEPTED'))
-        return 'Rechazada'
-      
-    },
+    
   },
 };
 </script>

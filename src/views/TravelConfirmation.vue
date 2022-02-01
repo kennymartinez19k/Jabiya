@@ -123,11 +123,14 @@
 
 <script>
 import { mapGetters } from "vuex";
+
 export default {
   alias: `Montar Viaje`,
   name: `cargarrr`,
   data() {
     return {
+      userType,
+      userPosition,
       status: null,
       result: null,
       load: null,
@@ -184,7 +187,7 @@ export default {
         } else x.completed = false;
       });
     },
-    async acceptOrRejectLoad(id, version, param){
+    async acceptOrRejectLoad(id, version, param, ){
         const result = await this.$services.loadsServices.acceptOrRejectLoad(id, version, param)
         console.log(result)
         if(result){
