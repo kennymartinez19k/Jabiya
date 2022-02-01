@@ -120,6 +120,9 @@
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
               </ul>
             </div>
+            <div>
+                <driver-truck></driver-truck>
+            </div>
         </div>
       </div>
     </div>
@@ -133,13 +136,14 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-
+import DriverTruck from '../components/AddDriverAndTruck.vue'
 export default {
   name: "DetailsLoad",
   alias: "Detalles del Viaje",
 
   components: {
     IonLoading,
+    DriverTruck
   },
   props: {
     timeout: { type: Number, default: 1000 },
