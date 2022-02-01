@@ -138,27 +138,6 @@ export default {
         this.showError = false;
       }
     },
-    rememberPassword: {
-      handler: function (newVal) {
-        if (newVal === true) {
-          localStorage.removeItem("rememberData");
-          localStorage.removeItem("rememberPassword");
-          localStorage.setItem(
-            "rememberData",
-            JSON.stringify(this.login.email)
-          );
-          localStorage.setItem(
-            "rememberPassword",
-            JSON.stringify(this.login.password)
-          );
-    
-        } else {
-          localStorage.removeItem("rememberData");
-          localStorage.removeItem("rememberPassword");
-        }
-      },
-      deep: true,
-    },
   },
   mounted() {
     if (JSON.parse(localStorage.getItem("rememberData"))) {
@@ -177,10 +156,6 @@ export default {
   methods: {
     async changeRoute(path) {
     
-      if(this.rememberPassword){
-        localStorage.setItem("rememberData", JSON.stringify(this.login.email));
-        localStorage.setItem("rememberPassword", JSON.stringify(this.login.password));
-      }
       if (path == "home") {
         if (this.login.email !== "" && this.login.password !== "") {
           this.loaded = true;
@@ -193,6 +168,11 @@ export default {
       this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
         this.loaded = true;
         this.$store.commit("setUserData");
+     
+        if(this.rememberPassword){
+          localStorage.setItem("rememberData", JSON.stringify(this.login.email));
+          localStorage.setItem("rememberPassword", JSON.stringify(this.login.password));
+        }
 
         if(res?.role == this.role?.transporter && res?.userType == this.userType?.transporter && res?.position == this.positionSPN?.transporter){
           this.$router.push({ name: 'transporter-load' }).catch(() => {}) 
