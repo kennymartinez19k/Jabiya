@@ -165,11 +165,19 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    this.detailsLoads = this.detailsLoadsStore;
+    if (this.detailsLoadsStore) {
+      this.detailsLoads = this.detailsLoadsStore;
+    // } else {
+      // this.detailsLoads =  JSON.parse(localStorage.getItem('DeliveryCharges'));
+      console.log( JSON.parse(localStorage.getItem('DeliveryCharges')))
+    }
   },
 
   computed: {
     ...mapGetters(["detailsLoadsStore"]),
+  },
+  mounted () {
+     JSON.parse(localStorage.getItem('DeliveryCharges'));
   },
 
   methods: {
