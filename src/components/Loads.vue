@@ -66,7 +66,7 @@
                 <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
               </div>
 
-              <div v-if="userData?.userType != userType?.driver">
+              <div v-if="userInfo?.userType != userType?.driver">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Chofer:&nbsp;</p>
                    <span v-for="info of load?.Vehicles" :key="info">
@@ -130,7 +130,8 @@ export default {
       date: new Date(),
       dateMoment: null,
       assignedLoads: -1,
-      timeOut: 20000
+      timeOut: 20000,
+      userInfo: {}
     };
   },
 
@@ -146,6 +147,7 @@ export default {
   },
   
   async mounted() {
+      this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
       moment.locale('en');
       window.location.href = "#Hoy";
       this.setProfile()
@@ -189,15 +191,19 @@ export default {
       else this.dateMoment = date
       this.setOpen(true);
       
-      let loads = await this.$services.loadsServices.getLoadsbyDate(date);
+      let loadsCurrent = await this.$services.loadsServices.getLoadsbyDate(date);
+      let loads = [...loadsCurrent] 
+      console.log(loadsCurrent, 'Estoy en load')
       for(let i = 0; i < loads.length; i++){
         let x = loads[i]
         
           const resultByDate =  await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-          
-          if(!resultByDate.approvers[0]?.status && this.userData?.userType != this.userType?.provider){
+          console.log(this.userInfo)
+          if((!resultByDate.approvers[0]?.status && this.userInfo?.userType == this.userType?.driver )){
             loads.splice(i, 1)
+            alert('lo borre')
           }else{
+            alert('entre')
             x.firstOrdenSector = x.Orders?.find((order) => order);
             Object.assign(x, resultByDate);
             this.IsDelivered(x)
@@ -256,7 +262,7 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-
+      if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
       if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
 

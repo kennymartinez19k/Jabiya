@@ -240,7 +240,6 @@ export default {
     },
     async acceptOrRejectLoad(id, version, status, type) {
       var user = JSON.parse(localStorage.getItem("userInfo"));
-      alert('ddd')
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,
@@ -249,7 +248,6 @@ export default {
         type
       );
       console.log(result);
-      alert('sssss')
       if (result) {
         if(status == 'REJECT')  this.$router.push({ name: "home" });
         else this.$router.push({ name: "load-status" });
