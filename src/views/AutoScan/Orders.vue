@@ -134,7 +134,6 @@ export default {
       }
   },
   mounted() {
-    console.log(this.loadStore)
     this.localStorageGps.create();
 
     if(this.loadStore){
@@ -195,13 +194,11 @@ export default {
         for(var i = 0; i < order.products.length; i++){
           let prod = order.products[i]
           if(prod.scanOneByOne === "no") {
-            const resultScanning =  await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-            console.log(resultScanning)
+            await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
           }
           else {
             for(let i = 0; i <= prod.quantity; i++){
-              const resultScanning =  await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
-              console.log(resultScanning)
+              await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
             }
           }
         }

@@ -63,7 +63,11 @@ export const Mixins = {
                  if(val == 'Dispatched') await this.startLoadRoute(load)
                  if(val == 'Deliver-Load') router.push({name: 'delivery-actions-auto'}) 
                  if(val == 'return-container')  router.push({name: 'return-container'})
-                 if(val == 'Delivered') this.localStorageGps.remove(`gps ${load?.loadMapId}`)
+                 if(val == 'Delivered') {
+                    localStorage.removeItem('loadingProgress');
+                    this.localStorageGps.remove(`gps ${load?.loadMapId}`)
+                    localStorage.removeItem(`loadStatus${load.loadMapId}`)
+                 } 
              }
              else {
                 if(val == 'Approved' || val == 'Loading Truck') router.push({name: 'orders'})

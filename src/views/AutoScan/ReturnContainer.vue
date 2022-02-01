@@ -171,7 +171,6 @@ export default {
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.load.Orders.filter((x) => x.isReturn);
-      console.log(this.orders, 'retu');
       this.showSignaturform = this.orders.some(x =>  x.isReturn );
     }
     if (this.orderScan?.length > 1) {
@@ -312,7 +311,6 @@ export default {
 
      async postImages() {
       let returnedOrders = this.orders.filter((x) => x.isReturn);
-      console.log(returnedOrders)
       let accountant = null;
       for (var it = 0; it < returnedOrders.length; it++) {
         let order = returnedOrders[it];
@@ -332,8 +330,8 @@ export default {
         }
         for (let i = numberOfImages; i < accountant; i++) {
           images.push(this.imagiElement[0]);
+          
         }
-        console.log(order)
         this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
     },
@@ -361,7 +359,6 @@ export default {
               }
             }
           } catch(error){
-            console.log(error, 'hola')
             if (error.message === 'Request failed with status code 401') {
               console.log('Error al introducir los datos')
             }else if (error.message === 'Network Error') {
