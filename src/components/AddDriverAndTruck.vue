@@ -1,20 +1,20 @@
 <template>
   <div>
     <div class="md-6" style="text-align: center">
-      <h3>Detalles del Transportista</h3>
+      <h5 class="uk-text-bold">Detalles del Transportista</h5>
     </div>
 
     <div>
-      <h5>Transportista: <span>Kenny</span></h5>
+      <h6 style="color: #666 !important">Transportista: <span>Kenny</span></h6>
     </div>
     <form action="" class="table-border">
       <h5>Elija un Conductor</h5>
 
       <table class="uk-table uk-table-striped">
         <thead>
-          <tr>
+          <tr class="">
             <th scope="col" style="width: 5px"></th>
-            <th scope="col">Nombre del Conductor</th>
+            <th scope="col" style="display: inline">Nombre del Conductor</th>
           </tr>
         </thead>
         <tbody>
@@ -77,8 +77,8 @@
         <thead>
           <tr>
             <th scope="col" style="width: 0.3%"></th>
-            <label class="uk-margin-remove uk-padding-remove">
-              <th scope="col">No. del Vehículo</th>
+            <label class="uk-margin-remove uk-padding-remove list uk-flex uk-flex-around">
+              <th scope="col" >No. del Vehículo</th>
               <th scope="col">Marca</th>
               <th scope="col">Costo</th>
             </label>
@@ -97,7 +97,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove" for="vehicleId6"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list " for="vehicleId6"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -115,7 +115,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove" for="vehicleId7"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId7"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -133,7 +133,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove" for="vehicleId8"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId8"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -194,7 +194,9 @@ h5 {
   color: #212529;
 }
 th {
-  font-size: 2vh;
+  font-size: 11px; 
+  font-weight: 600;
+  color: #666
 }
 td {
   font-size: 1.9vh;
@@ -203,5 +205,13 @@ td {
   table .vehicle {
     padding: 0px 0px 8px 2px;
   }
+}
+.list th{
+  width: 15%;
+  min-width: 76px
+}
+.list td{
+  width: 15%;
+  min-width: 80px;
 }
 </style>

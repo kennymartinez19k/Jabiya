@@ -1,6 +1,7 @@
 export const Profile = {
   data() {
     return {
+      user: null,
       container: {
         LoadStatus: {
           expectingApprovalProvider: {
@@ -8,8 +9,9 @@ export const Profile = {
             pastMessage: "Aprobó el Viaje $ Flai",
           },
           expectingApproval: {
-            message: "Aprobar Viaje",
-            pastMessage: "Aprobó el Viaje",
+            message: this.approvalVerified(),
+            pastMessage: "Aprobó el Viaje (Chofer)",
+            isProvider: "Esperando aprobación (Chofer)"
           },
           driverArrival: {
             message: "Registrar LLegada a Recoger",
@@ -33,35 +35,35 @@ export const Profile = {
           },
         },
       },
-      container1: {
+      eCommerce: {
         LoadStatus: {
           expectingApprovalProvider: {
             message: "Aprobar $ Viaje Flai 1",
-            pastMessage: "Aprobó el Viaje $ Flai",
+            pastMessage: "Aprobó el Viaje $ Flai 1",
           },
           expectingApproval: {
             message: "Aprobar Viaje 1",
-            pastMessage: "Aprobó el Viaje",
+            pastMessage: "Aprobó el Viaje 1",
           },
           driverArrival: {
             message: "Registrar LLegada a Recoger 1",
-            pastMessage: "Llegó a Recoger",
+            pastMessage: "Llegó a Recoger 1",
           },
           approved: {
             message: "Montar Viaje 1",
-            pastMessage: "Monto el Viaje",
+            pastMessage: "Monto el Viaje 1",
           },
           startRoute: {
             message: "Iniciar Ruta 1",
-            pastMessage: "Comenzo la Ruta",
+            pastMessage: "Comenzo la Ruta 1",
           },
           delivered: {
             message: "Entregar Contenedor 1",
-            pastMessage: "Contenedor Entregado",
+            pastMessage: "Contenedor Entregado 1",
           },
           returnContainer: {
             message: "Retornar Contenedor 1",
-            astMessage: "Contenedor Retornado",
+            astMessage: "Contenedor Retornado 1",
           },
         },
       },
@@ -74,13 +76,18 @@ export const Profile = {
   methods: {
     setProfile() {
       let setting = JSON.parse(localStorage.getItem("setting"))
+      
       if (setting.profile == "container") {
         this.currentProfile = { ...this.container };
       }
-      if(setting.profile == "eCommerce"){
-        this.currentProfile = { ...this.container1 };
-
+      if (setting.profile == "eCommerce"){
+        this.currentProfile = { ...this.eCommerce };
       }
     },
+    approvalVerified(){
+      this.user = JSON.parse(localStorage.getItem("userInfo"))
+      if(this.user?.userType != 'Driver') return 'Esperando aprobación (Chofer)'
+      else return 'Aprobar Viaje (Chofer)'
+    }
   },
 };

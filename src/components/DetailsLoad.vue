@@ -30,21 +30,20 @@
               <div v-if="userData?.userType == userType?.provider">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span>{{detailsLoads.plannedProfitability.profitability.revenue}}</span>
+                  <span>{{detailsLoads?.plannedProfitability?.profitability?.revenue}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span>{{detailsLoads.plannedProfitability.profitability.profitability}}</span>
+                  <span>{{detailsLoads?.plannedProfitability?.profitability?.profitability}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
-                  <span>{{detailsLoads.plannedProfitability.profitability.transportCost}}</span>
+                  <span>{{detailsLoads?.plannedProfitability?.profitability?.transportCost}}</span>
                 </div>
               </div>
 
               <div
                 class="uk-flex uk-flex-middle"
-                style="font-size: 16px !important"
               >
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
                 <span v-for="order of detailsLoads.Orders" :key="order">{{
@@ -134,7 +133,7 @@
             </div>
            
           </div>
-           <div class="uk-text-left" v-if="userData?.userType == userType?.transporter && userData?.position == userPosition?.transporter">
+           <div class="uk-text-left" v-if="userData?.userType === userType?.transporter && userData?.position === userPosition?.transporter">
               <p class="uk-text-bold " style="font-size: 16px !important">Información Adicional:</p>
               <ul>
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
@@ -142,7 +141,7 @@
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
               </ul>
             </div>
-            <div v-if="userData?.userType == userType?.transporter && userData?.position == userPosition?.transporter && detailsLoads.loadingStatus.text === 'Driver selection in progress'">
+            <div v-if="(userData?.userType === userType?.transporter || userData?.userType === userType?.provider) && detailsLoads.loadingStatus.text === 'Driver selection in progress'">
                 <driver-truck></driver-truck>
             </div>
         </div>
