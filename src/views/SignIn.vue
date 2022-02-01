@@ -111,7 +111,7 @@ export default {
         email: "",
         password: "",
       },
-      rememberPassword: false,
+      rememberPassword: true,
 
       AutoLogin: {
         email: "",
@@ -132,27 +132,6 @@ export default {
       if (newVal) {
         this.showError = false;
       }
-    },
-    rememberPassword: {
-      handler: function (newVal) {
-        if (newVal === true) {
-          localStorage.removeItem("rememberData");
-          localStorage.removeItem("rememberPassword");
-          localStorage.setItem(
-            "rememberData",
-            JSON.stringify(this.login.email)
-          );
-          localStorage.setItem(
-            "rememberPassword",
-            JSON.stringify(this.login.password)
-          );
-    
-        } else {
-          localStorage.removeItem("rememberData");
-          localStorage.removeItem("rememberPassword");
-        }
-      },
-      deep: true,
     },
   },
   mounted() {
@@ -180,7 +159,22 @@ export default {
         this.loaded = true;
         this.$store.commit("setUserData", resultLogin);
         if (resultLogin) this.$router.push({ name: path }).catch(() => {});
-
+          if (this.rememberPassword === true) {
+            localStorage.removeItem("rememberData");
+            localStorage.removeItem("rememberPassword");
+            localStorage.setItem(
+              "rememberData",
+              JSON.stringify(this.login.email)
+            );
+            localStorage.setItem(
+              "rememberPassword",
+              JSON.stringify(this.login.password)
+            );
+    
+        } else {
+          localStorage.removeItem("rememberData");
+          localStorage.removeItem("rememberPassword");
+        }
       }) .catch((error) => {
         this.loaded = false;
         this.disabled = false;
