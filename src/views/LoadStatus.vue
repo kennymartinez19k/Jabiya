@@ -60,13 +60,14 @@
           </div>
 
           <div
+            :class="{'disabled-event': userData?.userType == userType?.provider }"
             @click="changeRoute('Expecting Approval')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
             <h6>{{messageStatus?.expectingApproval?.message}}</h6>
           </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
+          <div class="icon-item" >
+            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval && userData?.userType == userType?.driver" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
             <img v-if="loadStatus.step > step.expectingApproval" src="../assets/check.png" />
           </div>
@@ -279,9 +280,8 @@ export default {
     },
 
     messageStatus(){
-      console.log(this.currentProfile)
+        console.log(this.currentProfile)
       let message = { ...this.currentProfile?.LoadStatus }
-      console.log(message)
 
       if(this.loadStatus.step > 0)
         message.expectingApprovalProvider.message = message?.expectingApprovalProvider?.pastMessage
@@ -306,7 +306,7 @@ export default {
        message.returnContainer.message = message?.returnContainer?.pastMessage 
 
       return message
-    }
+      }
   },
 
   async mounted() {
@@ -539,6 +539,9 @@ ul {
 
 .progressbar li .active h6{
   color: #fff !important
+}
+.disabled-event{
+  pointer-events: none;
 }
 
 </style>

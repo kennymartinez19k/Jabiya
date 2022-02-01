@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="md-6" style="text-align: center">
-      <h3>Detalles del Transportista</h3>
+      <h5 class="uk-text-bold">Detalles del Transportista</h5>
     </div>
 
     <div>
-      <h5>Transportista: <span>Kenny</span></h5>
+      <h6 style="color: #666 !important">Transportista: <span>Kenny</span></h6>
     </div>
     <form action="" class="table-border">
       <h5>Elija un Conductor</h5>
@@ -77,7 +77,7 @@
         <thead>
           <tr>
             <th scope="col" style="width: 0.3%"></th>
-            <label class="uk-margin-remove uk-padding-remove list">
+            <label class="uk-margin-remove uk-padding-remove list uk-flex uk-flex-around">
               <th scope="col" >No. del Vehículo</th>
               <th scope="col">Marca</th>
               <th scope="col">Costo</th>
@@ -97,7 +97,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around " for="vehicleId6"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list " for="vehicleId6"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -115,7 +115,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around" for="vehicleId7"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId7"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -133,7 +133,7 @@
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around" for="vehicleId8"
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId8"
               ><td>vehicleNo</td>
               <td>brand</td>
               <td>cost</td></label
@@ -203,7 +203,12 @@ td {
     padding: 0px 0px 8px 2px;
   }
 }
+.list th{
+  width: 15%;
+  min-width: 76px
+}
 .list td{
-  width: 30%
+  width: 15%;
+  min-width: 80px;
 }
 </style>

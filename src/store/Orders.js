@@ -19,12 +19,9 @@ const orders = {
       console.log(state.registrationForScan)
     },
     async setSettings(state, val){
-      alert('s')
       if(!val){
-        alert('d')
         localStorage.setItem('setting', JSON.stringify(state.settings))
       }else{
-        alert('3')
         state.settings = val
         localStorage.setItem('setting', JSON.stringify(state.settings))
       }
