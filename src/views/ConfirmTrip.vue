@@ -166,7 +166,7 @@
         <font-awesome-icon icon="ban" style="color: #fff; font-size: 14px" />
       </a>
       <button
-        @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'ACCEPTED', userData.userType)"
+        @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', userData?.userType)"
         class="uk-button uk-button-blue"
       >
         Aceptar Viaje &nbsp;
@@ -206,6 +206,7 @@ export default {
     },
   },
   mounted() {
+
     if (this.loadStore) {
       this.load = this.loadStore;
       console.log(this.load)
