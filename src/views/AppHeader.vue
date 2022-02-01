@@ -108,7 +108,10 @@ export default {
       Uikit.offcanvas("#offcanvas-overlay").hide();
     },
     setCurrentPage(val) {
-      val
+      if(val == 'sign-in'){
+        this.$store.commit('resetData')
+        this.$router.push({ name: val }).catch(() => {});
+      }
       if (val == "back") this.$router.go(-1);
       else {
         this.$router.push({ name: val }).catch(() => {});

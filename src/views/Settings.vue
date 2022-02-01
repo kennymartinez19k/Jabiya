@@ -37,6 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { Profile } from '../mixins/Profile'
 export default {
   alias: 'Configuracion',
   data() {
@@ -44,11 +45,12 @@ export default {
       settings: {
         AutoScan: true,
         language: null,
-        profile: null,
+        profile: 'container',
         maps: false
       },
     };
   },
+  mixins: [Profile],
   computed: {
     ...mapGetters(['languageStore', 'rolStore', 'settingsStore'])
   },
@@ -58,8 +60,9 @@ export default {
   },
 
   methods: {
-    saveSettings() {
-      this.$store.commit("setSettings", this.settings);
+    async saveSettings() {
+      await this.$store.commit("setSettings", this.settings);
+      this.setProfile()
       this.$store.commit("changeRol", this.settings.profile );
       this.$router.push({ name: "home" });
     },
