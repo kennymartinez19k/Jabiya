@@ -142,6 +142,7 @@
         </tbody>
       </table>
     </form>
+    
     <div class="uk-margin-small-top">
       <button type="button" class="uk-button uk-button-primary" @click="selectDriverVehicle()">Seleccionar conductor y Vehículo </button>
     </div>

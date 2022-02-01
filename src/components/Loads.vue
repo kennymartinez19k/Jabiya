@@ -111,7 +111,6 @@ import { Mixins } from "../mixins/mixins";
 import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
 
-
 export default {
   components: {
     IonLoading,
