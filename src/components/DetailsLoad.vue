@@ -10,7 +10,9 @@
     </ion-loading>
     <div>
       <div class="uk-card uk-card-default uk-width-1-2@m container">
-        <div  class="uk-card uk-card-default uk-card-body">
+        <div
+            :class="{'load-delivered': detailsLoads.loadingStatus.text == 'Delivered'}" 
+            class="uk-card uk-card-default uk-card-body load-default-status">
           <div
             @click="setLoad(detailsLoads)"
           >
@@ -72,13 +74,15 @@
                 >
               </div>
 
-              <div class="uk-flex uk-flex-middle">
+              <div v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" 
+                  class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{
                   info?.driver
                 }}</span>
               </div>
-              <div class="uk-flex uk-flex-middle">
+              <div v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" 
+                  class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Vehiculo:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info"
                   >{{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
@@ -137,7 +141,7 @@
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
               </ul>
             </div>
-            <div>
+            <div v-if="userData?.userType == userType?.transporter && userData?.position == userPosition?.transporter && detailsLoads.loadingStatus.text === 'Driver selection in progress'">
                 <driver-truck></driver-truck>
             </div>
         </div>
@@ -187,11 +191,19 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    this.detailsLoads = this.detailsLoadsStore;
+    if (this.detailsLoadsStore) {
+      this.detailsLoads = this.detailsLoadsStore;
+    // } else {
+      // this.detailsLoads =  JSON.parse(localStorage.getItem('DeliveryCharges'));
+      console.log( JSON.parse(localStorage.getItem('DeliveryCharges')))
+    }
   },
 
   computed: {
     ...mapGetters(["detailsLoadsStore", "userData"]),
+  },
+  mounted () {
+     JSON.parse(localStorage.getItem('DeliveryCharges'));
   },
 
   methods: {
@@ -241,8 +253,8 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-     
-       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
+      if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
+      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
       if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
@@ -316,5 +328,14 @@ a {
 }
 .start-load {
   padding-right: 5px;
+}
+.load-delivered{
+  background: #fafffa
+}
+.load-default-status .status-load{
+  color: #286dd9;
+}
+.load-delivered .status-load{
+  color: green !important;
 }
 </style>

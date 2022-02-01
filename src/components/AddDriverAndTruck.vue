@@ -142,6 +142,9 @@
         </tbody>
       </table>
     </form>
+    <div class="uk-margin-small-top">
+      <button type="button" class="uk-button uk-button-primary">Seleccionar conductor y Vehículo </button>
+    </div>
   </div>
 </template>
 

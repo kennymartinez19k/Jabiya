@@ -201,9 +201,7 @@ export default {
           console.log(this.userInfo)
           if((!resultByDate.approvers[0]?.status && this.userInfo?.userType == this.userType?.driver )){
             loads.splice(i, 1)
-            alert('lo borre')
           }else{
-            alert('entre')
             x.firstOrdenSector = x.Orders?.find((order) => order);
             Object.assign(x, resultByDate);
             this.IsDelivered(x)
