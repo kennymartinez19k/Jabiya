@@ -1,26 +1,16 @@
 {
-  "profile": { "container": 0, "eCommerce": 1 },
-  "titleAccess": "Seleccione la Acción que Desea Realizar",
+  "role": {
+    "transporter": "Transporter",
+    "driver": "Driver",
+    "provider": "Provider"
 
-  "profileComponent": [
-    {
-      "directAccess": {
-        "titleTravel": ["Ver tus Viajes", "box-truck.png", "home"],
-        "titleMount": ["Montar Viaje e Iniciar Ruta", "cargo.png", "orders-auto-scan"],
-        "titleDelivery": ["Realizar Entrega del Contenedor al Cliente", "deliver-container.png", "delivery-actions-auto"],
-        "titleProcessNo": ["Procesar No-Entrega del contenedor", "reject-container.png", "deliveryActions"],
-        "titleReturn": ["Devolver Contenedor", "return-container.png", "home"]
-      }
-
-    },
-    {
-      "directAccess": {
-        "titleTravel": ["Ver tus Cargas", "box-truck.png"],
-        "titleMount": ["Montar Carga e Iniciar Ruta", "load-truck.png", "deliveryActions"],
-        "titleInvoices": ["Crear Factura Final para Orden", "invoice.png", "invoice"],
-        "titleDelivery": ["Realizar Entrega de Orden(es) al Cliente", "deliver-container.png", "home"],
-        "titleReconciliation": ["Reconciliación con Almacén al Final del Viaje", "almacen.png", "reconciliation-warehouse"]
-      }
-    }
-  ]
+  },
+  "userType": {
+    "transporter": "Transporter",
+    "driver": "Driver",
+    "provider": "Provider"
+  },
+  "positionSPN":{
+    "transporter": "Coordinador de Transporte"
+  }
 }

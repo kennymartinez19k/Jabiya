@@ -16,13 +16,17 @@ const storeModule = {
       ...orders.state,
       ...profiles.state,
       ...invoicesStore.state,
-      queue: [] 
-
+      profile: {
+        container: true,
+        
+      }
     }
   ),
   mutations: {
-    addQueue(state, val){
-      state.queue.push(val)
+   
+    resetData(state){
+      state.userData = null
+      localStorage.removeItem("dateCheck")
     },
     ...currentPage.mutations,
     ...loads.mutations,
@@ -34,9 +38,7 @@ const storeModule = {
     
   },
   actions: {
-    changeQueue({commit}, val){
-      commit('addQueue', val)
-    },
+   
     ...currentPage.actions,
     ...loads.actions,
     ...timelineStore.actions,
