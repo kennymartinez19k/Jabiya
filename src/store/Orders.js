@@ -16,7 +16,6 @@ const orders = {
     },
     setStructureToScan(state, val){
       state.registrationForScan = val
-      console.log(state.registrationForScan)
     },
     async setSettings(state, val){
       if(!val){

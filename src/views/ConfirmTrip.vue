@@ -23,7 +23,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.firstOrdenSector?.sector }}</span>
+            ><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
@@ -38,6 +38,20 @@
             <h6 class="uk-text-center">Detalles del Viaje</h6>
            
             <div class="uk-margin-top">
+                <div v-if="userData?.userType == userType?.provider">
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Ingreso:&nbsp;</p>
+                  <span>{{load?.plannedProfitability?.profitability?.revenue}}</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
+                  <span>{{load?.plannedProfitability?.profitability?.profitability}}</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
+                  <span>{{load?.plannedProfitability?.profitability?.transportCost}}</span>
+                </div>
+              </div>
         
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Estado del Viaje:&nbsp;</p>
@@ -77,8 +91,8 @@
                 </div>
                 <div>
                   <p class="uk-text-bold">Entregar en:</p>
-                  <p>{{load?.firstOrdenSector?.client_name}}</p>
-                  <p>{{load?.firstOrdenSector?.address}}</p>
+                  <p>{{load?.firstOrdenInfo?.client_name}}</p>
+                  <p>{{load?.firstOrdenInfo?.address}}</p>
                 </div>
               
               </div>
@@ -179,10 +193,15 @@
 <script>
 import { mapGetters } from "vuex";
 import { Mixins } from '../mixins/mixins'
+import { userType, userPosition } from '../types'
+
 export default {
   alias: `Aprobar Viaje`,
   data() {
     return {
+      userType,
+      userPosition,
+
       status: null,
       result: null,
       load: null,
@@ -206,7 +225,6 @@ export default {
     },
   },
   mounted() {
-
     if (this.loadStore) {
       this.load = this.loadStore;
       console.log(this.load)

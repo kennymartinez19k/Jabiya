@@ -18,7 +18,7 @@
             @click="setLoad(detailsLoads)"
           >
             <p class="uk-flex status-load">
-              <span class="uk-text-bold">{{ loadStatus(detailsLoads) }}</span>
+              <span class="uk-text-bold">{{ loadStatus(detailsLoads) }} </span>
             </p>
             <div class="uk-margin-top" style="margin-top: 25px !important">
               <div>
@@ -98,8 +98,8 @@
               >
                 <div>
                   <p class="uk-text-bold">Recoger en:</p>
-                  <p>{{ detailsLoads?.firstOrdenSector?.client_name }}</p>
-                  <p>{{ detailsLoads?.firstOrdenSector?.address }}</p>
+                  <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
+                  <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
                 </div>
                 <div>
                   <p class="uk-text-bold">Entregar en:</p>
@@ -123,8 +123,8 @@
                 </div>
                 <div>
                   <p class="uk-text-bold">Entregar en:</p>
-                  <p>{{ detailsLoads?.firstOrdenSector?.client_name }}</p>
-                  <p>{{ detailsLoads?.firstOrdenSector?.address }}</p>
+                  <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
+                  <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
                 </div>
               </div>
               <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" class="start-load uk-flex-middle">
@@ -141,7 +141,7 @@
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
               </ul>
             </div>
-            <div v-if="(userData?.userType === userType?.transporter || userData?.userType === userType?.provider) && detailsLoads.loadingStatus.text === 'Driver selection in progress'">
+            <div v-if=" detailsLoads.loadingStatus.text === 'Driver selection in progress'">
                 <driver-truck></driver-truck>
             </div>
         </div>
@@ -193,8 +193,8 @@ export default {
     this.setOpen(true);
     if (this.detailsLoadsStore) {
       this.detailsLoads = this.detailsLoadsStore;
-    // } else {
-      // this.detailsLoads =  JSON.parse(localStorage.getItem('DeliveryCharges'));
+      this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
+      this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
       console.log( JSON.parse(localStorage.getItem('DeliveryCharges')))
     }
   },
@@ -203,7 +203,6 @@ export default {
     ...mapGetters(["detailsLoadsStore", "userData"]),
   },
   mounted () {
-     JSON.parse(localStorage.getItem('DeliveryCharges'));
   },
 
   methods: {
