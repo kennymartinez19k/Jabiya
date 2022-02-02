@@ -9,8 +9,6 @@
     >
     </ion-loading>
 <ul class="uk-pagination" uk-margin>
-
-
     <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
     <li><span>
       <p class="uk-text-meta uk-margin-remove-top date">
@@ -22,8 +20,9 @@
       </p>      
     </span></li>
     <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
-    
+    <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload"/>
 </ul>
+
     <div v-if="assignedLoads == 0" style="height: 50px">
       <span>No Tiene Viajes Asignados Para Este Día</span>
     </div>
@@ -33,7 +32,9 @@
       :key="i"
     >
       <div class="uk-card uk-card-default uk-width-1-2@m container">
-        <div class="load-default-status" :class="{'load-delivered': load.loadingStatus.text == 'Delivered'}">
+        <div 
+          class="load-default-status" 
+          :class="{'load-delivered': load.loadingStatus.text == 'Delivered', 'load-assigned': load.loadingStatus.text == 'Driver selection in progress'}">
           <div
           :class="{ 'load-edges': load.loadMapId === loadingProgress }"
             class="uk-card uk-card-body"
@@ -199,13 +200,10 @@ export default {
 
         Object.assign(load, loadDetails)
 
-        if(!((loadDetails.loadingStatus.text == "Driver selection in progress" && this.userInfo.userType !== this.userType.transporter) || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text == "Expecting Approval" && this.userInfo.userType !== this.userType.provider ))){
+        if(!((loadDetails.loadingStatus.text == "Driver selection in progress" && this.userInfo.userType === this.userType.driver) || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text == "Expecting Approval" && this.userInfo.userType !== this.userType.provider ))){
           this.loads.push(loadDetails)
         }
       }
-
-
-      
       this.setOpen(false);
 
       this.assignedLoads = this.loads.length
@@ -219,6 +217,7 @@ export default {
       console.log(val);
         for(var i = 0; i < val.Orders.length; i++){
           let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
+          val.firstOrdenInfo = val.Orders[i]
           Object.assign(val.Orders[i], order[0])
         }
       this.$store.commit("setloadStore", val);
@@ -258,9 +257,10 @@ export default {
     },
     loadStatus(val) {
       console.log(this.loads)
+      if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
       if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
-      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
-      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
+      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $Profit Flai";
+      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Chofer Apruebe Viaje";
 
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
@@ -273,8 +273,8 @@ export default {
       return moment(val).format('LT')
     },
     ordenIsReturn(val){
-      let res = val.Orders.find(x => x)
-      if(res.isReturn) return 'Devolver Contenedor'
+      let res = val?.Orders?.find(x => x)
+      if(res?.isReturn) return 'Devolver Contenedor'
       return 'Entregar Contenedor'
     },
     isReturnLoad(val){
@@ -285,6 +285,10 @@ export default {
       if(load.loadingStatus.text == val){
         this.changeRouteLoads(val, load)
       }
+    },
+    reloadData(){
+      this.loads = []
+      this.currentDate()
     },
     sortLoads() {
       this.loads?.sort((load) => {
@@ -307,7 +311,7 @@ p {
   padding: 20px 10px;
 }
 .uk-card-body {
-  border-radius: 2p;
+  border-radius: 2px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
   align-items: center;
@@ -554,5 +558,15 @@ footer #scroll-trigger {
 }
 .load-delivered .status-load{
   color: green !important;
+}
+.reload{
+  position: absolute;
+    right: 10%;
+    margin-top: 5px;
+    font-size: 17px;
+    color: #000 !important;
+}
+.load-assigned .status-load{
+  color: red
 }
 </style>
