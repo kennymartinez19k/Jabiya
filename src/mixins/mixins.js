@@ -84,10 +84,10 @@ export const Mixins = {
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
       this.load = val;
       services.gpsServices.updateFirstLocation(
-        this.user.id,
-        location.latitude,
-        location.longitude,
-        this.load.bay_id._id
+        this.user?.id,
+        location?.latitude,
+        location?.longitude,
+        this.load?.bay_id._id
       );
     },
 
