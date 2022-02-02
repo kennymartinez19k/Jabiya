@@ -10,70 +10,36 @@
     <form action="" class="table-border">
       <h5>Elija un Conductor</h5>
 
-      <table class="uk-table uk-table-striped">
+      <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
         <thead>
           <tr class="">
             <th scope="col" style="width: 5px"></th>
             <th scope="col" style="display: inline">Nombre del Conductor</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-for="details in data" :key="details">
           <tr>
             <td scope="row">
               <input
                 class="uk-radio"
                 type="radio"
                 name="driverId"
-                id="carro"
-                value="1"
+                :id="details.id"
+                :value="details"
                 v-model="carrierSelection.driver"
                 required
               />
             </td>
-            <label for="carro">
-              <td>driver.driverName</td>
+            <label :for="details.id">
+              <td>{{details.driver}}</td>
             </label>
           </tr>
-          <tr>
-            <td scope="row">
-              <input
-                for="driverId2"
-                class="uk-radio"
-                type="radio"
-                name="driverId"
-                id="carro2"
-                value="2"
-                v-model="carrierSelection.driver"
-                required
-              />
-            </td>
-            <label for="carro2">
-              <td>driver.driverName</td>
-            </label>
-          </tr>
-
-          <tr>
-            <td scope="row">
-              <input
-                for="driverId3"
-                class="uk-radio"
-                type="radio"
-                name="driverId"
-                id="carro3"
-                value="3"
-                v-model="carrierSelection.driver"
-                required
-              />
-            </td>
-            <label for="carro3">
-              <td>driver.driverName</td>
-            </label>
-          </tr>
+         
         </tbody>
       </table>
       <h5>Elija un Vehículo</h5>
 
-      <table class="uk-table uk-table-striped">
+      <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
         <thead>
           <tr>
             <th scope="col" style="width: 0.3%"></th>
@@ -84,61 +50,25 @@
             </label>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-for="details in dataVehicle" :key="details">
           <tr>
             <td scope="row">
               <input
                 class="uk-radio"
                 type="radio"
                 name="vehicleId"
-                id="vehicleId6"
-                value="6"
+                :id="details.id"
+                :value="details"
                 v-model="carrierSelection.vehicle"
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list " for="vehicleId6"
-              ><td>vehicleNo</td>
-              <td>brand</td>
-              <td>cost</td></label
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" :for="details.id"
+              ><td>{{details.vehicleNo}}</td>
+              <td>{{details.brand}}</td>
+              <td>{{details.costDetails.cost}}</td></label
             >
-          </tr>
-          <tr>
-            <td scope="row">
-              <input
-                class="uk-radio"
-                type="radio"
-                name="vehicleId"
-                id="vehicleId7"
-                value="7"
-                v-model="carrierSelection.vehicle"
-                required
-              />
-            </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId7"
-              ><td>vehicleNo</td>
-              <td>brand</td>
-              <td>cost</td></label
-            >
-          </tr>
-          <tr>
-            <td scope="row">
-              <input
-                class="uk-radio"
-                type="radio"
-                name="vehicleId"
-                id="vehicleId8"
-                value="8"
-                v-model="carrierSelection.vehicle"
-                required
-              />
-            </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId8"
-              ><td>vehicleNo</td>
-              <td>brand</td>
-              <td>cost</td></label
-            >
-          </tr>
+          </tr>       
         </tbody>
       </table>
     </form>
@@ -159,6 +89,58 @@ export default {
         driver: null,
         vehicle: null,
       },
+      data: [
+        {
+         id: 1,
+         driver: "Wilson Soto",
+        },
+        {
+         id: 2,
+         driver: "Marcos Andujar",
+        },
+        {
+         id: 3,
+        driver: "Migule Gonzales",
+        },
+        {
+         id: 4,
+         driver: "Kenny Martinez",
+        }
+      ],
+        dataVehicle: [
+       {
+         id: 5,
+         vehicleNo: 123654,
+        brand: "toyota",
+        costDetails: {
+          cost: 10
+        }
+       },
+        {
+         id: 6,
+         vehicleNo: 123654,
+        brand: "mazda",
+        costDetails: {
+          cost: 10
+        }
+       },
+        {
+         id: 7,
+         vehicleNo: 123654,
+        brand: "Isuzu",
+        costDetails: {
+          cost: 10
+        }
+       },
+        {
+         id: 8,
+         vehicleNo: 123654,
+        brand: "toyota",
+        costDetails: {
+          cost: 10
+        }
+       }
+      ]
     };
   },
   watch: {
@@ -213,6 +195,6 @@ td {
 }
 .list td{
   width: 15%;
-  min-width: 80px;
+  min-width: 70px;
 }
 </style>

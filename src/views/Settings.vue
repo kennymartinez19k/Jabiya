@@ -1,11 +1,11 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
     <div>
-      <label class="item" for="check">
+      <!-- <label class="item" for="check">
         <h6>Escaneo Automatico</h6>
         <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox">
         
-      </label>
+      </label> -->
       <label class="item uk-margin" for="language">
             <h6>Seleccione un Idioma:</h6>
         <div class="uk-form-controls" style="width: 40%">
@@ -52,7 +52,7 @@ export default {
   },
   mixins: [Profile],
   computed: {
-    ...mapGetters(['languageStore', 'rolStore', 'settingsStore'])
+    ...mapGetters(['languageStore', 'settingsStore'])
   },
   mounted() {
     this.settings = this.settingsStore
@@ -63,7 +63,6 @@ export default {
     async saveSettings() {
       await this.$store.commit("setSettings", this.settings);
       this.setProfile()
-      this.$store.commit("changeRol", this.settings.profile );
       this.$router.push({ name: "home" });
     },
   },
