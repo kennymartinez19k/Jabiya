@@ -1,4 +1,4 @@
-const orders = {
+const Orders = {
   state: {
       scanOrder: null,
       registrationForScan: null,
@@ -53,4 +53,4 @@ const orders = {
   }
 }
 
-export default orders
+export default Orders
