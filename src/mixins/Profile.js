@@ -9,9 +9,8 @@ export const Profile = {
             pastMessage: "Aprobó el Viaje $ Flai",
           },
           expectingApproval: {
-            message: this.approvalVerified(),
+            message: 'Aprobar Viaje (Chofer)',
             pastMessage: "Aprobó el Viaje (Chofer)",
-            isProvider: "Esperando aprobación (Chofer)"
           },
           driverArrival: {
             message: "Registrar LLegada a Recoger",
@@ -84,10 +83,6 @@ export const Profile = {
         this.currentProfile = { ...this.eCommerce };
       }
     },
-    approvalVerified(){
-      this.user = JSON.parse(localStorage.getItem("userInfo"))
-      if(this.user?.userType != 'Driver') return 'Esperando aprobación (Chofer)'
-      else return 'Aprobar Viaje (Chofer)'
-    }
+
   },
 };
