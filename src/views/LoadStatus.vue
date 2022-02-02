@@ -23,7 +23,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ loadStore?.firstOrdenSector.sector }}</span>
+            ><span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
@@ -60,14 +60,13 @@
           </div>
 
           <div
-            :class="{'disabled-event': userData?.userType == userType?.provider }"
             @click="changeRoute('Expecting Approval')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
             <h6>{{messageStatus?.expectingApproval?.message}}</h6>
           </div>
           <div class="icon-item" >
-            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval && userData?.userType == userType?.driver" icon="arrow-right"/>
+            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
             <img v-if="loadStatus.step > step.expectingApproval" src="../assets/check.png" />
           </div>
@@ -280,7 +279,6 @@ export default {
     },
 
     messageStatus(){
-        console.log(this.currentProfile)
       let message = { ...this.currentProfile?.LoadStatus }
 
       if(this.loadStatus.step > 0)
@@ -311,7 +309,7 @@ export default {
 
   async mounted() {
     this.setting = JSON.parse(localStorage.getItem('setting'))
-    console.log(this.setting)
+    console.log(this.loadStore)
     let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore

@@ -9,6 +9,8 @@
     >
     </ion-loading>
 <ul class="uk-pagination" uk-margin>
+
+
     <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
     <li><span>
       <p class="uk-text-meta uk-margin-remove-top date">
@@ -146,6 +148,7 @@ export default {
   },
   
   async mounted() {
+      this.$store.commit('setUserData')
       this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
       moment.locale('en');
       window.location.href = "#Hoy";
@@ -176,8 +179,6 @@ export default {
     },
     async currentDate(val = null) {
       this.assignedLoads = -1
-     
-
       let contDate
       if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
         contDate = JSON.parse(localStorage.getItem('dateCheck'));
@@ -190,26 +191,23 @@ export default {
       else this.dateMoment = date
       this.setOpen(true);
       
-      let loadsCurrent = await this.$services.loadsServices.getLoadsbyDate(date);
-      let loads = [...loadsCurrent] 
-      console.log(loadsCurrent, 'Estoy en load')
-      for(let i = 0; i < loads.length; i++){
-        let x = loads[i]
-        
-          const resultByDate =  await this.$services.loadsServices.getLoadDetails(x.loadMapId);
-          console.log(this.userInfo)
-          if((!resultByDate.approvers[0]?.status && this.userInfo?.userType == this.userType?.driver )){
-            loads.splice(i, 1)
-          }else{
-            x.firstOrdenSector = x.Orders?.find((order) => order);
-            Object.assign(x, resultByDate);
-            this.IsDelivered(x)
-          }
+      let loads = await this.$services.loadsServices.getLoadsbyDate(date);
+
+      for (let i = 0; i < loads.length; i++) {
+        const load = {...loads[i]}
+        const loadDetails =  await this.$services.loadsServices.getLoadDetails(load?.loadMapId);
+
+        Object.assign(load, loadDetails)
+
+        if(!((loadDetails.loadingStatus.text == "Driver selection in progress" && this.userInfo.userType !== this.userType.transporter) || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text == "Expecting Approval" && this.userInfo.userType !== this.userType.provider ))){
+          this.loads.push(loadDetails)
+        }
       }
+
+
       
       this.setOpen(false);
 
-      this.loads = loads
       this.assignedLoads = this.loads.length
 
       console.log(this.loads);
@@ -259,6 +257,7 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
+      console.log(this.loads)
       if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
       if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
@@ -308,9 +307,9 @@ p {
   padding: 20px 10px;
 }
 .uk-card-body {
-  border-radius: 2px;
+  border-radius: 2p;
   margin-bottom: 15px;
-  border: 0.1px solid #e5e5e5;
+  border: 1px solid #ccc;
   align-items: center;
   padding: 16px 10px;
 }
