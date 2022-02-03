@@ -104,6 +104,7 @@ export default {
 
         }
       },
+      deep: true
     },
 
     exception: {

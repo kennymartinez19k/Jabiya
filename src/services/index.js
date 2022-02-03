@@ -7,6 +7,7 @@ import DeliverServices from './DeliverServices'
 import RequestServices from './RequestServices'
 import QueueServices from './QueueServices'
 import GpsServices from './GpsServices'
+import DriverVehicleAssignment from './DriverVehicleAssignment'
 
 export default {
     axiosInstance: axiosInstance,
@@ -17,6 +18,7 @@ export default {
     deliverServices: new DeliverServices(axiosInstance),
     requestServices: new RequestServices(axiosInstance),
     queueServices: new QueueServices(),
-    gpsServices: new GpsServices(axiosInstance) 
+    gpsServices: new GpsServices(axiosInstance), 
+    driverVehicleAssignment: new DriverVehicleAssignment(axiosInstance), 
     
 }
