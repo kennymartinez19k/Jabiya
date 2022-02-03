@@ -7,6 +7,7 @@ export const Profile = {
           expectingApprovalProvider: {
             message: "Aprobar $ Viaje Flai",
             pastMessage: "Aprobó el Viaje $ Flai",
+            
           },
           expectingApproval: {
             message: 'Aprobar Viaje (Chofer)',

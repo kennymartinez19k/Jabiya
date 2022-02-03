@@ -1,8 +1,6 @@
 const profiles = {
     state: {
         settings: {
-            // AutoScan: true,
-            language: null,
             profile: 'container',
             maps: false,
         },

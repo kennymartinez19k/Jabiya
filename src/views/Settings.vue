@@ -1,20 +1,6 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
     <div>
-      <!-- <label class="item" for="check">
-        <h6>Escaneo Automatico</h6>
-        <input type="checkbox" id="check" v-model="settings.AutoScan" class="checkBox">
-        
-      </label> -->
-      <label class="item uk-margin" for="language">
-            <h6>Seleccione un Idioma:</h6>
-        <div class="uk-form-controls" style="width: 40%">
-            <select class="uk-select" id="language" v-model="settings.language">
-                <option  value="es" selected>English</option>
-                <option value="en">Español</option>
-            </select>
-        </div>
-      </label>
       <label class="item uk-margin" for="profile">
             <h6>Perfil</h6>
         <div class="uk-form-controls" style="width: 40%">
@@ -43,8 +29,6 @@ export default {
   data() {
     return {
       settings: {
-        AutoScan: true,
-        language: null,
         profile: 'container',
         maps: false
       },

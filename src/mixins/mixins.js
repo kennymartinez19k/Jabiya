@@ -1,5 +1,3 @@
-// import orders from "../store/Orders";
-import profiles from "../store/Profiles";
 import router from "../router";
 import services from "../services/index";
 import { Geolocation } from "@capacitor/geolocation";
@@ -55,13 +53,14 @@ export const Mixins = {
 
   methods: {
     async changeRouteLoads(val, load = null) {
-      var profile = profiles.state.settings.profile;
-      if (profile === 'container') {
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      if (setting.profile === 'container') {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
-        if (val == "Approved") this.uploadTrip(load);
+        if (val == "Approved") this.uploadTrip(load, 'drayage-orden');
         if (val == "Dispatched") await this.startLoadRoute(load);
         if (val == "Deliver-Load")
+          alert('sss')
           router.push({ name: "delivery-actions-auto" });
         if (val == "return-container")
           router.push({ name: "return-container" });
@@ -71,11 +70,19 @@ export const Mixins = {
           localStorage.removeItem(`loadStatus${load?.loadMapId}`);
         }
       } else {
-        if (val == "Approved" || val == "Loading Truck")
-          router.push({ name: "orders" });
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
-        if (val == "Dispatched") this.setMap(load);
-        if (val == "Deliver-Load") router.push({ name: "delivery-routes" });
+        if (val == "Driver Arrival") await this.driverArrival(load);
+        if (val == "Approved") this.uploadTrip(load, 'orders');
+        if (val == "Dispatched") await this.startLoadRoute(load);
+        if (val == "Deliver-Load")
+          router.push({ name: "delivery-routes" });
+        if (val == "return-container")
+          router.push({ name: "return-container" });
+        if (val == "Delivered") {
+          localStorage.removeItem("loadingProgress");
+          this.localStorageGps.remove(`gps ${load?.loadMapId}`);
+          localStorage.removeItem(`loadStatus${load?.loadMapId}`);
+        }
       }
     },
     async driverArrival(val) {
@@ -92,8 +99,8 @@ export const Mixins = {
       );
     },
 
-    uploadTrip(load) {
-      router.push({ name: "drayage-orden" });
+    uploadTrip(load, route) {
+      router.push({ name: route });
       this.localStorageGps.remove(`gps ${load?.loadMapId}`);
     },
     async startLoadRoute(val) {

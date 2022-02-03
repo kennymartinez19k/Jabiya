@@ -158,12 +158,9 @@ export default {
       window.location.href = "#Hoy";
       this.setProfile()
       await this.currentDate();
-      
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
-      if(!localStorage.getItem('setting')){
-        this.$store.commit("setSettings", null);
-      }
+      this.$store.commit("setSettings", false);
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings", "userData"]),
@@ -416,6 +413,9 @@ a {
 .load-assigned .status-load{
   color: red;
   -webkit-animation: asigned 500ms infinite;
+}
+.load-assigned{
+  background: #fff6f6;
 }
 @-webkit-keyframes asigned {
   from { opacity: 1.0; }
