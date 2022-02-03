@@ -22,6 +22,17 @@
       </div>
     </div>
     <ul class="progressbar">
+           <li
+        v-if="!settings?.AutoScan"
+        class="stepOne"
+        :class="{ active: resultScan !== null }"
+        @click="getShow('scan')"
+      >
+        <div class="info active"><font-awesome-icon icon="check" /></div>
+        <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
+        <span>Escaner</span>
+      </li>
+
       <li
         class="stepTwo"
         :class="{
@@ -66,7 +77,7 @@
         <span>Firma</span>
         <div :class="{ disabled: step < 2 }"></div>
       </li>
-      <li
+      <!-- <li
         class="stepFour"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('finish')"
@@ -75,7 +86,7 @@
         <div><img src="../assets/check.png" alt="" srcset="" /></div>
         <span>Completado</span>
         <div :class="{ disabled: step < 2 }"></div>
-      </li>
+      </li> -->
     </ul>
 
   </div>
@@ -115,7 +126,6 @@ export default {
     exception: Boolean,
     resultScan: String,
     imagiElement: Array,
-    // digitalFirm: String,
   },
   data() {
     return {
