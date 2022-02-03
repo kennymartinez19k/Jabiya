@@ -11,7 +11,7 @@
     <div>
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div
-            :class="{'load-delivered': detailsLoads.loadingStatus.text == 'Delivered', 'load-assigned': detailsLoads.loadingStatus.text == 'Driver selection in progress'}" 
+            :class="{'load-delivered': detailsLoads?.loadingStatus?.text == 'Delivered', 'load-assigned': detailsLoads.loadingStatus.text == 'Driver selection in progress'}" 
             class="uk-card uk-card-default uk-card-body load-default-status">
           <div
             :class="{'disabled-event': detailsLoads.loadingStatus.text === 'Driver selection in progress'}"

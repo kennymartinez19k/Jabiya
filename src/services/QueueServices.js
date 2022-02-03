@@ -30,6 +30,7 @@ class QueueServices {
   
     peek = function () {
       let elements = JSON.parse(localStorage.getItem(this.queueId))
+      console.log(elements)
       return elements?.length > 0 ? elements[0] : undefined;
     }
     
