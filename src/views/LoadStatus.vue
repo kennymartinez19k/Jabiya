@@ -17,13 +17,13 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span
-            ><span>&nbsp; {{ shipperName(loadStore) }}</span>
+            <span class="font-weight-medium">Shipper: </span>
+            <span>&nbsp; {{ shipperName(loadStore) }}</span>
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span>
+            <span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
@@ -35,8 +35,8 @@
           v-if="userData?.userType == userType?.provider" 
           :class="{active: loadStatus.step == step.expectingApprovalProvider, 'completed-status': loadStatus.step > step.expectingApprovalProvider}"
         >
-          <div  
-            class="info"><span>0</span>
+          <div class="info">
+            <span>0</span>
           </div>
 
           <div
@@ -55,8 +55,8 @@
         <li 
           :class="{active: loadStatus.step == step.expectingApproval, 'completed-status': loadStatus.step > step.expectingApproval}"
         >
-          <div  
-            class="info"><span>1</span>
+          <div class="info">
+            <span>1</span>
           </div>
 
           <div
@@ -65,7 +65,7 @@
           >
             <h6>{{messageStatus?.expectingApproval?.message}}</h6>
           </div>
-          <div class="icon-item" >
+          <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
             <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
             <img v-if="loadStatus.step > step.expectingApproval" src="../assets/check.png" />
@@ -75,8 +75,8 @@
         <li 
           :class="{active: loadStatus.step == step.driverArrival, 'completed-status': loadStatus.step > step.driverArrival}"
         >
-          <div  
-            class="info"><span>2</span>
+          <div class="info">
+            <span>2</span>
           </div>
 
           <div
@@ -95,8 +95,8 @@
         <li
           :class="{active: loadStatus.step == step.approved, 'completed-status': loadStatus.step > step.approved}"
         >
-           <div  
-            class="info"><span>3</span>
+           <div class="info">
+            <span>3</span>
           </div>
           <div
             @click="changeRoute('Approved')"
@@ -114,8 +114,8 @@
         </li>
         <li
         :class="{active: loadStatus.step == step.truckLoaded, 'completed-status': loadStatus.step > step.truckLoaded}">
-          <div  
-            class="info"><span>4</span>
+          <div class="info">
+            <span>4</span>
           </div>
           <div
             @click="changeRoute('Dispatched')"
