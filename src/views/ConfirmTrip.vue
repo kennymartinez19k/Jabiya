@@ -227,9 +227,7 @@ export default {
   mounted() {
     if (this.loadStore) {
       this.load = this.loadStore;
-      console.log(this.load)
       this.orders = this.loadStore.Orders
-      console.log(this.orders)
     }
     if (this.orderScan) {
       this.completedOrden();
@@ -258,6 +256,7 @@ export default {
       });
     },
     async acceptOrRejectLoad(id, version, status, type) {
+      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
       var user = JSON.parse(localStorage.getItem("userInfo"));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,

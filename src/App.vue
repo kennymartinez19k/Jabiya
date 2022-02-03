@@ -52,20 +52,16 @@ export default {
         await this.enqueue(enqueueItem)
       }
       let queueItem = await this.peek()
-      if(queueItem && !this.sendingBI){
-        this.sendingBI = true
+      if(queueItem){
           try{
             let res = await this.$services.requestServices.request(queueItem)
             if(res){
-              console.log(res)
               this.dequeue()
             }
           } 
           catch(error){
             console.log(error)
-            this.dequeue()
           }
-          this.sendingBI = false
       }
   }, 1000)
 },

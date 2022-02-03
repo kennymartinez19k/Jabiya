@@ -8,20 +8,23 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-<ul class="uk-pagination" uk-margin>
-    <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
-    <li><span>
-      <p class="uk-text-meta uk-margin-remove-top date">
-        <time
-          class="uk-text-bold uk-text-uppercase"
-          style="font-size: 14px"
-          >{{dateMoment}}</time
-        >
-      </p>      
-    </span></li>
-    <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
-    <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload"/>
-</ul>
+    <div uk-margin style="position: relative">
+      <ul class="uk-pagination" >
+        <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
+        <li><span>
+          <p class="uk-text-meta uk-margin-remove-top date">
+            <time
+              class="uk-text-bold uk-text-uppercase"
+              style="font-size: 14px"
+              >{{dateMoment}}</time
+            >
+          </p>      
+        </span></li>
+        <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
+      </ul>
+      <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
+    </div>
+
 
     <div v-if="assignedLoads == 0" style="height: 50px">
       <span>No Tiene Viajes Asignados Para Este Día</span>
@@ -40,6 +43,7 @@
             class="uk-card uk-card-body"
             @click="setLoad(load)"
           >
+          <span class="uk-badge">{{i + 1}}</span>
            <p class="uk-flex status-load">
                 <span class="uk-text-bold">{{ loadStatus(load) }}</span>
             </p>
@@ -132,20 +136,19 @@ export default {
       date: new Date(),
       dateMoment: null,
       assignedLoads: -1,
-      timeOut: 20000,
-      userInfo: {}
+      timeOut: 10000,
+      userInfo: {},
+      reloadEvent: false
     };
   },
 
   setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
-
     return { isOpenRef, setOpen };
   },
   async beforeMount() {
     this.setOpen(true);
-
   },
   
   async mounted() {
@@ -166,7 +169,6 @@ export default {
     ...mapGetters(["allLoadsStore", "settings", "userData"]),
 
     loadingProgress: function () {
-     
       return JSON.parse(localStorage.getItem('loadingProgress'));
     },
   },
@@ -204,11 +206,12 @@ export default {
           this.loads.push(loadDetails)
         }
       }
+      this.sortLoads()
       this.setOpen(false);
 
       this.assignedLoads = this.loads.length
-
       console.log(this.loads);
+
       this.$store.commit("setAllLoadStore", this.loads);
       localStorage.setItem('AllLoadS', JSON.stringify(this.loads));
 
@@ -256,7 +259,6 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      console.log(this.loads)
       if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
       if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $Profit Flai";
@@ -287,16 +289,20 @@ export default {
       }
     },
     reloadData(){
+      this.reloadEvent = true
+      setTimeout(() => {
+        this.reloadEvent = false
+      }, 500)
+      
       this.loads = []
       this.currentDate()
+
     },
     sortLoads() {
-      this.loads?.sort((load) => {
-        if (load?.loadMapId !== this.loadingProgress) {
-          return 1;
-        } else {
-          return -1;
-        }
+      this.loads?.sort((a, b) => {
+        a = new Date(a?.loadingStatus?.slotStartTime).getHours()
+        b = new Date(b?.loadingStatus?.slotStartTime).getHours()
+       return a - b
       });
     },
   },
@@ -365,170 +371,18 @@ button {
   font-size: 9px !important;
   line-height: 15px;
 }
-.assigned {
-  color: rgb(73 73 73);
-}
-.assigned button {
-  color: green;
-  border: 1px solid #009b08;
-  font-weight: 700;
-  box-shadow: 0px 0.5px 2px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  display: inline-block;
-  padding: 5px 10px;
-  -webkit-animation: glowing 800ms infinite;
-}
-body {
-  background: black;
-}
 
-@-webkit-keyframes glowing {
-  0% {
-    background-color: transparent;
-    -webkit-box-shadow: 0 0 1px #146d02;
-  }
-  50% {
-    background-color: transparent;
-    -webkit-box-shadow: 0 0 5px #025a11;
-  }
-  100% {
-    background-color: transparent;
-    -webkit-box-shadow: 0 0 0px #02691c;
-  }
-}
-
-.only-black,
-.delivered,
-.driver-arrival,
-.approved {
-  color: rgb(130, 127, 127) !important;
-}
-.delivered button,
-.driver-arrival button,
-.approved button,
-.expectingApprove button {
-  background: #ffffff;
-  color: rgb(73, 73, 73);
-  border: 1px solid rgb(136, 136, 136);
-  /* color: #252525; */
-  font-weight: 700;
-}
-.onWay {
-  color: rgb(73 73 73);
-}
-
-.onWay button {
-  color: green;
-  background: #fff;
-  font-weight: 700;
-  border: 1px solid #3c6e3c;
-}
-
-.orange-flashing {
-  color: rgb(199, 194, 194);
-}
-.orange-flashing button {
-  box-shadow: 0px 0.5px 3px #c58002;
-  color: #af7202;
-  background: #ffffff;
-  border: 1px solid #ccc;
-  font-weight: 700;
-  -webkit-animation: onWays 800ms infinite;
-}
-@-webkit-keyframes onWays {
-  0% {
-    -webkit-box-shadow: 0 0 1px #c58002;
-  }
-  50% {
-    -webkit-box-shadow: 0 0 5px #a06800;
-  }
-  100% {
-    -webkit-box-shadow: 0 0 0px #d38a02;
-  }
-}
 a {
   text-decoration: none;
   color: #fff;
 }
-.rainbow-button {
-  width: calc(20vw + 6px);
-  height: calc(8vw + 6px);
-  background-image: linear-gradient(
-    90deg,
-    #00c0ff 0%,
-    #ffcf00 49%,
-    #fc4f4f 80%,
-    #00c0ff 100%
-  );
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-transform: uppercase;
-  font-size: 3vw;
-  font-weight: bold;
-}
-.rainbow-button:after {
-  content: attr(alt);
-  width: 20vw;
-  height: 8vw;
-  background-color: #191919;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.rainbow-button:hover {
-  animation: slidebg 2s linear infinite;
-}
 
-@keyframes slidebg {
-  to {
-    background-position: 20vw;
-  }
-}
-footer {
-  position: relative;
-  width: 400px;
-  height: 100px;
-}
-
-footer .circle-loader {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.2);
-  border-top: 5px solid #fff;
-  animation: animate 1.5s infinite linear;
-}
-footer #scroll-trigger {
-  height: 50px;
-}
 .reject-img {
   width: 80px;
 }
 
 .show-date{
   color: red;
-}
-footer .circle-loader {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 5px solid rgba(255, 255, 255, 0.2);
-  border-top: 5px solid #fff;
-  animation: animate 1.5s infinite linear;
-}
-footer #scroll-trigger {
-  height: 50px;
 }
 .uk-pagination{
   justify-content: center;
@@ -559,14 +413,41 @@ footer #scroll-trigger {
 .load-delivered .status-load{
   color: green !important;
 }
+.load-assigned .status-load{
+  color: red;
+  -webkit-animation: asigned 500ms infinite;
+}
+@-webkit-keyframes asigned {
+  from { opacity: 1.0; }
+  to { opacity: 0.8; }
+}
+
 .reload{
   position: absolute;
-    right: 10%;
-    margin-top: 5px;
-    font-size: 17px;
-    color: #000 !important;
+  top: 0px;
+  right: 10%;
+  margin-top: 10px;
+  font-size: 17px;
+  color: #333 !important;
+  transition: all 0.6s ease;
+
 }
-.load-assigned .status-load{
+.reload:active{
   color: red
 }
+
+.uk-badge{
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  font-weight: 600;
+  font-size: 14px;
+  left: 10px;
+  top: 10px;
+}
+.reload-event{
+  transform: rotate(360deg);
+}
+
+  
 </style>

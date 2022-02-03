@@ -69,7 +69,6 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "vue/no-deprecated-slot-attribute": "off"
     }
     
   },
