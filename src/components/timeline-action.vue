@@ -22,7 +22,6 @@
       </div>
     </div>
     <ul class="progressbar">
-       <!-- 'uk-disabled': step !== 1, -->
       <li
         class="stepTwo"
         :class="{
@@ -36,25 +35,6 @@
         <span style="color: #000">Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
-      <!-- <li
-        v-if="exception"
-        :class="{
-          'uk-disabled': (imagiElement.length === 0) || (imagiElement.length !== 1),
-          active:
-            imagiElement.length >= 1 &&
-            textException !== null && showException === false,
-        }"
-        @click="getShow('exception')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
-        <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
-        <span style="color: #000">Camara</span>
-        <div
-          :class="{
-            disabled: (imagiElement.length === 0) || (imagiElement.length !== 1),
-          }"
-        ></div>
-      </li> -->
       <li
       v-if="showSignaturform === false"
         class="stepThree"
