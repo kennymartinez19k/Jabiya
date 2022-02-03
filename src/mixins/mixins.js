@@ -1,4 +1,5 @@
-import orders from "../store/Orders";
+// import orders from "../store/Orders";
+import profiles from "../store/Profiles";
 import router from "../router";
 import services from "../services/index";
 import { Geolocation } from "@capacitor/geolocation";
@@ -54,8 +55,8 @@ export const Mixins = {
 
   methods: {
     async changeRouteLoads(val, load = null) {
-      var autoScan = orders.state.settings.AutoScan;
-      if (autoScan) {
+      var profile = profiles.state.settings.profile;
+      if (profile === 'container') {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
         if (val == "Approved") this.uploadTrip(load);

@@ -1,151 +1,80 @@
 <template>
   <div>
     <div class="md-6" style="text-align: center">
-      <h5 class="uk-text-bold">Detalles del Transportista</h5>
+      <h5 class="uk-text-bold uk-text-left">Asignar Chofer y Vehículo:</h5>
     </div>
 
     <div>
-      <h6 style="color: #666 !important">Transportista: <span>Kenny</span></h6>
+      <h6 style="color: #666 !important">Transportista: <span>{{transporterName}}</span></h6>
     </div>
-    <form action="" class="table-border">
+    <form action="" class="table-border uk-margin-medium-bottom">
       <h5>Elija un Conductor</h5>
 
-      <table class="uk-table uk-table-striped">
+      <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
         <thead>
           <tr class="">
             <th scope="col" style="width: 5px"></th>
             <th scope="col" style="display: inline">Nombre del Conductor</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-for="driver in drivers" :key="driver">
           <tr>
             <td scope="row">
               <input
                 class="uk-radio"
                 type="radio"
                 name="driverId"
-                id="carro"
-                value="1"
-                v-model="carrierSelection.driver"
+                :id="driver.driverId"
+                :value="driver.driverId"
+                v-model="carrierSelection.driverId"
                 required
               />
             </td>
-            <label for="carro">
-              <td>driver.driverName</td>
+            <label :for="driver.driverId">
+              <td>{{driver.driverName}}</td>
             </label>
           </tr>
-          <tr>
-            <td scope="row">
-              <input
-                for="driverId2"
-                class="uk-radio"
-                type="radio"
-                name="driverId"
-                id="carro2"
-                value="2"
-                v-model="carrierSelection.driver"
-                required
-              />
-            </td>
-            <label for="carro2">
-              <td>driver.driverName</td>
-            </label>
-          </tr>
-
-          <tr>
-            <td scope="row">
-              <input
-                for="driverId3"
-                class="uk-radio"
-                type="radio"
-                name="driverId"
-                id="carro3"
-                value="3"
-                v-model="carrierSelection.driver"
-                required
-              />
-            </td>
-            <label for="carro3">
-              <td>driver.driverName</td>
-            </label>
-          </tr>
+         
         </tbody>
       </table>
       <h5>Elija un Vehículo</h5>
 
-      <table class="uk-table uk-table-striped">
+      <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
         <thead>
           <tr>
             <th scope="col" style="width: 0.3%"></th>
             <label class="uk-margin-remove uk-padding-remove list uk-flex uk-flex-around">
-              <th scope="col" >No. del Vehículo</th>
               <th scope="col">Marca</th>
-              <th scope="col">Costo</th>
+              <th scope="col">Color</th>
+              <th class="text" scope="col">Matrícula</th>
             </label>
           </tr>
         </thead>
-        <tbody>
+        <tbody  v-for="details in vehicles" :key="details">
           <tr>
             <td scope="row">
               <input
                 class="uk-radio"
                 type="radio"
                 name="vehicleId"
-                id="vehicleId6"
-                value="6"
-                v-model="carrierSelection.vehicle"
+                :id="details.vehicleId"
+                :value="details.vehicleId"
+                v-model="carrierSelection.vehicleId"
                 required
               />
             </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list " for="vehicleId6"
-              ><td>vehicleNo</td>
-              <td>brand</td>
-              <td>cost</td></label
-            >
-          </tr>
-          <tr>
-            <td scope="row">
-              <input
-                class="uk-radio"
-                type="radio"
-                name="vehicleId"
-                id="vehicleId7"
-                value="7"
-                v-model="carrierSelection.vehicle"
-                required
-              />
-            </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId7"
-              ><td>vehicleNo</td>
-              <td>brand</td>
-              <td>cost</td></label
-            >
-          </tr>
-          <tr>
-            <td scope="row">
-              <input
-                class="uk-radio"
-                type="radio"
-                name="vehicleId"
-                id="vehicleId8"
-                value="8"
-                v-model="carrierSelection.vehicle"
-                required
-              />
-            </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" for="vehicleId8"
-              ><td>vehicleNo</td>
-              <td>brand</td>
-              <td>cost</td></label
-            >
-          </tr>
+            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" :for="details.vehicleId">
+              <td>{{details.brand}}</td>
+              <td>{{details.color}}</td>
+              <td>{{details.vehicleNo}}</td>
+              </label>
+          </tr>       
         </tbody>
       </table>
-    </form>
-    
-    <div class="uk-margin-small-top">
-      <button type="button" class="uk-button uk-button-primary" @click="selectDriverVehicle()">Seleccionar conductor y Vehículo </button>
+      <div class=" button-opt">
+      <button type="button" :disabled="showButton" class="uk-button uk-button-primary" @click="selectDriverVehicle()">Seleccionar conductor y Vehículo </button>
     </div>
+    </form>
   </div>
 </template>
 
@@ -153,29 +82,46 @@
 export default {
   name: "AddDriverAndTruck",
 
+  props: {
+    detailsLoads: Object
+  },
   data() {
     return {
       carrierSelection: {
-        driver: null,
-        vehicle: null,
+        vehicleId: null,
+        driverId: null,
       },
+      drivers: [],
+      vehicles: [],
+      transporterName: null,
+      showButton: true
     };
   },
   watch: {
-    "carrierSelection.driver": function () {
-      console.log(this.carrierSelection, "getCarrierSelection");
-    },
-    "carrierSelection.vehicle": function () {
-      console.log(this.carrierSelection, "getCarrierSelection");
+    carrierSelection: {
+      handler: function () {
+        if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
+         this.showButton = false;
+        }
+      },
+      deep: true
     },
   },
+  async mounted () {
+    const data = await this.$services.driverVehicleAssignment.getDriverAndVehicle(this.detailsLoads.loadMapId);
+    this.drivers = {...data.drivers}
+    this.vehicles = {...data.vehicles}
+    this.transporterName = data.transporterName
+  },
   methods: {
-    getCarrierSelection(value) {
-      console.log(value, "getCarrierSelection");
-      console.log(this.carrierSelection, "getCarrierSelection");
-    },
-    selectDriverVehicle () {
-      this.$router.push({ name: "home" }).catch(() => {});
+    async selectDriverVehicle () {
+      if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
+        localStorage.removeItem('dateCheck');
+        localStorage.setItem('dateCheck', JSON.stringify(this.detailsLoads?.dateTime?.date));
+        await this.$services.driverVehicleAssignment.postDriverVehicleAssignment(this.detailsLoads.loadMapId, this.carrierSelection);
+        this.$router.push({ name: "home" }).catch(() => {});
+      }
+    
     }
   },
 };
@@ -197,7 +143,7 @@ h5 {
 th {
   font-size: 11px; 
   font-weight: 600;
-  color: #666
+  color: #666;
 }
 td {
   font-size: 1.9vh;
@@ -213,6 +159,20 @@ td {
 }
 .list td{
   width: 15%;
-  min-width: 80px;
+  min-width: 70px;
+}
+.text {
+  padding-left: 0px
+}
+.button-opt {
+  background: #ffffff !important;
+  border-top: 1px solid #b1b1b1;
+  display: flex;
+  justify-content: space-evenly;
+  width: 91%;
+  padding: 10px;
+  position: fixed;
+  bottom: 0px;
+  left: 14px;
 }
 </style>

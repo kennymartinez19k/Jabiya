@@ -11,7 +11,7 @@
     <div>
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div
-            :class="{'load-delivered': detailsLoads.loadingStatus.text == 'Delivered'}" 
+            :class="{'load-delivered': detailsLoads.loadingStatus.text == 'Delivered', 'load-assigned': detailsLoads.loadingStatus.text == 'Driver selection in progress'}" 
             class="uk-card uk-card-default uk-card-body load-default-status">
           <div
             :class="{'disabled-event': detailsLoads.loadingStatus.text === 'Driver selection in progress'}"
@@ -142,7 +142,7 @@
               </ul>
             </div>
             <div v-if=" detailsLoads.loadingStatus.text === 'Driver selection in progress'">
-                <driver-truck></driver-truck>
+                <driver-truck :detailsLoads="detailsLoads"></driver-truck>
             </div>
         </div>
       </div>
@@ -340,5 +340,8 @@ a {
 }
 .disabled-event {
   pointer-events: none;
+}
+.load-assigned .status-load{
+  color: red
 }
 </style>

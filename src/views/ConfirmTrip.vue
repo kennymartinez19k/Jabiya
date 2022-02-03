@@ -259,6 +259,10 @@ export default {
     },
     async acceptOrRejectLoad(id, version, status, type) {
       var user = JSON.parse(localStorage.getItem("userInfo"));
+      localStorage.removeItem('loadingProgress');
+      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
+      localStorage.removeItem('dateCheck');
+    localStorage.setItem('dateCheck', JSON.stringify(this.load?.dateTime?.date));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,

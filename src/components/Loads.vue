@@ -256,7 +256,6 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      console.log(this.loads)
       if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
       if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $Profit Flai";

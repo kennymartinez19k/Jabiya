@@ -1,29 +1,47 @@
-
 const profiles = {
     state: {
-        rol: 'container',
-        permissions: {
-            'container': ['autoScan', 'saveInfo'],
-            'eCommerce': ['noAutoScan'],
-        }
+        settings: {
+            // AutoScan: true,
+            language: null,
+            profile: 'container',
+            maps: false,
+        },
+    
     },
     mutations: {
-        changeRol(state, rol) {
-            console.log(rol)
-          state.rol = rol
-        }
+   
+        async setSettings(state, val){
+            if(!val){
+              localStorage.setItem('setting', JSON.stringify(state.settings))
+            }else{
+              state.settings = val
+              localStorage.setItem('setting', JSON.stringify(state.settings))
+            }
+      
+          },
+          setLanguageStore (state, lang) {
+            state.language = lang
+           console.log(lang)
+          }    
     },
     actions:{
-        hasPermission({state}, permission){
-            // debugger // eslint-disable-line
-            var a = state.permissions[state.rol].some(p => p === permission)
-            console.log(a)
-            return a
-        }
+    
+        changeLoadScannedInStore({commit}, val){
+            commit('setStructureToScan', val)
+            let name = JSON.stringify(val.name)
+            console.log(name)
+            localStorage.setItem(name,JSON.stringify(val))
+          },
+          SettingStorage(state){
+            if(!localStorage.getItem('setting')){
+              localStorage.setItem('setting', JSON.stringify(state.state.settings))
+            }
+          }
     },
   
     getters: {
-      rolStore : state => state.rol
+      settingsStore: state => state.settings,
+      languageStore: state => state.language,
     }
   }
   
