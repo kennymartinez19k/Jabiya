@@ -273,6 +273,9 @@ export default {
     },
     ordenIsReturn(val){
       let res = val?.Orders?.find(x => x)
+      const setting = JSON.parse(localStorage.getItem('setting'))
+      console.log(setting.profile, 'local')
+      if (setting.profile === 'eCommerce') return 'eCommerce '
       if(res?.isReturn) return 'Devolver Contenedor'
       return 'Entregar Contenedor'
     },

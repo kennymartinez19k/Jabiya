@@ -70,19 +70,17 @@ export const Mixins = {
           localStorage.removeItem(`loadStatus${load?.loadMapId}`);
         }
       } else {
-        if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
-        if (val == "Driver Arrival") await this.driverArrival(load);
-        if (val == "Approved") this.uploadTrip(load, 'orders');
-        if (val == "Dispatched") await this.startLoadRoute(load);
-        if (val == "Deliver-Load")
-          router.push({ name: "delivery-routes" });
-        if (val == "return-container")
-          router.push({ name: "return-container" });
-        if (val == "Delivered") {
-          localStorage.removeItem("loadingProgress");
-          this.localStorageGps.remove(`gps ${load?.loadMapId}`);
-          localStorage.removeItem(`loadStatus${load?.loadMapId}`);
-        }
+          if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
+          if (val == "Driver Arrival") await this.driverArrival(load);
+          if (val == "Approved") this.uploadTrip(load, 'orders');
+          if (val == "Dispatched") await this.startLoadRoute(load);
+          if (val == "Deliver-Load")
+            router.push({ name: "delivery-routes" });
+          if (val == "Delivered") {
+            localStorage.removeItem("loadingProgress");
+            this.localStorageGps.remove(`gps ${load?.loadMapId}`);
+            localStorage.removeItem(`loadStatus${load?.loadMapId}`);
+          }
       }
     },
     async driverArrival(val) {
