@@ -230,8 +230,6 @@ export default {
     ...mapGetters(["loadStore", "startRoute", "userData"]),
 
     loadStatus() {
-      console.log(this.userInfo)
-      console.log(this.load)
       let step = 0;
       let status = this.load?.loadingStatus?.text
       let userType = this.userInfo.userType
@@ -321,7 +319,7 @@ export default {
     },
 
     messageStatus(){
-      let message =  (JSON.parse(localStorage.getItem('currentProfile')))?.LoadStatus
+      let message = (JSON.parse(localStorage.getItem('currentProfile')))?.LoadStatus
 
       console.log(message)
       if(this.loadStatus.step > 0)
