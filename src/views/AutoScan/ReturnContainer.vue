@@ -34,7 +34,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.firstOrdenSector.sector }}</span>
+            ><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
@@ -170,6 +170,7 @@ export default {
     this.getLocation();
     if (this.loadStore) {
       this.load = this.loadStore;
+      this.load.firstOrdenInfo = this.load?.Orders[0]
       this.orders = this.load.Orders.filter((x) => x.isReturn);
       this.showSignaturform = this.orders.some(x =>  x.isReturn );
     }

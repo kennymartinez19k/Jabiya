@@ -1,4 +1,5 @@
 <template>
+
   <div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
@@ -41,16 +42,17 @@
                 <div v-if="userData?.userType == userType?.provider">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span>{{load?.plannedProfitability?.profitability?.revenue}}</span>
-                </div>
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span>{{load?.plannedProfitability?.profitability?.profitability}}</span>
+                  <span> RD ${{load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
-                  <span>{{load?.plannedProfitability?.profitability?.transportCost}}</span>
+                  <span> RD ${{load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
+                  <span> RD ${{load?.plannedProfitability?.profitability?.profitability * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                </div>
+                
               </div>
         
               <div class="uk-flex uk-flex-middle">
@@ -221,8 +223,10 @@ import { mapGetters } from "vuex";
 import { Mixins } from '../mixins/mixins'
 import { userType, userPosition, profile } from '../types'
 
+
 export default {
   alias: `Aprobar Viaje`,
+
   data() {
     return {
       userType,
@@ -233,7 +237,8 @@ export default {
       result: null,
       load: null,
       orders: null,
-      userInfo: {}
+      userInfo: {},
+
     };
   },
   mixins: [Mixins],
@@ -285,14 +290,17 @@ export default {
       });
     },
     async acceptOrRejectLoad(id, version, status, type) {
+      let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       let userId
-      if(!this.load.approvers[0].status)
+      if(!load.approvers[0].status){
         userId = (JSON.parse(localStorage.getItem('userInfo'))).id
-      else 
-        userId = (this.load.Vehicles.find(x => x)).driver_id._id
+      }
+      else{
+        userId = (load.Vehicles.find(x => x)).driver_id._id
+      } 
 
-      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
-      localStorage.setItem('dateCheck', JSON.stringify(this.load?.dateTime?.date));
+      localStorage.setItem('loadingProgress', JSON.stringify(load.loadMapId));
+      localStorage.setItem('dateCheck', JSON.stringify(load?.dateTime?.date));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,

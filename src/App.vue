@@ -46,6 +46,7 @@ export default {
 },
   async mounted(){
     
+    let waitInterval = 2000
     setInterval( async () => {
       if(queue.length > 0){
         let enqueueItem = remove()
@@ -53,17 +54,23 @@ export default {
       }
       let queueItem = await this.peek()
       if(queueItem){
-          try{
-            let res = await this.$services.requestServices.request(queueItem)
-            if(res){
-              this.dequeue()
-            }
-          } 
-          catch(error){
-            console.log(error)
+        if(queueItem.formInfo){
+          waitInterval = 4000
+        }else{
+          waitInterval = 2000
+        }
+        try{
+          let res = await this.$services.requestServices.request(queueItem)
+          if(res){
+            console.log(res)
+            this.dequeue()
           }
+        } 
+        catch(error){
+          console.log(error)
+        }
       }
-  }, 1000)
+  }, waitInterval)
 },
 methods:{
   setName(val){

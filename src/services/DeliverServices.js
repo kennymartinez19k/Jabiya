@@ -19,10 +19,7 @@ class deliverServices {
           }
           
           let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
-          console.log(json, 'json')
           add(json)
-
-
 
     }
 
