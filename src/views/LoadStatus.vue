@@ -207,7 +207,7 @@ export default {
         approved: 3,
         truckLoaded: 4,
         delivered: 5,
-        returnContainer: 6
+        returnContainer: 5
       },
       isReturnOrder: false,
       statusDelivered: false,
@@ -216,7 +216,11 @@ export default {
       LoadReturn: null,
       currentStatusLoad: null,
       allOrderIsReturn: null,
-      setting: {}
+      setting: {},
+
+      startRouteStorage: false,
+      deliverStorage: false,
+      uploadStorage: false
     };
   },
  
@@ -225,55 +229,140 @@ export default {
     ...mapGetters(["loadStore", "startRoute", "userData"]),
 
     loadStatus() {
-      let statusLoad = {};
-      if (this.load?.loadingStatus?.text == "Expecting Approval" && !this.load.approvers[0].status && this.userData.userType == this.userType.provider){
-        statusLoad.step = 0;
-        return statusLoad
-      }
-      if (this.load?.loadingStatus?.text == "Expecting Approval" && this.load?.approvers[0]?.status || this.userData?.userType != this.userType?.provider && this.load?.loadingStatus?.text == "Expecting Approval" ){
-        statusLoad.step = 1;
-        return statusLoad
-      }
-      if (this.load?.loadingStatus?.text == "Approved"){
-        statusLoad.step = 2;
-      }
-      if (this.load?.loadingStatus?.text == "Approved" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Driver Arrival" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Loading Truck" && this.currentStatusLoad == this.step.approved){
-        statusLoad.step = 3;
-
-      }
-      if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad < this.step.delivered){
-        statusLoad.step = 4;
-        return statusLoad;
-      }
-      if(this.allOrderIsReturn){
-        if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
-          statusLoad.step = 6;
-          return statusLoad;
-        }
-         if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
-          statusLoad.step = 7;
-          return statusLoad;
-      }
-       if (this.load?.loadingStatus?.text == 'Delivered'){
-        statusLoad.step = 8;
-        return statusLoad;
-      }
+      console.log(this.load)
+      let step = 0;
+      let status = this.load?.loadingStatus?.text
+      console.log(status)
+      let userType = this.userData.userType
+      let adminApproval;
+      let driverApproval;
+      for (let i = 0; i < this.load?.approvers?.length; i++) {
+        if(i == 0)
+        adminApproval = this.load?.approvers[i]?.status
+        else
+        driverApproval = this.load?.approvers[i]?.status
         
       }
-      if(!this.allOrderIsReturn){
-        if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
-          statusLoad.step = 5;
-          return statusLoad;
-        }
-        if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
-        statusLoad.step = 6;
-        return statusLoad;
+
+      if (status == "Expecting Approval" && !adminApproval && userType == this.userType.provider){
+        step = 0;
       }
-      if (this.load?.loadingStatus?.text == 'Delivered'){
-        this.deliveredLoad(this.load)
-        statusLoad.step = 7;
-        return statusLoad;
+
+      if (status == "Expecting Approval" && adminApproval == 'REJECT' && userType == this.userType.provider){
+        step = 0;
       }
+
+      if (status == "Reject by Admin" && adminApproval == 'REJECT' && userType == this.userType.provider){
+        step = 0;
+      }
+
+      if (status == "Expecting Approval" && adminApproval == 'ACCEPTED' && userType == this.userType.provider){
+        step = 1;
+      }
+
+      if(adminApproval == 'ACCEPTED' && !driverApproval && status == 'Expecting Approval'){
+        step = 1;
+      }
+
+       if(adminApproval == 'ACCEPTED' && driverApproval == 'REJECT' && status == 'Expecting Approval'){
+        step = 1;
+      }
+
+      if(adminApproval == 'ACCEPTED' && driverApproval == 'REJECT' && status == 'Reject by Driver'){
+        step = 1;
+      }
+
+      if(adminApproval == 'ACCEPTED' && driverApproval == 'ACCEPTED' && status == 'Expecting Approval'){
+        step = 2;
+      }
+
+      if(status == 'Approved'){
+        step = 2
+      }
+
+      if(status == 'Driver Arrival'){
+        step = 3
+      }
+
+      if(status == 'Loading Truck'){
+        step = 3
+      }
+
+      if(status == 'Dispatched'){
+        step = 4
+      }
+
+
+      if(step == 4 && status == 'Dispatched' && !this.startRouteStorage){
+        step = 4
+      }
+
+       if(step == 4 && status == 'Dispatched' && this.startRouteStorage){
+        step = 5
+      }
+
+       if(step == 5 && status == 'Dispatched' && this.startRouteStorage && !this.deliverStorage){
+        step = 5
+      }
+
+      if(step == 5 && status == 'Dispatched' && this.startRouteStorage && this.deliverStorage){
+        step = 6
+      }
+
+      if(status == 'Delivered'){
+        step = 6
+      }
+
+
+
+
+      // if (this.load?.loadingStatus?.text == "Expecting Approval" && this.load?.approvers[0]?.status || this.userData?.userType != this.userType?.provider && this.load?.loadingStatus?.text == "Expecting Approval" ){
+      //   statusLoad.step = 1;
+      //   return statusLoad
+      // }
+      // if (this.load?.loadingStatus?.text == "Approved"){
+      //   statusLoad.step = 2;
+      // }
+      // if (this.load?.loadingStatus?.text == "Approved" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Driver Arrival" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Loading Truck" && this.currentStatusLoad == this.step.approved){
+      //   statusLoad.step = 3;
+
+      // }
+      // if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad < this.step.delivered){
+      //   statusLoad.step = 4;
+      //   return statusLoad;
+      // }
+      // if(this.allOrderIsReturn){
+      //   if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
+      //     statusLoad.step = 6;
+      //     return statusLoad;
+      //   }
+      //    if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
+      //     statusLoad.step = 7;
+      //     return statusLoad;
+      // }
+      //  if (this.load?.loadingStatus?.text == 'Delivered'){
+      //   statusLoad.step = 8;
+      //   return statusLoad;
+      // }
+        
+      // }
+      // if(!this.allOrderIsReturn){
+      //   if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
+      //     statusLoad.step = 5;
+      //     return statusLoad;
+      //   }
+      //   if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
+      //   statusLoad.step = 6;
+      //   return statusLoad;
+      // }
+      // if (this.load?.loadingStatus?.text == 'Delivered'){
+      //   this.deliveredLoad(this.load)
+      //   statusLoad.step = 7;
+      //   return statusLoad;
+      // }
+      // }
+      let statusLoad = {
+        step: step
       }
       return statusLoad;
     },
@@ -324,16 +413,22 @@ export default {
     console.log(this.load)  
     localStorage.removeItem('dateCheck');
     localStorage.setItem('dateCheck', JSON.stringify(this.load.dateTime.date));
+
+    this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
+    this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
+    this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
   },
 
   methods: {
     async changeRoute(val) {
       if(await this.ubication()){
-        localStorage.removeItem('loadingProgress');
         localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
         await this.changeRouteLoads(val, this.load);
-        this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
 
+        this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
+        this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
+        this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
+        this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       }
     },
     setInvoice() {
@@ -499,6 +594,9 @@ ul {
 }
 .progressbar .action{
   border-radius: 5px;
+}
+.progressbar .action h6{
+  font-size: 14px;
 }
 .progressbar .completed-status .info{
   border-color: #017625 !important;
