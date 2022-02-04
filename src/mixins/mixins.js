@@ -84,7 +84,6 @@ export const Mixins = {
       }
     },
     async driverArrival(val) {
-      // localStorage.setItem(`driverArrival${val.loadMapId}`, true);
       services.loadsScanServices.driverArrival(val.loadMapId);
       let location = await this.location();
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
@@ -161,7 +160,7 @@ export const Mixins = {
       this.localStorageGps.remove(`gps ${val.loadMapId}`)
       let totalOfBoxes = await this.setLoadTruck(val)
       await this.$services.loadsScanServices.completeLoad(val.loadMapId, totalOfBoxes ) 
-      localStorage.setItem(`uploadStorage${this.load.loadMapId}`, true)
+      localStorage.setItem(`uploadStorage${this.load.loadMapId}`,JSON.stringify(true))
     },
     async setLoadTruck(val){
       let totalOfBoxes = 0
