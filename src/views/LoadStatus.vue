@@ -32,7 +32,7 @@
       <h6>Seleccione el Siguiente Paso</h6>
       <ul class="progressbar">
         <li
-          v-if="userData?.userType == userType?.provider" 
+          v-if="userInfo?.userType == userType?.provider" 
           :class="{active: loadStatus.step == step.expectingApprovalProvider, 'completed-status': loadStatus.step > step.expectingApprovalProvider}"
         >
           <div class="info">
@@ -217,6 +217,7 @@ export default {
       currentStatusLoad: null,
       allOrderIsReturn: null,
       setting: {},
+      userInfo: {},
 
       startRouteStorage: false,
       deliverStorage: false,
@@ -229,11 +230,11 @@ export default {
     ...mapGetters(["loadStore", "startRoute", "userData"]),
 
     loadStatus() {
+      console.log(this.userInfo)
       console.log(this.load)
       let step = 0;
       let status = this.load?.loadingStatus?.text
-      console.log(status)
-      let userType = this.userData.userType
+      let userType = this.userInfo.userType
       let adminApproval;
       let driverApproval;
       for (let i = 0; i < this.load?.approvers?.length; i++) {
@@ -313,54 +314,6 @@ export default {
         step = 6
       }
 
-
-
-
-      // if (this.load?.loadingStatus?.text == "Expecting Approval" && this.load?.approvers[0]?.status || this.userData?.userType != this.userType?.provider && this.load?.loadingStatus?.text == "Expecting Approval" ){
-      //   statusLoad.step = 1;
-      //   return statusLoad
-      // }
-      // if (this.load?.loadingStatus?.text == "Approved"){
-      //   statusLoad.step = 2;
-      // }
-      // if (this.load?.loadingStatus?.text == "Approved" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Driver Arrival" && this.currentStatusLoad == this.step.approved || this.load?.loadingStatus?.text == "Loading Truck" && this.currentStatusLoad == this.step.approved){
-      //   statusLoad.step = 3;
-
-      // }
-      // if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad < this.step.delivered){
-      //   statusLoad.step = 4;
-      //   return statusLoad;
-      // }
-      // if(this.allOrderIsReturn){
-      //   if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
-      //     statusLoad.step = 6;
-      //     return statusLoad;
-      //   }
-      //    if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
-      //     statusLoad.step = 7;
-      //     return statusLoad;
-      // }
-      //  if (this.load?.loadingStatus?.text == 'Delivered'){
-      //   statusLoad.step = 8;
-      //   return statusLoad;
-      // }
-        
-      // }
-      // if(!this.allOrderIsReturn){
-      //   if (this.load?.loadingStatus?.text == "Dispatched" && this.currentStatusLoad == this.step.delivered){
-      //     statusLoad.step = 5;
-      //     return statusLoad;
-      //   }
-      //   if (this.load?.loadingStatus?.text == 'Dispatched' && this.currentStatusLoad == this.step.returnContainer){
-      //   statusLoad.step = 6;
-      //   return statusLoad;
-      // }
-      // if (this.load?.loadingStatus?.text == 'Delivered'){
-      //   this.deliveredLoad(this.load)
-      //   statusLoad.step = 7;
-      //   return statusLoad;
-      // }
-      // }
       let statusLoad = {
         step: step
       }
@@ -368,8 +321,9 @@ export default {
     },
 
     messageStatus(){
-      let message = { ...this.currentProfile?.LoadStatus }
+      let message =  (JSON.parse(localStorage.getItem('currentProfile')))?.LoadStatus
 
+      console.log(message)
       if(this.loadStatus.step > 0)
         message.expectingApprovalProvider.message = message?.expectingApprovalProvider?.pastMessage
 
@@ -397,6 +351,7 @@ export default {
   },
 
   async mounted() {
+    this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.setting = JSON.parse(localStorage.getItem('setting'))
     console.log(this.loadStore)
     let loadsMounted = null
