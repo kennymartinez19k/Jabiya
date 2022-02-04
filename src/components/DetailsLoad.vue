@@ -136,7 +136,7 @@
            
           </div>
           
-          <div v-if="userInfo?.profile == profile?.eCommerce">
+          <div v-if="detailsLoads?.loadType">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"
@@ -320,7 +320,7 @@ export default {
     ordenIsReturn(val) {
       let res = val?.Orders?.find((x) => x);
       localStorage.setItem('loadType', JSON.stringify(val.loadType))
-      if (val.loadType === 'b2b') return 'eCommerce '
+      if (val.loadType === this.profile.eCommerce) return 'eCommerce '
       if (res?.isReturn) return "Devolver Contenedor";
       return "Entregar Contenedor";
     },

@@ -93,7 +93,7 @@ export const Profile = {
         localStorage.setItem('currentProfile', JSON.stringify(this.container))
       }
       if (val.loadType == "b2b"){
-        localStorage.setItem('currentProfile', JSON.stringify(this.eCommerce))
+        localStorage.setItem('currentProfile', JSON.stringify(this.b2b))
       }
 
     },
