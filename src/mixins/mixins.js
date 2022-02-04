@@ -56,8 +56,7 @@ export const Mixins = {
 
   methods: {
     async changeRouteLoads(val, load = null) {
-      let setting = JSON.parse(localStorage.getItem('setting'))
-      if (setting.profile === 'container') {
+      if (load.loadType === this.profile.container) {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
         if (val == "Approved") await this.uploadTrip(load, 'drayage-orden');
@@ -99,9 +98,7 @@ export const Mixins = {
     async uploadTrip(load, route) {
       this.localStorageGps.remove(`gps ${load?.loadMapId}`);
 
-      let setting = JSON.parse(localStorage.getItem('setting'))
-
-      if(setting.profile == this.profile.container){
+      if(load.loadType == this.profile.container){
         await this.uploadOrDownload(load)
       }else{
         router.push({ name: route });
