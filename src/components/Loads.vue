@@ -277,8 +277,8 @@ export default {
     },
     ordenIsReturn(val){
       let res = val?.Orders?.find(x => x)
-      const setting = JSON.parse(localStorage.getItem('setting'))
-      if (setting.profile === 'eCommerce') return 'eCommerce '
+      localStorage.setItem('loadType', JSON.stringify(val.loadType))
+      if (val.loadType === this.profile.eCommerce) return 'eCommerce '
       if(res?.isReturn) return 'Devolver Contenedor'
       return 'Entregar Contenedor'
     },

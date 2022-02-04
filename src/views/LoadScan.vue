@@ -179,11 +179,15 @@ export default {
   async mounted() {
     if(this.orderScan){
       BarcodeScanner.prepare();
+
       this.load = this.loadStore;
       this.orders = this.orderScan
       this.firstStructureLoad = this.structureToScan.firstStructure
       this.secondStructureLoad = this.structureToScan.secondStructure
-      console.log(this.secondStructureLoad)
+      console.log(this.load, 'loads')
+      console.log(this.orders, 'order')
+      console.log(this.firstStructureLoad, 'firstStructureLoad')
+      console.log(this.secondStructureLoad, '222222222')
       this.orders.map(x => x.completedScanned = false)
       this.load.firstOrdenSector = this.orders[0]?.sector
     }
@@ -418,7 +422,11 @@ export default {
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
             await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
-            this.statusOrders = "aprovve"   
+            this.statusOrders = "aprovve"  
+            setTimeout(() => {
+             this.$router.push({ name: "load-status" }).catch(() => {});
+
+            },2000) 
           }
           else this.scanOrder()
         }, 1000)

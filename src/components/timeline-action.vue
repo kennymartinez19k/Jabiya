@@ -72,7 +72,6 @@ export default {
   computed:{
     ...mapGetters([
       'loadStore',
-      'settingsStore'
     ])
   },
   watch: {
