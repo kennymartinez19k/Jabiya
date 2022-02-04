@@ -157,7 +157,6 @@ export default {
       this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
       moment.locale('en');
       window.location.href = "#Hoy";
-      this.setProfile()
       await this.currentDate();
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
@@ -217,21 +216,22 @@ export default {
 
     },
     async setLoad(val) {
-      console.log(val);
-        for(var i = 0; i < val.Orders.length; i++){
-          let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
-          val.firstOrdenInfo = val.Orders[i]
-          Object.assign(val.Orders[i], order[0])
-        }
+      this.setProfile(val)
+      
+      for(var i = 0; i < val.Orders.length; i++){
+        let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
+        val.firstOrdenInfo = val.Orders[i]
+        Object.assign(val.Orders[i], order[0])
+      }
       this.$store.commit("setloadStore", val);
       this.$store.commit("setDetailsLoadsStore", val);
       localStorage.setItem('DeliveryCharges', JSON.stringify(val));
       
-      if(val.loadingStatus.text == 'Expecting Approval'){
-        this.$router.push({ name: "load-status" }).catch(() => {});
-      }else{
-        this.$router.push({ name: "details-load" }).catch(() => {});
-      }
+        if(val.loadingStatus.text == 'Expecting Approval'){
+          this.$router.push({ name: "load-status" }).catch(() => {});
+        }else{
+          this.$router.push({ name: "details-load" }).catch(() => {});
+        }
     },
     changeRoute(path) {
       this.$router.push({ name: path }).catch(() => {});

@@ -77,7 +77,7 @@ export const Profile = {
           },
           returnContainer: {
             message: "Retornar Contenedor 1",
-            astMessage: "Contenedor Retornado 1",
+            pastMessage: "Contenedor Retornado 1",
             route: ''
           },
         },
@@ -86,20 +86,16 @@ export const Profile = {
       },
     };
   },
-  mounted() {
-    this.setProfile();
-  },
 
   methods: {
-    setProfile() {
-      let loadType = JSON.parse(localStorage.getItem("loadType"))
-      
-      if (loadType === "container") {
-        this.currentProfile = { ...this.container };
+    setProfile(val) {
+      if (val.loadType == "container") {
+        localStorage.setItem('currentProfile', JSON.stringify(this.container))
       }
-      if (loadType === "b2b"){
-        this.currentProfile = { ...this.b2b };
+      if (val.loadType == "b2b"){
+        localStorage.setItem('currentProfile', JSON.stringify(this.eCommerce))
       }
+
     },
 
   },

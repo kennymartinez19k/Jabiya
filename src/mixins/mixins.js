@@ -58,7 +58,6 @@ export const Mixins = {
 
   methods: {
     async changeRouteLoads(val, load = null) {
-      // var profile = profiles.state.settings.profile;
       if (load.loadType === this.profile.container) {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
