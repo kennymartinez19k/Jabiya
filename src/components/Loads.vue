@@ -217,6 +217,7 @@ export default {
     },
     async setLoad(val) {
       this.setProfile(val)
+
       
       for(var i = 0; i < val.Orders.length; i++){
         let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
