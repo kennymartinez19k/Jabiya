@@ -1,4 +1,5 @@
 <template>
+
   <div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
@@ -41,21 +42,34 @@
                 <div v-if="userData?.userType == userType?.provider">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span>{{load?.plannedProfitability?.profitability?.revenue}}</span>
-                </div>
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span>{{load?.plannedProfitability?.profitability?.profitability}}</span>
+                  <span> RD ${{load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
-                  <span>{{load?.plannedProfitability?.profitability?.transportCost}}</span>
+                  <span> RD ${{load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
+                  <span> RD ${{load?.plannedProfitability?.profitability?.profitability * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                </div>
+                
               </div>
         
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Estado del Viaje:&nbsp;</p>
                 <span>{{loadStatus(load)}}</span>
+              </div>
+
+              <div v-if="userInfo.profile == profile.container">
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Cliente:&nbsp;</p>
+                  <span>{{ load.Orders[0].client_name }}</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Orden:&nbsp;</p>
+                  <span>{{ load?.Orders[0]?.order_num }}</span>
+                </div>
+
               </div>
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
@@ -78,7 +92,7 @@
               
             </div>
             <div class="uk-flex uk-flex-between">
-              <div class="uk-text-left info-user">
+              <div class="uk-text-left uk-flex uk-flex-between info-user" v-if="userInfo.profile == profile.container">
                 <div>
                   <p class="uk-text-bold">Recoger en:</p>
                   <p>
@@ -99,34 +113,48 @@
               
             </div>
             <div>
-        <h6  class="font-weight-medium" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
       </div>
+      <div v-if="userInfo.profile == profile.eCommerce">
+        <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
+        <div
+          v-for="order in orders"
+          :key="order"
+          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+          :class="{ ordenCompleted: order?.completed }"
+        >
+          <div class="uk-text-left uk-flex uk-flex-wrap">
+            <p class="uk-width-1-1" style="margin-right: 10px !important">
+                  <span class="font-weight-medium">Cliente: </span>
+                  <span>{{ order.client_name }}</span>
+                </p>
+            <p style="margin-right: 10px !important">
+              <span class="font-weight-medium">Orden: </span
+              ><span>{{ order.order_num }}</span>
+            </p>
+            <p>
+              <span class="font-weight-medium">Cajas / Pallets: </span
+              >{{ order.products?.length }}<span></span>
+            </p>
+            
+            <div class="uk-text-left info-user">
+                  <div>
+                    <p class="uk-text-bold">Warehouse:</p>
+                    <p>
+                      <span v-for="info in load?.shipper" :key="info">
+                        {{ info?.name }}
+                      </span>
+                    </p>
+                    <p>{{load?.warehouse?.location?.address}}</p>
 
-      <div
-        v-for="order in orders"
-        :key="order"
-        class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order?.completed }"
-      >
-        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-          <p class="uk-width-1-1" style="margin-right: 10px !important">
-                <span class="font-weight-medium">Cliente: </span>
-                <span>{{ order.client_name }}</span>
-              </p>
-          <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Orden: </span
-            ><span>{{ order.order_num }}</span>
-          </p>
-          <p>
-            <span class="font-weight-medium">Cajas / Pallets: </span
-            >{{ order.products?.length }}<span></span>
-          </p>
-          <p class="uk-width-1-1">
-            <span class="font-weight-medium">Destino: </span>
-            <font-awesome-icon icon="map-marker-alt" />&nbsp;<span>
-              {{order.city}}. {{order.sector}}
-              </span>
-          </p>
+                  </div>
+                  <div>
+                    <p class="uk-text-bold">Entregar en:</p>
+                    <p>{{load?.firstOrdenInfo?.client_name}}</p>
+                    <p>{{load?.firstOrdenInfo?.address}}</p>
+                  </div>
+                
+                </div>
+          </div>
         </div>
       </div>
           </div>
@@ -193,19 +221,24 @@
 <script>
 import { mapGetters } from "vuex";
 import { Mixins } from '../mixins/mixins'
-import { userType, userPosition } from '../types'
+import { userType, userPosition, profile } from '../types'
+
 
 export default {
   alias: `Aprobar Viaje`,
+
   data() {
     return {
       userType,
       userPosition,
+      profile,
 
       status: null,
       result: null,
       load: null,
       orders: null,
+      userInfo: {},
+
     };
   },
   mixins: [Mixins],
@@ -225,6 +258,7 @@ export default {
     },
   },
   mounted() {
+    this.userInfo = JSON.parse(localStorage.getItem('setting'))
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.loadStore.Orders
@@ -256,20 +290,24 @@ export default {
       });
     },
     async acceptOrRejectLoad(id, version, status, type) {
-      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
-      var user = JSON.parse(localStorage.getItem("userInfo"));
-      localStorage.removeItem('loadingProgress');
-      localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
-      localStorage.removeItem('dateCheck');
-    localStorage.setItem('dateCheck', JSON.stringify(this.load?.dateTime?.date));
+      let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
+      let userId
+      if(!load.approvers[0].status){
+        userId = (JSON.parse(localStorage.getItem('userInfo'))).id
+      }
+      else{
+        userId = (load.Vehicles.find(x => x)).driver_id._id
+      } 
+
+      localStorage.setItem('loadingProgress', JSON.stringify(load.loadMapId));
+      localStorage.setItem('dateCheck', JSON.stringify(load?.dateTime?.date));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,
-        user.id,
+        userId,
         status,
         type
       );
-      console.log(result);
       if (result) {
         if(status == 'REJECT')  this.$router.push({ name: "home" });
         else this.$router.push({ name: "load-status" });
@@ -410,5 +448,13 @@ p {
 .uk-button-red{
   background: #930404;
   color: #fff;
+}
+.info-user{
+  width: 100% !important;
+  display: flex;
+  justify-content: space-between;
+}
+.info-user div{
+  width: 45%;
 }
 </style>

@@ -1,14 +1,15 @@
-// import orders from "../store/Orders";
-import profiles from "../store/Profiles";
 import router from "../router";
 import services from "../services/index";
 import { Geolocation } from "@capacitor/geolocation";
 import { LocalStorage } from "../mixins/LocalStorage";
 import { Storage } from "@ionic/storage";
+import {profile } from '../types'
 
 export const Mixins = {
   data() {
     return {
+      profile,
+
       myLocation: null,
       load: null,
       localStorageGps: new Storage(),
@@ -55,26 +56,22 @@ export const Mixins = {
 
   methods: {
     async changeRouteLoads(val, load = null) {
-      var profile = profiles.state.settings.profile;
-      console.log(val, 'ruta')
-      if (profile === 'container') {
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      if (setting.profile === 'container') {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
-        if (val == "Approved") this.uploadTrip(load);
+        if (val == "Approved") await this.uploadTrip(load, 'drayage-orden');
         if (val == "Dispatched") await this.startLoadRoute(load);
         if (val == "Deliver-Load")
           router.push({ name: "delivery-actions-auto" });
         if (val == "return-container")
           router.push({ name: "return-container" });
-        if (val == "Delivered") {
-          localStorage.removeItem("loadingProgress");
-          this.localStorageGps.remove(`gps ${load?.loadMapId}`);
-          localStorage.removeItem(`loadStatus${load?.loadMapId}`);
-        }
+        if (val == "Delivered") this.removeInfoInStorage(load)    
+  
       } else {
           if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
           if (val == "Driver Arrival") await this.driverArrival(load);
-          if (val == "Approved") this.uploadTrip(load, 'orders');
+          if (val == "Approved") await this.uploadTrip(load, 'orders');
           if (val == "Dispatched") await this.startLoadRoute(load);
           if (val == "Deliver-Load")
             router.push({ name: "delivery-routes" });
@@ -86,7 +83,7 @@ export const Mixins = {
       }
     },
     async driverArrival(val) {
-      localStorage.setItem(`loadStatus${val.loadMapId}`, 3);
+      localStorage.setItem(`driverArrival${val.loadMapId}`, true);
       services.loadsScanServices.driverArrival(val.loadMapId);
       let location = await this.location();
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
@@ -99,15 +96,23 @@ export const Mixins = {
       );
     },
 
-    uploadTrip(load) {
-      router.push({ name: "drayage-orden" });
+    async uploadTrip(load, route) {
       this.localStorageGps.remove(`gps ${load?.loadMapId}`);
+
+      let setting = JSON.parse(localStorage.getItem('setting'))
+
+      if(setting.profile == this.profile.container){
+        await this.uploadOrDownload(load)
+      }else{
+        router.push({ name: route });
+      }
     },
     async startLoadRoute(val) {
       if (this.setting.maps) await this.setMap(val);
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
 
-      localStorage.setItem(`loadStatus${val.loadMapId}`, 5);
+      localStorage.setItem(`startRoute${val.loadMapId}`, true);
+      
     },
 
     async setMap(val) {
@@ -152,5 +157,43 @@ export const Mixins = {
     async setGps() {
       return await this.localStorageGps.get(`gps ${this.load?.loadMapId}`);
     },
+
+    async uploadOrDownload(val){
+      this.localStorageGps.remove(`gps ${val.loadMapId}`)
+      let totalOfBoxes = await this.setLoadTruck(val)
+      await this.$services.loadsScanServices.completeLoad(val.loadMapId, totalOfBoxes ) 
+      localStorage.setItem(`uploadStorage${this.load.loadMapId}`, true)
+    },
+    async setLoadTruck(val){
+      let totalOfBoxes = 0
+      for(let cont = 0; cont < val.Orders.length; cont++){
+        let load = val.Orders[cont]
+        let orders =  await this.$services.loadsScanServices.getProduct(load._id);
+        Object.assign(val.Orders[cont], orders[0])
+        this.$store.commit("setloadStore", val)
+        let order = orders.find(x => x)
+        totalOfBoxes += load.no_of_boxes
+        for(var i = 0; i < order.products.length; i++){
+          let prod = order.products[i]
+          if(prod.scanOneByOne === "no") {
+            await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+          }
+          else {
+            for(let i = 0; i <= prod.quantity; i++){
+              await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+            }
+          }
+        }
+      }
+      return totalOfBoxes
+    },
+    removeInfoInStorage(val){
+      localStorage.removeItem("loadingProgress");
+      this.localStorageGps.remove(`gps ${val?.loadMapId}`);
+      
+      localStorage.removeItem(`startRoute${this.load.loadMapId}`)
+      localStorage.removeItem(`deliverLoad${this.load.loadMapId}`)
+      localStorage.removeItem(`uploadStorage${this.load.loadMapId}`)
+    }
   },
 };

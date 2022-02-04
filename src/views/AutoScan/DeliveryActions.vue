@@ -191,6 +191,7 @@ export default {
     digitalFirmStore: {
       handler: async function (newVal) {
         if (newVal !== null) {
+          console.log(newVal)
           this.firm = newVal;
           this.uploadOrDownload(this.load)
           this.postImages()
@@ -341,8 +342,9 @@ export default {
         for (let i = numberOfImages; i < 3; i++) {
           images.push(this.imagiElement[0]);
         }
+        console.log(this.firm)
         images.push(this.firm);
-          this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+        this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
     },
     
@@ -362,7 +364,7 @@ export default {
           let prod = order.products[i]
           try {
             if(prod.scanOneByOne === "no") {
-              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
             }
             else {
               for(let i = 0; i <= prod.quantity; i++){

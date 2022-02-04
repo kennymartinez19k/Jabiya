@@ -5,13 +5,13 @@ export const Profile = {
       container: {
         LoadStatus: {
           expectingApprovalProvider: {
-            message: "Aprobar $ Viaje Flai",
+            message: "Aprobar/Rechazar $ (Flai)",
             pastMessage: "Aprobó el Viaje $ Flai",
             route: ''
           },
           expectingApproval: {
-            message: 'Aprobar Viaje (Chofer)',
-            pastMessage: "Aprobó el Viaje (Chofer)",
+            message: 'Aceptar/Rechazar Viaje (Chofer)',
+            pastMessage: "Aceptó el Viaje (Chofer)",
             route: 'confirm-trip'
           },
           driverArrival: {

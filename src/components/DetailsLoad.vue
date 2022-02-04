@@ -27,7 +27,7 @@
                   </p>
               </div>
               
-              <div v-if="userData?.userType == userType?.provider">
+              <div v-if="userData?.userType == userType?.provider && detailsLoads.loadingStatus.text !== 'Driver selection in progress'">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
                   <span>{{detailsLoads?.plannedProfitability?.profitability?.revenue}}</span>
@@ -92,47 +92,94 @@
               
             </div>
             <div class="uk-flex uk-flex-between">
-              <div
-                v-if="isReturnLoad(detailsLoads)"
-                class="uk-text-left info-user"
-              >
-                <div>
-                  <p class="uk-text-bold">Recoger en:</p>
-                  <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
-                  <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
+                <div style="width: 100%">
+                  <div
+                    v-if="isReturnLoad(detailsLoads) && userInfo.profile == profile.container"
+                    class="uk-text-left info-user"
+                  >
+                    <div>
+                      <p class="uk-text-bold">Recoger en:</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
+                    </div>
+                    <div>
+                      <p class="uk-text-bold">Entregar en:</p>
+                      <p>
+                        <span v-for="info in detailsLoads.shipper" :key="info">
+                          {{ info?.name }}
+                        </span>
+                      </p>
+                      <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
+                    </div>
+                  </div>
+                  <div v-else-if="userInfo.profile == profile.container" class="uk-text-left info-user">
+                    <div>
+                      <p class="uk-text-bold">Recoger en:</p>
+                      <p>
+                        <span v-for="info in detailsLoads.shipper" :key="info">
+                          {{ info?.name }}
+                        </span>
+                      </p>
+                      <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
+                    </div>
+                    <div>
+                      <p class="uk-text-bold">Entregar en:</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p class="uk-text-bold">Entregar en:</p>
-                  <p>
-                    <span v-for="info in detailsLoads.shipper" :key="info">
-                      {{ info?.name }}
-                    </span>
-                  </p>
-                  <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
-                </div>
-              </div>
-              <div v-else class="uk-text-left info-user">
-                <div>
-                  <p class="uk-text-bold">Recoger en:</p>
-                  <p>
-                    <span v-for="info in detailsLoads.shipper" :key="info">
-                      {{ info?.name }}
-                    </span>
-                  </p>
-                  <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
-                </div>
-                <div>
-                  <p class="uk-text-bold">Entregar en:</p>
-                  <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
-                  <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
-                </div>
-              </div>
               <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" class="start-load uk-flex-middle">
                 <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
               </div>
             </div>
            
           </div>
+          
+          <div v-if="userInfo?.profile == profile?.eCommerce">
+        <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
+        <div
+          v-for="order in orders"
+          :key="order"
+          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+          :class="{ ordenCompleted: order?.completed }"
+        >
+          <div class="uk-text-left uk-flex uk-flex-wrap">
+            <p class="uk-width-1-1" style="margin-right: 10px !important">
+                  <span class="font-weight-medium">Cliente: </span>
+                  <span>{{ order.client_name }}</span>
+                </p>
+            <p style="margin-right: 10px !important">
+              <span class="font-weight-medium">Orden: </span
+              ><span>{{ order.order_num }}</span>
+            </p>
+            <p>
+              <span class="font-weight-medium">Cajas / Pallets: </span
+              >{{ order.products?.length }}<span></span>
+            </p>
+            
+            <div class="uk-text-left info-user">
+                  <div>
+                    <p class="uk-text-bold">Warehouse:</p>
+                    <p>
+                      <span v-for="info in load?.shipper" :key="info">
+                        {{ info?.name }}
+                      </span>
+                    </p>
+                    <p>{{detailsLoads?.warehouse?.location?.address}}</p>
+
+                  </div>
+                  <div>
+                    <p class="uk-text-bold">Entregar en:</p>
+                    <p>{{detailsLoads?.firstOrdenInfo?.client_name}}</p>
+                    <p>{{detailsLoads?.firstOrdenInfo?.address}}</p>
+                  </div>
+                
+                </div>
+          </div>
+        </div>
+      </div>
+
            <div class="uk-text-left" v-if="userData?.userType === userType?.transporter && userData?.position === userPosition?.transporter">
               <p class="uk-text-bold " style="font-size: 16px !important">Información Adicional:</p>
               <ul>
@@ -157,7 +204,7 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-import { userType, userPosition } from '../types'
+import { userType, userPosition, profile } from '../types'
 import DriverTruck from '../components/AddDriverAndTruck.vue'
 
 export default {
@@ -176,7 +223,9 @@ export default {
     return {
       userType,
       userPosition,
-
+      profile,
+      orders: [],
+      userInfo: null,
       loaded: false,
       detailsLoads: [],
       dateAvalaible: [],
@@ -191,8 +240,10 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
+    this.userInfo = JSON.parse(localStorage.getItem('setting'))
     if (this.detailsLoadsStore) {
       this.detailsLoads = this.detailsLoadsStore;
+      this.orders = this.detailsLoads.Orders
       this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
       this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
       console.log( JSON.parse(localStorage.getItem('DeliveryCharges')))
@@ -342,6 +393,7 @@ a {
   pointer-events: none;
 }
 .load-assigned .status-load{
-  color: red
+  color: red;
 }
+
 </style>

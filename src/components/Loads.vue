@@ -136,7 +136,7 @@ export default {
       date: new Date(),
       dateMoment: null,
       assignedLoads: -1,
-      timeOut: 10000,
+      timeOut: 30000,
       userInfo: {},
       reloadEvent: false
     };
@@ -153,17 +153,14 @@ export default {
   
   async mounted() {
       this.$store.commit('setUserData')
+      this.$store.commit("setSettings", false);
       this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
       moment.locale('en');
       window.location.href = "#Hoy";
       this.setProfile()
       await this.currentDate();
-      
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
-      if(!localStorage.getItem('setting')){
-        this.$store.commit("setSettings", null);
-      }
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings", "userData"]),
@@ -181,6 +178,7 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
+      this.loads = []
       this.assignedLoads = -1
       let contDate
       if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
@@ -190,22 +188,24 @@ export default {
       else contDate = this.date
       var date = moment(contDate).format("MM/DD/YYYY");
 
+
        if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
       this.setOpen(true);
+
       
       let loads = await this.$services.loadsServices.getLoadsbyDate(date);
-
       for (let i = 0; i < loads.length; i++) {
         const load = {...loads[i]}
         const loadDetails =  await this.$services.loadsServices.getLoadDetails(load?.loadMapId);
 
         Object.assign(load, loadDetails)
-
         if(!((loadDetails.loadingStatus.text == "Driver selection in progress" && this.userInfo.userType === this.userType.driver) || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text == "Expecting Approval" && this.userInfo.userType !== this.userType.provider ))){
           this.loads.push(loadDetails)
+          console.log('entre carga en loads')
         }
       }
+      console.log(this.loads)
       this.sortLoads()
       this.setOpen(false);
 
@@ -227,8 +227,8 @@ export default {
       this.$store.commit("setDetailsLoadsStore", val);
       localStorage.setItem('DeliveryCharges', JSON.stringify(val));
       
-      if(val.loadingStatus.text == 'Expecting Approval' && !val.approvers[0].status){
-        this.$router.push({ name: "confirm-trip" }).catch(() => {});
+      if(val.loadingStatus.text == 'Expecting Approval'){
+        this.$router.push({ name: "load-status" }).catch(() => {});
       }else{
         this.$router.push({ name: "details-load" }).catch(() => {});
       }
@@ -262,7 +262,7 @@ export default {
       if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
       if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
       if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $Profit Flai";
-      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Chofer Apruebe Viaje";
+      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Chofer Acepte Viaje";
 
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
@@ -277,7 +277,6 @@ export default {
     ordenIsReturn(val){
       let res = val?.Orders?.find(x => x)
       const setting = JSON.parse(localStorage.getItem('setting'))
-      console.log(setting.profile, 'local')
       if (setting.profile === 'eCommerce') return 'eCommerce '
       if(res?.isReturn) return 'Devolver Contenedor'
       return 'Entregar Contenedor'
@@ -296,8 +295,6 @@ export default {
       setTimeout(() => {
         this.reloadEvent = false
       }, 500)
-      
-      this.loads = []
       this.currentDate()
 
     },
@@ -419,6 +416,9 @@ a {
 .load-assigned .status-load{
   color: red;
   -webkit-animation: asigned 500ms infinite;
+}
+.load-assigned{
+  background: #fff6f6;
 }
 @-webkit-keyframes asigned {
   from { opacity: 1.0; }

@@ -12,5 +12,9 @@
   },
   "positionSPN":{
     "transporter": "Coordinador de Transporte"
+  },
+  "profile":{
+    "container": "container",
+    "eCommerce": "eCommerce"
   }
 }
