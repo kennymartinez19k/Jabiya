@@ -84,7 +84,7 @@ export const Mixins = {
       }
     },
     async driverArrival(val) {
-      localStorage.setItem(`driverArrival${val.loadMapId}`, true);
+      // localStorage.setItem(`driverArrival${val.loadMapId}`, true);
       services.loadsScanServices.driverArrival(val.loadMapId);
       let location = await this.location();
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
@@ -110,7 +110,7 @@ export const Mixins = {
       if (this.setting.maps) await this.setMap(val);
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
 
-      localStorage.setItem(`startRoute${val.loadMapId}`, true);
+      localStorage.setItem(`startRoute${val.loadMapId}`, JSON.stringify(true));
       
     },
 
