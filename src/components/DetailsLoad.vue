@@ -169,7 +169,7 @@ export default {
     DriverTruck
   },
   props: {
-    timeout: { type: Number, default: 1000 },
+    timeout: {  default: 1000 },
   },
   mixins: [Mixins],
   data() {
@@ -203,6 +203,7 @@ export default {
     ...mapGetters(["detailsLoadsStore", "userData"]),
   },
   mounted () {
+    this.$store.commit("setSettings", null);
   },
 
   methods: {
@@ -267,6 +268,8 @@ export default {
     },
     ordenIsReturn(val) {
       let res = val?.Orders?.find((x) => x);
+      localStorage.setItem('loadType', JSON.stringify(val.loadType))
+      if (val.loadType === 'b2b') return 'eCommerce '
       if (res?.isReturn) return "Devolver Contenedor";
       return "Entregar Contenedor";
     },

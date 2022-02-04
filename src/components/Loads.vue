@@ -181,6 +181,7 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
+      this.loads = []
       this.assignedLoads = -1
       let contDate
       if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
@@ -276,9 +277,8 @@ export default {
     },
     ordenIsReturn(val){
       let res = val?.Orders?.find(x => x)
-      const setting = JSON.parse(localStorage.getItem('setting'))
-      console.log(setting.profile, 'local')
-      if (setting.profile === 'eCommerce') return 'eCommerce '
+      localStorage.setItem('loadType', JSON.stringify(val.loadType))
+      if (val.loadType === 'b2b') return 'eCommerce '
       if(res?.isReturn) return 'Devolver Contenedor'
       return 'Entregar Contenedor'
     },

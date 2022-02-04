@@ -22,8 +22,7 @@
       </div>
     </div>
     <ul class="progressbar">
-           <li
-        v-if="!settings?.AutoScan"
+      <li
         class="stepOne"
         :class="{ active: resultScan !== null }"
         @click="getShow('scan')"
@@ -145,7 +144,10 @@ export default {
   methods: {
     getShow(value) {
       this.$emit("action", value);
+      if (value === 'scan') {
+      this.$emit("action", value);
 
+      }
       if (value === "exception") {
         this.showException = true;
       }

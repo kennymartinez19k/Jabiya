@@ -1,5 +1,5 @@
 // import orders from "../store/Orders";
-import profiles from "../store/Profiles";
+// import profiles from "../store/Profiles";
 import router from "../router";
 import services from "../services/index";
 import { Geolocation } from "@capacitor/geolocation";
@@ -55,12 +55,11 @@ export const Mixins = {
 
   methods: {
     async changeRouteLoads(val, load = null) {
-      var profile = profiles.state.settings.profile;
-      console.log(val, 'ruta')
-      if (profile === 'container') {
+      // var profile = profiles.state.settings.profile;
+      if (load.loadType === 'container') {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
-        if (val == "Approved") this.uploadTrip(load);
+        if (val == "Approved") this.uploadTrip(load, 'drayage-orden');
         if (val == "Dispatched") await this.startLoadRoute(load);
         if (val == "Deliver-Load")
           router.push({ name: "delivery-actions-auto" });
@@ -99,8 +98,8 @@ export const Mixins = {
       );
     },
 
-    uploadTrip(load) {
-      router.push({ name: "drayage-orden" });
+    uploadTrip(load, route) {
+      router.push({ name: route });
       this.localStorageGps.remove(`gps ${load?.loadMapId}`);
     },
     async startLoadRoute(val) {

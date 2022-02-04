@@ -152,9 +152,12 @@ export default {
   },
   watch: {
     digitalFirmStore: {
-      handler: function (newVal) {
+      handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
+         await this.postImages()
+          this.$router.push({ name: "home" }).catch(() => {});
+
         }
       },
     },
@@ -168,8 +171,9 @@ export default {
   methods: {
     getShow(value) {
       this.show = value;
+      // alert(value)
       if (value === "scan") {
-        this.scanOrder();
+        this.scanOrder();   
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.getCam();
       } else if (value === "firm") {
@@ -178,18 +182,33 @@ export default {
       }
     },
     async scanOrder() {
+      // alert('estoy escaneando')
+
       this.statusOrders = 'start';
         if (await this.checkPermission()) {
           BarcodeScanner.hideBackground();
+      // alert('estoy en permiso')
+
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+      alert(result.content)
+
           if (result.hasContent) {
+      // alert('result.hasContent')
+      // alert(result.hasContent)
+
             BarcodeScanner.hideBackground();
-            var OrderElement = this.orders.findIndex(x => x.order_num == result.content)
+            var OrderElement  = this.orders.findIndex(x => x.products.findIndex(z => z.qrcode == "CNT40"))
+                    // alert(OrderElement)
+
             if (OrderElement > -1) {
+                    // alert('OrderElement > -1')
               this.step++;
               this.resultScan = result
               this.verifiedElement(OrderElement)
             } else if (OrderElement){
+                    // alert('estoy escanese if OrderElement')
+                    // alert(OrderElement)
+
               this.statusOrders = 'reject';
               Vibration.vibrate(1000);
               setTimeout(() => {
@@ -233,8 +252,8 @@ export default {
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
 
-      if (this.imagiElement?.length === 3) {
-        this.step++;
+       if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
+        this.step = 2;
       }
       this.cont = this.cont + 1;
     },
@@ -284,7 +303,26 @@ export default {
     shipperName(val){
       var shipper = val?.shipper?.find(x => x.name)
       return shipper?.name
-    }
+    },
+     async postImages() {
+        let unreturnedOrders = this.orders.filter((x) => !x.isReturn);
+      for (var it = 0; it < unreturnedOrders.length; it++) {
+        let order = unreturnedOrders[it];
+        let images = [];
+        images.push(...this.imagiElement);
+        let numberOfImages = 3;
+        if (this.imagiElement.length === 1) {
+          numberOfImages = 1;
+        } else if (this.imagiElement.length === 2) {
+          numberOfImages = 2;
+        }
+        for (let i = numberOfImages; i < 3; i++) {
+          images.push(this.imagiElement[0]);
+        }
+        images.push(this.firm);
+          this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+      }
+    },
   },
 };
 </script>

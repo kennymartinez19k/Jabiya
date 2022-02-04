@@ -20,7 +20,7 @@
         <div class="uk-form-controls" style="width: 40%">
             <select v-model="settings.profile" class="uk-select" id="profile">
                 <option value="container" selected>Contenedor</option>
-                <option value="eCommerce">eCommerce</option>
+                <option value="b2b">eCommerce</option>
             </select>
         </div>
       </label>

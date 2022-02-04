@@ -43,7 +43,7 @@ export const Profile = {
         pick: 'Recoger en',
         deliver: 'Entregar en',
       },
-      eCommerce: {
+      b2b: {
         LoadStatus: {
           expectingApprovalProvider: {
             message: "Aprobar $ Viaje Flai 1",
@@ -92,13 +92,13 @@ export const Profile = {
 
   methods: {
     setProfile() {
-      let setting = JSON.parse(localStorage.getItem("setting"))
+      let loadType = JSON.parse(localStorage.getItem("loadType"))
       
-      if (setting.profile == "container") {
+      if (loadType === "container") {
         this.currentProfile = { ...this.container };
       }
-      if (setting.profile == "eCommerce"){
-        this.currentProfile = { ...this.eCommerce };
+      if (loadType === "b2b"){
+        this.currentProfile = { ...this.b2b };
       }
     },
 

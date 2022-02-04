@@ -321,7 +321,6 @@ export default {
           accountant = 3
           images.push(this.singnature);
         }
-        images.push(...this.imagiElement);
         let numberOfImages = 3;
         if (this.imagiElement.length === 1) {
           numberOfImages = 1;
