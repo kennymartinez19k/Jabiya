@@ -1,3 +1,5 @@
+// import orders from "../store/Orders";
+// import profiles from "../store/Profiles";
 import router from "../router";
 import services from "../services/index";
 import { Geolocation } from "@capacitor/geolocation";

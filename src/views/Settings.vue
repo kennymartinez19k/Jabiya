@@ -5,8 +5,8 @@
             <h6>Perfil</h6>
         <div class="uk-form-controls" style="width: 40%">
             <select v-model="settings.profile" class="uk-select" id="profile">
-                <option value="container" selected>Contenedor</option>
-                <option value="eCommerce">eCommerce</option>
+                <option :value="profile.container" selected>Contenedor</option>
+                <option :value="profile.eCommerce">eCommerce</option>
             </select>
         </div>
       </label>
