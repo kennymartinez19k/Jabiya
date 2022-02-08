@@ -204,6 +204,8 @@ import moment from "moment";
 import "moment/locale/es";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { Profile } from "../mixins/Profile";
+
 import { userType, userPosition, profile } from '../types'
 import DriverTruck from '../components/AddDriverAndTruck.vue'
 
@@ -218,7 +220,7 @@ export default {
   props: {
     timeout: {  default: 1000 },
   },
-  mixins: [Mixins],
+  mixins: [Mixins, Profile],
   data() {
     return {
       userType,
@@ -304,14 +306,7 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
-      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $ Flai";
-      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
-      if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
-      if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
-      if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
-      if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
-      if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
+      return this.setStatus(val)
     },
 
     setLocaleDate(val) {

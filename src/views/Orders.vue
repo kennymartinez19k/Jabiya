@@ -177,21 +177,19 @@ export default {
     },
    
     scan() {
-
-     this.$emit("setNameHeader", 'Escaneo Corrido');
+      this.$emit("setNameHeader", 'Escaneo Corrido');
       this.$store.commit("scanOrder", this.listOrderDetails );
       let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      let allProducts = []
+      for (let i = 0; i < this.orders.length; i++) {
+        const order = this.orders[i];
+        allProducts.push(order.order_num)        
+      }
+      localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structureInfo)
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
-    shipperName(val){
-      var shipper = val?.shipper?.find(x => x)
-      return shipper?.name
-    },
-    firstOrderSector(val){
-      var shipper = val?.shipper?.find(x => x)
-      return shipper?.name
-    },
+    
     async orderForScan(order, allOrders = false){
       let firstProductInfo;
       let totalOfOrders = 0;
@@ -199,7 +197,6 @@ export default {
        this.listOrderDetails = this.listOrderDetails.filter(x => x.order_num != order.order_num)
        this.listOfOrders = this.listOfOrders.filter(x => x.order_num != order.order_num)
        this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order.order_num)
-       console.log(this.listOfOrderTotal)
      }else{
        this.listOrderDetails.push(order)
        order.products.forEach(async x => {
@@ -234,10 +231,17 @@ export default {
           }
         })
         this.listOfOrderTotal = products
-        console.log(this.listOfOrders)
-        console.log(this.listOfOrderTotal)
     }
-  }
+  },
+
+  shipperName(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    firstOrderSector(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    }
 }
 }
 </script>

@@ -60,7 +60,7 @@
                 <span>{{loadStatus(load)}}</span>
               </div>
 
-              <div v-if="userInfo.profile == profile.container">
+              <div v-if="load?.loadType == profile.container">
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Cliente:&nbsp;</p>
                   <span>{{ load.Orders[0].client_name }}</span>
@@ -92,7 +92,7 @@
               
             </div>
             <div class="uk-flex uk-flex-between">
-              <div class="uk-text-left uk-flex uk-flex-between info-user" v-if="userInfo.profile == profile.container">
+              <div class="uk-text-left uk-flex uk-flex-between info-user" v-if="load?.loadType == profile?.container">
                 <div>
                   <p class="uk-text-bold">Recoger en:</p>
                   <p>
@@ -114,7 +114,7 @@
             </div>
             <div>
       </div>
-      <div v-if="load.loadType">
+      <div v-if="load?.loadType == profile?.eCommerce">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"
@@ -193,7 +193,7 @@
           </button>
           <button
             href="#modal-group-1"
-            @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECT', userData.userType)"
+            @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECTED', userData?.userType, load.loadForeignkeys.vehicleId)"
             class="uk-button button-reject uk-modal-close"
             uk-toggle
           >
@@ -208,7 +208,7 @@
         <font-awesome-icon icon="ban" style="color: #fff; font-size: 14px" />
       </a>
       <button
-        @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', userData?.userType)"
+        @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', userData?.userType, load.loadForeignkeys.vehicleId)"
         class="uk-button uk-button-blue"
       >
         Aceptar Viaje &nbsp;
@@ -289,7 +289,7 @@ export default {
         } else x.completed = false;
       });
     },
-    async acceptOrRejectLoad(id, version, status, type) {
+    async acceptOrRejectLoad(id, version, status, type, vehicleId) {
       let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       let userId
       if(!load.approvers[0].status){
@@ -306,10 +306,13 @@ export default {
         version,
         userId,
         status,
-        type
+        type,
+        vehicleId
       );
       if (result) {
-        if(status == 'REJECT')  this.$router.push({ name: "home" });
+        if(status == 'REJECTED') {
+          this.$router.push({ name: "home" });
+        } 
         else this.$router.push({ name: "load-status" });
       }
     },
