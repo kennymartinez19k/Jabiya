@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('3')">Escanear</button>
+    <button @click="uploadProducts('7')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -264,7 +264,7 @@ export default {
                 }
             }
             else {
-              await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
+              await this.setMessageConfirmation(order._id, productInfo._id,  productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
             }
           }
         }else{
@@ -295,8 +295,8 @@ export default {
       if(scanOneByOne){
         this.firstStructureLoad[index_first].loadScanningCounter += 1
         this.secondStructureLoad[index_second].loadScanningCounter += 1
-        loadCounter =+ 1
-        await this.$services.loadsScanServices.scanProduct(orderId, boxId, loadCounter, productId, qrCode)
+
+        await this.$services.loadsScanServices.scanProduct(orderId, boxId, this.secondStructureLoad[index_second].loadScanningCounter, productId, qrCode)
 
         if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
           this.secondStructureLoad[index_second].scanProgress = true

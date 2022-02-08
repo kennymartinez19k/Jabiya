@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('3')">escanear</button>
+    <button @click="uploadProducts('6b')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -382,6 +382,7 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
+      console.log(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne)
       alert('send Confirmation')
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
@@ -390,7 +391,7 @@ export default {
         this.firstStructureLoad[index_first].loadScanningCounter += 1
         this.secondStructureLoad[index_second].loadScanningCounter += 1
         loadCounter =+ 1
-        await this.$services.deliverServices.deliverProduct(orderId, boxId, loadCounter, productId, qrCode)
+        await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
 
         if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
           this.secondStructureLoad[index_second].scanProgress = true
@@ -534,13 +535,11 @@ export default {
     },
     
     async verifiedLoad(){          
-      alert('verifique ')
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
-          this.resultScan = true
-          if(this.secondStructureLoad.every(x => x.completedScanned)){
-            alert('todas estas completadas')
+          if(this.firstStructureLoad.every(x => x.completedScanned)){
+            this.resultScan = true
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
