@@ -357,7 +357,6 @@ export default {
                 }
             }
             else {
-            alert(' es Scan 1b1')
               await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
             }
           }
@@ -382,8 +381,6 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
-      console.log(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne)
-      alert('send Confirmation')
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
       console.log(this.firstStructureLoad[index_first])
@@ -535,11 +532,13 @@ export default {
     },
     
     async verifiedLoad(){          
+      // alert('verifique ')
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
-          if(this.firstStructureLoad.every(x => x.completedScanned)){
-            this.resultScan = true
+          this.resultScan = true
+          if(this.secondStructureLoad.every(x => x.completedScanned)){
+            // alert('todas estas completadas')
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
