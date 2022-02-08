@@ -198,10 +198,12 @@ export default {
       for (let i = 0; i < this.orders.length; i++) {
         listOrderDetails.push(order)
         const order = this.orders[i];
+        let num_id = 0
         order.products.forEach(async x => {
+          num_id++
           let {order_num, _id} = order
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
-          firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
+          firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter, num_id}       
           listOfOrders.unshift(firstProductInfo)
         })
       }

@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('4')">escanear</button>
+    <button @click="uploadProducts('6')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -134,14 +134,13 @@ export default {
     return {
       show: null,
       orders: null,
-      resultScan: null,
+      resultScan: true,
       cont: 0,
       load: null,
       imagiElement: [],
       step: 0,
       exception: false,
       firm: null,
-      mira: 'null22',
       firstStructureLoad: [],
       secondStructureLoad: [],
       quantityForScan: null,
@@ -312,7 +311,8 @@ export default {
       console.log(this.firstStructureLoad)
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
-          x.loadScanningCounter < x.quantity
+          x.loadScanningCounter < x.quantity &&
+          !x.completedScanned
         )
         console.log(orderForScan)
         console
@@ -354,7 +354,6 @@ export default {
             }
             else {
             alert(' es Scan 1b1')
-
               await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
             }
           }
@@ -379,9 +378,9 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
-      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode)
-      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
-
+      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
+      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
+      console.log(this.firstStructureLoad[index_first])
       if(scanOneByOne){
         this.firstStructureLoad[index_first].loadScanningCounter += 1
         this.secondStructureLoad[index_second].loadScanningCounter += 1
@@ -494,7 +493,7 @@ export default {
               this.secondStructureLoad[index_second].scanProgress = false
             }
             await this.$services.deliverServices.deliverProduct(order._id, productInfo._id, LoadDistribute, productInfo.product._id, qrCode)
-            
+            this.verifiedLoad()
         }
     },
     async location() {
@@ -530,29 +529,19 @@ export default {
     },
     
     async verifiedLoad(){          
+      alert('verifique ')
+      this.step = 1
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
+          this.resultScan = true
           if(this.secondStructureLoad.every(x => x.completedScanned)){
+            alert('todas estas completadas')
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
 
-            let allProducts = JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
-            let isScannedAllProduct = []
-            for (let i = 0; i < allProducts.length; i++) {
-              const orderNum = allProducts[i];
-              isScannedAllProduct.push(this.firstStructureLoad.some(x => x.order_num == orderNum))
-            }
-            console.log(isScannedAllProduct)
-            this.statusOrders = "approved"  
-            if(isScannedAllProduct.includes(false)){
-              this.$router.push({name: 'orders'})
-             
-            }else{
-              this.$router.push({ name: "load-status" }).catch(() => {});
-              await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
-            }
+            await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
           }
           else this.scanOrder()
         }, 1000)
