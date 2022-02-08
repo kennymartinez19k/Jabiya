@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-    <div class="uk-padding-small uk-margin-xlarge-bottom uk-width-1-2@m" style="margin-bottom: 50px!important;">
+    <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
       <div class="uk-flex select-all">
         <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
         <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
