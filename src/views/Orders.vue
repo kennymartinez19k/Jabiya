@@ -211,21 +211,19 @@ export default {
     },
    
     scan() {
-
-     this.$emit("setNameHeader", 'Escaneo Corrido');
+      this.$emit("setNameHeader", 'Escaneo Corrido');
       this.$store.commit("scanOrder", this.listOrderDetails );
       let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      let allProducts = []
+      for (let i = 0; i < this.orders.length; i++) {
+        const order = this.orders[i];
+        allProducts.push(order.order_num)        
+      }
+      localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structureInfo)
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
-    shipperName(val){
-      var shipper = val?.shipper?.find(x => x)
-      return shipper?.name
-    },
-    firstOrderSector(val){
-      var shipper = val?.shipper?.find(x => x)
-      return shipper?.name
-    },
+    
     async orderForScan(order, allOrders = false){
       let firstProductInfo;
       let totalOfOrders = 0;
@@ -268,7 +266,16 @@ export default {
         })
         this.listOfOrderTotal = products
     }
-  }
+  },
+
+  shipperName(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    },
+    firstOrderSector(val){
+      var shipper = val?.shipper?.find(x => x)
+      return shipper?.name
+    }
 }
 }
 </script>

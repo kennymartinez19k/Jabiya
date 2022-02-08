@@ -1,5 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+    <button @click="uploadProducts(5)">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -171,7 +172,6 @@ export default {
   methods: {
     getShow(value) {
       this.show = value;
-      // alert(value)
       if (value === "scan") {
         this.scanOrder();   
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
@@ -182,32 +182,24 @@ export default {
       }
     },
     async scanOrder() {
-      // alert('estoy escaneando')
-
       this.statusOrders = 'start';
         if (await this.checkPermission()) {
           BarcodeScanner.hideBackground();
-      // alert('estoy en permiso')
 
           const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-      alert(result.content)
 
           if (result.hasContent) {
-      // alert('result.hasContent')
-      // alert(result.hasContent)
 
             BarcodeScanner.hideBackground();
-            var OrderElement  = this.orders.findIndex(x => x.products.findIndex(z => z.qrcode == "CNT40"))
-                    // alert(OrderElement)
+            this.uploadProducts(result.content)
+            var OrderElement  = this.orders.findIndex(x => x.products.findIndex(z => z.qrcode == result.content))
 
             if (OrderElement > -1) {
-                    // alert('OrderElement > -1')
+              
               this.step++;
               this.resultScan = result
               this.verifiedElement(OrderElement)
             } else if (OrderElement){
-                    // alert('estoy escanese if OrderElement')
-                    // alert(OrderElement)
 
               this.statusOrders = 'reject';
               Vibration.vibrate(1000);
@@ -218,15 +210,69 @@ export default {
             }
           }
         }
-      },
-
-      verificacion(orders, result) {
-        for (let i = 0; i < orders?.length; i++) {
-          if (i?.numberOfOrders === result.content.numberOfOrders) {
-            return true
-          }
-        }
     },
+
+    async uploadProducts(val){
+        let orderForScan = this.orders?.find(order => order?.products?.find(prod => prod.qrcode = val))
+
+        if(orderForScan){
+          let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
+          if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){
+              Vibration.vibrate(1000);
+              alert('Ya estan escaneadas todas las ordenes con este qrcode')
+              setTimeout(() => {
+                  this.statusOrders = 'start'
+                  this.scanOrder()
+              }, 1000)
+          }
+          else{
+            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            order = order.find(x => x)
+            let productInfo = order.products.find(p => p.qrCode == val && orderForScan.quantity == p.quantity)
+            // compruebo si es scan 1by1 o no
+            
+            if(productInfo.scanOneByOne === "no") {
+              let noScan1by1 = 0
+              let listNoScan1by = this.firstStructureLoad.filter(x => x.scanOneByOne == "no" && x.qrCode == val)
+              listNoScan1by.forEach(x => {
+                noScan1by1 += x.quantity
+              })
+              this.totalLimitOfBoxes.scanned = detailsOrderToScan.loadScanningCounter
+              this.totalLimitOfBoxes.totalOfOrders = noScan1by1
+              this.infoForScan = {
+                orderId: order._id,
+                boxId: productInfo._id,
+                loadScanningCounter: productInfo.loadScanningCounter,
+                productId: productInfo.product._id,
+                productQrCode: productInfo.qrCode,
+                scanOneByOne: false
+                }
+            }
+            else {
+              await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
+            }
+          }
+        }else{
+          if(this.secondStructureLoad.some(x => x.qrCode == val)){
+            alert('No existe producto con este qrCode')
+            Vibration.vibrate(1000);
+            setTimeout(() => {
+                this.statusOrders = 'start'
+                this.scanOrder()
+            }, 1000)
+          }else{
+
+            this.statusOrders = 'reject';
+              Vibration.vibrate(1000);
+              setTimeout(() => {
+                  this.statusOrders = 'start'
+                  this.scanOrder()
+              }, 1000)
+          }
+
+        }      
+    },
+
     async stopScan() {
       await BarcodeScanner.showBackground();
       await BarcodeScanner.stopScan();
@@ -237,7 +283,6 @@ export default {
       if (status.granted) {
         return true;
       }
-
       return false;
     },
 

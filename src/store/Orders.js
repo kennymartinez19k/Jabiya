@@ -37,7 +37,6 @@ const Orders = {
     changeLoadScannedInStore({commit}, val){
       commit('setStructureToScan', val)
       let name = JSON.stringify(val.name)
-      console.log(name)
       localStorage.setItem(name,JSON.stringify(val))
     },
     SettingStorage(state){

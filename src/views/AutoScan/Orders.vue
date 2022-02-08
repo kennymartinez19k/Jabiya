@@ -88,7 +88,6 @@
     <div></div>
     <div class="button-opt ">
       <button @click="uploadOrDownload(load)" class="uk-button uk-width-1-1 uk-button-blue">{{messageStatusLoad}}
-          <!-- <img src="../../assets/container.png" style="width: 25px; margin-left: 5px "> -->
       </button>
       
     </div>

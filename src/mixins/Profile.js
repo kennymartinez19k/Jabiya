@@ -46,39 +46,39 @@ export const Profile = {
       b2b: {
         LoadStatus: {
           expectingApprovalProvider: {
-            message: "Aprobar $ Viaje Flai 1",
-            pastMessage: "Aprobó el Viaje $ Flai 1",
+            message: "Aprobar/Rechazar $ (Flai)",
+            pastMessage: "Aprobó el Viaje $ Flai",
             route: ''
           },
           expectingApproval: {
-            message: "Aprobar Viaje 1",
-            pastMessage: "Aprobó el Viaje 1",
+            message: 'Aceptar/Rechazar Viaje (Chofer)',
+            pastMessage: "Aceptó el Viaje (Chofer)",
             route: 'confirm-trip'
           },
           driverArrival: {
-            message: "Registrar LLegada a Recoger 1",
-            pastMessage: "Llegó a Recoger 1",
+            message: "Registrar LLegada a Recoger",
+            pastMessage: "Llegó a Recoger",
             route: ''
           },
           approved: {
-            message: "Montar Viaje 1",
-            pastMessage: "Monto el Viaje 1",
-            route: 'orders'
+            message: "Montar Viaje",
+            pastMessage: "Monto el Viaje",
+            route: 'drayage-orden'
           },
           startRoute: {
-            message: "Iniciar Ruta 1",
-            pastMessage: "Comenzo la Ruta 1",
+            message: "Iniciar Ruta",
+            pastMessage: "Comenzo la Ruta",
             route: ''
           },
           delivered: {
-            message: "Entregar Contenedor 1",
-            pastMessage: "Contenedor Entregado 1",
-            route: 'delivery-routes'
+            message: "Entregar Contenedor",
+            pastMessage: "Contenedor Entregado",
+            route: 'delivery-actions-auto'
           },
           returnContainer: {
-            message: "Retornar Contenedor 1",
-            pastMessage: "Contenedor Retornado 1",
-            route: ''
+            message: "Retornar Contenedor",
+            astMessage: "Contenedor Retornado",
+            route: 'return-container'
           },
         },
         pick: 'Warehouse',
@@ -86,7 +86,7 @@ export const Profile = {
       },
     };
   },
-
+  
   methods: {
     setProfile(val) {
       if (val.loadType == "container") {
@@ -97,6 +97,24 @@ export const Profile = {
       }
 
     },
+
+    setStatus(val){
+      if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
+      if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
+      if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[0]?.status == 'REJECTED') return "Rechazado por Flai Admin";
+      if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[1]?.status == 'REJECTED') return "Rechazado por Chofer";
+
+      if (val?.loadingStatus?.text == "Loading Truck") return "Cargando Vehiculo";
+
+      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0]?.status) return "Esperando Aprobación $ Flai";
+      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0]?.status) return "Esperando Chofer Acepte Viaje";
+
+      if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
+      if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
+      if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
+      if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
+      if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
+    }
 
   },
 };

@@ -383,6 +383,9 @@ export default {
         this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
         this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       }
+      else{
+        alert('no hay')
+      }
     },
     setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});
