@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-    <div class="uk-padding-small uk-margin-xlarge-bottom uk-width-1-2@m" style="margin-bottom: 96px!important;">
+    <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
       <div class="uk-flex select-all">
         <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
         <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
@@ -89,7 +89,7 @@
             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                <!-- uk-open -->
                 <li class="uk-margin-remove">
-                    <a class="uk-accordion-title uk-margin-remove uk-padding-remove" href="#"></a>
+                   <a class="uk-accordion-title " href="#"></a>
                     <div 
                      class="uk-accordion-content uk-margin-remove uk-padding-remove">
                      <div class="details-product">
@@ -128,7 +128,6 @@
 import { mapGetters } from "vuex";
 import UIkit from "uikit";
 
-
 export default {
   alias: `Montar Viaje`,
   name: `cargarrr`,
@@ -142,7 +141,7 @@ export default {
       listOfOrders: [],
       listOfOrderTotal: [],
       listOrderDetails: [],
-      selectAllOrders: false
+      selectAllOrders: false,
     };
   },
   
@@ -436,22 +435,26 @@ li{
   list-style-type: none;
 }
 .uk-accordion-title{
+  display: flex;
+  /* width: 100%; 
   display: inline-block;
+  */
 }
 .uk-accordion-title::before {
     content: "";
-    width: 1.4em;
-    height: 1.4em;
-    margin-left: 10px;
-    position: absolute;
-    top: 0;
-    right: 7px;
-    background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%221%22%20height%3D%2213%22%20x%3D%226%22%20y%3D%220%22%20%2F%3E%0A%3C%2Fsvg%3E);
+    margin-left: 20px;/* revision*/
+    background-image: url('../assets/down.png');
+    height: 17px;
+    background-size: 21px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
 }
 .uk-open>.uk-accordion-title::before {
-    background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%3C%2Fsvg%3E);
+  background-image: url('../assets/up.png');
+    height: 17px;
+    background-size: 27px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat
 }
 .order-select{
   width: 10%;
