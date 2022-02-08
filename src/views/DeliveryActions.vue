@@ -316,8 +316,7 @@ export default {
       console.log(this.firstStructureLoad)
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
-          x.loadScanningCounter < x.quantity &&
-          !x.completedScanned
+          x.loadScanningCounter < x.quantity
         )
         console.log(orderForScan)
         console
@@ -383,6 +382,7 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
+      alert('send Confirmation')
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
       console.log(this.firstStructureLoad[index_first])

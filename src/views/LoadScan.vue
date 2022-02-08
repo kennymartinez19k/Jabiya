@@ -289,7 +289,7 @@ export default {
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
       
-      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode)
+      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
 
       if(scanOneByOne){
@@ -313,7 +313,6 @@ export default {
           this.firstStructureLoad[index_first].completedScanned = true
           this.firstStructureLoad[index_first].scanProgress = false
         }
-
       }else{
         if(loadCounter > this.firstStructureLoad[index_first].quantity){
               let LoadDistribute = loadCounter - this.firstStructureLoad[index_first].quantity
