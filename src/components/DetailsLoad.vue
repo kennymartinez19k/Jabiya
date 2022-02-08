@@ -43,11 +43,12 @@
               </div>
 
               <div
+                v-if="detailsLoads.loadType == profile.container"
                 class="uk-flex uk-flex-middle"
               >
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
-                <span v-for="order of detailsLoads.Orders" :key="order">{{
-                  order.order_num
+                <span >{{
+                  detailsLoads?.Orders[0]?.order_num
                 }}</span>
               </div>
               <div class="uk-flex uk-flex-middle">
@@ -112,7 +113,7 @@
                       <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
                     </div>
                   </div>
-                  <div v-else-if="userInfo.profile == profile.container" class="uk-text-left info-user">
+                  <div v-else-if="detailsLoads.loadType == profile.container" class="uk-text-left info-user">
                     <div>
                       <p class="uk-text-bold">Recoger en:</p>
                       <p>
@@ -136,7 +137,7 @@
            
           </div>
           
-          <div v-if="detailsLoads?.loadType">
+          <div v-if="detailsLoads?.loadType == profile.eCommerce ">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"

@@ -100,7 +100,7 @@
       class="slide box-slide"
       text="Cargar e Iniciar Ruta"
       success-text="Activando"
-      @completed="complete(orders)"
+      @completed="scan(orders)"
       textSize="10px"
     />
   </div>
@@ -133,7 +133,7 @@ export default {
     this.orders = this.load.Orders
   },
   methods: {
-        async location () {
+    async location () {
         try {
           const geo = await Geolocation.getCurrentPosition();
           this.location1.latitude = geo.coords.latitude
@@ -143,10 +143,8 @@ export default {
         
         }
     },
-    complete(val) {
-      this.scan(val);
-    },
-    scan(val) {
+    
+    async scan(val) {
       let orderScan = []
       if (val.length) {
         orderScan = val
@@ -181,16 +179,70 @@ export default {
       }
 
       console.log(listProducts, listProductTotal, totalOfProducts)
+
+      await this.orderForScan()
       this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
-
-  
-    
     shipperName(val){
       var shipper = val?.shipper?.find(x => x.name)
       return shipper?.name
     },
+    async orderForScan(){
+      let firstProductInfo;
+      let totalOfOrders = 0;
+      let listOrderDetails = []
+      let listOfOrderTotal = []
+      let listOfOrders = []
+
+      for (let i = 0; i < this.orders.length; i++) {
+        listOrderDetails.push(order)
+        const order = this.orders[i];
+        order.products.forEach(async x => {
+          let {order_num, _id} = order
+          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
+          firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
+          listOfOrders.unshift(firstProductInfo)
+        })
+      }
+      console.log(listOfOrders)
+        listOfOrders.forEach( x => {
+         let {qrCode,  loadScanningCounter, order_num} = x
+          var productQrCode = listOfOrders.filter( p => p.qrCode == x.qrCode )
+           if(productQrCode){
+             productQrCode.forEach(product => {
+               totalOfOrders += product.quantity
+             })
+           }
+           loadScanningCounter = 0
+           let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
+             listOfOrderTotal.unshift(SecondProductInfo)
+             totalOfOrders = 0
+        })
+        
+        let products = []
+        listOfOrderTotal.forEach(x => {
+          let product = products.find(p => p.qrCode == x.qrCode)
+          if(product){
+              if(x.totalOfOrders > product.totalOfOrders){
+                  product.totalOfOrders = x.totalOfOrders
+              }   
+          }else{
+              products.push(x)
+          }
+        })
+        listOfOrderTotal = products
+
+      let structureInfo = {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
+      let allProducts = []
+      for (let i = 0; i < this.orders.length; i++) {
+        const order = this.orders[i];
+        allProducts.push(order.order_num)        
+      }
+      console.log(structureInfo, 'estructura')
+      localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
+      this.$store.commit("setStructureToScan", structureInfo)
+  },
   },
 };
 </script>
