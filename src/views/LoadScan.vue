@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('8')">Escanear</button>
+    <button @click="uploadProducts('3')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -243,7 +243,6 @@ export default {
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
             order = order.find(x => x)
             let productInfo = order.products.find(p => p.qrCode == val && orderForScan.quantity == p.quantity)
-            // compruebo si es scan 1by1 o no
             
             if(productInfo.scanOneByOne === "no") {
               let noScan1by1 = 0
@@ -661,7 +660,7 @@ border: 1px solid #efefef;
   background: green;
 }
 .inProgressOrden{
-  background: rgb(190, 190, 1);
+  background: #fff500
 }
 .icon-checked{
   width: 20px;
