@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-    <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
+    <div class="uk-padding-small uk-margin-xlarge-bottom uk-width-1-2@m" style="margin-bottom: 50px!important;">
       <div class="uk-flex select-all">
         <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
         <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
@@ -39,7 +39,7 @@
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         :class="{ ordenCompleted: order.completed }"
       >
-        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+        <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-left">
               <span
@@ -68,13 +68,36 @@
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
+          <div class="uk-flex uk-flex-wrap">
           <p class="">
-            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.no_of_boxes}}<span></span>
+            <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
+          <p class="">
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order?.no_of_boxes}}</span>
+          </p>
+          </div>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span> 
             <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
+             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
+               <!-- uk-open -->
+                <li class="uk-margin-remove">
+                    <a class="uk-accordion-title uk-margin-remove uk-padding-remove" href="#"></a>
+                    <div v-for="item in order.products" :key="item.id"
+                     class="uk-accordion-content uk-margin-remove uk-padding-remove">
+                      <p class="">
+                        <span class="font-weight-medium">Producto: </span><span>{{item?.name}}</span>
+                      </p>
+                      <p class="">
+                        <span class="font-weight-medium">Codigo QR: </span><span>{{item.qrCode}}</span>
+                      </p>
+                      <p class="">
+                        <span class="font-weight-medium">Escaneadas: </span><span>{{order?.no_of_boxes}}</span>
+                      </p>
+                    </div>
+                </li>
+            </ul>
         </div>
         <div>
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
@@ -83,9 +106,8 @@
       </div>
       
     </div>
-    <div></div>
       <div class="button-opt">
-      <button @click="scan()" class="uk-button uk-button-transparent">Escanear y Cargar Camion
+      <button @click="scan()" :disabled="showButton === true" class="uk-button uk-button-primary">Escanear y Cargar Camion
           <img src="../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
       
@@ -96,6 +118,8 @@
 
 <script>
 import { mapGetters } from "vuex";
+import UIkit from "uikit";
+
 
 export default {
   alias: `Montar Viaje`,
@@ -103,7 +127,7 @@ export default {
   data() {
     return {
       status: null,
-      result: null,
+      showButton: true,
       load: null,
       completed: "background-color: #2a307c !important",
       orders: null,
@@ -146,6 +170,15 @@ export default {
           this.selectAllOrders = false
         }
       }, deep: true
+    },
+     listOfOrders:{
+      handler: function (newVal) {
+       if (newVal.length === 0) {
+       this.showButton = true
+      } else {
+       this.showButton = false
+      }
+      }, deep: true
     }
   },
   mounted() {
@@ -154,11 +187,9 @@ export default {
       this.orders = this.loadStore.Orders
       this.orders.map(x => x.isSelected = false)
       this.load.firstOrdenSector = this.orders[0]?.sector
-      console.log(this.load)
     }else{
       this.load = this.allLoadsStore
-    this.orders = this.load.orders
-
+      this.orders = this.load.orders
     }
     this.orderObj();
 
@@ -166,6 +197,9 @@ export default {
       
   },
   methods: {
+    accordiontn () {
+      UIkit.accordion('#accordion').show()
+    },
     orderObj() {
       this.orders.sort((a) => {
         if (a.completed == true) {
@@ -199,7 +233,6 @@ export default {
        this.listOrderDetails = this.listOrderDetails.filter(x => x.order_num != order.order_num)
        this.listOfOrders = this.listOfOrders.filter(x => x.order_num != order.order_num)
        this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order.order_num)
-       console.log(this.listOfOrderTotal)
      }else{
        this.listOrderDetails.push(order)
        order.products.forEach(async x => {
@@ -234,8 +267,6 @@ export default {
           }
         })
         this.listOfOrderTotal = products
-        console.log(this.listOfOrders)
-        console.log(this.listOfOrderTotal)
     }
   }
 }
@@ -374,5 +405,26 @@ p {
 }
 .select-all label {
   font-weight: 600;
+}
+li{
+  list-style-type: none;
+}
+.uk-accordion-title{
+  display: inline-block;
+}
+.uk-accordion-title::before {
+    content: "";
+    width: 1.4em;
+    height: 1.4em;
+    margin-left: 10px;
+    position: absolute;
+    top: 0;
+    right: 7px;
+    background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%221%22%20height%3D%2213%22%20x%3D%226%22%20y%3D%220%22%20%2F%3E%0A%3C%2Fsvg%3E);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+.uk-open>.uk-accordion-title::before {
+    background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%3C%2Fsvg%3E);
 }
 </style>

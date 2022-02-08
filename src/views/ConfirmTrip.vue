@@ -114,7 +114,7 @@
             </div>
             <div>
       </div>
-      <div v-if="load.loadType">
+      <div v-if="load?.loadType">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"
