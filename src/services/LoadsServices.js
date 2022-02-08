@@ -19,14 +19,15 @@ class LoadsServices {
       const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/?date=${loadDate}`)
       return result.data
     }
-    async acceptOrRejectLoad (id, version, approverId, status, type){
-      console.log(id, version, approverId, status, type)
+    async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){
+      console.log(id, version, approverId, status, type, vehicleId)
       const params = {
         "actionName": "confirmOrder",
         "params": {
             "version": version,
             "approverId":approverId,
             "status": status,
+            "vehicle_id": vehicleId,
             "type": type
         }
       }

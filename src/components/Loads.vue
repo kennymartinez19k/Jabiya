@@ -25,7 +25,6 @@
       <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
     </div>
 
-
     <div v-if="assignedLoads == 0" style="height: 50px">
       <span>No Tiene Viajes Asignados Para Este Día</span>
     </div>
@@ -37,7 +36,11 @@
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div 
           class="load-default-status" 
-          :class="{'load-delivered': load.loadingStatus.text == 'Delivered', 'load-assigned': load.loadingStatus.text == 'Driver selection in progress'}">
+          :class="{'load-delivered': load.loadingStatus.text == 'Delivered',
+                  'load-assigned': load.loadingStatus.text == 'Driver selection in progress',
+                  'load-rejected': load.loadingStatus.text == 'Denied Approval'
+                  }"
+          >
           <div
           :class="{ 'load-edges': load.loadMapId === loadingProgress }"
             class="uk-card uk-card-body"
@@ -196,12 +199,22 @@ export default {
       let loads = await this.$services.loadsServices.getLoadsbyDate(date);
       for (let i = 0; i < loads.length; i++) {
         const load = {...loads[i]}
+
+        let productScan = localStorage.getItem(JSON.stringify(load.loadMapId))
+        if(productScan && (load.loadingStatus.text !== 'Approved' && load.loadingStatus.text !== 'Loading Truck')){
+          localStorage.removeItem(JSON.stringify(load.loadMapId))
+        }
         const loadDetails =  await this.$services.loadsServices.getLoadDetails(load?.loadMapId);
 
         Object.assign(load, loadDetails)
-        if(!((loadDetails.loadingStatus.text == "Driver selection in progress" && this.userInfo.userType === this.userType.driver) || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text == "Expecting Approval" && this.userInfo.userType !== this.userType.provider ))){
+
+        if(!((loadDetails.loadingStatus.text === "Driver selection in progress" && this.userInfo.userType === this.userType.driver)
+           || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text === "Expecting Approval" && this.userInfo.userType !== this.userType.provider )
+             || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[0]?.status == 'REJECTED' && this.userInfo.userType !== this.userType.provider)
+             || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[1]?.status == 'REJECTED' && this.userInfo.userType === this.userType.driver)
+           )
+        ){
           this.loads.push(loadDetails)
-          console.log('entre carga en loads')
         }
       }
       console.log(this.loads)
@@ -218,7 +231,6 @@ export default {
     async setLoad(val) {
       this.setProfile(val)
 
-      console.log('s')
       for(var i = 0; i < val.Orders.length; i++){
         let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
         val.firstOrdenInfo = val.Orders[i]
@@ -260,16 +272,7 @@ export default {
       return shipper?.name;
     },
     loadStatus(val) {
-      if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
-      if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
-      if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0].status) return "Esperando Aprobación $Profit Flai";
-      if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Chofer Acepte Viaje";
-
-      if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
-      if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
-      if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
-      if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
-      if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
+      return this.setStatus(val)
     },
    
     setLocaleDate(val){
@@ -415,9 +418,13 @@ a {
   color: green !important;
 }
 .load-assigned .status-load{
-  color: red;
+  color: rgb(212, 129, 5);
   -webkit-animation: asigned 500ms infinite;
 }
+.load-rejected .status-load{
+  color: red;
+}
+
 .load-assigned{
   background: #fff6f6;
 }
@@ -452,6 +459,8 @@ a {
 .reload-event{
   transform: rotate(360deg);
 }
+
+
 
   
 </style>

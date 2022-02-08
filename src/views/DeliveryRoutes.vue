@@ -110,7 +110,6 @@
 <script>
 import SlideUnlock from "vue-slide-unlock";
 import { Geolocation } from "@capacitor/geolocation";
-import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
 export default {
   alias: 'Entregar Ordenes',
@@ -154,37 +153,40 @@ export default {
       } else {
         orderScan.push(val)
       }
+      let listProducts = [];
+      let listProductTotal = [];
+      let totalOfProducts = 0;
+
+
+      for (let i = 0; i < this.orders.length; i++) {
+        const order = this.orders[i];
+        
+        for (let i = 0; i < order.products.length; i++) {
+          const prod = order.products[i];
+          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = prod
+          listProducts.unshift({name, qrCode, quantity, scanOneByOne, loadScanningCounter})
+        }
+      }
+      for (let i = 0; i < listProducts.length; i++) {
+        const product = listProducts[i];
+        let {qrCode,  loadScanningCounter, order_num} = product
+        var productQrCode = listProducts.filter( p => p.qrCode == product.qrCode )
+           if(productQrCode){
+             productQrCode.forEach(prod => {
+               totalOfProducts += prod.quantity
+             })
+           }
+            listProductTotal.unshift( {order_num, qrCode, totalOfProducts, loadScanningCounter})
+             totalOfProducts = 0
+      }
+
+      console.log(listProducts, listProductTotal, totalOfProducts)
       this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
-    async scanOrder() {
-      if (await this.checkPermission()) {
-        BarcodeScanner.hideBackground();
 
-        const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-        
-        if (result.hasContent) {
-          this.result = result.content;
-          this.stopScan();
-        }
-      }
-    },
-    async stopScan() {
-      BarcodeScanner.showBackground();
-      BarcodeScanner.stopScan();
-    },
-    async checkPermission() {
-      // check or request permission
-      const status = await BarcodeScanner.checkPermission({ force: true });
-      this.status = status;
-
-      if (status.granted) {
-        // the user granted permission
-        return true;
-      }
-
-      return false;
-    },
+  
+    
     shipperName(val){
       var shipper = val?.shipper?.find(x => x.name)
       return shipper?.name
