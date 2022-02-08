@@ -83,41 +83,35 @@
             <span class="font-weight-medium">Destino: </span> 
             <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
-             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
+           
+        </div>
+        <div style="width: 100%">
+            <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                <!-- uk-open -->
                 <li class="uk-margin-remove">
-                    <a class="uk-accordion-title " href="#"></a>
-                    <div class="uk-accordion-content uk-margin-remove uk-padding-remove uk-flex uk-flex-column">
-                    <div
-                     class=" uk-flex uk-flex-between" style="width: 100% !important;">
-                      <p class="">
+                   <a class="uk-accordion-title " href="#"></a>
+                    <div 
+                     class="uk-accordion-content uk-margin-remove uk-padding-remove">
+                     <div class="details-product">
+                      <p class="item">
                         <span class="font-weight-medium">Producto: </span>
                       </p>
-                      <p class="">
+                      <p class="item">
                         <span class="font-weight-medium">Codigo QR: </span>
                       </p>
-                      <p class="">
+                      <p class="item">
                         <span class="font-weight-medium">Escaneadas: </span>
                       </p>
-                    </div>
-                     <div v-for="item in order.products" :key="item.id"
-                     class=" ">
-                      <p class="uk-text-left">
-                        <span>{{item?.name}}</span>
-                      </p>
-                      <p class="uk-text-center">
-                        <span>{{item.qrCode}}</span>
-                      </p>
-                      <p class="uk-text-right">
-                        <span>{{totalOrdersScanned(order)}}/ 2</span>
-                      </p>
-                    </div>
+                     </div>
+                      <div v-for="item in order.products" :key="item.id" class="details-product">
+                        <p class="item">{{item?.name}}</p>
+                        <p class="item">{{item.qrCode}}</p>
+                        <p class="item">{{totalOrdersScanned(order)}}</p>
+                      </div>
                     </div>
                 </li>
             </ul>
         </div>
-        
-        
       </div>
       
     </div>
@@ -334,6 +328,7 @@ p {
   padding: 20px 10px;
 }
 .uk-card-body {
+  flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 10px 11px;
   border: 0.1px solid #e5e5e5;
@@ -440,11 +435,14 @@ li{
   list-style-type: none;
 }
 .uk-accordion-title{
+  display: flex;
+  /* width: 100%; 
   display: inline-block;
+  */
 }
 .uk-accordion-title::before {
     content: "";
-    margin-left: 0px;
+    margin-left: 20px;/* revision*/
     background-image: url('../assets/down.png');
     height: 17px;
     background-size: 21px;
@@ -462,5 +460,12 @@ li{
   width: 10%;
   display: flex;
   padding: 8px 0px;
+}
+.details-product{
+  display: flex;
+  justify-content: space-around;
+}
+.details-product .item{
+  width: 33%;
 }
 </style>

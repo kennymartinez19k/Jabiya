@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('3')">Escanear</button>
+    <button @click="uploadProducts('4')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -215,6 +215,7 @@ export default {
         data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
         secondStructure.push(data)
       })
+      
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
     }
