@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts(5)">escanear</button>
+    <button @click="uploadProducts('4')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -99,6 +99,19 @@
         @action="getShow($event)"
       />
     </div>
+    <div id="deliver-quantity" class="uk-flex-top" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+
+            <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
+
+            <p>Introduzca la Cantidad que desea escanear <span>{{totalLimitOfBoxes.scanned}}/{{totalLimitOfBoxes.totalOfOrders}}</span></p>
+            <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
+            <p class="uk-text-right uk-flex uk-flex-end" style="margin-top: 20px !important; justify-content: flex-end">
+                <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
+                <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
+            </p>
+        </div>
+    </div> 
   </div>
 </template>
 
@@ -108,8 +121,12 @@ import { mapGetters } from "vuex";
 import { Vibration } from "@ionic-native/vibration";
 import timeline from "../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
+import { Geolocation } from '@capacitor/geolocation'
+import UIkit from "uikit";
+
 export default {
   name: "DeliveryActions",
+  alias: "Entrega de Ordenes",
   components: {
     timeline,
   },
@@ -124,7 +141,14 @@ export default {
       step: 0,
       exception: false,
       firm: null,
-      mira: 'null22'
+      mira: 'null22',
+      firstStructureLoad: [],
+      secondStructureLoad: [],
+      quantityForScan: null,
+      totalLimitOfBoxes: {
+        scanned: null,
+        totalOfOrders: null
+      },
     };
   },
   computed: {
@@ -133,23 +157,52 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
-      "settings"
+      "settings",
+      "structureToScan"
     ]),
   },
-  mounted() {
+  async mounted() {
     if(this.loadStore){
        this.load = this.loadStore;
        this.orders = this.load.Orders
     }
     this.getShow("scan");
-    if (this.orderScan?.length > 1) {
-      this.$emit("setNameHeader", `Entrega de Ordenes`);
-    } else if (this.orderScan?.length == 1) {
-      this.$emit(
-        "setNameHeader",
-        `Orden No. ${this.orderScan[0]?.order_num}`
-      );
+    this.firstStructureLoad = this.structureToScan.firstStructure
+    this.secondStructureLoad = this.structureToScan.secondStructure
+    console.log(this.firstStructureLoad, this.secondStructureLoad)
+
+    const LoadScanned = await JSON.parse(localStorage.getItem(JSON.stringify(this.load.loadMapId)))
+     if(LoadScanned){
+      for (let i = 0; i < this.firstStructureLoad.length; i++) {
+        const product = this.firstStructureLoad[i];
+        let orderStructure = LoadScanned.firstStructure.find(structure => structure.order_num == product.order_num)
+        if(orderStructure){
+          this.firstStructureLoad[i].loadScanningCounter = orderStructure.loadScanningCounter
+        }
+      }
+      let firstStructure = []
+      let secondStructure = []
+      this.firstStructureLoad.forEach(x => {
+        let data = LoadScanned?.firstStructure.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity)
+        if(data){
+            firstStructure.push(data)
+        }
+        else{
+            firstStructure.push(x)
+        }
+      })
+      this.secondStructureLoad.forEach(x => {
+        let data = LoadScanned?.secondStructure.find(p => p.qrCode === x.qrCode && p.totalOfOrders === x.totalOfOrders)
+        if(!data) data = x
+        data.completedScanned = data.loadScanningCounter == data.totalOfOrders
+        data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
+        secondStructure.push(data)
+      })
+    this.firstStructureLoad = firstStructure
+    this.secondStructureLoad = secondStructure
     }
+    
+    this.scanOrder()
   },
   watch: {
     digitalFirmStore: {
@@ -181,111 +234,7 @@ export default {
         this.step++;
       }
     },
-    async scanOrder() {
-      this.statusOrders = 'start';
-        if (await this.checkPermission()) {
-          BarcodeScanner.hideBackground();
-
-          const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-
-          if (result.hasContent) {
-
-            BarcodeScanner.hideBackground();
-            this.uploadProducts(result.content)
-            var OrderElement  = this.orders.findIndex(x => x.products.findIndex(z => z.qrcode == result.content))
-
-            if (OrderElement > -1) {
-              
-              this.step++;
-              this.resultScan = result
-              this.verifiedElement(OrderElement)
-            } else if (OrderElement){
-
-              this.statusOrders = 'reject';
-              Vibration.vibrate(1000);
-              setTimeout(() => {
-                this.statusOrders = 'start'
-                this.scanOrder()
-              }, 1000)
-            }
-          }
-        }
-    },
-
-    async uploadProducts(val){
-        let orderForScan = this.orders?.find(order => order?.products?.find(prod => prod.qrcode = val))
-
-        if(orderForScan){
-          let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
-          if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){
-              Vibration.vibrate(1000);
-              alert('Ya estan escaneadas todas las ordenes con este qrcode')
-              setTimeout(() => {
-                  this.statusOrders = 'start'
-                  this.scanOrder()
-              }, 1000)
-          }
-          else{
-            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
-            order = order.find(x => x)
-            let productInfo = order.products.find(p => p.qrCode == val && orderForScan.quantity == p.quantity)
-            // compruebo si es scan 1by1 o no
-            
-            if(productInfo.scanOneByOne === "no") {
-              let noScan1by1 = 0
-              let listNoScan1by = this.firstStructureLoad.filter(x => x.scanOneByOne == "no" && x.qrCode == val)
-              listNoScan1by.forEach(x => {
-                noScan1by1 += x.quantity
-              })
-              this.totalLimitOfBoxes.scanned = detailsOrderToScan.loadScanningCounter
-              this.totalLimitOfBoxes.totalOfOrders = noScan1by1
-              this.infoForScan = {
-                orderId: order._id,
-                boxId: productInfo._id,
-                loadScanningCounter: productInfo.loadScanningCounter,
-                productId: productInfo.product._id,
-                productQrCode: productInfo.qrCode,
-                scanOneByOne: false
-                }
-            }
-            else {
-              await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
-            }
-          }
-        }else{
-          if(this.secondStructureLoad.some(x => x.qrCode == val)){
-            alert('No existe producto con este qrCode')
-            Vibration.vibrate(1000);
-            setTimeout(() => {
-                this.statusOrders = 'start'
-                this.scanOrder()
-            }, 1000)
-          }else{
-
-            this.statusOrders = 'reject';
-              Vibration.vibrate(1000);
-              setTimeout(() => {
-                  this.statusOrders = 'start'
-                  this.scanOrder()
-              }, 1000)
-          }
-
-        }      
-    },
-
-    async stopScan() {
-      await BarcodeScanner.showBackground();
-      await BarcodeScanner.stopScan();
-    },
-    async checkPermission() {
-      const status = await BarcodeScanner.checkPermission({ force: true });
-
-      if (status.granted) {
-        return true;
-      }
-      return false;
-    },
-
+   
     async getCam() {
       this.getCheckPermissions();
       const ele = await Camera.getPhoto({
@@ -333,18 +282,7 @@ export default {
         console.log(error);
       }
     },
-    verifiedElement(val){
-        this.checkOrder = true
-        this.orders[val].completed = true
-        this.$store.commit("scanOrder", this.orders);
-        setTimeout(() => {
-          this.checkOrder = false
-          if (this.orders.every(x => x.completed == true)){
-          this.statusOrders = 'approve'
-        } else this.scanOrder()
-        }, 1000)
-
-    },
+  
     shipperName(val){
       var shipper = val?.shipper?.find(x => x.name)
       return shipper?.name
@@ -367,6 +305,257 @@ export default {
         images.push(this.firm);
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
+    },
+
+
+    async uploadProducts(val){
+      console.log(this.firstStructureLoad)
+        let orderForScan = this.firstStructureLoad.find(
+          x => x.qrCode == val &&
+          x.loadScanningCounter < x.quantity
+        )
+        console.log(orderForScan)
+        console
+        if(orderForScan){
+
+          let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
+          if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){
+
+              Vibration.vibrate(1000);
+              alert('Ya estan escaneadas todas las ordenes con este qrcode')
+              setTimeout(() => {
+                  this.statusOrders = 'start'
+                  this.scanOrder()
+              }, 1000)
+          }
+          else{
+
+            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            order = order.find(x => x)
+            let productInfo = order.products.find(p => p.qrCode == val && orderForScan.quantity == p.quantity)
+            
+            if(productInfo.scanOneByOne === "no") {
+              let noScan1by1 = 0
+              let listNoScan1by = this.firstStructureLoad.filter(x => x.scanOneByOne == "no" && x.qrCode == val)
+              listNoScan1by.forEach(x => {
+                noScan1by1 += x.quantity
+              })
+              this.totalLimitOfBoxes.scanned = detailsOrderToScan.loadScanningCounter
+              this.totalLimitOfBoxes.totalOfOrders = noScan1by1
+              UIkit.modal('#deliver-quantity').show()
+              this.infoForScan = {
+                orderId: order._id,
+                boxId: productInfo._id,
+                loadScanningCounter: productInfo.loadScanningCounter,
+                productId: productInfo.product._id,
+                productQrCode: productInfo.qrCode,
+                scanOneByOne: false
+                }
+            }
+            else {
+            alert(' es Scan 1b1')
+
+              await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
+            }
+          }
+        }else{
+          if(this.secondStructureLoad.some(x => x.qrCode == val)){
+            alert('Ya estan escaneadas todas las ordenes con este qrcode')
+            Vibration.vibrate(1000);
+            setTimeout(() => {
+                this.statusOrders = 'start'
+                this.scanOrder()
+            }, 1000)
+          }else{
+
+            this.statusOrders = 'reject';
+              Vibration.vibrate(1000);
+              setTimeout(() => {
+                  this.statusOrders = 'start'
+                  this.scanOrder()
+              }, 1000)
+          }
+
+        }      
+    },
+    async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
+      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode)
+      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
+
+      if(scanOneByOne){
+        this.firstStructureLoad[index_first].loadScanningCounter += 1
+        this.secondStructureLoad[index_second].loadScanningCounter += 1
+        loadCounter =+ 1
+        await this.$services.deliverServices.deliverProduct(orderId, boxId, loadCounter, productId, qrCode)
+
+        if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
+          this.secondStructureLoad[index_second].scanProgress = true
+        }
+        else{
+          this.secondStructureLoad[index_second].completedScanned = true
+          this.secondStructureLoad[index_second].scanProgress = false
+        }
+
+        if(this.firstStructureLoad[index_first].loadScanningCounter < this.firstStructureLoad[index_first].quantity){
+          this.firstStructureLoad[index_first].scanProgress = true
+        }
+        else{
+          this.firstStructureLoad[index_first].completedScanned = true
+          this.firstStructureLoad[index_first].scanProgress = false
+        }
+
+      }else{
+        if(loadCounter > this.firstStructureLoad[index_first].quantity){
+              let LoadDistribute = loadCounter - this.firstStructureLoad[index_first].quantity
+              let secondLoadDistribute = loadCounter - LoadDistribute
+              this.secondStructureLoad[index_second].loadScanningCounter += secondLoadDistribute
+              this.firstStructureLoad[index_first].loadScanningCounter += secondLoadDistribute
+
+              await this.$services.deliverServices.deliverProduct(orderId, boxId, secondLoadDistribute, productId, qrCode)
+              await this.distributeProductScan(LoadDistribute,qrCode )
+        }
+        else{
+            await this.$services.deliverServices.deliverProduct(orderId, boxId, loadCounter, productId, qrCode)
+
+            this.firstStructureLoad[index_first].loadScanningCounter += quantity
+
+            if(this.firstStructureLoad[index_first].loadScanningCounter < this.firstStructureLoad[index_first].quantity){
+              this.firstStructureLoad[index_first].scanProgress = true
+            }
+            else{
+              this.firstStructureLoad[index_first].completedScanned = true
+              this.firstStructureLoad[index_first].scanProgress = false
+            }
+            
+            this.secondStructureLoad[index_second].loadScanningCounter += quantity
+
+            if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
+              this.secondStructureLoad[index_second].scanProgress = true
+            }
+            else{
+              this.secondStructureLoad[index_second].completedScanned = true
+              this.secondStructureLoad[index_second].scanProgress = false
+            }
+            }     
+      }
+      let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad, name:this.load.loadMapId }
+      await this.$store.dispatch("changeLoadScannedInStore", data)
+      this.verifiedLoad()
+    },
+    async scanOrder() {
+      this.statusOrders = 'start';
+      if (await this.checkPermission()) {
+        BarcodeScanner.hideBackground();
+        const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+        if (result.hasContent) {
+
+          BarcodeScanner.hideBackground();
+          this.uploadProducts(result.content)
+        } else {
+          this.statusOrders = 'start';
+        }
+      }
+    },
+
+    async sendQuantityForScan(){
+      let {orderId, boxId, loadScanningCounter, productId, productQrCode, scanOneByOne} = this.infoForScan
+      loadScanningCounter = this.quantityForScan
+      await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, this.quantityForScan, scanOneByOne)
+      this.quantityForScan = 0
+    },
+    async distributeProductScan( LoadDistribute, qrCode){
+      var orderForScan = this.firstStructureLoad.find(
+          x => x.qrCode == qrCode &&
+          x.loadScanningCounter < x.quantity
+      )
+        if(orderForScan){
+          let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === orderForScan.qrCode && x.loadScanningCounter < x.quantity)
+          let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == orderForScan.qrCode)
+          
+            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            order = order.find(x => x)
+            let productInfo = order.products.find(p => p.qrCode == qrCode && orderForScan.quantity == p.quantity)
+            this.secondStructureLoad[index_second].loadScanningCounter += LoadDistribute
+            this.firstStructureLoad[index_first].loadScanningCounter += LoadDistribute
+
+            if(this.firstStructureLoad[index_first].loadScanningCounter < this.firstStructureLoad[index_first].quantity){
+              this.firstStructureLoad[index_first].scanProgress = true
+            }
+            else{
+              this.firstStructureLoad[index_first].completedScanned = true
+              this.firstStructureLoad[index_first].scanProgress = false
+            }
+
+            if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
+              this.secondStructureLoad[index_second].scanProgress = true
+            }
+            else{
+              this.secondStructureLoad[index_second].completedScanned = true
+              this.secondStructureLoad[index_second].scanProgress = false
+            }
+            await this.$services.deliverServices.deliverProduct(order._id, productInfo._id, LoadDistribute, productInfo.product._id, qrCode)
+            
+        }
+    },
+    async location() {
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          this.location1.latitude = geo.coords.latitude;
+          this.location1.longitude = geo.coords.longitude;
+          console.log(this.location1.latitude, this.location1.longitude)
+        } catch (e) {
+          if (e.code === 1 || e.message === "location disabled") {
+            alert("Debe activar la localización.");
+          } else {
+            alert("Error inesperado. Favor contactese con el Administrador.");
+          }
+          console.log(e);
+        }
+      },
+    async stopScan() {
+      BarcodeScanner.showBackground();
+      BarcodeScanner.stopScan();
+    },
+    async checkPermission() {
+      const status = await BarcodeScanner.checkPermission({ force: true });
+      if (status.granted) {
+        this.status = true;
+        return true
+      }
+      this.status = false;
+      return true
+    },
+    changeRoute(val){
+      this.$router.push({ name: val }).catch(() => {});
+    },
+    
+    async verifiedLoad(){          
+        this.checkOrder = true
+        setTimeout(async () => {
+          this.checkOrder = false
+          if(this.secondStructureLoad.every(x => x.completedScanned)){
+            localStorage.removeItem('LoadScanned')
+            let quantityTotal = 0
+            this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
+
+            let allProducts = JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
+            let isScannedAllProduct = []
+            for (let i = 0; i < allProducts.length; i++) {
+              const orderNum = allProducts[i];
+              isScannedAllProduct.push(this.firstStructureLoad.some(x => x.order_num == orderNum))
+            }
+            console.log(isScannedAllProduct)
+            this.statusOrders = "approved"  
+            if(isScannedAllProduct.includes(false)){
+              this.$router.push({name: 'orders'})
+             
+            }else{
+              this.$router.push({ name: "load-status" }).catch(() => {});
+              await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
+            }
+          }
+          else this.scanOrder()
+        }, 1000)
     },
   },
 };

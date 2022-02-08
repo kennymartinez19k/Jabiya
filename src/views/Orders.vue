@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-    <div class="uk-padding-small uk-margin-xlarge-bottom uk-width-1-2@m" style="margin-bottom: 50px!important;">
+    <div class="uk-padding-small uk-margin-xlarge-bottom uk-width-1-2@m" style="margin-bottom: 96px!important;">
       <div class="uk-flex select-all">
         <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
         <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
@@ -83,27 +83,35 @@
             <span class="font-weight-medium">Destino: </span> 
             <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
           </p>
-             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
+           
+        </div>
+        <div style="width: 100%">
+            <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                <!-- uk-open -->
                 <li class="uk-margin-remove">
                     <a class="uk-accordion-title uk-margin-remove uk-padding-remove" href="#"></a>
-                    <div v-for="item in order.products" :key="item.id"
+                    <div 
                      class="uk-accordion-content uk-margin-remove uk-padding-remove">
-                      <p class="">
-                        <span class="font-weight-medium">Producto: </span><span>{{item?.name}}</span>
+                     <div class="details-product">
+                      <p class="item">
+                        <span class="font-weight-medium">Producto: </span>
                       </p>
-                      <p class="">
-                        <span class="font-weight-medium">Codigo QR: </span><span>{{item.qrCode}}</span>
+                      <p class="item">
+                        <span class="font-weight-medium">Codigo QR: </span>
                       </p>
-                      <p class="">
-                        <span class="font-weight-medium">Escaneadas: </span><span>{{totalOrdersScanned(order)}}</span>
+                      <p class="item">
+                        <span class="font-weight-medium">Escaneadas: </span>
                       </p>
+                     </div>
+                      <div v-for="item in order.products" :key="item.id" class="details-product">
+                        <p class="item">{{item?.name}}</p>
+                        <p class="item">{{item.qrCode}}</p>
+                        <p class="item">{{totalOrdersScanned(order)}}</p>
+                      </div>
                     </div>
                 </li>
             </ul>
         </div>
-        
-        
       </div>
       
     </div>
@@ -321,6 +329,7 @@ p {
   padding: 20px 10px;
 }
 .uk-card-body {
+  flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 10px 11px;
   border: 0.1px solid #e5e5e5;
@@ -448,5 +457,12 @@ li{
   width: 10%;
   display: flex;
   padding: 8px 0px;
+}
+.details-product{
+  display: flex;
+  justify-content: space-around;
+}
+.details-product .item{
+  width: 33%;
 }
 </style>
