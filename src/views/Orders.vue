@@ -86,9 +86,10 @@
              <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                <!-- uk-open -->
                 <li class="uk-margin-remove">
-                    <a class="uk-accordion-title uk-margin-remove uk-padding-remove" href="#"></a>
+                    <a class="uk-accordion-title " href="#"></a>
+                    <div class="uk-accordion-content uk-margin-remove uk-padding-remove uk-flex uk-flex-column">
                     <div
-                     class="uk-accordion-content uk-margin-remove uk-padding-remove uk-flex uk-flex-between" style="width: 100% !important;">
+                     class=" uk-flex uk-flex-between" style="width: 100% !important;">
                       <p class="">
                         <span class="font-weight-medium">Producto: </span>
                       </p>
@@ -100,16 +101,17 @@
                       </p>
                     </div>
                      <div v-for="item in order.products" :key="item.id"
-                     class="uk-accordion-content uk-margin-remove uk-padding-remove uk-flex uk-flex-around">
-                      <p class="">
+                     class=" ">
+                      <p class="uk-text-left">
                         <span>{{item?.name}}</span>
                       </p>
-                      <p class="">
+                      <p class="uk-text-center">
                         <span>{{item.qrCode}}</span>
                       </p>
-                      <p class="">
-                        <span>{{totalOrdersScanned(order)}}</span>
+                      <p class="uk-text-right">
+                        <span>{{totalOrdersScanned(order)}}/ 2</span>
                       </p>
+                    </div>
                     </div>
                 </li>
             </ul>
@@ -131,7 +133,6 @@
 <script>
 import { mapGetters } from "vuex";
 import UIkit from "uikit";
-// import {} from '../assets/up'
 
 export default {
   alias: `Montar Viaje`,
@@ -147,23 +148,6 @@ export default {
       listOfOrderTotal: [],
       listOrderDetails: [],
       selectAllOrders: false,
-      data: [
-        [
-        'javillatesting2',
-        'G034189',
-        'G034189',
-        ],
-          [
-        'javillatesting2',
-        'G034189',
-        'G034189',
-        ],
-          [
-        'javillatesting2',
-        'G034189',
-        'G034189',
-        ],
-      ]
     };
   },
   
@@ -460,19 +444,19 @@ li{
 }
 .uk-accordion-title::before {
     content: "";
-    width: 1.4em;
-    height: 1.4em;
-    margin-left: 10px;
-    position: absolute;
-    top: 0;
-    right: 7px;
-    background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%221%22%20height%3D%2213%22%20x%3D%226%22%20y%3D%220%22%20%2F%3E%0A%3C%2Fsvg%3E);
+    margin-left: 0px;
+    background-image: url('../assets/down.png');
+    height: 17px;
+    background-size: 21px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
 }
 .uk-open>.uk-accordion-title::before {
-  /* background-image: '../assets/up.png'; */
-    background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%3C%2Fsvg%3E);
+  background-image: url('../assets/up.png');
+    height: 17px;
+    background-size: 27px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat
 }
 .order-select{
   width: 10%;
