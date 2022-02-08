@@ -84,16 +84,28 @@
                <!-- uk-open -->
                 <li class="uk-margin-remove">
                     <a class="uk-accordion-title uk-margin-remove uk-padding-remove" href="#"></a>
-                    <div v-for="item in order.products" :key="item.id"
-                     class="uk-accordion-content uk-margin-remove uk-padding-remove">
+                    <div
+                     class="uk-accordion-content uk-margin-remove uk-padding-remove uk-flex uk-flex-between" style="width: 100% !important;">
                       <p class="">
-                        <span class="font-weight-medium">Producto: </span><span>{{item?.name}}</span>
+                        <span class="font-weight-medium">Producto: </span>
                       </p>
                       <p class="">
-                        <span class="font-weight-medium">Codigo QR: </span><span>{{item.qrCode}}</span>
+                        <span class="font-weight-medium">Codigo QR: </span>
                       </p>
                       <p class="">
-                        <span class="font-weight-medium">Escaneadas: </span><span>{{order?.no_of_boxes}}</span>
+                        <span class="font-weight-medium">Escaneadas: </span>
+                      </p>
+                    </div>
+                     <div v-for="item in order.products" :key="item.id"
+                     class="uk-accordion-content uk-margin-remove uk-padding-remove uk-flex uk-flex-around">
+                      <p class="">
+                        <span>{{item?.name}}</span>
+                      </p>
+                      <p class="">
+                        <span>{{item.qrCode}}</span>
+                      </p>
+                      <p class="">
+                        <span>{{order?.no_of_boxes}}</span>
                       </p>
                     </div>
                 </li>
@@ -119,7 +131,7 @@
 <script>
 import { mapGetters } from "vuex";
 import UIkit from "uikit";
-
+// import {} from '../assets/up'
 
 export default {
   alias: `Montar Viaje`,
@@ -134,7 +146,24 @@ export default {
       listOfOrders: [],
       listOfOrderTotal: [],
       listOrderDetails: [],
-      selectAllOrders: false
+      selectAllOrders: false,
+      data: [
+        [
+        'javillatesting2',
+        'G034189',
+        'G034189',
+        ],
+          [
+        'javillatesting2',
+        'G034189',
+        'G034189',
+        ],
+          [
+        'javillatesting2',
+        'G034189',
+        'G034189',
+        ],
+      ]
     };
   },
   
@@ -432,6 +461,7 @@ li{
     background-position: 50% 50%;
 }
 .uk-open>.uk-accordion-title::before {
+  /* background-image: '../assets/up.png'; */
     background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%3C%2Fsvg%3E);
 }
 </style>

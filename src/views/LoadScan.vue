@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('6')">Escanear</button>
+    <button @click="uploadProducts('8')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -101,9 +101,9 @@
 
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
 
-            <p>Introduza la Cantidad que desea escanear <span>{{totalLimitOfBoxes.scanned}}/{{totalLimitOfBoxes.totalOfOrders}}</span></p>
+            <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }})</span></p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
-            <p class="uk-text-right uk-flex uk-flex-end" style="margin-top: 20px !important; justify-content: flex-end">
+            <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
             </p>
@@ -127,7 +127,7 @@ export default {
       checkOrder: false,
       camera: "auto",
       statusOrders: 'start',
-      quantityForScan: 0,
+      quantityForScan: null,
       infoForScan: {},
       cont: 0,
       orders: [],
