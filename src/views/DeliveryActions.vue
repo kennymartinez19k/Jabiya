@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('6')">escanear</button>
+    <button @click="uploadProducts('3')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -134,7 +134,7 @@ export default {
     return {
       show: null,
       orders: null,
-      resultScan: true,
+      resultScan: false,
       cont: 0,
       load: null,
       imagiElement: [],
@@ -311,8 +311,7 @@ export default {
       console.log(this.firstStructureLoad)
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
-          x.loadScanningCounter < x.quantity &&
-          !x.completedScanned
+          x.loadScanningCounter < x.quantity
         )
         console.log(orderForScan)
         console
@@ -378,6 +377,7 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
+      alert('send Confirmation')
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
       console.log(this.firstStructureLoad[index_first])

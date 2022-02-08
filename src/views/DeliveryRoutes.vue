@@ -203,6 +203,7 @@ export default {
           num_id++
           let {order_num, _id} = order
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
+          loadScanningCounter = 0
           firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter, num_id}       
           listOfOrders.unshift(firstProductInfo)
         })
