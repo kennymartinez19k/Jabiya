@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('6')">escanear</button>
+    <button @click="uploadProducts('3')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -134,13 +134,17 @@ export default {
     return {
       show: null,
       orders: null,
-      resultScan: true,
+      resultScan: false,
       cont: 0,
       load: null,
       imagiElement: [],
       step: 0,
       exception: false,
       firm: null,
+      location: {
+        latitude: null, 
+        longitude: null
+      },
       firstStructureLoad: [],
       secondStructureLoad: [],
       quantityForScan: null,
@@ -166,6 +170,7 @@ export default {
        this.orders = this.load.Orders
     }
     this.getShow("scan");
+    await this.getLocation()
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
     console.log(this.firstStructureLoad, this.secondStructureLoad)
@@ -496,12 +501,12 @@ export default {
             this.verifiedLoad()
         }
     },
-    async location() {
+    async getLocation () {
         try {
           const geo = await Geolocation.getCurrentPosition();
-          this.location1.latitude = geo.coords.latitude;
-          this.location1.longitude = geo.coords.longitude;
-          console.log(this.location1.latitude, this.location1.longitude)
+          this.location.latitude = geo.coords.latitude;
+          this.location.longitude = geo.coords.longitude;
+          console.log(this.location.latitude, this.location.longitude)
         } catch (e) {
           if (e.code === 1 || e.message === "location disabled") {
             alert("Debe activar la localización.");
@@ -530,7 +535,6 @@ export default {
     
     async verifiedLoad(){          
       alert('verifique ')
-      this.step = 1
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
@@ -540,7 +544,7 @@ export default {
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
-
+            this.step = 1
             await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
           }
           else this.scanOrder()
