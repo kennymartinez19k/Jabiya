@@ -39,6 +39,9 @@
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         :class="{ ordenCompleted: order.completed }"
       >
+        <div class="order-select">
+          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
+        </div>
         <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-left">
@@ -73,7 +76,7 @@
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
           <p class="">
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order?.no_of_boxes}}</span>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{totalOrdersScanned(order)}}</span>
           </p>
           </div>
           <p class="uk-width-1-1">
@@ -93,22 +96,19 @@
                         <span class="font-weight-medium">Codigo QR: </span><span>{{item.qrCode}}</span>
                       </p>
                       <p class="">
-                        <span class="font-weight-medium">Escaneadas: </span><span>{{order?.no_of_boxes}}</span>
+                        <span class="font-weight-medium">Escaneadas: </span><span>{{totalOrdersScanned(order)}}</span>
                       </p>
                     </div>
                 </li>
             </ul>
         </div>
-        <div>
-          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
-        </div>
+        
         
       </div>
       
     </div>
       <div class="button-opt">
       <button @click="scan()" :disabled="showButton === true" class="uk-button uk-button-primary">Escanear y Cargar Camion
-          <img src="../assets/load-truck.png" style="width: 25px; margin-left: 5px ">
       </button>
       
       
@@ -275,7 +275,18 @@ export default {
     firstOrderSector(val){
       var shipper = val?.shipper?.find(x => x)
       return shipper?.name
+    },
+    
+  totalOrdersScanned(val){
+    let structure = localStorage.getItem(JSON.stringify(this.load))
+    let loadScanned = 0
+    if(structure){
+      structure?.firstStructure.forEach(prod => {
+        if(prod.order_num == val.order_num) loadScanned += prod.loadScanningCounter
+      })
     }
+    return loadScanned
+  }
 }
 }
 </script>
@@ -304,7 +315,6 @@ p {
   padding: 10px 0px;
 }
 .button-opt button{
-  padding: 5px 5px;
   line-height: 15px;
 }
 .uk-card {
@@ -312,7 +322,6 @@ p {
 }
 .uk-card-body {
   margin-bottom: 10px;
-  align-items: center;
   padding: 10px 11px;
   border: 0.1px solid #e5e5e5;
 }
@@ -390,6 +399,7 @@ p {
 }
 .info-user {
   padding-right: 5px;
+  width: 90%;
 }
 .ordenCompleted {
   background: rgba(233, 255, 233, 0.6);
@@ -402,7 +412,7 @@ p {
 }
 .select-all{
   align-items: center;
-  padding: 10px 5px;
+  padding: 10px 11px;
 }
 .select-all input{
   transform: scale(1.1);
@@ -433,5 +443,10 @@ li{
 }
 .uk-open>.uk-accordion-title::before {
     background-image: url(data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%20%2F%3E%0A%3C%2Fsvg%3E);
+}
+.order-select{
+  width: 10%;
+  display: flex;
+  padding: 8px 0px;
 }
 </style>
