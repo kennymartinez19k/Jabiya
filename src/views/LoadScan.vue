@@ -454,6 +454,7 @@ export default {
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
+            
 
             let allProducts = JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
             let isScannedAllProduct = []
@@ -616,7 +617,6 @@ p{
 
 .animationCheck {
   animation: start 1s ease infinite both;
-  /* Override default play state paused of codepen iframe */
   animation-play-state: running!important;
 }
 
