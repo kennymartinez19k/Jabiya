@@ -1,8 +1,10 @@
 <template>
-  <div class="uk-flex uk-flex-between uk-flex-column cnt">
+<div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
-      <p style="font-size: 13px !important; font-weight: 500">
-        {{ load?.loadNumber }}
+      <p
+        style=" font-size: 13px !important; font-weight: 500"
+      >
+        {{load?.loadNumber}}
       </p>
       <div
         class="
@@ -13,102 +15,87 @@
           uk-margin-remove
           uk-padding-remove
         "
-        style="align-items: center"
+        style="align-items: center;"
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span
-            ><span>&nbsp; {{ shipperName(load) }}</span>
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.firstOrdenSector?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
     </div>
-
-    <div class="uk-card uk-card-default uk-width-1-2@m uk-margin-medium-bottom allScreen">
+    <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
+      <div class="uk-flex select-all">
+        <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
+        <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
+      </div>
       <div
         v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+        :class="{ ordenCompleted: order.completed }"
       >
-        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+        <div class="order-select">
+          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
+        </div>
+        <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
-            <div class="uk-flex uk-flex-column uk-text-center">
+            <div class="uk-flex uk-flex-column uk-text-left">
+              <span
+                v-if="order.completed"
+                style="
+                  display: flex;
+                  position: relative;
+                  top: -4px;
+                  color: green;
+                "
+              >
+                <strong>Completado </strong>
+                <font-awesome-icon
+                  icon="check"
+                  style="font-size: 14px; margin: 3px"
+                />
+              </span>
               <p
-                style="font-size: 16px !important;"
                 class="uk-width-1-1"
               >
-                <span class="font-weight-medium">Cliente: </span>
+              <span class="font-weight-medium">Cliente: </span>
                 <span>{{ order.client_name }}</span>
               </p>
             </div>
-            <span>
-              <img src="../assets/box.png" alt="" />
-            </span>
+          </div>
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
+          </p>
+          <div class="uk-flex uk-flex-wrap">
+          <p class="">
+            <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
+          </p>
+         
           </div>
           <p class="uk-width-1-1">
-            <strong>Dirección: </strong><span>{{ order?.sector}}</span>
+            <span class="font-weight-medium">Destino: </span> 
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.address}}</span>
           </p>
-          <p class="uk-width-1-2">
-            <strong> Orden: </strong
-            ><span>{{ order?.order_num }}</span>
-          </p>
-          <p class="uk-width-1-2">
-            <strong>Cajas / Pallets: </strong>{{ order?.no_of_boxes }}<span></span>
-          </p>
-          <div
-            class="uk-flex uk-width-1-1 uk-flex-between"
-            style="margin-top: 10px"
-          >
-            <div class="uk-width-1-2">
-              <div
-                class="uk-flex-column"
-                style="align-items: center; display: inline-flex"
-              >
-                <img src="../assets/map.png" class="img-scan" alt="" />
-                <span>Ver Ruta</span>
-              </div>
-            </div>
-            <div class="uk-width-1-2">
-              <div
-                class="uk-flex-column"
-                @click="scan(order)"
-                style="align-items: center; display: inline-flex"
-              >
-                <img src="../assets/parcel.png" class="img-scan" alt="" />
-                <span>Entregar Orden</span> 
-              </div>
-            </div>
-          </div>
+           
         </div>
       </div>
+      
     </div>
-  <div class="slide-div">
-    <slide-unlock
-      ref="vueslideunlock"
-      :auto-width="true"
-      :circle="true"
-      :disabled="false"
-      :noanimate="false"
-      :width="400"
-      :height="40"
-      :completedBg="completed"
-      class="slide box-slide"
-      text="Cargar e Iniciar Ruta"
-      success-text="Activando"
-      @completed="scan(orders)"
-      textSize="10px"
-    />
-  </div>
+      <div class="button-opt">
+      <button @click="scan()" :disabled="showButton === true" class="uk-button uk-button-primary">Escanear y Cargar Camion
+      </button>
+      
+      
+    </div>
   </div>
 </template>
 
 <script>
-import SlideUnlock from "vue-slide-unlock";
 import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 export default {
@@ -120,17 +107,52 @@ export default {
       load: null,
       orders: null,
       completed: "background-color: #2a307c !important",
+      selectAllOrders: false,
+      listOfOrders: [],
+      listOrderDetails: [],
+      listOfOrderTotal: []
+
     };
   },
-  components: {
-    SlideUnlock,
+  watch:{
+    selectAllOrders: function(newVal){
+        if(newVal == true){
+            this.orders.forEach( x => {
+            if(!x.isSelected){
+              x.isSelected = true
+              this.orderForScan(x)
+            }
+          })
+        }else{
+            if(this.orders.every(order => order.isSelected)){
+              this.orders.map(x => x.isSelected = false)
+              this.orders.forEach(x => {
+                this.listOrderDetails = this.listOrderDetails.filter(p => p.order_num != x.order_num)
+                this.listOfOrders = this.listOfOrders.filter(p => p.order_num != x.order_num)
+                this.listOfOrderTotal = this.listOfOrderTotal.filter(p => p.order_num != x.order_num)
+              })
+              
+            }
+          }
+    },
+    orders:{
+      handler: function (newVal) {
+        if(newVal.every(x => x.isSelected == true)){
+          this.selectAllOrders = true
+        }else{
+          this.selectAllOrders = false
+        }
+      }, deep: true
+    },
   },
   computed: {
     ...mapGetters(["loadStore", "orderScan"]),
   },
   mounted() {
     this.load = this.loadStore;
-    this.orders = this.load.Orders
+    this.load.firstOrdenInfo = this.load?.Orders[0]
+    this.orders = this.load?.Orders
+    this.orders.map(x => x.isSelected = false)
   },
   methods: {
     async location () {
@@ -144,107 +166,59 @@ export default {
         }
     },
     
-    async scan(val) {
-      let orderScan = []
-      if (val.length) {
-        orderScan = val
-      } else {
-        orderScan.push(val)
-      }
-      let listProducts = [];
-      let listProductTotal = [];
-      let totalOfProducts = 0;
-
-
-      for (let i = 0; i < this.orders.length; i++) {
-        const order = this.orders[i];
-        
-        for (let i = 0; i < order.products.length; i++) {
-          const prod = order.products[i];
-          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = prod
-          listProducts.unshift({name, qrCode, quantity, scanOneByOne, loadScanningCounter})
-        }
-      }
-      for (let i = 0; i < listProducts.length; i++) {
-        const product = listProducts[i];
-        let {qrCode,  loadScanningCounter, order_num} = product
-        var productQrCode = listProducts.filter( p => p.qrCode == product.qrCode )
-           if(productQrCode){
-             productQrCode.forEach(prod => {
-               totalOfProducts += prod.quantity
-             })
-           }
-            listProductTotal.unshift( {order_num, qrCode, totalOfProducts, loadScanningCounter})
-             totalOfProducts = 0
-      }
-
-      console.log(listProducts, listProductTotal, totalOfProducts)
-
+    async scan() {
       await this.orderForScan()
-      this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     shipperName(val){
       var shipper = val?.shipper?.find(x => x.name)
       return shipper?.name
     },
-    async orderForScan(){
-      let firstProductInfo;
+  
+    async orderForScan(order, allOrders = false){
       let totalOfOrders = 0;
-      let listOrderDetails = []
-      let listOfOrderTotal = []
-      let listOfOrders = []
-
-      for (let i = 0; i < this.orders.length; i++) {
-        listOrderDetails.push(order)
-        const order = this.orders[i];
+    
+      if(this.listOfOrders?.some(x => x.order_num == order?.order_num) && !allOrders){
+        this.listOrderDetails = this.listOrderDetails.filter(x => x?.order_num != order?.order_num)
+        this.listOfOrders = this.listOfOrders.filter(x => x?.order_num != order?.order_num)
+        this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order?.order_num)
+      }
+      else{
+        this.listOrderDetails.push(order)
         let num_id = 0
-        order.products.forEach(async x => {
+        order?.products?.forEach(async x => {
           num_id++
           let {order_num, _id} = order
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
           loadScanningCounter = 0
-          firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter, num_id}       
-          listOfOrders.unshift(firstProductInfo)
-        })
-      }
-      console.log(listOfOrders)
-        listOfOrders.forEach( x => {
+          let firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter, num_id}       
+          this.listOfOrders.unshift(firstProductInfo)
+      })
+        this.listOfOrders.forEach( x => {
          let {qrCode,  loadScanningCounter, order_num} = x
-          var productQrCode = listOfOrders.filter( p => p.qrCode == x.qrCode )
-           if(productQrCode){
-             productQrCode.forEach(product => {
-               totalOfOrders += product.quantity
-             })
-           }
-           loadScanningCounter = 0
-           let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
-             listOfOrderTotal.unshift(SecondProductInfo)
-             totalOfOrders = 0
-        })
-        
-        let products = []
-        listOfOrderTotal.forEach(x => {
-          let product = products.find(p => p.qrCode == x.qrCode)
-          if(product){
-              if(x.totalOfOrders > product.totalOfOrders){
-                  product.totalOfOrders = x.totalOfOrders
-              }   
-          }else{
-              products.push(x)
+          var productQrCode = this.listOfOrders.filter( p => p.qrCode == x.qrCode )
+          if(productQrCode){
+            productQrCode.forEach(product => {
+              totalOfOrders += product.quantity
+            })
           }
+          loadScanningCounter = 0
+          let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
+          this.listOfOrderTotal.unshift(SecondProductInfo)
+          totalOfOrders = 0
         })
-        listOfOrderTotal = products
 
-      let structureInfo = {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
+
+      let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       let allProducts = []
       for (let i = 0; i < this.orders.length; i++) {
         const order = this.orders[i];
         allProducts.push(order.order_num)        
       }
-      console.log(structureInfo, 'estructura')
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structureInfo)
+
+      }
   },
   },
 };
@@ -252,13 +226,39 @@ export default {
 
 <style scoped>
 
+:root {
+  --su-size-text: 12px;
+}
+.slideunlock .slideunlock-text{
+  font-size: var(--su-size-text);
+}
+p {
+  margin: 2px 0px !important;
+}
+.slide .slideunlock.is-complete .slideunlock-progressbar {
+  background-color: #2a307c;
+}
+.button-opt {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e2e2;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0px;
+}
+.button-opt button{
+  line-height: 15px;
+}
 .uk-card {
   padding: 20px 10px;
 }
 .uk-card-body {
+  flex-wrap: wrap;
   margin-bottom: 10px;
-  align-items: center;
-  padding: 16px 15px;
+  padding: 10px 11px;
+  border: 0.1px solid #e5e5e5;
 }
 .slide {
   position: fixed;
@@ -267,24 +267,17 @@ export default {
   height: 40px;
   --su-size-text: 18px;
 }
-.slide-div {
-  background: #ffffff !important;
-  height: 70px;
-  width: 100%;
-  position: absolute;
-  bottom: 0px;
-}
 .status {
-  font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
 }
 .btn {
   display: flex;
   align-items: baseline;
   width: 100%;
+  justify-content: flex-start;
 }
 .btn img {
-  width: 20px;
+  width: 30px;
   position: relative;
   top: -2px;
   margin-left: 5px;
@@ -302,18 +295,27 @@ export default {
 }
 .truck {
   max-width: 100%;
-  transform: scaleX(-1);
   width: 70px;
   display: flex;
 }
 
+.stiky {
+  color: rgb(255, 255, 255) !important;
+  z-index: 2;
+    border-top: 1px solid #313575;
+  font-size: 12px !important;
+  padding: 0px 10px 5px !important;
+ background: #2a307c;
+ font-weight: 300 !important;
+ text-align: center;
+  box-shadow: 1px 0px 5px #898989;
+}
 .img-scan {
   width: 39px;
 }
 .icon-load {
   width: 35%;
   margin-right: 20px;
-  transform: scaleX(-1);
 }
 .btn-scan {
   margin-top: 12px;
@@ -323,26 +325,19 @@ export default {
   padding: 3px;
   background: #2a307c;
 }
-.stiky {
-  color: rgb(255, 255, 255) !important;
-  z-index: 2;
-  border-top: 1px solid #313575;
-  font-size: 12px !important;
-  padding: 0px 10px 5px !important;
- background: #2a307c;
- font-weight: 300 !important;
- text-align: center;
-  box-shadow: 1px 0px 5px #898989;
-}
+
 .info-header {
   width: 30%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
-.status {
-  font-weight: 300;
-  font-size: 12px;
+.info-user {
+  padding-right: 5px;
+  width: 90%;
+}
+.ordenCompleted {
+  background: rgba(233, 255, 233, 0.6);
 }
 .box-slide {
   background-image: url('../assets/parcel.png');
@@ -350,8 +345,54 @@ export default {
     background-repeat: no-repeat;
     background-position: 81%
 }
-.allScreen{
-  height: 80vh;
-  overflow: scroll;
+.select-all{
+  align-items: center;
+  padding: 10px 11px;
+}
+.select-all input{
+  transform: scale(1.1);
+}
+.select-all input :focus-visible {
+    outline: 0px dotted #333;
+}
+.select-all label {
+  font-weight: 600;
+}
+li{
+  list-style-type: none;
+}
+.uk-accordion-title{
+  display: flex;
+  /* width: 100%; 
+  display: inline-block;
+  */
+}
+.uk-accordion-title::before {
+    content: "";
+    margin-left: 20px;/* revision*/
+    background-image: url('../assets/down.png');
+    height: 17px;
+    background-size: 21px;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+.uk-open>.uk-accordion-title::before {
+  background-image: url('../assets/up.png');
+    height: 17px;
+    background-size: 27px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat
+}
+.order-select{
+  width: 10%;
+  display: flex;
+  padding: 8px 0px;
+}
+.details-product{
+  display: flex;
+  justify-content: space-around;
+}
+.details-product .item{
+  width: 33%;
 }
 </style>
