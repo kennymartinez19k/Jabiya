@@ -193,7 +193,7 @@
           </button>
           <button
             href="#modal-group-1"
-            @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECTED', userData?.userType, load.loadForeignkeys.vehicleId)"
+            @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECTED', load.loadForeignkeys.vehicleId)"
             class="uk-button button-reject uk-modal-close"
             uk-toggle
           >
@@ -208,7 +208,7 @@
         <font-awesome-icon icon="ban" style="color: #fff; font-size: 14px" />
       </a>
       <button
-        @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', userData?.userType, load.loadForeignkeys.vehicleId)"
+        @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', load.loadForeignkeys.vehicleId)"
         class="uk-button uk-button-blue"
       >
         Aceptar Viaje &nbsp;
@@ -257,8 +257,9 @@ export default {
       return "Montar Viaje";
     },
   },
-  mounted() {
-    this.userInfo = JSON.parse(localStorage.getItem('setting'))
+ async mounted() {
+    this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
+    console.log(this.userInfo)
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.loadStore.Orders
@@ -289,11 +290,11 @@ export default {
         } else x.completed = false;
       });
     },
-    async acceptOrRejectLoad(id, version, status, type, vehicleId) {
+    async acceptOrRejectLoad(id, version, status,vehicleId) {
       let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       let userId
       if(!load.approvers[0].status){
-        userId = (JSON.parse(localStorage.getItem('userInfo'))).id
+        userId = this.userInfo?.id
       }
       else{
         userId = (load.Vehicles.find(x => x)).driver_id._id
@@ -306,7 +307,7 @@ export default {
         version,
         userId,
         status,
-        type,
+        this.userInfo.userType,
         vehicleId
       );
       if (result) {

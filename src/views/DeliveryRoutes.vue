@@ -152,6 +152,7 @@ export default {
     this.load = this.loadStore;
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
+    this.orders.map(x => x.isSelected = false)
   },
   methods: {
     async location () {
@@ -166,18 +167,7 @@ export default {
     },
     
     async scan() {
-      // let orderScan = []
-      // if (val.length) {
-      //   orderScan = val
-      // } else {
-      //   orderScan.push(val)
-      // }
-     
-      // let totalOfProducts = 0;
-      console.log(this.listOfOrders, this.listOfOrderTotal, this.listOrderDetails)
-
       await this.orderForScan()
-      // this.$store.commit("scanOrder", orderScan);
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     shipperName(val){
@@ -202,22 +192,20 @@ export default {
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
           loadScanningCounter = 0
           let firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter, num_id}       
-          console.log(firstProductInfo)
           this.listOfOrders.unshift(firstProductInfo)
       })
         this.listOfOrders.forEach( x => {
          let {qrCode,  loadScanningCounter, order_num} = x
           var productQrCode = this.listOfOrders.filter( p => p.qrCode == x.qrCode )
-           if(productQrCode){
-             productQrCode.forEach(product => {
-               totalOfOrders += product.quantity
-             })
-           }
-           loadScanningCounter = 0
-           let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
-           console.log(SecondProductInfo)
-             this.listOfOrderTotal.unshift(SecondProductInfo)
-             totalOfOrders = 0
+          if(productQrCode){
+            productQrCode.forEach(product => {
+              totalOfOrders += product.quantity
+            })
+          }
+          loadScanningCounter = 0
+          let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
+          this.listOfOrderTotal.unshift(SecondProductInfo)
+          totalOfOrders = 0
         })
 
 
@@ -227,7 +215,6 @@ export default {
         const order = this.orders[i];
         allProducts.push(order.order_num)        
       }
-      console.log(structureInfo, 'estructura')
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structureInfo)
 

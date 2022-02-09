@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('6b')">escanear</button>
+    <button @click="uploadProducts('1')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -104,7 +104,7 @@
 
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
 
-            <p>Introduzca la Cantidad que desea escanear <span>{{totalLimitOfBoxes.scanned}}/{{totalLimitOfBoxes.totalOfOrders}}</span></p>
+            <p>Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }})</span></p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-end" style="margin-top: 20px !important; justify-content: flex-end">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
@@ -145,6 +145,7 @@ export default {
         latitude: null, 
         longitude: null
       },
+      statusOrders: 'start',
       firstStructureLoad: [],
       secondStructureLoad: [],
       quantityForScan: null,
@@ -187,21 +188,21 @@ export default {
       let firstStructure = []
       let secondStructure = []
       this.firstStructureLoad.forEach(x => {
-        let data = LoadScanned?.firstStructure.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity)
-        if(data){
-            firstStructure.push(data)
-        }
-        else{
-            firstStructure.push(x)
-        }
+        let data = this.firstStructureLoad.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity)
+        if(!data) data = x
+          data.completedScanned = data.loadScanningCounter == data.quantity
+          data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
+          firstStructure.push(data)
+      
       })
       this.secondStructureLoad.forEach(x => {
-        let data = LoadScanned?.secondStructure.find(p => p.qrCode === x.qrCode && p.totalOfOrders === x.totalOfOrders)
+        let data = this.secondStructureLoad.find(p => p.qrCode === x.qrCode && p.totalOfOrders === x.totalOfOrders)
         if(!data) data = x
         data.completedScanned = data.loadScanningCounter == data.totalOfOrders
         data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
         secondStructure.push(data)
       })
+     
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
     }
@@ -327,6 +328,7 @@ export default {
 
               Vibration.vibrate(1000);
               alert('Ya estan escaneadas todas las ordenes con este qrcode')
+              this.statusOrders = 'reject'
               setTimeout(() => {
                   this.statusOrders = 'start'
                   this.scanOrder()
@@ -383,7 +385,6 @@ export default {
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
-      console.log(this.firstStructureLoad[index_first])
       if(scanOneByOne){
         this.firstStructureLoad[index_first].loadScanningCounter += 1
         this.secondStructureLoad[index_second].loadScanningCounter += 1
@@ -532,13 +533,12 @@ export default {
     },
     
     async verifiedLoad(){          
-      // alert('verifique ')
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
           this.resultScan = true
+
           if(this.secondStructureLoad.every(x => x.completedScanned)){
-            // alert('todas estas completadas')
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
