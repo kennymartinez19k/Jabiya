@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('4')">Escanear</button>
+    <button @click="uploadProducts('6')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -356,6 +356,7 @@ export default {
       }
       let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad, name:this.load.loadMapId }
       await this.$store.dispatch("changeLoadScannedInStore", data)
+
       this.verifiedLoad()
     },
     async scanOrder() {
@@ -446,7 +447,9 @@ export default {
       this.$router.push({ name: val }).catch(() => {});
     },
     
-    async verifiedLoad(){          
+    async verifiedLoad(){   
+        let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
+        this.$store.commit("setloadStore", load);
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
