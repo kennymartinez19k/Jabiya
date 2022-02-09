@@ -82,17 +82,26 @@
               </div>
             </div>
       </div>
-      <div class="uk-flex" style="margin-top: 10px" >
+      <!-- <div class="uk-flex" style="margin-top: 10px" >
               <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
               <img class="img-result" :src="firm" alt="Fima Digital" />
-          </div>
+          </div> -->
       </ul>
+    </div>
+    <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m img">
+      <div class="uk-flex">
+             <span v-for="(src, index) in imagiElement" :key="src">
+               <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
+              <img class="img-result" :src="src"  style="width: 95%;" alt="Red dot" />
+             </span>
+              <img class="img-result" :src="firm" alt="Fima Digital" />
+          </div>
     </div>
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 15px 0px  !important;"
+      style="z-index: 0; padding: 4px 0px  !important;"
     >
-      <h6 style="margin: 0px 0px 15px; font-size: 14px ">Click Para Tomar las Fotos y Firma</h6>
+      <h6 style="margin: 0px 0px 10px; font-size: 14px ">Click Para Tomar las Fotos y Firma</h6>
       <timeline
         :step="step"
         :exception="exception"
@@ -382,6 +391,12 @@ export default {
       }
       return totalOfBoxes
     },
+    deleteImage (index) {
+      this.imagiElement.splice(index,1)
+      if (this.imagiElement.length === 0) {
+        this.step = 1;
+      }
+    }
   },
 };
 </script>
@@ -534,5 +549,13 @@ li::before {
 .cont{
   border-top: 1px solid #ccc;
 }
-
+.icon-close{
+  background-color: #f04c3b40;;
+  position: absolute;
+}
+.img {
+  position: absolute;
+  padding: 6px 5px;
+  bottom: 125px;
+}
 </style>
