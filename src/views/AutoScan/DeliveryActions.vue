@@ -82,13 +82,18 @@
               </div>
             </div>
       </div>
-      <!-- <div class="uk-flex" style="margin-top: 10px" >
-              <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
-              <img class="img-result" :src="firm" alt="Fima Digital" />
-          </div> -->
+       <div v-if="imagiElement.length > showImg" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
+      <div class="uk-flex uk-flex-around img-scroll">
+             <span v-for="(src, index) in imagiElement"  :key="src">
+              <img class="img-result" :src="src"  alt="Red dot" />
+               <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
+             </span>
+              <!-- <img class="img-result" :src="firm" alt="Fima Digital" /> -->
+          </div>
+    </div>
       </ul>
     </div>
-    <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m img">
+    <!-- <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m img">
       <div class="uk-flex">
              <span v-for="(src, index) in imagiElement" :key="src">
                <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
@@ -96,7 +101,7 @@
              </span>
               <img class="img-result" :src="firm" alt="Fima Digital" />
           </div>
-    </div>
+    </div> -->
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 4px 0px  !important;"
@@ -142,6 +147,7 @@ export default {
   data() {
     return {
       show: null,
+      showImg: 0,
       orders: null,
       resultScan: null,
       cont: 0,
@@ -203,7 +209,7 @@ export default {
           console.log(newVal)
           this.firm = newVal;
           this.uploadOrDownload(this.load)
-          this.postImages()
+          // this.postImages()
         
             let isReturn = this.load.Orders.find(x => x.isReturn)
 
@@ -523,11 +529,18 @@ p{
 li::before {
   content: none;
 }
+
 .img-result {
-  width: 21%;
-  height: 60px;
-  margin-right: 5px;
+  width: 98%;
+  height: 80px;
+  /* margin-right: 5px; */
   border: 1px solid #000;
+}
+.img-scroll{
+  width: 98%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  max-width: 100%;
 }
 .btn {
   display: flex;
@@ -552,10 +565,16 @@ li::before {
 .icon-close{
   background-color: #f04c3b40;;
   position: absolute;
+  top: 16px;
+  margin: 2px 0px 0px -23px;
 }
 .img {
   position: absolute;
   padding: 6px 5px;
   bottom: 125px;
+}
+.img-card{
+  height: 100px;
+  width: 100%;
 }
 </style>
