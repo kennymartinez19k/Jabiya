@@ -68,7 +68,7 @@
           </p>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span> 
-            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.address}}</span>
           </p>
         </div>
         <div class="uk-width-1-2">

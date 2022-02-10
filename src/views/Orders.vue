@@ -195,6 +195,7 @@ export default {
     this.load = {...this.loadStore};
     this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
     this.orders = [...this.load.Orders]
+    Object.assign(this.orders, this.loadStore.Orders)
       this.load.firstOrdenSector = this.orders[0]?.sector
       this.orderObj();
 
@@ -245,6 +246,7 @@ export default {
        let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
        this.listOfOrders = structure.firstStructure
        this.listOfOrderTotal = structure.secondStructure
+
     }
   },
 
