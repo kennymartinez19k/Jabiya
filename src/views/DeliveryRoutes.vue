@@ -190,7 +190,7 @@ export default {
         }
     },
     async scan() {
-      await this.orderForScan()
+      this.$store.commit("scanOrder", this.listOrderDetails );
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     shipperName(val){
@@ -238,6 +238,7 @@ export default {
         const order = this.orders[i];
         allProducts.push(order.order_num)        
       }
+      
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structureInfo)
 

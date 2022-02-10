@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('4')">escanear</button>
+    <button @click="uploadProducts('7')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -104,9 +104,9 @@
 
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
 
-            <p>Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }})</span></p>
+            <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }})</span></p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
-            <p class="uk-text-right uk-flex uk-flex-end" style="margin-top: 20px !important; justify-content: flex-end">
+            <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
             </p>
@@ -166,28 +166,18 @@ export default {
     ]),
   },
   async mounted() {
-    if(this.loadStore){
-       this.load = this.loadStore;
-       this.orders = this.load.Orders
-    }
-    this.getShow("scan");
-    await this.getLocation()
+    this.load = {...this.loadStore};
+    this.orders = this.orderScan
+    console.log(this.orderScan)
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
+    this.orders.map(x => x.completedScanned = false)
 
-    const LoadScanned = await JSON.parse(localStorage.getItem(JSON.stringify(this.load.loadMapId)))
-     if(LoadScanned){
-      for (let i = 0; i < this.firstStructureLoad.length; i++) {
-        const product = this.firstStructureLoad[i];
-        let orderStructure = LoadScanned.firstStructure.find(structure => structure.order_num == product.order_num)
-        if(orderStructure){
-          this.firstStructureLoad[i].loadScanningCounter = orderStructure.loadScanningCounter
-        }
-      }
-      let firstStructure = []
+
+     let firstStructure = []
       let secondStructure = []
       this.firstStructureLoad.forEach(x => {
-        let data = this.firstStructureLoad.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity)
+        let data = this.firstStructureLoad.find(p => p.qrCode === x.qrCode && p.quantity === x.quantity && p.order_num ==  x.order_num)
         if(!data) data = x
           data.completedScanned = data.loadScanningCounter == data.quantity
           data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
@@ -201,12 +191,22 @@ export default {
         data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
         secondStructure.push(data)
       })
-     
+
+    this.getShow("scan");
+    await this.getLocation()
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
-    }
+    console.log(this.firstStructureLoad)
+
+    setInterval(async () =>{
+      await this.updateData()
+    }, 10000)
     
-    this.scanOrder()
+    if(this.secondStructureLoad.every(x => x.completedScanned)){
+      this.verifiedLoad()
+    }else{
+      this.scanOrder()
+    }
   },
   watch: {
     digitalFirmStore: {
@@ -223,6 +223,40 @@ export default {
       if (newVal){
         this.stopScan()
       }
+    },
+    structureToScan: function(){
+      let loadId = JSON.stringify(this.load.loadMapId)
+      let LoadScanned = JSON.parse(localStorage.getItem(loadId))
+      this.firstStructureLoad = LoadScanned.firstStructure
+      this.secondStructureLoad = LoadScanned.secondStructure
+    },
+    quantityForScan: function(newVal){
+      if(newVal > this.totalLimitOfBoxes.totalOfOrders){
+        this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders
+      }
+    },
+    firstStructureLoad:{
+      handler: function (newVal) {
+        if(newVal){
+          this.firstStructureLoad.forEach(x => {
+            x.completedScanned = x.loadScanningCounter >= x.quantity
+            x.scanProgress = x.loadScanningCounter > 0 && !x.completedScanned
+          })
+          if(this.firstStructureLoad.every(x => x.completedScanned)){
+            this.verifiedLoad()
+          }
+        }
+      }, deep: true
+    },
+    secondStructureLoad:{
+       handler: function (newVal) {
+        if(newVal){
+          this.secondStructureLoad.forEach(x => {
+            x.completedScanned = x.loadScanningCounter >= x.quantity
+            x.scanProgress = x.loadScanningCounter > 0 && !x.completedScanned
+          })
+        }
+      }, deep: true
     }
   },
 
@@ -312,31 +346,27 @@ export default {
     },
 
 
-    async uploadProducts(val){
+     async uploadProducts(val){
+      //   Compruebo si se encuentra el qrCode en la fila de la primera estructura
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
-          x.loadScanningCounter < x.quantity
+          x.loadScanningCounter < x.quantity &&
+          !x.completedScanned
         )
         if(orderForScan){
-
           let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
           if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){
-
               Vibration.vibrate(1000);
               alert('Ya estan escaneadas todas las ordenes con este qrcode')
-              this.statusOrders = 'reject'
               setTimeout(() => {
                   this.statusOrders = 'start'
                   this.scanOrder()
               }, 1000)
           }
           else{
-
-            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
-            order = order.find(x => x)
-            let productInfo = order.products.find(p => p.qrCode == val && orderForScan.quantity == p.quantity)
-            
-            if(productInfo.scanOneByOne === "no") {
+            let order =  this.orders?.find(x => x?._id == orderForScan?._id && x?.order_num == orderForScan?.order_num)
+            let productInfo = order.products.find(p => p?.qrCode == val && orderForScan.order_num == order.order_num)
+            if(productInfo?.scanOneByOne === "no") {
               let noScan1by1 = 0
               let listNoScan1by = this.firstStructureLoad.filter(x => x.scanOneByOne == "no" && x.qrCode == val)
               listNoScan1by.forEach(x => {
@@ -351,11 +381,12 @@ export default {
                 loadScanningCounter: productInfo.loadScanningCounter,
                 productId: productInfo.product._id,
                 productQrCode: productInfo.qrCode,
+                quantity: productInfo.quantity,
                 scanOneByOne: false
                 }
             }
             else {
-              await this.setMessageConfirmation(order._id, productInfo._id, productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
+              await this.setMessageConfirmation(order._id, productInfo._id,  productInfo.loadScanningCounter, productInfo.product._id, productInfo.qrCode, productInfo.quantity, true)
             }
           }
         }else{
@@ -375,38 +406,22 @@ export default {
                   this.scanOrder()
               }, 1000)
           }
-
         }      
     },
-    async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
-      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity === quantity && !x.completedScanned)
-      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)    
+     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
+      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.quantity == quantity &&  !x.completedScanned)
+      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
+
       if(scanOneByOne){
         this.firstStructureLoad[index_first].loadScanningCounter += 1
         this.secondStructureLoad[index_second].loadScanningCounter += 1
-        loadCounter =+ 1
-        await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
-
-        if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
-          this.secondStructureLoad[index_second].scanProgress = true
-        }
-        else{
-          this.secondStructureLoad[index_second].completedScanned = true
-          this.secondStructureLoad[index_second].scanProgress = false
-        }
-
-        if(this.firstStructureLoad[index_first].loadScanningCounter < this.firstStructureLoad[index_first].quantity){
-          this.firstStructureLoad[index_first].scanProgress = true
-        }
-        else{
-          this.firstStructureLoad[index_first].completedScanned = true
-          this.firstStructureLoad[index_first].scanProgress = false
-        }
+        this.$services.deliverServices.deliverProduct(orderId, boxId, this.secondStructureLoad[index_second].loadScanningCounter, productId, qrCode)
 
       }else{
         if(loadCounter > this.firstStructureLoad[index_first].quantity){
               let LoadDistribute = loadCounter - this.firstStructureLoad[index_first].quantity
               let secondLoadDistribute = loadCounter - LoadDistribute
+
               this.secondStructureLoad[index_second].loadScanningCounter += secondLoadDistribute
               this.firstStructureLoad[index_first].loadScanningCounter += secondLoadDistribute
 
@@ -414,31 +429,17 @@ export default {
               await this.distributeProductScan(LoadDistribute,qrCode )
         }
         else{
-            await this.$services.deliverServices.deliverProduct(orderId, boxId, loadCounter, productId, qrCode)
 
-            this.firstStructureLoad[index_first].loadScanningCounter += quantity
+            this.firstStructureLoad[index_first].loadScanningCounter += loadCounter
+            await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
 
-            if(this.firstStructureLoad[index_first].loadScanningCounter < this.firstStructureLoad[index_first].quantity){
-              this.firstStructureLoad[index_first].scanProgress = true
-            }
-            else{
-              this.firstStructureLoad[index_first].completedScanned = true
-              this.firstStructureLoad[index_first].scanProgress = false
-            }
-            
-            this.secondStructureLoad[index_second].loadScanningCounter += quantity
-
-            if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
-              this.secondStructureLoad[index_second].scanProgress = true
-            }
-            else{
-              this.secondStructureLoad[index_second].completedScanned = true
-              this.secondStructureLoad[index_second].scanProgress = false
-            }
+            this.secondStructureLoad[index_second].loadScanningCounter += loadCounter
             }     
+
       }
       let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad, name:this.load.loadMapId }
       await this.$store.dispatch("changeLoadScannedInStore", data)
+
       this.verifiedLoad()
     },
     async scanOrder() {
@@ -457,15 +458,17 @@ export default {
     },
 
     async sendQuantityForScan(){
-      let {orderId, boxId, loadScanningCounter, productId, productQrCode, scanOneByOne} = this.infoForScan
+      let {orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne} = this.infoForScan
       loadScanningCounter = this.quantityForScan
-      await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, this.quantityForScan, scanOneByOne)
-      this.quantityForScan = 0
+      await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne)
+      this.quantityForScan = null
     },
+
     async distributeProductScan( LoadDistribute, qrCode){
       var orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == qrCode &&
-          x.loadScanningCounter < x.quantity
+          x.loadScanningCounter < x.quantity &&
+          !x.completedScanned
       )
         if(orderForScan){
           let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === orderForScan.qrCode && x.loadScanningCounter < x.quantity)
@@ -477,23 +480,8 @@ export default {
             this.secondStructureLoad[index_second].loadScanningCounter += LoadDistribute
             this.firstStructureLoad[index_first].loadScanningCounter += LoadDistribute
 
-            if(this.firstStructureLoad[index_first].loadScanningCounter < this.firstStructureLoad[index_first].quantity){
-              this.firstStructureLoad[index_first].scanProgress = true
-            }
-            else{
-              this.firstStructureLoad[index_first].completedScanned = true
-              this.firstStructureLoad[index_first].scanProgress = false
-            }
-
-            if(this.secondStructureLoad[index_second].loadScanningCounter < this.secondStructureLoad[index_second].totalOfOrders){
-              this.secondStructureLoad[index_second].scanProgress = true
-            }
-            else{
-              this.secondStructureLoad[index_second].completedScanned = true
-              this.secondStructureLoad[index_second].scanProgress = false
-            }
             await this.$services.deliverServices.deliverProduct(order._id, productInfo._id, LoadDistribute, productInfo.product._id, qrCode)
-            this.verifiedLoad()
+            
         }
     },
     async getLocation () {
@@ -527,22 +515,65 @@ export default {
       this.$router.push({ name: val }).catch(() => {});
     },
     
-    async verifiedLoad(){          
+    async verifiedLoad(){   
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
-          this.resultScan = true
-
-          if(this.secondStructureLoad.every(x => x.completedScanned)){
+          if(this.firstStructureLoad.every(x => x.completedScanned)){
+            this.step = 1
+            this.resultScan = true
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
-            this.step = 1
-            await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
+
+            this.statusOrders = "approved"  
           }
           else this.scanOrder()
         }, 1000)
     },
+    async updateData(){
+      if(this.$route.name == 'scan-order'){
+
+      let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
+      if(load.loadingStatus.text == 'Dispatched'){
+        this.firstStructureLoad.forEach(x => {
+          x.loadScanningCounter = x.quantity
+        })
+        this.verifiedLoad()
+      }else{
+        for (let i = 0; i < load.Orders.length; i++) {
+          const order = load.Orders[i];
+          
+          if(this.firstStructureLoad.some(x => x.order_num == order.order_num)){
+            let structure = await this.setStructure(order)
+            
+            for (let cont = 0; cont < structure.firstStructure.length; cont++) {
+              const product = structure.firstStructure[cont];
+              this.firstStructureLoad.forEach(x => {
+                if(x.qrCode == product.qrCode){
+                  x.loadScanningCounter = product.loadScanningCounter
+                  x.completedScanned = x.loadScanningCounter >= x.quantity
+                  x.scanProgress =  x.loadScanningCounter > 0 && !x.completedScanned
+
+                }
+              })
+            }
+           
+            for(let cont = 0; cont < structure.secondStructure.length; cont++){
+              const product = structure.secondStructure[cont];
+              this.secondStructureLoad.forEach(x => {
+                if(x.qrCode == product.qrCode){
+                  x.loadScanningCounter = product.loadScanningCounter
+                  x.completedScanned = x.loadScanningCounter >= x.quantity
+                  x.scanProgress =  x.loadScanningCounter > 0 && !x.completedScanned
+                }
+              })
+            }
+          }
+        }
+      }
+      }
+    }
   },
 };
 </script>
