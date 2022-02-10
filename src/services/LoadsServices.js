@@ -20,7 +20,6 @@ class LoadsServices {
       return result.data
     }
     async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){
-      console.log(id, version, approverId, status, type, vehicleId)
       const params = {
         "actionName": "confirmOrder",
         "params": {

@@ -181,8 +181,6 @@ export default {
         let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore
-    } else {
-      console.log(loadsMounted, 'this.loadStore')
     }
       this.$store.commit("setloadStore", loadsMounted);
 
@@ -206,7 +204,6 @@ export default {
     digitalFirmStore: {
       handler: async function (newVal) {
         if (newVal !== null) {
-          console.log(newVal)
           this.firm = newVal;
           this.uploadOrDownload(this.load)
           // this.postImages()
@@ -357,7 +354,6 @@ export default {
         for (let i = numberOfImages; i < 3; i++) {
           images.push(this.imagiElement[0]);
         }
-        console.log(this.firm)
         images.push(this.firm);
         this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }

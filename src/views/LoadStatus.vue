@@ -321,7 +321,6 @@ export default {
     messageStatus(){
       let message = (JSON.parse(localStorage.getItem('currentProfile')))?.LoadStatus
 
-      console.log(message)
       if(this.loadStatus.step > 0)
         message.expectingApprovalProvider.message = message?.expectingApprovalProvider?.pastMessage
 
@@ -351,19 +350,18 @@ export default {
   async mounted() {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.setting = JSON.parse(localStorage.getItem('setting'))
-    console.log(this.loadStore)
     let loadsMounted = null
     if (this.loadStore) {
        loadsMounted = this.loadStore
     } else {
       loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
     }
+    console.log(loadsMounted)
     this.$store.commit("setloadStore", loadsMounted);
     this.load = await this.$services.loadsServices.getLoadDetails(loadsMounted?.loadMapId);
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
-    console.log(this.load)  
     localStorage.removeItem('dateCheck');
     localStorage.setItem('dateCheck', JSON.stringify(this.load.dateTime.date));
 
@@ -383,9 +381,7 @@ export default {
         this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
         this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       }
-      else{
-        alert('no hay')
-      }
+     
     },
     setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});

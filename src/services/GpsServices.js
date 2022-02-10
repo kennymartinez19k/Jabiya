@@ -27,7 +27,6 @@ class GpsServices {
     }
 
     async updateFirstLocation (driverId, lat, lng, bayId){
-      console.log(driverId, lat, lng, bayId)
       const body = {
         "lat": lat,
         "lng": lng,

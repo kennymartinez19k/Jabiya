@@ -128,7 +128,6 @@ export default {
   methods: {
       async productsOfOrders () {
         const result = await axios.get(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}`, {withCredentials: true })
-        console.log(result.data.result.data, 'productsOfOrders')
         this.order_lines = result.data.result.data.order_lines
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(x => {
           return x.productQuantity

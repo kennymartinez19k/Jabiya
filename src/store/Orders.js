@@ -30,7 +30,6 @@ const Orders = {
     },
     setLanguageStore (state, lang) {
       state.language = lang
-     console.log(lang)
     }    
   },
   actions:{
