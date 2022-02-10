@@ -11,10 +11,10 @@
     <div>
       <div class="uk-card uk-card-default uk-width-1-2@m container">
         <div
-            :class="{'load-delivered': detailsLoads?.loadingStatus?.text == 'Delivered', 'load-assigned': detailsLoads.loadingStatus.text == 'Driver selection in progress'}" 
+            :class="{'load-delivered': detailsLoads?.loadingStatus?.text == 'Delivered', 'load-assigned': detailsLoads?.loadingStatus?.text == 'Driver selection in progress'}" 
             class="uk-card uk-card-default uk-card-body load-default-status">
           <div
-            :class="{'disabled-event': detailsLoads.loadingStatus.text === 'Driver selection in progress'}"
+            :class="{'disabled-event': detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}"
             @click="setLoad(detailsLoads)"
           >
             <p class="uk-flex status-load">
@@ -23,27 +23,28 @@
             <div class="uk-margin-top" style="margin-top: 25px !important">
               <div>
                   <p class="uk-flex">
-                    <span>{{ detailsLoads.loadNumber }}</span>
+                    <span>{{ detailsLoads?.loadNumber }}</span>
                   </p>
               </div>
               
-              <div v-if="userData?.userType == userType?.provider && detailsLoads.loadingStatus.text !== 'Driver selection in progress'">
-                <div class="uk-flex uk-flex-middle">
+                 <div>
+                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span>{{detailsLoads?.plannedProfitability?.profitability?.revenue}}</span>
+                  <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.revenue * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div class="uk-flex uk-flex-middle">
+                <div  v-if="userData?.userType == userType?.provider || userData?.userType == userType?.transporter" class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">{{costText}}:&nbsp;</p>
+                  <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.transportCost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                </div>
+                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span>{{detailsLoads?.plannedProfitability?.profitability?.profitability}}</span>
+                  <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.profitability * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
-                  <span>{{detailsLoads?.plannedProfitability?.profitability?.transportCost}}</span>
-                </div>
+                
               </div>
 
               <div
-                v-if="detailsLoads.loadType == profile.container"
+                v-if="detailsLoads.loadType == profile?.container"
                 class="uk-flex uk-flex-middle"
               >
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
@@ -60,7 +61,7 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(detailsLoads.loadingStatus.slotStartTime)
+                    setLocaleDate(detailsLoads?.loadingStatus?.slotStartTime)
                   }}</span
                 >
               </div>
@@ -70,19 +71,19 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(detailsLoads.loadingStatus.slotEndTime)
+                    setLocaleDate(detailsLoads?.loadingStatus?.slotEndTime)
                   }}</span
                 >
               </div>
 
-              <div v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" 
+              <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'" 
                   class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{
                   info?.driver
                 }}</span>
               </div>
-              <div v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" 
+              <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'" 
                   class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Vehiculo:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info"
@@ -95,7 +96,7 @@
             <div class="uk-flex uk-flex-between">
                 <div style="width: 100%">
                   <div
-                    v-if="isReturnLoad(detailsLoads) && userInfo.profile == profile.container"
+                    v-if="isReturnLoad(detailsLoads) && detailsLoads?.loadType == profile?.container"
                     class="uk-text-left info-user"
                   >
                     <div>
@@ -130,14 +131,14 @@
                     </div>
                   </div>
                 </div>
-              <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress'" class="start-load uk-flex-middle">
+              <div  v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'" class="start-load uk-flex-middle">
                 <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
               </div>
             </div>
            
           </div>
           
-          <div v-if="detailsLoads?.loadType == profile.eCommerce ">
+          <div v-if="detailsLoads?.loadType == profile?.b2b ">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"
@@ -148,15 +149,15 @@
           <div class="uk-text-left uk-flex uk-flex-wrap">
             <p class="uk-width-1-1" style="margin-right: 10px !important">
                   <span class="font-weight-medium">Cliente: </span>
-                  <span>{{ order.client_name }}</span>
+                  <span>{{ order?.client_name }}</span>
                 </p>
             <p style="margin-right: 10px !important">
               <span class="font-weight-medium">Orden: </span
-              ><span>{{ order.order_num }}</span>
+              ><span>{{ order?.order_num }}</span>
             </p>
             <p>
               <span class="font-weight-medium">Cajas / Pallets: </span
-              >{{ order.products?.length }}<span></span>
+              >{{ order?.products?.length }}<span></span>
             </p>
             
             <div class="uk-text-left info-user">
@@ -189,7 +190,7 @@
                 <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
               </ul>
             </div>
-            <div v-if=" detailsLoads.loadingStatus.text === 'Driver selection in progress'">
+            <div v-if=" detailsLoads?.loadingStatus?.text === 'Driver selection in progress'">
                 <driver-truck :detailsLoads="detailsLoads"></driver-truck>
             </div>
         </div>
@@ -226,9 +227,10 @@ export default {
     return {
       userType,
       userPosition,
+      costText: null,
       profile,
       orders: [],
-      userInfo: null,
+      userInfo: {},
       loaded: false,
       detailsLoads: [],
       dateAvalaible: [],
@@ -243,20 +245,30 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    this.userInfo = JSON.parse(localStorage.getItem('setting'))
+    console.log(this.userInfo, 'info')
     if (this.detailsLoadsStore) {
       this.detailsLoads = this.detailsLoadsStore;
       this.orders = this.detailsLoads.Orders
       this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
       this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
     }
+    console.log(this.detailsLoads, 'detailsLoads')
+
   },
 
   computed: {
     ...mapGetters(["detailsLoadsStore", "userData"]),
   },
-  mounted () {
+ async mounted () {
+       this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
+
     this.$store.commit("setSettings", null);
+    console.log(this.userInfo, 'info')
+     if (this.userInfo.userType  === "Transporter") {
+      this.costText = 'Ingreso por el Viaje'
+    } else if (this.userInfo.userType  === "Provider") {
+      this.costText = 'Costo de Transporte'
+    }
   },
 
   methods: {
@@ -314,12 +326,12 @@ export default {
     ordenIsReturn(val) {
       let res = val?.Orders?.find((x) => x);
       localStorage.setItem('loadType', JSON.stringify(val.loadType))
-      if (val.loadType === this.profile.eCommerce) return 'eCommerce '
+      if (val.loadType === this.profile.b2b) return 'b2b '
       if (res?.isReturn) return "Devolver Contenedor";
       return "Entregar Contenedor";
     },
     isReturnLoad(val) {
-      return val.Orders.find((x) => x.isReturn);
+      return val?.Orders?.find((x) => x.isReturn);
     },
   
   },

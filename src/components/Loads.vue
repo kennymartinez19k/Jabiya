@@ -281,7 +281,7 @@ export default {
     ordenIsReturn(val){
       let res = val?.Orders?.find(x => x)
       localStorage.setItem('loadType', JSON.stringify(val.loadType))
-      if (val.loadType === this.profile.eCommerce) return 'eCommerce '
+      if (val.loadType === this.profile.b2b) return 'b2b '
       if(res?.isReturn) return 'Devolver Contenedor'
       return 'Entregar Contenedor'
     },
