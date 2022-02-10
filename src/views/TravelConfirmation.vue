@@ -160,7 +160,6 @@ export default {
       this.load = this.allLoadsStore.find(x => x.status == "Driver Arrival" || x.status == "Driver Assigned" )
     this.orders = this.load.orders
     }
-    console.log(this.orders)
     if (this.orderScan) {
       this.completedOrden();
     }
@@ -189,7 +188,6 @@ export default {
     },
     async acceptOrRejectLoad(id, version, param, ){
         const result = await this.$services.loadsServices.acceptOrRejectLoad(id, version, param)
-        console.log(result)
         if(result){
           this.$router.push({ name: 'direct-access' })
         }

@@ -25,6 +25,7 @@
       <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
     </div>
 
+    
     <div v-if="assignedLoads == 0" style="height: 50px">
       <span>No Tiene Viajes Asignados Para Este Día</span>
     </div>
@@ -217,7 +218,6 @@ export default {
           this.loads.push(loadDetails)
         }
       }
-      console.log(this.loads)
       this.sortLoads()
       this.setOpen(false);
 

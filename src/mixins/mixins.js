@@ -192,6 +192,47 @@ export const Mixins = {
       localStorage.removeItem(`startRoute${this.load.loadMapId}`)
       localStorage.removeItem(`deliverLoad${this.load.loadMapId}`)
       localStorage.removeItem(`uploadStorage${this.load.loadMapId}`)
+    },
+
+    async setStructure(order, listOfOrders = [], listOfOrderTotal = []){
+      let firstProductInfo;
+      let totalOfOrders = 0;
+      for (let i = 0; i < order.products.length; i++) {
+        const x = order?.products[i];
+          let {order_num, _id} = order
+          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
+          firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
+          listOfOrders.unshift(firstProductInfo)
+  
+  
+          listOfOrders.forEach( x => {
+            let {qrCode,  loadScanningCounter, order_num} = x
+             var productQrCode = listOfOrders.filter( p => p.qrCode == x.qrCode )
+              if(productQrCode){
+                productQrCode.forEach(product => {
+                  totalOfOrders += product.quantity
+                })
+              }
+              let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
+                listOfOrderTotal.unshift(SecondProductInfo)
+                totalOfOrders = 0
+           })
+           
+           let products = []
+           listOfOrderTotal.forEach(x => {
+             let product = products.find(p => p.qrCode == x.qrCode)
+             if(product){
+                 if(x.totalOfOrders > product.totalOfOrders){
+                     product.totalOfOrders = x.totalOfOrders
+                 }   
+             }else{
+                 products.push(x)
+             }
+           })
+           listOfOrderTotal = products
+  
+      }
+      return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
     }
   },
 };

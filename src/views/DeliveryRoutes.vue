@@ -29,10 +29,6 @@
       </div>
     </div>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
-      <div class="uk-flex select-all">
-        <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
-        <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
-      </div>
       <div
         v-for="order in orders"
         :key="order"
@@ -89,8 +85,6 @@
       <div class="button-opt">
       <button @click="scan()" :disabled="showButton === true" class="uk-button uk-button-primary">Escanear y Cargar Camion
       </button>
-      
-      
     </div>
   </div>
 </template>
@@ -107,33 +101,22 @@ export default {
       load: null,
       orders: null,
       completed: "background-color: #2a307c !important",
-      selectAllOrders: false,
       listOfOrders: [],
       listOrderDetails: [],
-      listOfOrderTotal: []
+      listOfOrderTotal: [],
+      showButton: true
 
     };
   },
   watch:{
-    selectAllOrders: function(newVal){
-        if(newVal == true){
-            this.orders.forEach( x => {
-            if(!x.isSelected){
-              x.isSelected = true
-              this.orderForScan(x)
-            }
-          })
-        }else{
-            if(this.orders.every(order => order.isSelected)){
-              this.orders.map(x => x.isSelected = false)
-              this.orders.forEach(x => {
-                this.listOrderDetails = this.listOrderDetails.filter(p => p.order_num != x.order_num)
-                this.listOfOrders = this.listOfOrders.filter(p => p.order_num != x.order_num)
-                this.listOfOrderTotal = this.listOfOrderTotal.filter(p => p.order_num != x.order_num)
-              })
-              
-            }
-          }
+    listOfOrders:{
+      handler: function (newVal) {
+       if (newVal.length === 0) {
+       this.showButton = true
+      } else {
+       this.showButton = false
+      }
+      }, deep: true
     },
     orders:{
       handler: function (newVal) {
@@ -165,7 +148,6 @@ export default {
         
         }
     },
-    
     async scan() {
       await this.orderForScan()
       this.$router.push({ name: "deliveryActions" }).catch(() => {});

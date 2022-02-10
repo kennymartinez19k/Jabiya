@@ -112,7 +112,6 @@ export default {
     this.drivers = [...data.drivers]
     this.vehicles = [...data.vehicles]
     this.transporterName = data.transporterName
-    console.log(data)
   },
   methods: {
     async selectDriverVehicle () {

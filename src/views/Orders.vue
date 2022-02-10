@@ -4,7 +4,7 @@
       <p
         style=" font-size: 13px !important; font-weight: 500"
       >
-        {{load?.loadNumber}}
+        {{loadStore?.loadNumber}}
       </p>
       <div
         class="
@@ -19,11 +19,11 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(loadStore) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ loadStore?.firstOrdenInfo.sector }}</span>
           </p>
         </div>
       </div>
@@ -126,11 +126,13 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { Mixins} from '../mixins/mixins'
 import UIkit from "uikit";
 
 export default {
   alias: `Montar Viaje`,
   name: `cargarrr`,
+  mixins: [Mixins],
   data() {
     return {
       status: null,
@@ -188,20 +190,18 @@ export default {
       }, deep: true
     }
   },
-  mounted() {
-    if(this.loadStore){
-      this.load = this.loadStore;
-      this.orders = this.loadStore.Orders
-      this.orders.map(x => x.isSelected = false)
+  async beforeMount(){
+    
+  },
+  async mounted() {
+    this.load = {...this.loadStore};
+    console.log(this.loadStore)
+    this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
+    this.orders = [...this.load.Orders]
+      this.orders?.map(x => x.isSelected = false)
       this.load.firstOrdenSector = this.orders[0]?.sector
-    }else{
-      this.load = this.allLoadsStore
-      this.orders = this.load.orders
-    }
-    this.orderObj();
+      this.orderObj();
 
-  
-      
   },
   methods: {
     accordiontn () {
@@ -220,58 +220,27 @@ export default {
     scan() {
       this.$emit("setNameHeader", 'Escaneo Corrido');
       this.$store.commit("scanOrder", this.listOrderDetails );
-      let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       let allProducts = []
+      let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       for (let i = 0; i < this.orders.length; i++) {
         const order = this.orders[i];
         allProducts.push(order.order_num)        
       }
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
-      this.$store.commit("setStructureToScan", structureInfo)
+      this.$store.commit("setStructureToScan", structure)
       this.$router.push({ name: "scan-order" }).catch(() => {});
     },
     
     async orderForScan(order, allOrders = false){
-      let firstProductInfo;
-      let totalOfOrders = 0;
      if(this.listOfOrders.some(x => x.order_num == order.order_num) && !allOrders){
        this.listOrderDetails = this.listOrderDetails.filter(x => x.order_num != order.order_num)
        this.listOfOrders = this.listOfOrders.filter(x => x.order_num != order.order_num)
        this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order.order_num)
      }else{
        this.listOrderDetails.push(order)
-       order.products.forEach(async x => {
-         let {order_num, _id} = order
-         let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
-         firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
-         this.listOfOrders.unshift(firstProductInfo)
-       })
-     
-        this.listOfOrders.forEach( x => {
-         let {qrCode,  loadScanningCounter, order_num} = x
-          var productQrCode = this.listOfOrders.filter( p => p.qrCode == x.qrCode )
-           if(productQrCode){
-             productQrCode.forEach(product => {
-               totalOfOrders += product.quantity
-             })
-           }
-           let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
-             this.listOfOrderTotal.unshift(SecondProductInfo)
-             totalOfOrders = 0
-        })
-        
-        let products = []
-        this.listOfOrderTotal.forEach(x => {
-          let product = products.find(p => p.qrCode == x.qrCode)
-          if(product){
-              if(x.totalOfOrders > product.totalOfOrders){
-                  product.totalOfOrders = x.totalOfOrders
-              }   
-          }else{
-              products.push(x)
-          }
-        })
-        this.listOfOrderTotal = products
+       let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
+       this.listOfOrders = structure.firstStructure
+       this.listOfOrderTotal = structure.secondStructure
     }
   },
 

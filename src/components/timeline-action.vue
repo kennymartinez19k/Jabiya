@@ -125,7 +125,6 @@ export default {
           this.digitalFirm = true;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
      }
-      console.log(value, 'value')
     },
     resetTextException() {
       UIkit.modal("#modal-sections").hide();

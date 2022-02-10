@@ -249,7 +249,6 @@ export default {
       this.orders = this.detailsLoads.Orders
       this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
       this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
-      console.log( JSON.parse(localStorage.getItem('DeliveryCharges')))
     }
   },
 
@@ -269,7 +268,6 @@ export default {
     },
 
     async setLoad(val) {
-      console.log(val);
       for (var i = 0; i < val.Orders.length; i++) {
         let order = await this.$services.loadsScanServices.getProduct(
           val.Orders[i]._id

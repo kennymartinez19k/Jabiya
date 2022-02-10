@@ -174,7 +174,6 @@ export default {
     await this.getLocation()
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
-    console.log(this.firstStructureLoad, this.secondStructureLoad)
 
     const LoadScanned = await JSON.parse(localStorage.getItem(JSON.stringify(this.load.loadMapId)))
      if(LoadScanned){
@@ -314,13 +313,10 @@ export default {
 
 
     async uploadProducts(val){
-      console.log(this.firstStructureLoad)
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
           x.loadScanningCounter < x.quantity
         )
-        console.log(orderForScan)
-        console
         if(orderForScan){
 
           let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
@@ -505,7 +501,6 @@ export default {
           const geo = await Geolocation.getCurrentPosition();
           this.location.latitude = geo.coords.latitude;
           this.location.longitude = geo.coords.longitude;
-          console.log(this.location.latitude, this.location.longitude)
         } catch (e) {
           if (e.code === 1 || e.message === "location disabled") {
             alert("Debe activar la localización.");

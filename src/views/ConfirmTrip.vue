@@ -192,6 +192,7 @@
             Cancelar
           </button>
           <button
+            :class="{disabled: disabled}"
             href="#modal-group-1"
             @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECTED', load.loadForeignkeys.vehicleId)"
             class="uk-button button-reject uk-modal-close"
@@ -210,6 +211,7 @@
       <button
         @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', load.loadForeignkeys.vehicleId)"
         class="uk-button uk-button-blue"
+        :class="{disabled: disabled}"
       >
         Aceptar Viaje &nbsp;
         <font-awesome-icon icon="check" style="color: #fff; font-size: 14px" />
@@ -238,7 +240,7 @@ export default {
       load: null,
       orders: null,
       userInfo: {},
-
+      disabled: false
     };
   },
   mixins: [Mixins],
@@ -291,6 +293,7 @@ export default {
       });
     },
     async acceptOrRejectLoad(id, version, status,vehicleId) {
+      this.disabled = true
       let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       let userId
       if(!load.approvers[0].status){
@@ -460,5 +463,8 @@ p {
 }
 .info-user div{
   width: 45%;
+}
+.disabled {
+  pointer-events: none;
 }
 </style>
