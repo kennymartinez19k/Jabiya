@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('7')">Escanear</button>
+    <button @click="uploadProducts('3')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -48,7 +48,8 @@
         <p v-if="orders.length <= 1" style="font-size: 14px">Verifique orden para cargar al camion</p>
         <div v-else style="font-size: 13px">
         <span class="font-weight-medium">Ordenes: </span>
-        <span v-for="(orden, i) of orders" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
+        <span v-for="(orden, i) of orders" v-show="i < 4" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
+        <span v-if="orders.length > 3">,....</span>
         </div>
         
       </div>

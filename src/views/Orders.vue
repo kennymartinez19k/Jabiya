@@ -31,13 +31,13 @@
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
       <div class="uk-flex select-all">
         <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
-        <label for="all-orders"><strong>Seleccionar Todas las Ordenes </strong></label>
+        <label for="all-orders">&nbsp;<strong>Seleccionar Todas las Ordenes</strong></label>
       </div>
       <div
-        v-for="order in orders"
+        v-for="(order, index) in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed }"
+        :class="{ ordenCompleted: order.completed, 'order-status': order?.products[index]?.loadScanningCounter === order?.totalQuantity }"
       >
         <div class="order-select">
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
@@ -72,16 +72,16 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <div class="uk-flex uk-flex-wrap">
-          <p class="">
+          <p>
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
-          <p class="">
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{totalOrdersScanned(order)}}</span>
+          <p>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order?.products[index]?.loadScanningCounter}}/{{order?.totalQuantity}}</span>
           </p>
           </div>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span> 
-            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.sector}}</span>
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.address}}</span>
           </p>
            
         </div>
@@ -106,7 +106,7 @@
                       <div v-for="item in order.products" :key="item.id" class="details-product">
                         <p class="item">{{item?.name}}</p>
                         <p class="item">{{item.qrCode}}</p>
-                        <p class="item">{{totalOrdersScanned(order)}}</p>
+                        <p class="item">{{totalOrdersScanned(order)}}/{{item.quantity}}</p>
                       </div>
                     </div>
                 </li>
@@ -190,18 +190,22 @@ export default {
       }, deep: true
     }
   },
-  async beforeMount(){
-    
-  },
+  
   async mounted() {
     this.load = {...this.loadStore};
-    console.log(this.loadStore)
     this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
     this.orders = [...this.load.Orders]
-      this.orders?.map(x => x.isSelected = false)
       this.load.firstOrdenSector = this.orders[0]?.sector
       this.orderObj();
 
+      this.orders.map(x => {
+        x.isSelected = false
+        let sumQuantity= null
+        x.products.forEach(z => { 
+          sumQuantity = z.quantity + sumQuantity
+          x.totalQuantity =  sumQuantity 
+        })
+      })
   },
   methods: {
     accordiontn () {
@@ -391,9 +395,9 @@ p {
   align-items: center;
   padding: 10px 11px;
 }
-.select-all input{
+/* .select-all input{
   transform: scale(1.1);
-}
+} */
 .select-all input :focus-visible {
     outline: 0px dotted #333;
 }
@@ -436,5 +440,8 @@ li{
 }
 .details-product .item{
   width: 33%;
+}
+.order-status{
+  background: #fafffa
 }
 </style>

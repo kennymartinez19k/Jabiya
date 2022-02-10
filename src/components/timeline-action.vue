@@ -23,7 +23,6 @@
     </div>
     <ul class="progressbar">
       <li
-        class="stepTwo"
         :class="{
          
           active: imagiElement.length !== 0 && imagiElement.length >= 1,
@@ -37,7 +36,6 @@
       </li>
       <li
       v-if="showSignaturform === false"
-        class="stepThree"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('firm')"
       >
@@ -48,7 +46,6 @@
       </li>
        <li
       v-if="showSignaturform === true"
-        class="stepFour"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('save')"
       >
@@ -147,7 +144,7 @@ export default {
   position: absolute;
   width: 90px;
   height: 70px;
-  top: 40px;
+  top: 33px;
   left: 10px;
   background: #ffffffc4;
 }
@@ -179,7 +176,7 @@ ul {
   height: 30px;
   border: 2px solid #bebebe;
   display: block;
-  margin: 0 auto 10px auto;
+  margin: 0 auto 1px auto;
   border-radius: 50%;
   line-height: 27px;
   background: white;

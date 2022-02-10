@@ -68,10 +68,12 @@
             <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
           </p>
           <div class="uk-flex uk-flex-wrap">
-          <p class="">
+          <p>
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
-         
+          <p>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{totalOrdersScanned(order)}}/{{order.totalQuantity}} </span>
+          </p>
           </div>
           <p class="uk-width-1-1">
             <span class="font-weight-medium">Destino: </span> 
@@ -79,6 +81,36 @@
           </p>
            
         </div>
+
+         <div style="width: 100%">
+            <ul uk-accordion class="uk-margin-remove uk-padding-remove">
+               <!-- uk-open -->
+                <li class="uk-margin-remove">
+                   <a class="uk-accordion-title " href="#"></a>
+                    <div 
+                     class="uk-accordion-content uk-margin-remove uk-padding-remove">
+                     <div class="details-product">
+                      <p class="item">
+                        <span class="font-weight-medium">Producto: </span>
+                      </p>
+                      <p class="item">
+                        <span class="font-weight-medium">Codigo QR: </span>
+                      </p>
+                      <p class="item">
+                        <span class="font-weight-medium">Escaneadas: </span>
+                      </p>
+                     </div>
+                      <div v-for="item in order.products" :key="item.id" class="details-product">
+                        <p class="item">{{item?.name}}</p>
+                        <p class="item">{{item.qrCode}}</p>
+                        <p class="item">{{totalOrdersScanned(order)}}/{{item.quantity}}</p>
+                      </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        
       </div>
       
     </div>
@@ -104,7 +136,7 @@ export default {
       listOfOrders: [],
       listOrderDetails: [],
       listOfOrderTotal: [],
-      showButton: true
+      showButton: true,
 
     };
   },
@@ -130,12 +162,21 @@ export default {
   },
   computed: {
     ...mapGetters(["loadStore", "orderScan"]),
+
   },
   mounted() {
     this.load = this.loadStore;
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
-    this.orders.map(x => x.isSelected = false)
+    console.log(this.orders, 'orders')
+    this.orders.map(x =>{ 
+      x.isSelected = false
+      let sumQuantity= null
+        x.products.forEach(z => { 
+          sumQuantity = z.quantity + sumQuantity
+          x.totalQuantity =  sumQuantity 
+        })
+    })
   },
   methods: {
     async location () {
@@ -202,6 +243,17 @@ export default {
 
       }
   },
+  
+  totalOrdersScanned(val){
+    let structure = localStorage.getItem(JSON.stringify(this.load))
+    let loadScanned = 0
+    if(structure){
+      structure?.firstStructure.forEach(prod => {
+        if(prod.order_num == val.order_num) loadScanned += prod.loadScanningCounter
+      })
+    }
+    return loadScanned
+  }
   },
 };
 </script>
@@ -319,7 +371,7 @@ p {
   width: 90%;
 }
 .ordenCompleted {
-  background: rgba(233, 255, 233, 0.6);
+  background: rgba(18, 216, 18, 0.6);
 }
 .box-slide {
   background-image: url('../assets/parcel.png');
@@ -376,5 +428,8 @@ li{
 }
 .details-product .item{
   width: 33%;
+}
+.order-status{
+  background: #fafffa
 }
 </style>

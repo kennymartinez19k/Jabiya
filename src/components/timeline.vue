@@ -58,7 +58,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
-        <span>Camara</span>
+        <span>Excepción</span>
         <div
           :class="{
             disabled: (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length !== 3),

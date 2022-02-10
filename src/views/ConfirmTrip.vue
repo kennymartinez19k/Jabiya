@@ -39,16 +39,16 @@
             <h6 class="uk-text-center">Detalles del Viaje</h6>
            
             <div class="uk-margin-top">
-                <div v-if="userData?.userType == userType?.provider">
-                <div class="uk-flex uk-flex-middle">
+                <div>
+                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
                   <span> RD ${{load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Costo de Transporte:&nbsp;</p>
+                <div  v-if="userData?.userType == userType?.provider || userData?.userType == userType?.transporter" class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">{{cost}}:&nbsp;</p>
                   <span> RD ${{load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div class="uk-flex uk-flex-middle">
+                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
                   <span> RD ${{load?.plannedProfitability?.profitability?.profitability * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
@@ -234,7 +234,7 @@ export default {
       userType,
       userPosition,
       profile,
-
+      cost: null,
       status: null,
       result: null,
       load: null,
@@ -270,6 +270,11 @@ export default {
       this.completedOrden();
     }
     this.orderObj();
+    if (this.userInfo.userType  === "Transporter") {
+      this.cost = 'Ingreso por el Viaje'
+    } else if (this.userInfo.userType  === "Provider") {
+      this.cost = 'Costo de Transporte'
+    }
   },
   methods: {
     orderObj() {
