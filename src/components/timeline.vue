@@ -24,7 +24,7 @@
     <ul class="progressbar">
       <li
         class="stepOne"
-        :class="{ active: resultScan !== null }"
+        :class="{ active: resultScan !== false }"
         @click="getShow('scan')"
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
@@ -35,8 +35,8 @@
       <li
         class="stepTwo"
         :class="{
-          'uk-disabled': step !== 1,
-          active: imagiElement.length !== 0 && imagiElement.length === 3,
+          'uk-disabled': step < 1,
+          active: imagiElement.length !== 0 && imagiElement.length >= 1,
         }"
         @click="getShow('camera')"
       >
@@ -48,10 +48,10 @@
       <li
         v-if="exception"
         :class="{
-          'uk-disabled': (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length !== 3),
+          'uk-disabled': (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length < 1),
           active:
             resultScan !== null &&
-            imagiElement.length === 3 &&
+            imagiElement.length === 1 &&
             textException !== null && showException === false,
         }"
         @click="getShow('exception')"

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('8')">Escanear</button>
+    <button @click="uploadProducts('6')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -165,12 +165,7 @@ export default {
         this.stopScan()
       }
     },
-    structureToScan: function(){
-      let loadId = JSON.stringify(this.load.loadMapId)
-      let LoadScanned = JSON.parse(localStorage.getItem(loadId))
-      this.firstStructureLoad = LoadScanned.firstStructure
-      this.secondStructureLoad = LoadScanned.secondStructure
-    },
+  
     quantityForScan: function(newVal){
       if(newVal > this.totalLimitOfBoxes.totalOfOrders){
         this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders

@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('8')">escanear</button>
+    <button @click="uploadProducts('7')">escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -223,12 +223,6 @@ export default {
       if (newVal){
         this.stopScan()
       }
-    },
-    structureToScan: function(){
-      let loadId = JSON.stringify(this.load.loadMapId)
-      let LoadScanned = JSON.parse(localStorage.getItem(loadId))
-      this.firstStructureLoad = LoadScanned.firstStructure
-      this.secondStructureLoad = LoadScanned.secondStructure
     },
     quantityForScan: function(newVal){
       if(newVal > this.totalLimitOfBoxes.totalOfOrders){

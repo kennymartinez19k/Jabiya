@@ -33,7 +33,7 @@
         v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed }"
+        :class="{ ordenCompleted: order.completed, 'order-status': order?.totalOrdersScanned === order?.totalQuantity }"
       >
         <div class="order-select">
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
@@ -72,7 +72,7 @@
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
           <p>
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{totalOrdersScanned(order)}}/{{order.totalQuantity}} </span>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order?.totalOrdersScanned}}/{{order.totalQuantity}} </span>
           </p>
           </div>
           <p class="uk-width-1-1">
@@ -103,7 +103,7 @@
                       <div v-for="item in order.products" :key="item.id" class="details-product">
                         <p class="item">{{item?.name}}</p>
                         <p class="item">{{item.qrCode}}</p>
-                        <p class="item">{{totalOrdersScanned(order)}}/{{item.quantity}}</p>
+                        <p class="item">{{item.loadScanningCounter}}/{{item.quantity}}</p>
                       </div>
                     </div>
                 </li>
@@ -161,7 +161,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan"]),
+    ...mapGetters(["loadStore", "orderScan","orderDetailsStore"]),
 
   },
   mounted() {
@@ -169,14 +169,24 @@ export default {
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
     console.log(this.orders, 'orders')
-    this.orders.map(x =>{ 
+   this.orders.map(x => {
       x.isSelected = false
-      let sumQuantity= null
+        x.totalQuantity = 0
+        x.totalOrdersScanned = 0
         x.products.forEach(z => { 
-          sumQuantity = z.quantity + sumQuantity
-          x.totalQuantity =  sumQuantity 
+          x.totalQuantity =+  z.quantity 
+          x.totalOrdersScanned += z.loadScanningCounter
         })
-    })
+      })
+      if (this.orderDetailsStore) {
+        this.orderDetailsStore.forEach(x => {
+          this.orders.forEach(order => {
+           if (order.order_num === x.order_num) {
+            this.orderForScan(order)
+           } 
+          })
+        })
+      }
   },
   methods: {
     async location () {
@@ -191,6 +201,7 @@ export default {
     },
     async scan() {
       this.$store.commit("scanOrder", this.listOrderDetails );
+      this.$store.commit("setOrderDetails", this.listOrderDetails );
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     shipperName(val){
@@ -431,6 +442,6 @@ li{
   width: 33%;
 }
 .order-status{
-  background: #fafffa
+  background: #e0fae080;
 }
 </style>
