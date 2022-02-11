@@ -1,6 +1,6 @@
 <template>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('7')">escanear</button>
+    <button @click="uploadProducts('8')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -29,49 +29,80 @@
         </div>
       </div>
     </div>
-    <div class="result-info"
-    :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve' }"
-    >
-    <div></div>
-      <div v-if="statusOrders == 'reject'">
-          <font-awesome-icon icon="ban" class="ban" />
-          <h6>ORDEN NO RECONOCIDA</h6>
+     <div 
+      class="result-info"
+      >
+      <div
+        v-if="statusOrders != 'start'"
+        class="status-order"
+        :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approved' }"
+      >
+        <div v-if="statusOrders == 'approved'" style="width: 100%; font-size: 30px">
+          <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
+        </div>
+        <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
+            <h6 class="uk-margin-remove">ERROR, ORDEN NO RECONOCIDA <font-awesome-icon icon="ban" style="color: #be1515;"/>
+            </h6>
+        </div>
       </div>
       <ul
         v-if="resultScan"
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
-        <li
-          v-for="orden in orders"
-          :key="orden"
-          class="article uk-card uk-card-default uk-card-body"
-        >
-          <div>
-            <p class="uk-width-1-1" style="font-weight: 600">
-              <font-awesome-icon
-                icon="map-marker-alt"
-                style="font-size: 14px; color: green"
-              />&nbsp;<strong>{{ orden.zone.name }}</strong>
-            </p>
-            <strong>No. de Orden: &nbsp; {{ orden.order_num }}</strong>
+      <div
+        v-for="order in orders"
+        :key="order"
+        class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+        :class="{ ordenCompleted: order.completed }"
+      >
+        <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+          <div class="btn uk-flex">
+            <div class="uk-flex uk-flex-column uk-text-left">
+              <p
+                class="uk-width-1-1"
+              >
+              <span class="font-weight-medium">Cliente: </span>
+                <span>{{ order.client_name }}</span>
+              </p>
+            </div>
           </div>
-          <div class="uk-flex uk-flex-column" style="align-items: center">
-            <font-awesome-icon
-              icon="check-circle"
-              style="font-size: 20px; color: green"
-            />
-            <span class="font-weight-medium" style="color: green">Entregada</span>
+          <p style="margin-right: 10px !important">
+            <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
+          </p>
+          <p class="">
+            <span class="font-weight-medium">Cajas / Pallets: </span>{{order?.no_of_boxes}}<span></span>
+          </p>
+          <p class="uk-width-1-1">
+            <span class="font-weight-medium">Destino: </span> 
+            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.address}}</span>
+          </p>
+        </div>
+        <div class="uk-width-1-2">
+              <div
+                @click="setMap(order)"
+                class="uk-flex-column"
+                style="align-items: center; display: inline-flex"
+              >
+                <img src="../assets/map.png" class="img-scan" alt="" />
+                <span>Ver Ruta</span>
+              </div>
+            </div>
+      </div>
+       <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
+      <div class="uk-flex uk-flex-around img-scroll">
+             <span v-for="(src, index) in imagiElement"  :key="src">
+              <img class="img-result" :src="src"  alt="Red dot" />
+               <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
+             </span>
           </div>
-
-          <div v-if="imagiElement.length" class="uk-flex uk-width-1-1" style="margin-top: 10px" >
-              <img class="img-result" v-for="src in imagiElement" :key="src" :src="src" alt="Red dot" />
-              <img class="img-result" :src="firm" alt="Fima Digital" />
-          </div>
-        </li>
-      </ul>
-      
     </div>
+      </ul>
+    </div>
+   <ul v-if="!resultScan" class="box-orden">
+          <li v-for="product in firstStructureLoad" :key="product" 
+              :class="{completedOrden: product.completedScanned, inProgressOrden: product.scanProgress}" style="">&nbsp;</li> 
+        </ul>
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 15px 0px  !important;"
@@ -112,6 +143,8 @@
             </p>
         </div>
     </div> 
+
+    
   </div>
 </template>
 
@@ -122,6 +155,7 @@ import { Vibration } from "@ionic-native/vibration";
 import timeline from "../components/timeline.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import { Geolocation } from '@capacitor/geolocation'
+import { Mixins} from '../mixins/mixins'
 import UIkit from "uikit";
 
 export default {
@@ -130,6 +164,7 @@ export default {
   components: {
     timeline,
   },
+  mixins: [Mixins],
   data() {
     return {
       show: null,
@@ -153,6 +188,7 @@ export default {
         scanned: null,
         totalOfOrders: null
       },
+      checkOrder: true
     };
   },
   computed: {
@@ -164,6 +200,15 @@ export default {
       "settings",
       "structureToScan"
     ]),
+
+    completedOrder: function(){
+      if(this.firstStructureLoad.every(x => x.completedScanned)){
+        return 'TODAS LAS ORDENES HAN SIDO CARGADAS'
+      }
+      else{
+        return 'LA ORDEN HA SIDO CARGADA'
+      }
+    },
   },
   async mounted() {
     this.load = {...this.loadStore};
@@ -196,7 +241,6 @@ export default {
     await this.getLocation()
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
-    console.log(this.firstStructureLoad)
 
     setInterval(async () =>{
       await this.updateData()
@@ -207,6 +251,9 @@ export default {
     }else{
       this.scanOrder()
     }
+
+    console.log(this.firstStructureLoad, this.secondStructureLoad)
+
   },
   watch: {
     digitalFirmStore: {
@@ -224,12 +271,7 @@ export default {
         this.stopScan()
       }
     },
-    structureToScan: function(){
-      let loadId = JSON.stringify(this.load.loadMapId)
-      let LoadScanned = JSON.parse(localStorage.getItem(loadId))
-      this.firstStructureLoad = LoadScanned.firstStructure
-      this.secondStructureLoad = LoadScanned.secondStructure
-    },
+    
     quantityForScan: function(newVal){
       if(newVal > this.totalLimitOfBoxes.totalOfOrders){
         this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders
@@ -244,6 +286,7 @@ export default {
           })
           if(this.firstStructureLoad.every(x => x.completedScanned)){
             this.verifiedLoad()
+
           }
         }
       }, deep: true
@@ -283,7 +326,7 @@ export default {
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
-
+      console.log(this.imagiElement)
        if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
         this.step = 2;
       }
@@ -348,6 +391,7 @@ export default {
 
      async uploadProducts(val){
       //   Compruebo si se encuentra el qrCode en la fila de la primera estructura
+      console.log(this.firstStructureLoad)
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
           x.loadScanningCounter < x.quantity &&
@@ -364,8 +408,10 @@ export default {
               }, 1000)
           }
           else{
-            let order =  this.orders?.find(x => x?._id == orderForScan?._id && x?.order_num == orderForScan?.order_num)
+            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            order = order.find(x => x)
             let productInfo = order.products.find(p => p?.qrCode == val && orderForScan.order_num == order.order_num)
+            console.log(productInfo)
             if(productInfo?.scanOneByOne === "no") {
               let noScan1by1 = 0
               let listNoScan1by = this.firstStructureLoad.filter(x => x.scanOneByOne == "no" && x.qrCode == val)
@@ -517,7 +563,10 @@ export default {
     
     async verifiedLoad(){   
         this.checkOrder = true
+        this.statusOrders = "approved"  
+
         setTimeout(async () => {
+          this.statusOrders = 'start'
           this.checkOrder = false
           if(this.firstStructureLoad.every(x => x.completedScanned)){
             this.step = 1
@@ -526,16 +575,15 @@ export default {
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
 
-            this.statusOrders = "approved"  
           }
           else this.scanOrder()
         }, 1000)
     },
     async updateData(){
-      if(this.$route.name == 'scan-order'){
+      if(this.$route.name == 'deliveryActions'){
 
       let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
-      if(load.loadingStatus.text == 'Dispatched'){
+      if(load.loadingStatus.text == 'Delivered'){
         this.firstStructureLoad.forEach(x => {
           x.loadScanningCounter = x.quantity
         })
@@ -546,19 +594,7 @@ export default {
           
           if(this.firstStructureLoad.some(x => x.order_num == order.order_num)){
             let structure = await this.setStructure(order)
-            
-            for (let cont = 0; cont < structure.firstStructure.length; cont++) {
-              const product = structure.firstStructure[cont];
-              this.firstStructureLoad.forEach(x => {
-                if(x.qrCode == product.qrCode){
-                  x.loadScanningCounter = product.loadScanningCounter
-                  x.completedScanned = x.loadScanningCounter >= x.quantity
-                  x.scanProgress =  x.loadScanningCounter > 0 && !x.completedScanned
-
-                }
-              })
-            }
-           
+         
             for(let cont = 0; cont < structure.secondStructure.length; cont++){
               const product = structure.secondStructure[cont];
               this.secondStructureLoad.forEach(x => {
@@ -584,6 +620,9 @@ export default {
 }
 .circle {
   background-color: rgb(25, 189, 33);
+}
+.uk-card-body{
+  padding: 16px 15px;
 }
 .onoffswitch {
   position: relative;
@@ -710,15 +749,100 @@ li::before {
   color: #fff !important;
 }
 .img-result {
-  width: 21%;
-  height: 60px;
-  margin-right: 5px;
+  width: 98%;
+  height: 80px;
   border: 1px solid #000;
+}
+.icon-close{
+  background-color: #f04c3b40;;
+  position: absolute;
+  top: 16px;
+  margin: 2px 0px 0px -23px;
 }
 .ban {
   color: #be1515;
   font-size: 50px;
 
 }
+.btn {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+}
+p{
+  margin: 2px 0px !important;
+}
+.img-scan {
+  width: 39px;
+}
+.box-orden{
+  list-style: none;
+  display: flex;
+  padding: 0px;
+  width: 100%;
+  flex-wrap: wrap;
+  padding: 0px 20px;
+  margin: 5px 0px;
+}
+.box-orden li{
+    width: 25px;
+    border: 1px solid #a2a2a2;
+    margin: 1px
+}
+.status-order{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.check-all-Screen {
+  position: fixed;
+    left: calc(70% - 30px);
+    top: calc(54% + 30px);
+    border: solid 17px green;
+    width: 109px;
+    height: 59px;
+    margin: -50px 0 0 -100px;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    transform-origin: top left;
+    box-shadow: -5px 5px 0 0 rgb(3 148 10 / 14%);
+    
+}
 
+.animationCheck {
+  animation: start 1s ease infinite both;
+  animation-play-state: running!important;
+}
+
+@keyframes start {
+  0% {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  50% {
+    opacity: 1;
+    width: 0;
+    height: 59px;
+  }
+  100% {
+    width: 120px;
+  }
+}
+.checkScreen{
+  background: rgba(11, 134, 0, 0.1)
+}
+.banScreen{
+   background: rgba(255, 138, 138, 0.1) !important;
+}
+.completedOrden{
+  background: green;
+}
+.inProgressOrden{
+  background: #fff500
+}
 </style>
