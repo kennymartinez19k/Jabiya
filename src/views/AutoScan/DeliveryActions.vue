@@ -82,7 +82,8 @@
               </div>
             </div>
       </div>
-       <div v-if="imagiElement.length > showImg" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
+      
+       <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
       <div class="uk-flex uk-flex-around img-scroll">
              <span v-for="(src, index) in imagiElement"  :key="src">
               <img class="img-result" :src="src"  alt="Red dot" />
@@ -147,7 +148,6 @@ export default {
   data() {
     return {
       show: null,
-      showImg: 0,
       orders: null,
       resultScan: null,
       cont: 0,

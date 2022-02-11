@@ -36,7 +36,7 @@
         class="stepTwo"
         :class="{
           'uk-disabled': step !== 1,
-          active: imagiElement.length !== 0 && imagiElement.length === 3,
+          active: imagiElement.length > 0,
         }"
         @click="getShow('camera')"
       >

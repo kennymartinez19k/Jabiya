@@ -1,10 +1,18 @@
 <template>
 <div class="uk-flex uk-flex-column cnt">
+  <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
       >
-        {{load?.loadNumber}}
+        {{loadStore?.loadNumber}}
       </p>
       <div
         class="
@@ -19,11 +27,11 @@
       >
         <div class="uk-flex uk-flex-wrap">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>      
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(loadStore) }}</span>      
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
@@ -72,7 +80,7 @@
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
           <p>
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{totalOrdersScanned(order)}}/{{order.totalQuantity}} </span>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order.totalLoadScanned}}/{{order.totalQuantity}} </span>
           </p>
           </div>
           <p class="uk-width-1-1">
@@ -103,7 +111,7 @@
                       <div v-for="item in order.products" :key="item.id" class="details-product">
                         <p class="item">{{item?.name}}</p>
                         <p class="item">{{item.qrCode}}</p>
-                        <p class="item">{{totalOrdersScanned(order)}}/{{item.quantity}}</p>
+                        <p class="item">{{item.loadScanningCounter}}/{{item.quantity}}</p>
                       </div>
                     </div>
                 </li>
@@ -124,8 +132,23 @@
 <script>
 import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
+import { IonLoading } from "@ionic/vue";
+import { ref } from "vue";
+
+
+import { Mixins} from '../mixins/mixins'
 export default {
   alias: 'Entregar Ordenes',
+  mixins: [Mixins],
+  components:{
+    IonLoading
+  },
+   setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
+  },
   data() {
     return {
       status: null,
@@ -137,6 +160,7 @@ export default {
       listOrderDetails: [],
       listOfOrderTotal: [],
       showButton: true,
+      timeout: 10000
 
     };
   },
@@ -164,17 +188,21 @@ export default {
     ...mapGetters(["loadStore", "orderScan"]),
 
   },
-  mounted() {
-    this.load = this.loadStore;
+  async mounted() {
+    this.setOpen(true)
+    this.load = {...this.loadStore};
+    this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
+    this.orders = [...this.load.Orders]
     this.load.firstOrdenInfo = this.load?.Orders[0]
-    this.orders = this.load?.Orders
-    console.log(this.orders, 'orders')
+    this.setOpen(false)
     this.orders.map(x =>{ 
       x.isSelected = false
       let sumQuantity= null
+      x.totalLoadScanned = 0
         x.products.forEach(z => { 
           sumQuantity = z.quantity + sumQuantity
-          x.totalQuantity =  sumQuantity 
+          x.totalQuantity = sumQuantity 
+          x.totalLoadScanned += z.loadScanningCounter
         })
     })
   },
@@ -190,6 +218,9 @@ export default {
         }
     },
     async scan() {
+      let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      this.$store.commit("setStructureToScan", structure)
+
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
@@ -199,62 +230,18 @@ export default {
     },
   
     async orderForScan(order, allOrders = false){
-      let totalOfOrders = 0;
-    
-      if(this.listOfOrders?.some(x => x.order_num == order?.order_num) && !allOrders){
-        this.listOrderDetails = this.listOrderDetails.filter(x => x?.order_num != order?.order_num)
-        this.listOfOrders = this.listOfOrders.filter(x => x?.order_num != order?.order_num)
-        this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order?.order_num)
-      }
-      else{
-        this.listOrderDetails.push(order)
-        let num_id = 0
-        order?.products?.forEach(async x => {
-          num_id++
-          let {order_num, _id} = order
-          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
-          loadScanningCounter = 0
-          let firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter, num_id}       
-          this.listOfOrders.unshift(firstProductInfo)
-      })
-        this.listOfOrders.forEach( x => {
-         let {qrCode,  loadScanningCounter, order_num} = x
-          var productQrCode = this.listOfOrders.filter( p => p.qrCode == x.qrCode )
-          if(productQrCode){
-            productQrCode.forEach(product => {
-              totalOfOrders += product.quantity
-            })
-          }
-          loadScanningCounter = 0
-          let SecondProductInfo = {order_num, qrCode, totalOfOrders, loadScanningCounter}
-          this.listOfOrderTotal.unshift(SecondProductInfo)
-          totalOfOrders = 0
-        })
-
-
-      let structureInfo = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
-      let allProducts = []
-      for (let i = 0; i < this.orders.length; i++) {
-        const order = this.orders[i];
-        allProducts.push(order.order_num)        
-      }
-      
-      localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
-      this.$store.commit("setStructureToScan", structureInfo)
-
-      }
-  },
-  
-  totalOrdersScanned(val){
-    let structure = localStorage.getItem(JSON.stringify(this.load))
-    let loadScanned = 0
-    if(structure){
-      structure?.firstStructure.forEach(prod => {
-        if(prod.order_num == val.order_num) loadScanned += prod.loadScanningCounter
-      })
+     if(this.listOfOrders.some(x => x.order_num == order.order_num) && !allOrders){
+       this.listOrderDetails = this.listOrderDetails.filter(x => x.order_num != order.order_num)
+       this.listOfOrders = this.listOfOrders.filter(x => x.order_num != order.order_num)
+       this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order.order_num)
+     }else{
+       this.listOrderDetails.push(order)
+       let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
+       this.listOfOrders = structure.firstStructure
+       this.listOfOrderTotal = structure.secondStructure
     }
-    return loadScanned
-  }
+  },
+
   },
 };
 </script>
