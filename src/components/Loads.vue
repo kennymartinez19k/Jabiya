@@ -165,6 +165,11 @@ export default {
       await this.currentDate();
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
+
+      //   let date = localStorage.getItem('currentDate')
+      // setInterval(() => {
+      //   this.currentDate( null , date )
+      // }, 15000)
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings", "userData"]),
@@ -182,16 +187,16 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
-      this.loads = []
       this.assignedLoads = -1
+      this.loads = []
       let contDate
-      if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
-        contDate = JSON.parse(localStorage.getItem('dateCheck'));
-        this.date = new Date(contDate);
-      }else if(val) contDate = this.date.setDate(this.date.getDate() + val);   
-      else contDate = this.date
-      var date = moment(contDate).format("MM/DD/YYYY");
-
+      let date
+        if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
+          contDate = JSON.parse(localStorage.getItem('dateCheck'));
+          this.date = new Date(contDate);
+        }else if(val) contDate = this.date.setDate(this.date.getDate() + val);   
+        else contDate = this.date
+        date = moment(contDate).format("MM/DD/YYYY");
 
        if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
@@ -199,6 +204,7 @@ export default {
 
       
       let loads = await this.$services.loadsServices.getLoadsbyDate(date);
+
       for (let i = 0; i < loads.length; i++) {
         const load = {...loads[i]}
 

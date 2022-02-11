@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('6')">Escanear</button>
+    <button @click="uploadProducts('3')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -425,19 +425,13 @@ export default {
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
             let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
-            let allProductScanned = []
-            load.Orders.forEach(x => {
-              allProductScanned.push(x.products.every(prod => prod.loadScanningCounter >= prod.quantity))
-            })
-            if(allProductScanned.every(x => x == true)){
+            if(load.Orders.every(x => x.status == 'en-route')){
               localStorage.removeItem(`allProducts${this.load.loadMapId}`)
               await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
               this.$router.push({ name: "load-status" }).catch(() => {});
             }else{
               this.$router.push({name: 'orders'})
             }
-           
-           
           }
           else this.scanOrder()
         }, 1000)

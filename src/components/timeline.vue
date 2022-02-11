@@ -29,7 +29,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
-        <span>Escaner</span>
+        <span>Escanear</span>
       </li>
 
       <li
@@ -105,9 +105,7 @@ export default {
         if (newVal !== null) {
           this.showSingnature = null;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
-          setTimeout(()=> {
-            this.$router.push({ name: 'direct-access'}).catch(() => {})
-          },1000)
+         
         }
       },
     },
@@ -182,7 +180,7 @@ export default {
   background: #ffffffc4;
 }
 img {
-  width: 45%;
+  width: 35%;
 }
 .progressbar li {
   float: left;

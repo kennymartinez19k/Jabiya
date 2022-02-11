@@ -187,10 +187,8 @@ export default {
       });
     },
     async acceptOrRejectLoad(id, version, param, ){
-        const result = await this.$services.loadsServices.acceptOrRejectLoad(id, version, param)
-        if(result){
-          this.$router.push({ name: 'direct-access' })
-        }
+         await this.$services.loadsServices.acceptOrRejectLoad(id, version, param)
+        
     },
   },
 };
