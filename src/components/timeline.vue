@@ -35,8 +35,8 @@
       <li
         class="stepTwo"
         :class="{
-          'uk-disabled': step < 1,
-          active: imagiElement.length !== 0 && imagiElement.length >= 1,
+          'uk-disabled': step !== 1,
+          active: imagiElement.length > 0,
         }"
         @click="getShow('camera')"
       >

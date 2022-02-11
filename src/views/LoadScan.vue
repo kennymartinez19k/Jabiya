@@ -30,8 +30,6 @@
       </div>
     </div>
     <div class="allScreen">
-      
-      
       <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve' }"
@@ -48,7 +46,7 @@
         <p v-if="orders.length <= 1" style="font-size: 14px">Verifique orden para cargar al camion</p>
         <div v-else style="font-size: 13px">
         <span class="font-weight-medium">Ordenes: </span>
-        <span v-for="(orden, i) of orders" v-show="i < 4" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
+        <span v-for="(orden, i) of orders" v-show="i < 3" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
         <span v-if="orders.length > 3">,....</span>
         </div>
         
@@ -151,7 +149,7 @@ export default {
   computed: {
     ...mapGetters(["orderScan", "loadStore", "allLoadsStore", "structureToScan"]),
     completedOrder: function(){
-      if(this.orders.every(x => x.completed == true)){
+      if(this.firstStructureLoad.every(x => x.completedScanned)){
         return 'TODAS LAS ORDENES HAN SIDO CARGADAS'
       }
       else{
@@ -165,7 +163,6 @@ export default {
         this.stopScan()
       }
     },
-  
     quantityForScan: function(newVal){
       if(newVal > this.totalLimitOfBoxes.totalOfOrders){
         this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders
@@ -258,7 +255,8 @@ export default {
               }, 1000)
           }
           else{
-            let order =  this.orders.find(x => x?._id == orderForScan?._id && x?.order_num == orderForScan?.order_num)
+            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            order = order.find(x => x)
             let productInfo = order.products.find(p => p?.qrCode == val && orderForScan.order_num == order.order_num)
             if(productInfo?.scanOneByOne === "no") {
               let noScan1by1 = 0
@@ -419,26 +417,27 @@ export default {
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
+          
           if(this.firstStructureLoad.every(x => x.completedScanned)){
+            console.log(this.firstStructureLoad)
+            this.statusOrders = "approved"  
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
-
-            let allProducts = JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
-            let isScannedAllProduct = []
-            for (let i = 0; i < allProducts.length; i++) {
-              const orderNum = allProducts[i];
-              isScannedAllProduct.push(this.firstStructureLoad.some(x => x.order_num == orderNum))
-            }
-            this.statusOrders = "approved"  
-            if(isScannedAllProduct.includes(false)){
-              this.$router.push({name: 'orders'})
-             
-            }else{
+            let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
+            let allProductScanned = []
+            load.Orders.forEach(x => {
+              allProductScanned.push(x.products.every(prod => prod.loadScanningCounter >= prod.quantity))
+            })
+            if(allProductScanned.every(x => x == true)){
               localStorage.removeItem(`allProducts${this.load.loadMapId}`)
               await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
               this.$router.push({ name: "load-status" }).catch(() => {});
+            }else{
+              this.$router.push({name: 'orders'})
             }
+           
+           
           }
           else this.scanOrder()
         }, 1000)

@@ -1,5 +1,13 @@
 <template>
   <div class="uk-flex uk-flex-column cnt">
+    <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -105,8 +113,8 @@
                      </div>
                       <div v-for="item in order.products" :key="item.id" class="details-product">
                         <p class="item">{{item?.name}}</p>
-                        <p class="item">{{item.qrCode}}</p>
-                        <p class="item">{{item?.loadScanningCounter}}/{{item.quantity}}</p>
+                        <p class="item">{{item?.qrCode}}</p>
+                        <p class="item">{{item?.loadScanningCounter}}/{{item?.quantity}}</p>
                       </div>
                     </div>
                 </li>
@@ -127,10 +135,16 @@
 <script>
 import { mapGetters } from "vuex";
 import { Mixins} from '../mixins/mixins'
+import { IonLoading } from "@ionic/vue";
+import { ref } from "vue";
+
 
 export default {
   alias: `Montar Viaje`,
   mixins: [Mixins],
+  components:{
+    IonLoading
+  },
   data() {
     return {
       status: null,
@@ -143,6 +157,12 @@ export default {
       listOrderDetails: [],
       selectAllOrders: false,
     };
+  },
+   setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
   },
   
   computed: {
@@ -191,16 +211,17 @@ export default {
   },
   
   async mounted() {
+    this.setOpen(true)
     this.load = {...this.loadStore};
     this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
+    console.log(this.load)
     this.orders = [...this.load.Orders]
-    Object.assign(this.orders, this.loadStore.Orders)
       this.load.firstOrdenSector = this.orders[0]?.sector
       this.orderObj();
-
-    this.orders.map(x => {
-      // x.isSelected = false
+    this.setOpen(false)
+      this.orders.map(x => {
         x.totalQuantity = 0
+         // x.isSelected = false
         x.totalOrdersScanned = 0
         x.products.forEach(z => { 
           x.totalQuantity =+  z.quantity 
@@ -238,7 +259,10 @@ export default {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       for (let i = 0; i < this.orders.length; i++) {
         const order = this.orders[i];
-        allProducts.push(order.order_num)        
+        order.products.forEach(x => {
+          x.order_num = order.order_num
+          allProducts.push(x)        
+        })
       }
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structure)

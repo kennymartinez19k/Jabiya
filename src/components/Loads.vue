@@ -38,7 +38,8 @@
         <div 
           class="load-default-status" 
           :class="{'load-delivered': load.loadingStatus.text == 'Delivered',
-                  'load-assigned': load.loadingStatus.text == 'Driver selection in progress',
+                  'load-assigned': load.loadingStatus.text == 'Driver selection in progress' || 
+                  (load.loadingStatus.text == 'Expecting Approval' && !load.approvers[0].status),
                   'load-rejected': load.loadingStatus.text == 'Denied Approval'
                   }"
           >
