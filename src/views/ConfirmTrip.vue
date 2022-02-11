@@ -45,7 +45,7 @@
                   <span> RD ${{load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
                 <div  v-if="userData?.userType == userType?.provider || userData?.userType == userType?.transporter" class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">{{cost}}:&nbsp;</p>
+                  <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
                 <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
@@ -114,7 +114,7 @@
             </div>
             <div>
       </div>
-      <div v-if="load?.loadType == profile?.eCommerce">
+      <div v-if="load?.loadType == profile?.b2b">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"
@@ -234,7 +234,7 @@ export default {
       userType,
       userPosition,
       profile,
-      cost: null,
+      costText: null,
       status: null,
       result: null,
       load: null,
@@ -271,9 +271,9 @@ export default {
     }
     this.orderObj();
     if (this.userInfo.userType  === "Transporter") {
-      this.cost = 'Ingreso por el Viaje'
+      this.costText = 'Ingreso por el Viaje'
     } else if (this.userInfo.userType  === "Provider") {
-      this.cost = 'Costo de Transporte'
+      this.costText = 'Costo de Transporte'
     }
   },
   methods: {

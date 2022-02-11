@@ -7,6 +7,7 @@ const Orders = {
         profile: 'container',
         maps: false
       },
+      orderDetails: [],
       language: null,
     }, 
   mutations: {
@@ -30,7 +31,10 @@ const Orders = {
     },
     setLanguageStore (state, lang) {
       state.language = lang
-    }    
+    }   ,
+    setOrderDetails(state, val){
+      state.orderDetails = val
+    }, 
   },
   actions:{
     changeLoadScannedInStore({commit}, val){
@@ -49,7 +53,8 @@ const Orders = {
     orderScan : state => state.scanOrder,
     settingsStore: state => state.settings,
     languageStore: state => state.language,
-    structureToScan: state => state.registrationForScan
+    structureToScan: state => state.registrationForScan,
+    orderDetailsStore: state => state.orderDetails
   }
 }
 

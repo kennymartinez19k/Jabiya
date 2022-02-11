@@ -42,10 +42,10 @@
         <label for="all-orders">&nbsp;<strong>Seleccionar Todas las Ordenes</strong></label>
       </div>
       <div
-        v-for="(order, index) in orders"
+        v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed, 'order-status': order?.products[index]?.loadScanningCounter === order?.totalQuantity }"
+        :class="{ ordenCompleted: order.completed, 'order-status': order?.totalOrdersScanned === order?.totalQuantity }"
       >
         <div class="order-select">
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
@@ -113,8 +113,8 @@
                      </div>
                       <div v-for="item in order.products" :key="item.id" class="details-product">
                         <p class="item">{{item?.name}}</p>
-                        <p class="item">{{item.qrCode}}</p>
-                        <p class="item">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+                        <p class="item">{{item?.qrCode}}</p>
+                        <p class="item">{{item?.loadScanningCounter}}/{{item?.quantity}}</p>
                       </div>
                     </div>
                 </li>
@@ -138,11 +138,9 @@ import { Mixins} from '../mixins/mixins'
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
 
-import UIkit from "uikit";
 
 export default {
   alias: `Montar Viaje`,
-  name: `cargarrr`,
   mixins: [Mixins],
   components:{
     IonLoading
@@ -168,7 +166,7 @@ export default {
   },
   
   computed: {
-    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoadsStore", "products", "structureToScan"])
+    ...mapGetters(["loadStore", "orderScan", 'loads', "allLoadsStore", "products", "structureToScan", "orderDetailsStore"])
   },
   watch:{
     selectAllOrders: function(newVal){
@@ -202,11 +200,12 @@ export default {
     },
      listOfOrders:{
       handler: function (newVal) {
-       if (newVal.length === 0) {
+       if (newVal.length === 0 ) {
        this.showButton = true
       } else {
        this.showButton = false
       }
+        
       }, deep: true
     }
   },
@@ -222,17 +221,26 @@ export default {
     this.setOpen(false)
       this.orders.map(x => {
         x.totalQuantity = 0
+         // x.isSelected = false
         x.totalOrdersScanned = 0
         x.products.forEach(z => { 
           x.totalQuantity =+  z.quantity 
           x.totalOrdersScanned += z.loadScanningCounter
         })
       })
+      if (this.orderDetailsStore) {
+        this.orderDetailsStore.forEach(x => {
+          this.orders.forEach(order => {
+           if (order.order_num === x.order_num) {
+            this.orderForScan(order)
+           } 
+          })
+        })
+      }
+
+      
   },
   methods: {
-    accordiontn () {
-      UIkit.accordion('#accordion').show()
-    },
     orderObj() {
       this.orders.sort((a) => {
         if (a.completed == true) {
@@ -246,6 +254,7 @@ export default {
     scan() {
       this.$emit("setNameHeader", 'Escaneo Corrido');
       this.$store.commit("scanOrder", this.listOrderDetails );
+      this.$store.commit("setOrderDetails", this.listOrderDetails );
       let allProducts = []
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       for (let i = 0; i < this.orders.length; i++) {
@@ -265,12 +274,11 @@ export default {
        this.listOrderDetails = this.listOrderDetails.filter(x => x.order_num != order.order_num)
        this.listOfOrders = this.listOfOrders.filter(x => x.order_num != order.order_num)
        this.listOfOrderTotal = this.listOfOrderTotal.filter(x => x.order_num != order.order_num)
-     }else{
+     } else{
        this.listOrderDetails.push(order)
        let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
        this.listOfOrders = structure.firstStructure
        this.listOfOrderTotal = structure.secondStructure
-
     }
   },
 
@@ -468,6 +476,6 @@ li{
   width: 33%;
 }
 .order-status{
-  background: #fafffa
+  background: #e0fae080;
 }
 </style>

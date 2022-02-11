@@ -41,7 +41,7 @@
         v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed }"
+        :class="{ ordenCompleted: order.completed, 'order-status': order?.totalOrdersScanned === order?.totalQuantity }"
       >
         <div class="order-select">
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
@@ -185,7 +185,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan"]),
+    ...mapGetters(["loadStore", "orderScan","orderDetailsStore"]),
 
   },
   async mounted() {
@@ -194,17 +194,26 @@ export default {
     this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
     this.orders = [...this.load.Orders]
     this.load.firstOrdenInfo = this.load?.Orders[0]
+    this.orders = this.load?.Orders
     this.setOpen(false)
-    this.orders.map(x =>{ 
+   this.orders.map(x => {
       x.isSelected = false
-      let sumQuantity= null
-      x.totalLoadScanned = 0
+        x.totalQuantity = 0
+        x.totalOrdersScanned = 0
         x.products.forEach(z => { 
-          sumQuantity = z.quantity + sumQuantity
-          x.totalQuantity = sumQuantity 
-          x.totalLoadScanned += z.loadScanningCounter
+          x.totalQuantity =+  z.quantity 
+          x.totalOrdersScanned += z.loadScanningCounter
         })
-    })
+      })
+      if (this.orderDetailsStore) {
+        this.orderDetailsStore.forEach(x => {
+          this.orders.forEach(order => {
+           if (order.order_num === x.order_num) {
+            this.orderForScan(order)
+           } 
+          })
+        })
+      }
   },
   methods: {
     async location () {
@@ -222,6 +231,7 @@ export default {
       this.$store.commit("setStructureToScan", structure)
 
       this.$store.commit("scanOrder", this.listOrderDetails );
+      this.$store.commit("setOrderDetails", this.listOrderDetails );
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     shipperName(val){
@@ -418,6 +428,6 @@ li{
   width: 33%;
 }
 .order-status{
-  background: #fafffa
+  background: #e0fae080;
 }
 </style>

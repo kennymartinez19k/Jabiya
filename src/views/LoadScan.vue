@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('7')">Escanear</button>
+    <button @click="uploadProducts('6')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"

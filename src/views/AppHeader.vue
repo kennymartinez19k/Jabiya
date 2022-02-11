@@ -82,7 +82,13 @@ export default {
         ? ((this.action = "sign-in"), (this.iconType = false))
         : newVal.name == "load-status"
         ? ((this.action = "home"), (this.iconType = "arrow-left"))
+        : newVal.name == "scan-order"
+        ? ((this.action = "orders"), (this.iconType = "arrow-left"))
+         : newVal.name == "orders"
+        ? ((this.action = "load-status"), (this.iconType = "arrow-left"))
+        
         : ((this.action = "back"), (this.iconType = "arrow-left"));
+    
     },
   },
   mounted() {
