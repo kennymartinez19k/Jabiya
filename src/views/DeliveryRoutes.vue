@@ -80,7 +80,7 @@
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
           <p>
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order.totalLoadScanned}}/{{order.totalQuantity}} </span>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order.totalOrdersScanned }}/{{order.totalQuantity}} </span>
           </p>
           </div>
           <p class="uk-width-1-1">
@@ -197,7 +197,8 @@ export default {
     this.orders = this.load?.Orders
     this.setOpen(false)
    this.orders.map(x => {
-      x.isSelected = false
+      // x.isSelected = false
+      console.log(x, 'ooooo')
         x.totalQuantity = 0
         x.totalOrdersScanned = 0
         x.products.forEach(z => { 
