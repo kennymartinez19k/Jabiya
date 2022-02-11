@@ -1,7 +1,7 @@
 <template>
   <div>
     <VueSignaturePad
-      class="firm"
+      class="singnature"
       width="100%"
       height="150px"
       ref="signaturePad"
@@ -9,10 +9,10 @@
     />
 
     <div class="uk-flex uk-flex-between uk-margin-small-top">
-      <button class="uk-button uk-button-secondary btn" @click="undo">
+      <button class="uk-button uk-button-secondary btn" @click="undo()">
         Deshacer
       </button>
-      <button class="uk-button uk-button-primary btn" @click="save">
+      <button class="uk-button uk-button-primary btn" @click="save()">
         Guardar
       </button>
     </div>
@@ -25,7 +25,7 @@ export default {
   name: "SignatureAction",
   data() {
     return {
-      firm: null,
+      singnature: null,
     };
   },
   methods: {
@@ -34,15 +34,15 @@ export default {
     },
     save() {
       const { data } = this.$refs.signaturePad.saveSignature();
-      this.firm = data;
-      this.$emit("digitalSignature", this.firm);
+      this.singnature = data;
+      this.$emit("digitalSignature", this.singnature);
     },
 
   },
 };
 </script>
 <style scoped>
-.firm {
+.singnature {
   border: 2.5px solid #000;
 }
 .btn {

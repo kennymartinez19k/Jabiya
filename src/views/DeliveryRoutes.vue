@@ -201,7 +201,8 @@ export default {
     this.orders = this.load?.Orders
     this.setOpen(false)
    this.orders.map(x => {
-      x.isSelected = false
+      // x.isSelected = false
+      console.log(x, 'ooooo')
         x.totalQuantity = 0
         x.totalOrdersScanned = 0
         

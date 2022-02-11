@@ -1,7 +1,8 @@
 <template>
   <div class="container">
-    <div v-if="showSingnature === 'firm'" class="uk-padding-small">
-      <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
+    <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
+      <span class="icon-close" uk-icon="close" @click="closeSingnature()"></span>
+      <signature-action @digitalSignature="singnature= $event"></signature-action>
     </div>
 
     <div v-if="showException && exception" class="uk-padding-small">
@@ -35,7 +36,7 @@
       <li
         class="stepTwo"
         :class="{
-          'uk-disabled': step !== 1,
+          'uk-disabled': step == 0,
           active: imagiElement.length > 0,
         }"
         @click="getShow('camera')"
@@ -48,7 +49,7 @@
       <li
         v-if="exception"
         :class="{
-          'uk-disabled': (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length < 1),
+          'uk-disabled': (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length > 0),
           active:
             resultScan !== null &&
             imagiElement.length === 1 &&
@@ -61,15 +62,15 @@
         <span>Excepción</span>
         <div
           :class="{
-            disabled: (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length !== 3),
+            disabled: (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length > 0),
           }"
         ></div>
       </li>
 
       <li
         class="stepThree"
-        :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
-        @click="getShow('firm')"
+        :class="{ 'uk-disabled': step !== 2, active: singnature !== null }"
+        @click="getShow('Singnature')"
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
@@ -78,7 +79,7 @@
       </li>
       <!-- <li
         class="stepFour"
-        :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
+        :class="{ 'uk-disabled': step !== 2, active: singnature !== null }"
         @click="getShow('finish')"
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
@@ -100,12 +101,12 @@ export default {
     SignatureAction,
   },
   watch: {
-    digitalFirm: {
+    singnature: {
       handler: function (newVal) {
         if (newVal !== null) {
           this.showSingnature = null;
-          this.$store.commit("setDigitalFirm", this.digitalFirm);
-         
+          this.$store.commit("setDigitalFirm", this.singnature);
+          
         }
       },
     },
@@ -129,7 +130,7 @@ export default {
       textException: null,
       showException: null,
       showSingnature: null,
-      digitalFirm: null
+      singnature: null
 
     };
   },
@@ -149,7 +150,7 @@ export default {
       if (value === "exception") {
         this.showException = true;
       }
-      if (value === "firm") {
+      if (value === "Singnature") {
         this.showSingnature = value;
         
       }
@@ -163,6 +164,10 @@ export default {
       this.showException = false;
       this.$store.commit("setTextException", this.textException);
     },
+    closeSingnature () {
+        this.showSingnature = null;
+        this.singnature = null;
+    }
   },
 };
 </script>
@@ -236,5 +241,12 @@ ul {
   border-color: #3aac5d !important;
   background: #3aac5d !important;
   color: white !important;
+}
+.icon-close{
+  background-color: #f04c3b40;;
+  position: absolute;
+  top: 57px;
+  right: 20px;
+  margin: 2px 0px 0px -23px;
 }
 </style>
