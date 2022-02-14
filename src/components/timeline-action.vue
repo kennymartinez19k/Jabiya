@@ -1,6 +1,8 @@
 <template>
   <div class="container">
+    {{digitalFirm}}
     <div v-if="showSingnature === 'firm'" class="uk-padding-small">
+      <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
     </div>
 
@@ -23,6 +25,7 @@
     </div>
     <ul class="progressbar">
       <li
+        class="stepTwo"
         :class="{
          
           active: imagiElement.length !== 0 && imagiElement.length >= 1,
@@ -36,6 +39,7 @@
       </li>
       <li
       v-if="showSignaturform === false"
+        class="stepThree"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('firm')"
       >
@@ -46,6 +50,7 @@
       </li>
        <li
       v-if="showSignaturform === true"
+        class="stepFour"
         :class="{ 'uk-disabled': step !== 2, active: digitalFirm !== null }"
         @click="getShow('save')"
       >
@@ -131,6 +136,10 @@ export default {
       this.showException = false;
       this.$store.commit("setTextException", this.textException);
     },
+    closeSingnature () {
+        this.showSingnature = null;
+        this.digitalFirm = null;
+    }
     
   },
 };
@@ -144,7 +153,7 @@ export default {
   position: absolute;
   width: 90px;
   height: 70px;
-  top: 33px;
+  top: 40px;
   left: 10px;
   background: #ffffffc4;
 }
@@ -176,7 +185,7 @@ ul {
   height: 30px;
   border: 2px solid #bebebe;
   display: block;
-  margin: 0 auto 1px auto;
+  margin: 0 auto 10px auto;
   border-radius: 50%;
   line-height: 27px;
   background: white;
@@ -205,5 +214,14 @@ ul {
   border-color: #3aac5d !important;
   background: #3aac5d !important;
   color: white !important;
+}
+.icon-close{
+  background-color: #f04c3b40;;
+  position: absolute;
+  top: 60px;
+  width: 25px;
+  right: 10px;
+  border-radius: 10px;
+  margin: 2px 0px 0px -23px;
 }
 </style>

@@ -83,26 +83,17 @@
             </div>
       </div>
       
-       <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
-      <div class="uk-flex uk-flex-around img-scroll">
-             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative">
+       <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 15px 10px !important">
+      <div class="uk-flex img-scroll">
+             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display flex; margin: 0px 10px">
               <img class="img-result" :src="src"  alt="Red dot" />
                <img src="../../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="">
              </span>
-              <!-- <img class="img-result" :src="firm" alt="Fima Digital" /> -->
           </div>
     </div>
       </ul>
     </div>
-    <!-- <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m img">
-      <div class="uk-flex">
-             <span v-for="(src, index) in imagiElement" :key="src">
-               <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
-              <img class="img-result" :src="src"  style="width: 95%;" alt="Red dot" />
-             </span>
-              <img class="img-result" :src="firm" alt="Fima Digital" />
-          </div>
-    </div> -->
+    
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 4px 0px  !important;"
@@ -154,7 +145,7 @@ export default {
       load: null,
       imagiElement: [],
       imagiToApi: [],
-      step: 0,
+      step: 1,
       exception: false,
       firm: null,
       location : {
@@ -207,8 +198,7 @@ export default {
         if (newVal !== null) {
           this.firm = newVal;
           this.uploadOrDownload(this.load)
-          // this.postImages()
-        
+          this.postImages()
             let isReturn = this.load.Orders.find(x => x.isReturn)
 
                 if(isReturn){
@@ -376,10 +366,13 @@ export default {
           let prod = order.products[i]
           try {
             if(prod.scanOneByOne === "no") {
+              prod.loadScanningCounter = prod.quantity
               this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
             }
             else {
+
               for(let i = 0; i <= prod.quantity; i++){
+                prod.loadScanningCounter = i
                 this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
               }
             }
@@ -535,6 +528,7 @@ li::before {
 }
 .img-scroll{
   width: 98%;
+  padding: 10px 0px;
   overflow-x: scroll;
   overflow-y: hidden;
   max-width: 100%;
@@ -575,7 +569,6 @@ li::before {
   bottom: 125px;
 }
 .img-card{
-  height: 100px;
   width: 100%;
 }
 </style>

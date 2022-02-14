@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
-      <span class="icon-close" uk-icon="close" @click="closeSingnature()"></span>
+      <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()">
       <signature-action @digitalSignature="singnature= $event"></signature-action>
     </div>
 
@@ -245,8 +245,10 @@ ul {
 .icon-close{
   background-color: #f04c3b40;;
   position: absolute;
-  top: 57px;
-  right: 20px;
+  top: 60px;
+  width: 25px;
+  right: 10px;
+  border-radius: 10px;
   margin: 2px 0px 0px -23px;
 }
 </style>

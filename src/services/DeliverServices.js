@@ -8,6 +8,7 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
+      console.log(images, lat, lng ,id)
          let form = {images, lat, lng}
          let url = 'http://preprod.flai.com.do:8756/exo/orders/'+id+'/images'
 
