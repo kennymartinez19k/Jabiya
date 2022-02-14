@@ -221,6 +221,7 @@ export default {
       "orderScan",
       "loadStore",
       "exceptionStore",
+      "causeExceptionsStore",
       "digitalFirmStore",
       "settings",
       "structureToScan"
@@ -240,8 +241,12 @@ export default {
     this.orders = this.orderScan
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
-    this.orders.map(x => x.completedScanned = false)
-
+    this.orders.map(x => {
+       if (x.totalOrdersScanned) {
+          this.step = 1
+        }
+      x.completedScanned = false
+    })
      let firstStructure = []
       let secondStructure = []
       this.firstStructureLoad.forEach(x => {
@@ -358,7 +363,7 @@ export default {
         this.scanOrder();   
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.getCam();
-      } else if (value === "firm") {
+      } else if (value === "Singnature") {
         this.serieA = value;
         this.step++;
       }
@@ -416,6 +421,7 @@ export default {
       var shipper = val?.shipper?.find(x => x.name)
       return shipper?.name
     },
+
      async postImages() {
         let unreturnedOrders = this.firstStructureLoad.filter((x) => !x.isReturn);
       for (var it = 0; it < unreturnedOrders.length; it++) {
@@ -433,6 +439,28 @@ export default {
         }
         images.push(this.firm);
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
+      }
+       let quantity= null;
+        let loadScanningCounter = null;
+        unreturnedOrders.forEach(x => x.products.forEach(z => {
+          loadScanningCounter = z.loadScanningCounter
+          quantity = z.quantity
+        }))
+      if (this.causeExceptionsStore && loadScanningCounter < quantity) {
+       
+
+        console.log(quantity, 'quantity')
+        console.log(loadScanningCounter, 'loadScanningCounter')
+        console.log(unreturnedOrders, 'unreturnedOrders')
+        console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
+        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
+
+        // await this.$serre4vices.exceptionServices.setExceptions(unreturnedOrders[0]._id, this.causeExceptionsStore);
+        
+      } else {
+        
+        console.log(quantity, 'quantity else')
+        console.log(loadScanningCounter, 'loadScanningCounter else')
       }
     },
 

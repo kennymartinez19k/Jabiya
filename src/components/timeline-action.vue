@@ -10,7 +10,7 @@
       <textarea
         class="uk-textarea"
         rows="3"
-        placeholder="Digite la exepción"
+        placeholder="Notas:"
         v-model="textException"
       ></textarea>
       <div class="uk-margin-small-top uk-flex uk-flex-right">
