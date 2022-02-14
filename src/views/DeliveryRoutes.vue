@@ -41,10 +41,13 @@
         v-for="order in orders"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed, 'order-status': order?.totalOrdersScanned === order?.totalQuantity }"
+        :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }"
       >
-        <div class="order-select">
+        <div v-if="order.status !== 'Delivered' " class="order-select" >
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
+        </div>
+        <div v-else class="order-completed">
+          <font-awesome-icon icon="check"/>
         </div>
         <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
@@ -80,7 +83,7 @@
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
           <p>
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order.totalOrdersScanned }}/{{order.totalQuantity}} </span>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span :class="{'order-delivered': order?.status === 'Delivered'}">{{order.totalOrdersScanned}}/{{order.totalQuantity}} </span>
           </p>
           </div>
           <p class="uk-width-1-1">
@@ -123,7 +126,7 @@
       
     </div>
       <div class="button-opt">
-      <button @click="scan()" :disabled="showButton === true" class="uk-button uk-button-primary">Escanear y Cargar Camion
+      <button @click="scan()" :disabled="!showButton" class="uk-button uk-button-primary">Escanear y Cargar Camion
       </button>
     </div>
   </div>
@@ -159,7 +162,7 @@ export default {
       listOfOrders: [],
       listOrderDetails: [],
       listOfOrderTotal: [],
-      showButton: true,
+      showButton: false,
       timeout: 10000
 
     };
@@ -167,10 +170,11 @@ export default {
   watch:{
     listOfOrders:{
       handler: function (newVal) {
+        console.log(newVal)
        if (newVal.length === 0) {
-       this.showButton = true
-      } else {
        this.showButton = false
+      } else {
+       this.showButton = true
       }
       }, deep: true
     },
@@ -201,15 +205,19 @@ export default {
       console.log(x, 'ooooo')
         x.totalQuantity = 0
         x.totalOrdersScanned = 0
+        
         x.products.forEach(z => { 
+          
           x.totalQuantity =+  z.quantity 
           x.totalOrdersScanned += z.loadScanningCounter
+
         })
       })
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {
            if (order.order_num === x.order_num) {
+             order.isSelected = true
             this.orderForScan(order)
            } 
           })
@@ -430,5 +438,13 @@ li{
 }
 .order-status{
   background: #e0fae080;
+}
+.order-completed{
+  color: green;
+  font-size: 16px;
+}
+.order-delivered{
+  font-weight: 700;
+  color: green
 }
 </style>

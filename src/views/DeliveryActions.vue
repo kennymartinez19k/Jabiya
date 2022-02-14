@@ -91,9 +91,9 @@
       </div>
        <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
       <div class="uk-flex uk-flex-around img-scroll">
-             <span v-for="(src, index) in imagiElement"  :key="src">
+             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative">
               <img class="img-result" :src="src"  alt="Red dot" />
-               <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
+               <img src="../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="">
              </span>
           </div>
     </div>
@@ -105,7 +105,6 @@
         </ul>
     <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 15px 0px  !important;"
     >
       <strong class="exception uk-padding-small">
         Hubo Alguna Excepción? No
@@ -174,6 +173,7 @@ export default {
       load: null,
       imagiElement: [],
       step: 0,
+      allProductScanned: false,
       exception: false,
       firm: null,
       location: {
@@ -214,7 +214,6 @@ export default {
   async mounted() {
     this.load = {...this.loadStore};
     this.orders = this.orderScan
-    console.log(this.orderScan)
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
     this.orders.map(x => {
@@ -241,6 +240,7 @@ export default {
         secondStructure.push(data)
       })
 
+
     this.getShow("scan");
     await this.getLocation()
     this.firstStructureLoad = firstStructure
@@ -251,6 +251,7 @@ export default {
     }, 10000)
     
     if(this.secondStructureLoad.every(x => x.completedScanned)){
+      this.allProductScanned = true
       this.verifiedLoad()
     }else{
       this.scanOrder()
@@ -289,7 +290,9 @@ export default {
             x.scanProgress = x.loadScanningCounter > 0 && !x.completedScanned
           })
           if(this.firstStructureLoad.every(x => x.completedScanned)){
-            this.verifiedLoad()
+            if(!this.allProductScanned)
+            this.allProductUpload()
+            else this.verifiedLoad()
 
           }
         }
@@ -589,22 +592,32 @@ export default {
     },
     
     async verifiedLoad(){   
+      this.allProductScanned = true
         this.checkOrder = true
         this.statusOrders = "approved"  
 
         setTimeout(async () => {
           this.statusOrders = 'start'
+            this.resultScan = true
+            this.step = 1
+
           this.checkOrder = false
           if(this.firstStructureLoad.every(x => x.completedScanned)){
-            this.step = 1
-            this.resultScan = true
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
 
           }
           else this.scanOrder()
-        }, 1000)
+        }, 2000)
+    },
+    deleteImage(i){
+      this.imagiElement.splice(i, 1)
+    },
+    allProductUpload(){
+      this.statusOrders = 'start'
+      this.resultScan = true
+      this.step = 1
     },
     async updateData(){
       if(this.$route.name == 'deliveryActions'){
@@ -783,7 +796,11 @@ li::before {
 .icon-close{
   background-color: #f04c3b40;;
   position: absolute;
-  top: 16px;
+  right: -10px;
+  top: -10px;
+  width: 22px;
+  border-radius: 10px;
+
   margin: 2px 0px 0px -23px;
 }
 .ban {
@@ -871,5 +888,10 @@ p{
 }
 .inProgressOrden{
   background: #fff500
+}
+.cont{
+  z-index: 0;
+  padding: 5px 0px  !important;
+
 }
 </style>

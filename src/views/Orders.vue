@@ -47,8 +47,11 @@
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         :class="{ ordenCompleted: order.completed, 'order-status': order?.totalOrdersScanned === order?.totalQuantity }"
       >
-        <div class="order-select">
+        <div v-if="order?.totalOrdersScanned !== order?.totalQuantity  " class="order-select" >
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
+        </div>
+        <div v-else class="order-completed">
+          <font-awesome-icon icon="check"/>
         </div>
         <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
@@ -231,12 +234,14 @@ export default {
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {
-           if (order.order_num === x.order_num) {
+           if (order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
+             order.isSelected = true
             this.orderForScan(order)
            } 
           })
         })
       }
+      
 
       
   },

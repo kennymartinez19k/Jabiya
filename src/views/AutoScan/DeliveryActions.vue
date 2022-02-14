@@ -85,9 +85,9 @@
       
        <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
       <div class="uk-flex uk-flex-around img-scroll">
-             <span v-for="(src, index) in imagiElement"  :key="src">
+             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative">
               <img class="img-result" :src="src"  alt="Red dot" />
-               <span class="icon-close" uk-icon="close" @click="deleteImage(index)"></span>
+               <img src="../../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="">
              </span>
               <!-- <img class="img-result" :src="firm" alt="Fima Digital" /> -->
           </div>
@@ -154,7 +154,7 @@ export default {
       load: null,
       imagiElement: [],
       imagiToApi: [],
-      step: 1,
+      step: 0,
       exception: false,
       firm: null,
       location : {
@@ -184,7 +184,7 @@ export default {
     }
       this.$store.commit("setloadStore", loadsMounted);
 
-    await this.getLocation()
+    
     if(loadsMounted){
        this.load = loadsMounted;
        this.orders = this.load.Orders.filter(x => !x.isReturn)
@@ -198,7 +198,8 @@ export default {
         `Entrega de Orden No. ${this.orderScan[0]?.numberOfOrders}`
       );
     }
-
+    this.load.firstOrdenInfo = this.load?.Orders[0]
+  await this.getLocation()
   },
   watch: {
     digitalFirmStore: {
@@ -561,7 +562,11 @@ li::before {
 .icon-close{
   background-color: #f04c3b40;;
   position: absolute;
-  top: 16px;
+  right: -10px;
+  top: -10px;
+  width: 22px;
+  border-radius: 10px;
+
   margin: 2px 0px 0px -23px;
 }
 .img {
