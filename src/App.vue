@@ -1,5 +1,4 @@
 <template>
-  {{allrequest.length}}
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
 
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>

@@ -227,7 +227,7 @@ export default {
          // x.isSelected = false
         x.totalOrdersScanned = 0
         x.products.forEach(z => { 
-          x.totalQuantity =+  z.quantity 
+          x.totalQuantity +=  z.quantity 
           x.totalOrdersScanned += z.loadScanningCounter
         })
       })

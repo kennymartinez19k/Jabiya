@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('5')">Escanear</button>
+    <button @click="uploadProducts('7')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -41,7 +41,7 @@
       class="result-info"
       >
       <div
-        v-if="statusOrders != 'start'"
+        v-if="!showProduct"
         class="status-order"
         :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approved' }"
       >
@@ -49,7 +49,7 @@
           <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
         </div>
         <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
-            <h6 class="uk-margin-remove">{{messageReject}}<font-awesome-icon icon="ban" style="color: #be1515;"/>
+            <h6 class="uk-margin-remove">{{messageReject}} wd<font-awesome-icon icon="ban" style="color: #be1515;"/>
             </h6>
         </div>
       </div>
@@ -423,7 +423,7 @@ export default {
     },
 
      async postImages() {
-        let unreturnedOrders = this.firstStructureLoad.filter((x) => !x.isReturn);
+        let unreturnedOrders = this.orders.filter((x) => !x.isReturn);
       for (var it = 0; it < unreturnedOrders.length; it++) {
         let order = unreturnedOrders[it];
         let images = [];
@@ -440,28 +440,29 @@ export default {
         images.push(this.firm);
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
-       let quantity= null;
-        let loadScanningCounter = null;
-        unreturnedOrders.forEach(x => x.products.forEach(z => {
-          loadScanningCounter = z.loadScanningCounter
-          quantity = z.quantity
-        }))
-      if (this.causeExceptionsStore && loadScanningCounter < quantity) {
+        let res = []
+        this.firstStructureLoad.forEach(x => {
+          if(x.loadScanningCounter < x.quantity){
+            res.push(x._id)
+          }
+        })
+        console.log(res)
+      // if (this.causeExceptionsStore && loadScanningCounter < quantity) {
        
 
-        console.log(quantity, 'quantity')
-        console.log(loadScanningCounter, 'loadScanningCounter')
-        console.log(unreturnedOrders, 'unreturnedOrders')
-        console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
-        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
+      //   console.log(quantity, 'quantity')
+      //   console.log(loadScanningCounter, 'loadScanningCounter')
+      //   console.log(unreturnedOrders, 'unreturnedOrders')
+      //   console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
+      //   console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
 
         // await this.$serre4vices.exceptionServices.setExceptions(unreturnedOrders[0]._id, this.causeExceptionsStore);
         
-      } else {
+      // } else {
         
-        console.log(quantity, 'quantity else')
-        console.log(loadScanningCounter, 'loadScanningCounter else')
-      }
+      //   console.log(quantity, 'quantity else')
+      //   console.log(loadScanningCounter, 'loadScanningCounter else')
+      // }
     },
 
 
@@ -482,7 +483,7 @@ export default {
                   this.showProduct = true
                   this.statusOrders = 'start'
                   this.scanOrder()
-              }, 1000)
+              }, 10000)
           }
           else{
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
@@ -523,7 +524,7 @@ export default {
                 this.showProduct = true
                 this.statusOrders = 'start'
                 this.scanOrder()
-            }, 1000)
+            }, 10000)
           }else{
             this.statusOrders = 'reject';
             this.messageReject = 'Error, producto no reconocido'
@@ -536,7 +537,7 @@ export default {
                 this.showProduct = true
                 this.resultScan = true
                 this.scanOrder()
-            }, 1000)
+            }, 10000)
           }
         }      
     },
@@ -892,7 +893,7 @@ p{
 }
 .status-order{
   width: 100%;
-  height: 100%;
+  height: 52%;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('2')">Escanear</button>
+    <button @click="uploadProducts('7')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -525,6 +525,7 @@ p{
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background: #fff !important;
 }
 
 .waitScan {
