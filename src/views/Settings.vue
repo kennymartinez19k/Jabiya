@@ -1,15 +1,6 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
     <div>
-      <label class="item uk-margin" for="profile">
-            <h6>Perfil</h6>
-        <div class="uk-form-controls" style="width: 40%">
-            <select v-model="settings.profile" class="uk-select" id="profile">
-                <option :value="profile.container" selected>Contenedor</option>
-                <option :value="profile.b2b">b2b</option>
-            </select>
-        </div>
-      </label>
        <label class="item" for="maps">
         <h6>Mostrar Mapa</h6>
         <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
@@ -29,7 +20,6 @@ export default {
   data() {
     return {
       settings: {
-        profile: 'container',
         maps: false
       },
     };
@@ -46,7 +36,6 @@ export default {
   methods: {
     async saveSettings() {
       await this.$store.commit("setSettings", this.settings);
-      this.setProfile()
       this.$router.push({ name: "home" });
     },
   },

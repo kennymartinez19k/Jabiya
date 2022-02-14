@@ -1,5 +1,12 @@
 <template>
-
+  <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
   <div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
@@ -223,12 +230,22 @@
 <script>
 import { mapGetters } from "vuex";
 import { Mixins } from '../mixins/mixins'
+import { ref } from "vue";
+import { IonLoading } from "@ionic/vue";
 import { userType, userPosition, profile } from '../types'
 
 
 export default {
   alias: `Aprobar Viaje`,
+   components: {
+    IonLoading
+  },
+  setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
 
+    return { isOpenRef, setOpen };
+  },
   data() {
     return {
       userType,
@@ -240,7 +257,8 @@ export default {
       load: null,
       orders: null,
       userInfo: {},
-      disabled: false
+      disabled: false,
+      timeout: 10000
     };
   },
   mixins: [Mixins],
@@ -298,6 +316,7 @@ export default {
       });
     },
     async acceptOrRejectLoad(id, version, status,vehicleId) {
+      this.setOpen(true)
       this.disabled = true
       let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       let userId
@@ -318,6 +337,7 @@ export default {
         this.userInfo.userType,
         vehicleId
       );
+      this.setOpen(false)
       if (result) {
         if(status == 'REJECTED') {
           this.$router.push({ name: "home" });

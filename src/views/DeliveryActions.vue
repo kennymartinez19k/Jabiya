@@ -1,6 +1,14 @@
 <template>
+<ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('3')">Escanear jk</button>
+    <button @click="uploadProducts('7')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -33,7 +41,7 @@
       class="result-info"
       >
       <div
-        v-if="statusOrders != 'start'"
+        v-if="!showProduct"
         class="status-order"
         :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approved' }"
       >
@@ -41,12 +49,12 @@
           <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
         </div>
         <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
-            <h6 class="uk-margin-remove">ERROR, ORDEN NO RECONOCIDA <font-awesome-icon icon="ban" style="color: #be1515;"/>
+            <h6 class="uk-margin-remove">{{messageReject}} wd<font-awesome-icon icon="ban" style="color: #be1515;"/>
             </h6>
         </div>
       </div>
       <ul
-        v-if="resultScan"
+        v-if="showProduct"
         class="uk-list uk-list-divider"
         style="list-style: none"
       >
@@ -90,8 +98,8 @@
             </div>
       </div>
        <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
-      <div class="uk-flex uk-flex-around img-scroll">
-             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative">
+      <div class="uk-flex  img-scroll">
+             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display flex; margin: 0px 10px">
               <img class="img-result" :src="src"  alt="Red dot" />
                <img src="../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="">
              </span>
@@ -99,35 +107,39 @@
     </div>
       </ul>
     </div>
-   <ul v-if="!resultScan" class="box-orden">
-          <li v-for="product in firstStructureLoad" :key="product" 
-              :class="{completedOrden: product.completedScanned, inProgressOrden: product.scanProgress}" style="">&nbsp;</li> 
-        </ul>
-    <div
-      class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-    >
-      <strong class="exception uk-padding-small">
-        Hubo Alguna Excepción? No
-        <div class="onoffswitch">
-          <input
-            type="checkbox"
-            v-model="exception"
-            name="onoffswitch"
-            class="onoffswitch-checkbox"
-            id="myonoffswitch"
-            tabindex="0"
-          />
-          <label class="onoffswitch-label" for="myonoffswitch"></label>
-        </div>
-        Si
-      </strong>
-      <timeline
-        :step="step"
-        :exception="exception"
-        :resultScan="resultScan"
-        :imagiElement="imagiElement"
-        @action="getShow($event)"
-      />
+    <div style="height: 300px">
+      <div class="action">
+    <ul v-if="!showProduct" class="box-orden">
+            <li v-for="product in firstStructureLoad" :key="product" 
+                :class="{completedOrden: product.completedScanned, inProgressOrden: product.scanProgress}" style="">&nbsp;</li> 
+          </ul>
+      <div
+        class="cont uk-card uk-card-default uk-card-hover uk-card-body"
+      >
+        <strong class="exception uk-padding-small">
+          Hubo Alguna Excepción? No
+          <div class="onoffswitch">
+            <input
+              type="checkbox"
+              v-model="exception"
+              name="onoffswitch"
+              class="onoffswitch-checkbox"
+              id="myonoffswitch"
+              tabindex="0"
+            />
+            <label class="onoffswitch-label" for="myonoffswitch"></label>
+          </div>
+          Si
+        </strong>
+        <timeline
+          :step="step"
+          :exception="exception"
+          :resultScan="resultScan"
+          :imagiElement="imagiElement"
+          @action="getShow($event)"
+        />
+      </div>
+      </div>
     </div>
     <div id="deliver-quantity" class="uk-flex-top" uk-modal>
         <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
@@ -156,12 +168,16 @@ import { Camera, CameraResultType } from "@capacitor/camera";
 import { Geolocation } from '@capacitor/geolocation'
 import { Mixins} from '../mixins/mixins'
 import UIkit from "uikit";
+import { ref } from "vue";
+import { IonLoading } from "@ionic/vue";
+
 
 export default {
   name: "DeliveryActions",
   alias: "Entrega de Ordenes",
   components: {
     timeline,
+    IonLoading
   },
   mixins: [Mixins],
   data() {
@@ -188,8 +204,17 @@ export default {
         scanned: null,
         totalOfOrders: null
       },
-      checkOrder: true
+      checkOrder: true,
+      messageReject: null,
+      showProduct: true,
+      timeout: 10000
     };
+  },
+  setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
   },
   computed: {
     ...mapGetters([
@@ -241,7 +266,6 @@ export default {
       })
 
 
-    this.getShow("scan");
     await this.getLocation()
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
@@ -253,8 +277,6 @@ export default {
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.allProductScanned = true
       this.verifiedLoad()
-    }else{
-      this.scanOrder()
     }
 
     console.log(this.firstStructureLoad, this.secondStructureLoad)
@@ -265,8 +287,31 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-         await this.postImages()
-          this.$router.push({ name: "home" }).catch(() => {});
+          this.setOpen(true)
+          await this.postImages()
+          console.log(this.firstStructureLoad)
+          let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
+          let orders 
+          if(load){
+            orders = load.Orders
+          }else{
+            orders = await JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
+          }
+          let res = []
+          
+          for (let i = 0; i < orders.length; i++) {
+            const order = orders[i];
+            res.push(order.products.every(x => x.loadScanningCounter >= x.quantity))
+          }
+          console.log(res)
+          if(res.every(x => x == true)){
+            await this.changeRouteLoads('Delivered', this.load)
+            localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
+          }
+          setTimeout(() =>{
+            this.$router.push({ name: "home" }).catch(() => {});
+            this.setOpen(false)
+          }, 8000)
 
         }
       },
@@ -314,6 +359,7 @@ export default {
     getShow(value) {
       this.show = value;
       if (value === "scan") {
+        this.resultScan = false
         this.scanOrder();   
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.getCam();
@@ -394,34 +440,33 @@ export default {
         images.push(this.firm);
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
-       let quantity= null;
-        let loadScanningCounter = null;
-        unreturnedOrders.forEach(x => x.products.forEach(z => {
-          loadScanningCounter = z.loadScanningCounter
-          quantity = z.quantity
-        }))
-      if (this.causeExceptionsStore && loadScanningCounter < quantity) {
+        let res = []
+        this.firstStructureLoad.forEach(x => {
+          if(x.loadScanningCounter < x.quantity){
+            res.push(x._id)
+          }
+        })
+        console.log(res)
+      // if (this.causeExceptionsStore && loadScanningCounter < quantity) {
        
 
-        console.log(quantity, 'quantity')
-        console.log(loadScanningCounter, 'loadScanningCounter')
-        console.log(unreturnedOrders, 'unreturnedOrders')
-        console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
-        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
+      //   console.log(quantity, 'quantity')
+      //   console.log(loadScanningCounter, 'loadScanningCounter')
+      //   console.log(unreturnedOrders, 'unreturnedOrders')
+      //   console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
+      //   console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
 
         // await this.$serre4vices.exceptionServices.setExceptions(unreturnedOrders[0]._id, this.causeExceptionsStore);
         
-      } else {
+      // } else {
         
-        console.log(quantity, 'quantity else')
-        console.log(loadScanningCounter, 'loadScanningCounter else')
-      }
+      //   console.log(quantity, 'quantity else')
+      //   console.log(loadScanningCounter, 'loadScanningCounter else')
+      // }
     },
 
 
      async uploadProducts(val){
-      //   Compruebo si se encuentra el qrCode en la fila de la primera estructura
-      console.log(this.firstStructureLoad)
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
           x.loadScanningCounter < x.quantity &&
@@ -431,11 +476,14 @@ export default {
           let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
           if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){
               Vibration.vibrate(1000);
-              alert('Ya estan escaneadas todas las ordenes con este qrcode')
+              this.statusOrders = 'reject'
+              this.showProduct = false
+              this.messageReject = 'Ya estan escaneadas todas las ordenes con este qrcode'
               setTimeout(() => {
+                  this.showProduct = true
                   this.statusOrders = 'start'
                   this.scanOrder()
-              }, 1000)
+              }, 10000)
           }
           else{
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
@@ -467,20 +515,29 @@ export default {
           }
         }else{
           if(this.secondStructureLoad.some(x => x.qrCode == val)){
-            alert('Ya estan escaneadas todas las ordenes con este qrcode')
+            Vibration.vibrate(1000);
+            this.messageReject = 'Ya estan escaneadas todas las ordenes con este qrcode'
+            this.showProduct = false
+            this.statusOrders = 'reject'
+
+            setTimeout(() => {
+                this.showProduct = true
+                this.statusOrders = 'start'
+                this.scanOrder()
+            }, 10000)
+          }else{
+            this.statusOrders = 'reject';
+            this.messageReject = 'Error, producto no reconocido'
+            this.resultScan = false
+            this.showProduct = false
+
             Vibration.vibrate(1000);
             setTimeout(() => {
                 this.statusOrders = 'start'
+                this.showProduct = true
+                this.resultScan = true
                 this.scanOrder()
-            }, 1000)
-          }else{
-
-            this.statusOrders = 'reject';
-              Vibration.vibrate(1000);
-              setTimeout(() => {
-                  this.statusOrders = 'start'
-                  this.scanOrder()
-              }, 1000)
+            }, 10000)
           }
         }      
     },
@@ -521,10 +578,10 @@ export default {
     async scanOrder() {
       this.statusOrders = 'start';
       if (await this.checkPermission()) {
+        this.showProduct = false
         BarcodeScanner.hideBackground();
         const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
         if (result.hasContent) {
-
           BarcodeScanner.hideBackground();
           this.uploadProducts(result.content)
         } else {
@@ -594,22 +651,23 @@ export default {
     async verifiedLoad(){   
       this.allProductScanned = true
         this.checkOrder = true
-        this.statusOrders = "approved"  
-
+        this.statusOrders = "approved" 
+        this.showProduct = false
         setTimeout(async () => {
           this.statusOrders = 'start'
-            this.resultScan = true
-            this.step = 1
+          this.showProduct = true
 
           this.checkOrder = false
           if(this.firstStructureLoad.every(x => x.completedScanned)){
+            console.log(this.firstStructureLoad)
+          this.resultScan = true
+            this.step = 1
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
-
           }
           else this.scanOrder()
-        }, 2000)
+        }, 1000)
     },
     deleteImage(i){
       this.imagiElement.splice(i, 1)
@@ -734,12 +792,12 @@ export default {
 }
 .result-info {
   overflow: scroll;
-  padding: 0px 10px;
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 .statusError{
+  background: #ff01011c;
     justify-content: center;
 }
 
@@ -835,7 +893,7 @@ p{
 }
 .status-order{
   width: 100%;
-  height: 100%;
+  height: 52%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -891,7 +949,10 @@ p{
 }
 .cont{
   z-index: 0;
-  padding: 5px 0px  !important;
-
+  padding: 15px 5px !important;
+}
+.action{
+  position: absolute;
+  bottom: 0px;
 }
 </style>

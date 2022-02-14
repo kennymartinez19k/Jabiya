@@ -77,6 +77,7 @@ export const Mixins = {
           if (val == "Deliver-Load")
             router.push({ name: "delivery-routes" });
           if (val == "Delivered") {
+            this.removeInfoInStorage()
             localStorage.removeItem("loadingProgress");
             this.localStorageGps.remove(`gps ${load?.loadMapId}`);
             localStorage.removeItem(`loadStatus${load?.loadMapId}`);
@@ -148,9 +149,14 @@ export const Mixins = {
       if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0].status) return "Esperando Aprobación del Chofer";
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
-      if (val?.loadingStatus?.text == "Dispatched") return "Listo Para Entregar";
+      if (val?.loadingStatus?.text == "Dispatched")  return "Listo para Entregar";
+    
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
-      if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
+
+      if (val?.loadingStatus?.text == "Delivered") {
+        localStorage.removeItem(`sendInfo${val.loadMapId}`)
+        return "Viaje Entregado";
+      } 
     },
     async setGps() {
       return await this.localStorageGps.get(`gps ${this.load?.loadMapId}`);
@@ -168,16 +174,17 @@ export const Mixins = {
         let load = val.Orders[cont]
         let orders =  await this.$services.loadsScanServices.getProduct(load._id);
         Object.assign(val.Orders[cont], orders[0])
-        this.$store.commit("setloadStore", val)
         let order = orders.find(x => x)
         totalOfBoxes += load.no_of_boxes
         for(var i = 0; i < order.products.length; i++){
           let prod = order.products[i]
           if(prod.scanOneByOne === "no") {
+            prod.loadScanningCounter = prod.quantity
             await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
           }
           else {
             for(let i = 0; i <= prod.quantity; i++){
+              prod.loadScanningCounter += i
               await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
             }
           }

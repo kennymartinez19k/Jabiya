@@ -21,7 +21,8 @@ export default {
       ],
       nameOrder: null,
       result: 0,
-      sendingBI: false
+      sendingBI: false,
+      allrequest: []
     }
   },
   components:{
@@ -52,10 +53,11 @@ export default {
         let enqueueItem = remove()
         await this.enqueue(enqueueItem)
       }
+      this.allrequest = await this.all()
       let queueItem = await this.peek()
       if(queueItem){
         if(queueItem.formInfo){
-          waitInterval = 4000
+          waitInterval = 8000
         }else{
           waitInterval = 2000
         }

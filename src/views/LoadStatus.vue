@@ -125,12 +125,12 @@
           </div>
 
           <div class="icon-item">
-            <span v-if="setting.maps" class="ddd">
+            <span v-if="setting.maps" class="">
               <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right"/>
               <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
             </span>
 
-            <span v-if="!setting.maps" class="ss">
+            <span v-if="!setting.maps" class="">
               <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
               <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
               <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />

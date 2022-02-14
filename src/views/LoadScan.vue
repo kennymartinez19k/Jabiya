@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('3')">Escanear</button>
+    <button @click="uploadProducts('7')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -56,7 +56,7 @@
           <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
         </div>
       <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
-          <h6 class="uk-margin-remove">ERROR, ORDEN NO RECONOCIDA <font-awesome-icon icon="ban" style="color: #be1515;"/>
+          <h6 class="uk-margin-remove">{{messageReject}} <font-awesome-icon icon="ban" style="color: #be1515;"/>
           </h6>
       </div>
     </div>
@@ -144,6 +144,7 @@ export default {
         scanned: null,
         totalOfOrders: null
       },
+      messageReject: null
     };
   },
   computed: {
@@ -224,6 +225,8 @@ export default {
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
 
+    console.log(this.firstStructureLoad)
+
 
     setInterval(async () =>{
       await this.updateData()
@@ -247,12 +250,13 @@ export default {
         if(orderForScan){
           let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
           if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){
-              Vibration.vibrate(1000);
-              alert('Ya estan escaneadas todas las ordenes con este qrcode')
-              setTimeout(() => {
-                  this.statusOrders = 'start'
-                  this.scanOrder()
-              }, 1000)
+            this.messageReject = 'Ya estan escaneadas todas las ordenes con este qrcode'
+            this.statusOrders = 'reject'
+            Vibration.vibrate(1000);
+            setTimeout(() => {
+                this.statusOrders = 'start'
+                this.scanOrder()
+            }, 1000)
           }
           else{
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
@@ -285,15 +289,16 @@ export default {
           }
         }else{
           if(this.secondStructureLoad.some(x => x.qrCode == val)){
-            alert('Ya estan escaneadas todas las ordenes con este qrcode')
+            this.messageReject = 'Ya estan escaneadas todas los prodcutos con este qrcode'
+            this.statusOrders = 'reject'
             Vibration.vibrate(1000);
             setTimeout(() => {
                 this.statusOrders = 'start'
                 this.scanOrder()
             }, 1000)
           }else{
-
-            this.statusOrders = 'reject';
+            this.messageReject = 'Error, producto no reconocido'
+            this.statusOrders = 'reject'
               Vibration.vibrate(1000);
               setTimeout(() => {
                   this.statusOrders = 'start'
@@ -417,6 +422,7 @@ export default {
         this.checkOrder = true
         setTimeout(async () => {
           this.checkOrder = false
+            console.log(this.firstStructureLoad)
           
           if(this.firstStructureLoad.every(x => x.completedScanned)){
             console.log(this.firstStructureLoad)
@@ -425,7 +431,11 @@ export default {
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
             let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
-            if(load.Orders.every(x => x.status == 'en-route')){
+            let allProductScanned = []
+            load.Orders.forEach(x => {
+              allProductScanned.push(x.products.every(prod => prod.loadScanningCounter >= prod.quantity))
+            })
+            if(allProductScanned.every(x => x == true)){
               localStorage.removeItem(`allProducts${this.load.loadMapId}`)
               await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )
               this.$router.push({ name: "load-status" }).catch(() => {});
@@ -515,6 +525,7 @@ p{
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background: #fff !important;
 }
 
 .waitScan {
@@ -688,8 +699,9 @@ border: 1px solid #efefef;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-
-  
+}
+.statusError{
+  background: #ff01011c;
+    justify-content: center;
 }
 </style>

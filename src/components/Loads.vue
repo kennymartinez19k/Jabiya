@@ -191,12 +191,15 @@ export default {
       this.loads = []
       let contDate
       let date
-        if (JSON.parse(localStorage.getItem('dateCheck')) && typeof val !== 'number') {
-          contDate = JSON.parse(localStorage.getItem('dateCheck'));
+        if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
+          contDate = localStorage.getItem('dateCheck');
           this.date = new Date(contDate);
-        }else if(val) contDate = this.date.setDate(this.date.getDate() + val);   
+        }else if(val){
+          contDate = this.date.setDate(this.date.getDate() + val);
+        }    
         else contDate = this.date
         date = moment(contDate).format("MM/DD/YYYY");
+        localStorage.setItem('dateCheck', date)
 
        if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date

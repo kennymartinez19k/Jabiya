@@ -43,11 +43,11 @@
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }"
       >
-        <div v-if="order.status !== 'Delivered' " class="order-select" >
-          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
-        </div>
-        <div v-else class="order-completed">
+        <div v-if="order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
           <font-awesome-icon icon="check"/>
+        </div>
+        <div v-else class="order-select" >
+          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
         </div>
         <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
@@ -202,7 +202,6 @@ export default {
     this.setOpen(false)
    this.orders.map(x => {
       // x.isSelected = false
-      console.log(x, 'ooooo')
         x.totalQuantity = 0
         x.totalOrdersScanned = 0
         
@@ -216,7 +215,7 @@ export default {
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {
-           if (order.order_num === x.order_num) {
+           if (order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
              order.isSelected = true
             this.orderForScan(order)
            } 
@@ -238,7 +237,7 @@ export default {
     async scan() {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       this.$store.commit("setStructureToScan", structure)
-
+      localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
