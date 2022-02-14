@@ -13,7 +13,7 @@
         Deshacer
       </button>
       <button class="uk-button uk-button-primary btn" @click="save()">
-        Guardar
+        Guardar y Enviar
       </button>
     </div>
   </div>

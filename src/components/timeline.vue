@@ -4,12 +4,11 @@
       <span class="icon-close" uk-icon="close" @click="closeSingnature()"></span>
       <signature-action @digitalSignature="singnature= $event"></signature-action>
     </div>
-
-    <div v-if="showException && exception" class="uk-padding-small">
+    <!-- <div v-if="showException && exception" class="uk-padding-small">
       <textarea
         class="uk-textarea"
         rows="3"
-        placeholder="Digite la exepción"
+        placeholder="Notas:"
         v-model="textException"
       ></textarea>
       <div class="uk-margin-small-top uk-flex uk-flex-right">
@@ -21,7 +20,38 @@
           Guardar
         </button>
       </div>
+    </div> -->
+
+
+
+<!-- This is the modal -->
+<div id="exeption" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Headline</h2>
+         <div class="uk-margin">
+        <label for="">Tipos de Exepción</label>
+            <select class="uk-select" v-model="causeExceptions.type">
+                <option value="Option 01">Option 01</option>
+                <option value="Option 02">Option 02</option>
+            </select>
+        </div>
+        <div>
+        <label for="">Notas <span >*</span></label>
+          <textarea
+            class="uk-textarea"
+            rows="3"
+            placeholder="Notas:"
+            v-model="causeExceptions.note"
+            required
+          >
+          </textarea>
+        </div>
+         <p class="uk-flex uk-flex-around">
+            <button class="uk-button uk-button-default uk-modal-close cancel" type="button" @click="cancelResetException()">Cancelar</button>
+            <button :disabled="showException === true" class="uk-button uk-button-primary uk-modal-close" type="button" @click="setException()">Guardar</button>
+        </p>
     </div>
+</div>
     <ul class="progressbar">
       <li
         class="stepOne"
@@ -49,11 +79,11 @@
       <li
         v-if="exception"
         :class="{
-          'uk-disabled': (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length > 0),
+          'uk-disabled': step == 0,
           active:
             resultScan !== null &&
             imagiElement.length === 1 &&
-            textException !== null && showException === false,
+             causeExceptions.note !== null &&  causeExceptions.type !== null && showException === false,
         }"
         @click="getShow('exception')"
       >
@@ -62,31 +92,21 @@
         <span>Excepción</span>
         <div
           :class="{
-            disabled: (!resultScan && imagiElement.length === 0) || (resultScan && imagiElement.length > 0),
+            disabled: step == 0,
           }"
         ></div>
       </li>
 
       <li
         class="stepThree"
-        :class="{ 'uk-disabled': step !== 2, active: singnature !== null }"
+        :class="{ 'uk-disabled': showSingnatureAndException, active: singnature !== null }"
         @click="getShow('Singnature')"
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span>Firma</span>
-        <div :class="{ disabled: step < 2 }"></div>
+        <div :class="{ disabled: showSingnatureAndException }"></div>
       </li>
-      <!-- <li
-        class="stepFour"
-        :class="{ 'uk-disabled': step !== 2, active: singnature !== null }"
-        @click="getShow('finish')"
-      >
-        <div class="info"><font-awesome-icon icon="check" /></div>
-        <div><img src="../assets/check.png" alt="" srcset="" /></div>
-        <span>Completado</span>
-        <div :class="{ disabled: step < 2 }"></div>
-      </li> -->
     </ul>
 
   </div>
@@ -100,27 +120,7 @@ export default {
   components: {
     SignatureAction,
   },
-  watch: {
-    singnature: {
-      handler: function (newVal) {
-        if (newVal !== null) {
-          this.showSingnature = null;
-          this.$store.commit("setDigitalFirm", this.singnature);
-          setTimeout(()=> {
-            this.$router.push({ name: 'direct-access'}).catch(() => {})
-          },1000)
-        }
-      },
-    },
-
-    exception: {
-      handler: function (newVal) {
-        if (newVal === false) {
-          this.textException = null;
-        }
-      },
-    },
-  },
+ 
   props: {
     step: Number,
     exception: Boolean,
@@ -129,8 +129,12 @@ export default {
   },
   data() {
     return {
-      textException: null,
-      showException: null,
+      causeExceptions: {
+        note: null,
+        type: null
+      },
+      showException: true,
+      showSingnatureAndException: true,
       showSingnature: null,
       singnature: null
 
@@ -141,7 +145,52 @@ export default {
       'settingsStore'
     ])
   },
+ watch: {
+    singnature: {
+      handler: function (newVal) {
+        if (newVal !== null) {
+          this.showSingnature = null;
+          this.$store.commit("setDigitalFirm", this.singnature);
+          setTimeout(()=> {
+            this.$router.push({ name: 'direct-access'}).catch(() => {})
+          },1000)
+        }
+      }, deep: true
+    },
 
+    
+      exception: {
+      handler: function (newVal) {
+        if (newVal === false && this.step >= 2) {
+          this.showSingnatureAndException = false;
+           this.causeExceptions.note = null;
+          this.causeExceptions.type = null
+          this.showException = true
+        } else if (newVal === true && this.causeExceptions.note !== null && this.causeExceptions.type !== null && this.step >= 2) {
+              this.showSingnatureAndException = false ;
+        } else {
+          this.showSingnatureAndException = true;
+        }
+
+      }, deep: true
+    },
+    causeExceptions: {
+      handler: function (newVal) { 
+        if (newVal.note !== null && newVal.note.length > 10  && newVal.type !== null ) {
+          this.showException = false;
+        }
+      },  deep: true
+    },
+     step: {
+      handler: function (newVal) { 
+        if (newVal >= 2 &&  this.exception === true && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
+          this.showSingnatureAndException = false;
+        } else if (newVal >= 2 &&  this.exception === false) {
+          this.showSingnatureAndException = false;
+        }
+      },  deep: true
+    },
+  },
   methods: {
     getShow(value) {
       this.$emit("action", value);
@@ -150,25 +199,30 @@ export default {
 
       }
       if (value === "exception") {
-        this.showException = true;
+        UIkit.modal('#exeption').show()
       }
       if (value === "Singnature") {
         this.showSingnature = value;
         
       }
     },
-    resetTextException() {
-      // UIkit.toggle("#toggle-usage").hide();
-      UIkit.modal("#modal-sections").hide();
-      this.textException = null;
+    cancelResetException (){
+      this.causeExceptions.note = null;
+       this.causeExceptions.type = null
+        this.showSingnatureAndException = true ;
     },
     setException() {
-      this.showException = false;
-      this.$store.commit("setTextException", this.textException);
+      if (this.causeExceptions.note !== null && this.causeExceptions.type !== null ) {
+         this.$store.commit("setExceptions", this.causeExceptions);
+         if (this.exception === true && this.causeExceptions.note !== null && this.causeExceptions.type !== null && this.step >= 2) {
+              this.showSingnatureAndException = false ;
+        }
+      }
     },
     closeSingnature () {
         this.showSingnature = null;
         this.singnature = null;
+        this.showSingnatureAndException = true ;
     }
   },
 };
@@ -250,5 +304,9 @@ ul {
   top: 57px;
   right: 20px;
   margin: 2px 0px 0px -23px;
+}
+.cancel {
+  background-color:  rgb(119, 5, 5);
+  color: #fff;
 }
 </style>
