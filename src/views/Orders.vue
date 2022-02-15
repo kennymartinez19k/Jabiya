@@ -217,8 +217,7 @@ export default {
     this.setOpen(true)
     this.load = {...this.loadStore};
     this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
-    console.log(this.load)
-    this.orders = [...this.load.Orders]
+    this.orders =  (await this.$services.loadsServices.getLoadDetails(this.load.loadMapId)).Orders
       this.load.firstOrdenSector = this.orders[0]?.sector
       this.orderObj();
     this.setOpen(false)
@@ -231,6 +230,14 @@ export default {
           x.totalOrdersScanned += z.loadScanningCounter
         })
       })
+      let res = 0
+      this.load.Orders.map(x => {
+        x.products.forEach(z => { 
+          res += z.loadScanningCounter
+        })
+      })
+      console.log(res)
+      
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {

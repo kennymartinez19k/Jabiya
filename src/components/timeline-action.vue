@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    {{digitalFirm}}
     <div v-if="showSingnature === 'firm'" class="uk-padding-small">
       <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
@@ -138,6 +137,7 @@ export default {
     },
     closeSingnature () {
         this.showSingnature = null;
+        this.$emit("resetSign", false);
         this.digitalFirm = null;
     }
     
@@ -218,7 +218,7 @@ ul {
 .icon-close{
   background-color: #f04c3b40;;
   position: absolute;
-  top: 60px;
+  top: 35px;
   width: 25px;
   right: 10px;
   border-radius: 10px;
