@@ -139,13 +139,23 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (JSON.parse(localStorage.getItem("rememberData"))) {
       this.rememberPassword = true;
       this.login.email = JSON.parse(localStorage.getItem("rememberData"));
       this.login.password = JSON.parse(
         localStorage.getItem("rememberPassword")
       );
+      
+    }
+    let detailsException = null;
+    try {
+      detailsException = await this.$services.exceptionServices.getExceptionsDetails();
+    } catch (error) {
+      console.log(error.error)
+    }
+    if (detailsException) {
+      localStorage.setItem("detailsException", JSON.stringify(detailsException));
     }
   },
   computed:{

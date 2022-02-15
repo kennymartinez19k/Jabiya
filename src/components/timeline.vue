@@ -1,43 +1,37 @@
 <template>
   <div class="container">
     <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
-      <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()">
-      <signature-action @digitalSignature="singnature= $event"></signature-action>
+      <img
+        src="../assets/rejected.png"
+        class="icon-close"
+        @click="closeSingnature()"
+      />
+      <signature-action
+        @digitalSignature="singnature = $event"
+      ></signature-action>
     </div>
-    <!-- <div v-if="showException && exception" class="uk-padding-small">
-      <textarea
-        class="uk-textarea"
-        rows="3"
-        placeholder="Notas:"
-        v-model="textException"
-      ></textarea>
-      <div class="uk-margin-small-top uk-flex uk-flex-right">
-        <button
-          type="button"
-          class="uk-button uk-button-primary"
-          @click="setException()"
-        >
-          Guardar
-        </button>
-      </div>
-    </div> -->
-
-
-
-<!-- This is the modal -->
-<div id="exeption" uk-modal>
-    <div class="uk-modal-dialog uk-modal-body">
-        <h2 class="uk-modal-title">Headline</h2>
-         <div class="uk-margin">
-        <label for="">Tipos de Exepción</label>
-            <select class="uk-select" v-model="causeExceptions.type">
-                <option value="Option 01">Option 01</option>
-                <option value="Option 02">Option 02</option>
-            </select>
+    <!-- This is the modal -->
+    <div id="exception" uk-modal>
+      <div class="uk-modal-dialog uk-modal-body">
+        <div class="uk-margin">
+          <label class="uk-text-bolder" for="typeExp">Tipos de Excepción <span class="uk-text-danger">*</span></label>
+          <select id="typeExp" class="uk-select" v-model="causeExceptions.type">
+            <option disabled>Elija una Excepción</option>
+            <option
+              v-for="exception in detailsException"
+              :key="exception"
+              :value="exception"
+            >
+              {{ exception }}
+            </option>
+          </select>
         </div>
         <div>
-        <label for="">Notas <span >*</span></label>
+          <label class="uk-text-bolder" for="note"
+            >Notas <span class="uk-text-danger">*</span></label
+          >
           <textarea
+            id="note"
             class="uk-textarea"
             rows="3"
             placeholder="Notas:"
@@ -46,12 +40,25 @@
           >
           </textarea>
         </div>
-         <p class="uk-flex uk-flex-around">
-            <button class="uk-button uk-button-default uk-modal-close cancel" type="button" @click="cancelResetException()">Cancelar</button>
-            <button :disabled="showException === true" class="uk-button uk-button-primary uk-modal-close" type="button" @click="setException()">Guardar</button>
+        <p class="uk-flex uk-flex-around">
+          <button
+            class="uk-button uk-button-default uk-modal-close cancel"
+            type="button"
+            @click="cancelResetException()"
+          >
+            Cancelar
+          </button>
+          <button
+            :disabled="showException === true"
+            class="uk-button uk-button-primary uk-modal-close"
+            type="button"
+            @click="setException()"
+          >
+            Guardar
+          </button>
         </p>
+      </div>
     </div>
-</div>
     <ul class="progressbar">
       <li
         class="stepOne"
@@ -81,9 +88,9 @@
         :class="{
           'uk-disabled': step == 0,
           active:
-            resultScan !== null &&
-            imagiElement.length === 1 &&
-             causeExceptions.note !== null &&  causeExceptions.type !== null && showException === false,
+            causeExceptions.note !== null &&
+            causeExceptions.type !== null &&
+            showException === false,
         }"
         @click="getShow('exception')"
       >
@@ -99,7 +106,10 @@
 
       <li
         class="stepThree"
-        :class="{ 'uk-disabled': showSingnatureAndException, active: singnature !== null }"
+        :class="{
+          'uk-disabled': showSingnatureAndException,
+          active: singnature !== null
+        }"
         @click="getShow('Singnature')"
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
@@ -108,19 +118,18 @@
         <div :class="{ disabled: showSingnatureAndException }"></div>
       </li>
     </ul>
-
   </div>
 </template>
 
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
 import UIkit from "uikit";
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 export default {
   components: {
     SignatureAction,
   },
- 
+
   props: {
     step: Number,
     exception: Boolean,
@@ -131,96 +140,137 @@ export default {
     return {
       causeExceptions: {
         note: null,
-        type: null
+        type: null,
       },
       showException: true,
       showSingnatureAndException: true,
       showSingnature: null,
-      singnature: null
-
+      singnature: null,
     };
   },
   computed: {
-    ...mapGetters([
-      'settingsStore'
-    ])
+    ...mapGetters(["settingsStore"]),
   },
- watch: {
+  async mounted() {
+    this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
+  },
+  watch: {
     singnature: {
       handler: function (newVal) {
         if (newVal !== null) {
           this.showSingnature = null;
           this.$store.commit("setDigitalFirm", this.singnature);
         }
-      }, deep: true
+      },
+      deep: true,
     },
-
-    
-      exception: {
+    imagiElement: {
+      handler: function (newVal) {
+        if (newVal.length === 0) {
+          this.showSingnatureAndException = true;
+        } else if (newVal.length > 0 ) {
+          this.$emit("action", 'exception');
+          this.showSingnatureAndException = false;
+        } else {
+          this.showSingnatureAndException = false;
+        }
+      },
+      deep: true,
+    },
+    exception: {
       handler: function (newVal) {
         if (newVal === false && this.step >= 2) {
           this.showSingnatureAndException = false;
-           this.causeExceptions.note = null;
-          this.causeExceptions.type = null
-          this.showException = true
-        } else if (newVal === true && this.causeExceptions.note !== null && this.causeExceptions.type !== null && this.step >= 2) {
-              this.showSingnatureAndException = false ;
+          this.causeExceptions.note = null;
+          this.causeExceptions.type = null;
+          this.showException = true;
+        } else if (
+          newVal === true &&
+          this.causeExceptions.note !== null &&
+          this.causeExceptions.type !== null &&
+          this.step >= 2
+        ) {
+          this.showSingnatureAndException = false;
         } else {
           this.showSingnatureAndException = true;
         }
-
-      }, deep: true
+      },
+      deep: true,
     },
     causeExceptions: {
-      handler: function (newVal) { 
-        if (newVal.note !== null && newVal.note.length > 10  && newVal.type !== null ) {
+      handler: function (newVal) {
+        if (
+          newVal.note !== null &&
+          newVal.note.length > 10 &&
+          newVal.type !== null
+        ) {
           this.showException = false;
         }
-      },  deep: true
+      },
+      deep: true,
     },
-     step: {
-      handler: function (newVal) { 
-        if (newVal >= 2 &&  this.exception === true && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
+    step: {
+      handler: function (newVal) {
+        if (
+          newVal >= 2 &&
+          this.exception === true &&
+          this.causeExceptions.note !== null &&
+          this.causeExceptions.type !== null
+        ) {
           this.showSingnatureAndException = false;
-        } else if (newVal >= 2 &&  this.exception === false) {
+        } else if (newVal >= 2 && this.exception === false) {
           this.showSingnatureAndException = false;
         }
-      },  deep: true
+      },
+      deep: true,
     },
   },
   methods: {
     getShow(value) {
       this.$emit("action", value);
-      if (value === 'scan') {
-      this.$emit("action", value);
-
+      if (value === "scan") {
+        this.$emit("action", value);
       }
       if (value === "exception") {
-        UIkit.modal('#exeption').show()
+        UIkit.modal("#exception").show();
+        if (this.imagiElement.length > 0) {
+        this.$emit("action", value);
+        }
       }
       if (value === "Singnature") {
         this.showSingnature = value;
-        
       }
     },
-    cancelResetException (){
+    cancelResetException() {
       this.causeExceptions.note = null;
-       this.causeExceptions.type = null
-        this.showSingnatureAndException = true ;
+      this.causeExceptions.type = null;
+      this.showSingnatureAndException = true;
+      this.showException = true;
     },
     setException() {
-      if (this.causeExceptions.note !== null && this.causeExceptions.type !== null ) {
-         this.$store.commit("setExceptions", this.causeExceptions);
-         if (this.exception === true && this.causeExceptions.note !== null && this.causeExceptions.type !== null && this.step >= 2) {
-              this.showSingnatureAndException = false ;
+      if (
+        this.causeExceptions.note !== null &&
+        this.causeExceptions.type !== null
+      ) {
+        this.$store.commit("setExceptions", this.causeExceptions);
+        if (
+          this.exception === true &&
+          this.causeExceptions.note !== null &&
+          this.causeExceptions.type !== null &&
+          this.step >= 2 && 
+          this.imagiElement.length > 0
+        ) {
+          this.showSingnatureAndException = false;
         }
       }
     },
-    closeSingnature () {
-        this.showSingnature = null;
-        this.singnature = null;
-        this.showSingnatureAndException = true ;
-    }
+    closeSingnature() {
+      this.showSingnature = null;
+      this.singnature = null;
+      this.showSingnatureAndException = true;
+        this.$emit("resetSign", false);
+    },
+    
   },
 };
 </script>
@@ -295,8 +345,8 @@ ul {
   background: #3aac5d !important;
   color: white !important;
 }
-.icon-close{
-  background-color: #f04c3b40;;
+.icon-close {
+  background-color: #f04c3b40;
   position: absolute;
   top: 60px;
   width: 25px;
@@ -305,7 +355,7 @@ ul {
   margin: 2px 0px 0px -23px;
 }
 .cancel {
-  background-color:  rgb(119, 5, 5);
+  background-color: rgb(119, 5, 5);
   color: #fff;
 }
 </style>

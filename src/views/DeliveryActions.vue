@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('2b')">Escanear</button>
+    <button @click="uploadProducts('1b')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -137,6 +137,7 @@
           :resultScan="resultScan"
           :imagiElement="imagiElement"
           @action="getShow($event)"
+          @resetSign="resetSign()"
         />
       </div>
       </div>
@@ -291,7 +292,7 @@ export default {
           await this.postImages()
           console.log(this.firstStructureLoad)
           let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
-          let orders 
+          let orders ;
           if(load){
             orders = load.Orders
           }else{
@@ -352,7 +353,16 @@ export default {
           })
         }
       }, deep: true
-    }
+    },
+    exception:{
+      handler: function (newVal) {
+        if (newVal) {
+          this.step = 1
+        } else if (newVal === false && this.orders.some(x => {return x.products.some(z => z.loadScanningCounter !== 0)}) === false) {
+          this.step = 0
+        }
+      }, deep: true
+    },
   },
 
   methods: {
@@ -364,8 +374,9 @@ export default {
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.getCam();
       } else if (value === "Singnature") {
-        this.serieA = value;
         this.step++;
+      } else if (value === "exception") {
+        this.step = 2;
       }
     },
    
@@ -440,14 +451,29 @@ export default {
         images.push(this.firm);
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
-        let res = []
+        let resultId = []
         this.firstStructureLoad.forEach(x => {
           if(x.loadScanningCounter < x.quantity){
-            res.push(x._id)
+            resultId.push(x._id)
           }
         })
-        console.log(res)
-      
+        console.log(resultId, 'exception')
+      // if (this.causeExceptionsStore && loadScanningCounter < quantity) {
+       
+
+      //   console.log(quantity, 'quantity')
+      //   console.log(loadScanningCounter, 'loadScanningCounter')
+      //   console.log(unreturnedOrders, 'unreturnedOrders')
+      //   console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
+      //   console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
+
+        // await this.$services.exceptionServices.setExceptions(unreturnedOrders[0]._id, this.causeExceptionsStore);
+        
+      // } else {
+        
+      //   console.log(quantity, 'quantity else')
+      //   console.log(loadScanningCounter, 'loadScanningCounter else')
+      // }
     },
 
 
@@ -692,6 +718,9 @@ export default {
         }
       }
       }
+    },
+    resetSign(){
+      this.step = 2
     }
   },
 };
