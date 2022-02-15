@@ -49,7 +49,7 @@
           <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
         </div>
         <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
-            <h6 class="uk-margin-remove">{{messageReject}} wd<font-awesome-icon icon="ban" style="color: #be1515;"/>
+            <h6 class="uk-margin-remove">{{messageReject}} <font-awesome-icon icon="ban" style="color: #be1515;"/>
             </h6>
         </div>
       </div>

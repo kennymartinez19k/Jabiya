@@ -106,6 +106,7 @@
         :imagiElement="imagiElement"
         :showSignaturform="showSignaturform"
         @action="getShow($event)"
+        @resetSign="resetSign()"
       />
     </div>
   </div>
@@ -392,6 +393,9 @@ export default {
       if (this.imagiElement.length === 0) {
         this.step = 1;
       }
+    },
+    resetSign(){
+      this.step = 2
     }
   },
 };
