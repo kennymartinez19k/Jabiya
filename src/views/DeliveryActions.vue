@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('7')">Escanear</button>
+    <button @click="uploadProducts('2b')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -49,7 +49,7 @@
           <h6 style="font-size: 14px" class="uk-margin-remove">{{completedOrder}}</h6>
         </div>
         <div v-if="statusOrders == 'reject'" style="width: 100%;; font-size: 30px">
-            <h6 class="uk-margin-remove">{{messageReject}} wd<font-awesome-icon icon="ban" style="color: #be1515;"/>
+            <h6 class="uk-margin-remove">{{messageReject}} <font-awesome-icon icon="ban" style="color: #be1515;"/>
             </h6>
         </div>
       </div>
@@ -99,7 +99,7 @@
       </div>
        <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
       <div class="uk-flex  img-scroll">
-             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display flex; margin: 0px 10px">
+             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display: flex; margin: 0px 10px">
               <img class="img-result" :src="src"  alt="Red dot" />
                <img src="../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="">
              </span>
@@ -447,22 +447,7 @@ export default {
           }
         })
         console.log(res)
-      // if (this.causeExceptionsStore && loadScanningCounter < quantity) {
-       
-
-      //   console.log(quantity, 'quantity')
-      //   console.log(loadScanningCounter, 'loadScanningCounter')
-      //   console.log(unreturnedOrders, 'unreturnedOrders')
-      //   console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
-      //   console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
-
-        // await this.$serre4vices.exceptionServices.setExceptions(unreturnedOrders[0]._id, this.causeExceptionsStore);
-        
-      // } else {
-        
-      //   console.log(quantity, 'quantity else')
-      //   console.log(loadScanningCounter, 'loadScanningCounter else')
-      // }
+      
     },
 
 

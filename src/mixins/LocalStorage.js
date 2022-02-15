@@ -29,7 +29,6 @@ export const LocalStorage = {
     },
     async peek(){
       let elements =  JSON.parse(await this.localStorage.get(this.queueId))
-      console.log(elements)
       return elements?.length > 0 ? elements[0] : undefined;
     },
     async all(){
