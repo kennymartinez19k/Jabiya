@@ -4,7 +4,7 @@ class ExceptionServices {
       this.http = http
     }
   
-    async setExceptions (idException, exceptions) {
+    async putExceptions (idException, exceptions) {
         const exception ={
             "reason": exceptions.type ,
             "note": exceptions.note
