@@ -85,7 +85,7 @@
       
        <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 15px 10px !important">
       <div class="uk-flex img-scroll">
-             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display flex; margin: 0px 10px">
+             <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display: flex; margin: 0px 10px">
               <img class="img-result" :src="src"  alt="Red dot" />
                <img src="../../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="">
              </span>
