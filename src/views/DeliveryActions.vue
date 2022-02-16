@@ -147,7 +147,7 @@
 
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
 
-            <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }})</span></p>
+            <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }}</span>)</p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
