@@ -51,7 +51,7 @@
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
                   <span> RD ${{load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div  v-if="userData?.userType == userType?.provider || userData?.userType == userType?.transporter" class="uk-flex uk-flex-middle">
+                <div  v-if="userData?.userType !== userType?.driver" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>

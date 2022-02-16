@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('8')">Escanear</button>
+    <button @click="uploadProducts('3')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -442,6 +442,7 @@ export default {
             load.Orders.forEach(x => {
               allProductScanned.push(x.products.every(prod => prod.loadScanningCounter >= prod.quantity))
             })
+            this.stopScan()
             if(allProductScanned.every(x => x == true)){
               localStorage.removeItem(`allProducts${this.load.loadMapId}`)
               await this.$services.loadsScanServices.completeLoad(this.load.loadMapId, quantityTotal )

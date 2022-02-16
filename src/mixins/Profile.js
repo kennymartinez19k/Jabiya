@@ -89,17 +89,16 @@ export const Profile = {
   
   methods: {
     setProfile(val) {
-      if (val.loadType == "container") {
+      if (val.loadType == "Container Pickup/Delivery") {
         localStorage.setItem('currentProfile', JSON.stringify(this.container))
       }
-      if (val.loadType == "b2b"){
+      if (val.loadType == "B2B Delivery"){
         localStorage.setItem('currentProfile', JSON.stringify(this.b2b))
       }
-
     },
 
     setStatus(val){
-      if(val.loadType == 'container'){
+      if(val.loadType == 'Container Pickup/Delivery'){
         if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
         if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
         if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[0]?.status == 'REJECTED') return "Rechazado por Flai Admin";
