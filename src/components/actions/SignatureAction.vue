@@ -34,8 +34,11 @@ export default {
     },
     save() {
       const { data } = this.$refs.signaturePad.saveSignature();
-      this.singnature = data;
-      this.$emit("digitalSignature", this.singnature);
+      if(data){
+        this.singnature = data;
+        this.$emit("digitalSignature", this.singnature);
+      }
+     
     },
 
   },
@@ -48,4 +51,5 @@ export default {
 .btn {
   padding: 5px 5px;
 }
+
 </style>

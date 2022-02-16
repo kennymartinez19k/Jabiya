@@ -14,7 +14,7 @@
     "transporter": "Coordinador de Transporte"
   },
   "profile":{
-    "container": "container",
-    "b2b": "b2b"
+    "container": "Container Pickup/Delivery",
+    "b2b": "B2B Delivery"
   }
 }

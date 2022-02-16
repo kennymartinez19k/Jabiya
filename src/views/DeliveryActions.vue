@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('4')">Escanear</button>
+    <button @click="uploadProducts('2')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -289,39 +289,28 @@ export default {
           await this.postImages()
           let load
           let orders;
+          let res = []
+
           try{
             load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
             orders = load.Orders
+            for (let i = 0; i < orders.length; i++) {
+              const order = orders[i];
+              res.push(order.products.every(x => x.loadScanningCounter >= x.quantity))
+            }
+            if(res.every(x => x == true)){
+              await this.changeRouteLoads('Delivered', this.load)
+              localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
+              localStorage.removeItem(`allProducts${this.load.loadMapId}`)
+            } 
 
           }catch(error){
-            orders = await JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
+            localStorage.removeItem(`allProducts${this.load.loadMapId}`)
           }
-          let res = []
-          
-          for (let i = 0; i < orders.length; i++) {
-            const order = orders[i];
-            res.push(order.products.every(x => x.loadScanningCounter >= x.quantity))
-          }
-          if(res.every(x => x == true)){
-            await this.changeRouteLoads('Delivered', this.load)
-            localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
-          }
-          
-            let allProductScanned = []
-            orders.forEach(x => {
-              this.allProductScanned.push(this.firstStructureLoad.some(product => product.order_num == x.order_num))
-            })
-            if(allProductScanned.every(x => x == true)){
-              localStorage.removeItem(`allProducts${this.load.loadMapId}`)
-              this.$router.push({ name: "load-status" }).catch(() => {});
-            }else{
-              this.$router.push({name: 'orders'})
-            }
-          setTimeout(() =>{
-            this.$router.push({ name: "home" }).catch(() => {});
-            this.setOpen(false)
+             setTimeout(() =>{
+              this.$router.push({ name: "home" }).catch(() => {});
+              this.setOpen(false)
           }, 5000)
-
         }
       },
     },
@@ -528,7 +517,7 @@ export default {
                 this.showProduct = true
                 this.statusOrders = 'start'
                 this.scanOrder()
-            }, 10000)
+            }, 1000)
           }else{
             this.statusOrders = 'reject';
             this.messageReject = 'Error, producto no reconocido'
@@ -539,9 +528,8 @@ export default {
             setTimeout(() => {
                 this.statusOrders = 'start'
                 this.showProduct = true
-                this.resultScan = true
                 this.scanOrder()
-            }, 10000)
+            }, 1000)
           }
         }      
     },

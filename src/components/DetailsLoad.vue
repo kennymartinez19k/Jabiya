@@ -32,11 +32,11 @@
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
                   <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.revenue * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div  v-if="userData?.userType == userType?.provider || userData?.userType == userType?.transporter" class="uk-flex uk-flex-middle">
+                <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider || userData?.userType == userType?.transporter)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.transportCost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
+                <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
                   <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.profitability * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
@@ -138,7 +138,7 @@
            
           </div>
           
-          <div v-if="detailsLoads?.loadType == profile?.b2b ">
+        <div v-if="detailsLoads?.loadType == profile?.b2b && detailsLoads.loadingStatus.text !== 'Driver selection in progress'">
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
         <div
           v-for="order in orders"
@@ -182,12 +182,14 @@
         </div>
       </div>
 
-           <div class="uk-text-left" v-if="userData?.userType === userType?.transporter && userData?.position === userPosition?.transporter">
+           <div class="uk-text-left" v-if="userData?.userType !== userType?.driver && !hasAddAdditionalInfo">
               <p class="uk-text-bold " style="font-size: 16px !important">Información Adicional:</p>
-              <ul>
-                <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
-                <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
-                <li><a style="color: red;" href="https://drive.google.com/file/d/1V9uVm0928RLKDPrl8Y6WevKmDIx_cQkV/view?usp=sharing">Archivo PDF</a></li>
+              <ul class="file">
+                <li v-for="order in orders" :key="order" v-show="order?.addAdditionalInfo?.length > 0">
+                  <div v-for="file in order?.addAdditionalInfo" :key="file">
+                    <a target="_blank" style="color: red;" :href="file">{{baseName(file)}}</a>
+                    </div>
+                </li>
               </ul>
             </div>
             <div v-if=" detailsLoads?.loadingStatus?.text === 'Driver selection in progress'">
@@ -258,6 +260,13 @@ export default {
 
   computed: {
     ...mapGetters(["detailsLoadsStore", "userData"]),
+
+    hasAddAdditionalInfo(){
+      if(this.orders.some(order => order.addAdditionalInfo))
+        return this.orders.every(order => order.addAdditionalInfo <= 0)
+      else
+      return true
+    }
   },
  async mounted () {
        this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
@@ -326,7 +335,7 @@ export default {
     ordenIsReturn(val) {
       let res = val?.Orders?.find((x) => x);
       localStorage.setItem('loadType', JSON.stringify(val.loadType))
-      if (val.loadType === this.profile.b2b) return 'b2b '
+      if (val.loadType === this.profile.b2b) return 'B2B'
       if (res?.isReturn) return "Devolver Contenedor";
       return "Entregar Contenedor";
     },
@@ -334,6 +343,9 @@ export default {
       return val?.Orders?.find((x) => x.isReturn);
     },
   
+    baseName(file){
+      return file.split('/').reverse()[0];
+    }
   },
 };
 </script>
@@ -403,6 +415,11 @@ a {
 }
 .load-assigned .status-load{
   color: red;
+}
+
+.file{
+  margin: 15px 0px ;
+  padding-left: 15px;
 }
 
 </style>
