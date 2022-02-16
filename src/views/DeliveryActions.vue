@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('1b')">Escanear</button>
+    <button @click="uploadProducts('4')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -271,9 +271,6 @@ export default {
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
 
-    setInterval(async () =>{
-      await this.updateData()
-    }, 10000)
     
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.allProductScanned = true
@@ -290,12 +287,13 @@ export default {
           this.firm = newVal;
           this.setOpen(true)
           await this.postImages()
-          console.log(this.firstStructureLoad)
-          let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
-          let orders ;
-          if(load){
+          let load
+          let orders;
+          try{
+            load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
             orders = load.Orders
-          }else{
+
+          }catch(error){
             orders = await JSON.parse(localStorage.getItem(`allProducts${this.load.loadMapId}`))
           }
           let res = []
@@ -304,15 +302,25 @@ export default {
             const order = orders[i];
             res.push(order.products.every(x => x.loadScanningCounter >= x.quantity))
           }
-          console.log(res)
           if(res.every(x => x == true)){
             await this.changeRouteLoads('Delivered', this.load)
             localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
           }
+          
+            let allProductScanned = []
+            orders.forEach(x => {
+              this.allProductScanned.push(this.firstStructureLoad.some(product => product.order_num == x.order_num))
+            })
+            if(allProductScanned.every(x => x == true)){
+              localStorage.removeItem(`allProducts${this.load.loadMapId}`)
+              this.$router.push({ name: "load-status" }).catch(() => {});
+            }else{
+              this.$router.push({name: 'orders'})
+            }
           setTimeout(() =>{
             this.$router.push({ name: "home" }).catch(() => {});
             this.setOpen(false)
-          }, 8000)
+          }, 5000)
 
         }
       },
@@ -458,22 +466,7 @@ export default {
           }
         })
         console.log(resultId, 'exception')
-      // if (this.causeExceptionsStore && loadScanningCounter < quantity) {
-       
-
-      //   console.log(quantity, 'quantity')
-      //   console.log(loadScanningCounter, 'loadScanningCounter')
-      //   console.log(unreturnedOrders, 'unreturnedOrders')
-      //   console.log(unreturnedOrders[0]._id, 'unreturnedOrders')
-      //   console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
-
-        // await this.$services.exceptionServices.setExceptions(unreturnedOrders[0]._id, this.causeExceptionsStore);
-        
-      // } else {
-        
-      //   console.log(quantity, 'quantity else')
-      //   console.log(loadScanningCounter, 'loadScanningCounter else')
-      // }
+   
     },
 
 
@@ -494,7 +487,7 @@ export default {
                   this.showProduct = true
                   this.statusOrders = 'start'
                   this.scanOrder()
-              }, 10000)
+              }, 1000)
           }
           else{
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
@@ -671,11 +664,12 @@ export default {
           this.checkOrder = false
           if(this.firstStructureLoad.every(x => x.completedScanned)){
             console.log(this.firstStructureLoad)
-          this.resultScan = true
+            this.resultScan = true
             this.step = 1
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
+            
           }
           else this.scanOrder()
         }, 1000)
@@ -689,34 +683,48 @@ export default {
       this.step = 1
     },
     async updateData(){
-      if(this.$route.name == 'deliveryActions'){
+      try{
+        if(this.$route.name == 'deliveryActions'){
+  
+        let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
+        if(load.loadingStatus.text == 'Delivered'){
+          this.firstStructureLoad.forEach(x => {
+            x.loadScanningCounter = x.quantity
+          })
+          this.verifiedLoad()
+        }else{
+          for (let i = 0; i < load.Orders.length; i++) {
+            const order = load.Orders[i];
+            
+            if(this.firstStructureLoad.some(x => x.order_num == order.order_num)){
+              let structure = await this.setStructure(order)
 
-      let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
-      if(load.loadingStatus.text == 'Delivered'){
-        this.firstStructureLoad.forEach(x => {
-          x.loadScanningCounter = x.quantity
-        })
-        this.verifiedLoad()
-      }else{
-        for (let i = 0; i < load.Orders.length; i++) {
-          const order = load.Orders[i];
-          
-          if(this.firstStructureLoad.some(x => x.order_num == order.order_num)){
-            let structure = await this.setStructure(order)
-         
-            for(let cont = 0; cont < structure.secondStructure.length; cont++){
-              const product = structure.secondStructure[cont];
-              this.secondStructureLoad.forEach(x => {
-                if(x.qrCode == product.qrCode){
-                  x.loadScanningCounter = product.loadScanningCounter
-                  x.completedScanned = x.loadScanningCounter >= x.quantity
-                  x.scanProgress =  x.loadScanningCounter > 0 && !x.completedScanned
+              for (let cont = 0; cont < structure.firstStructure.length; cont++) {
+              const product = structure.firstStructure[cont];
+              this.firstStructureLoad.forEach(x => {
+                if(x.qrCode == product.qrCode && x?.quantity === product?.quantity){
+                  if(product.loadScanningCounter != x.loadScanningCounter ) {
+                    x.loadScanningCounter = product.loadScanningCounter
+                  }
+
                 }
               })
             }
+           
+              for(let cont = 0; cont < structure.secondStructure.length; cont++){
+                const product = structure.secondStructure[cont];
+                this.secondStructureLoad.forEach(x => {
+                  if(x.qrCode == product.qrCode){
+                    x.loadScanningCounter = product.loadScanningCounter
+                  }
+                })
+              }
+            }
           }
         }
-      }
+        }
+      }catch(error){
+        return false
       }
     },
     resetSign(){

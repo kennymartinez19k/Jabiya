@@ -57,7 +57,7 @@ export default {
       let queueItem = await this.peek()
       if(queueItem){
         if(queueItem.formInfo){
-          waitInterval = 8000
+          waitInterval = 4000
         }else{
           waitInterval = 2000
         }

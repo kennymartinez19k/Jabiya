@@ -47,7 +47,7 @@
           <font-awesome-icon icon="check"/>
         </div>
         <div v-else class="order-select" >
-          <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
+          <input @click="orderForScan(order)" v-model="order.isSelectedDeliver" type="checkbox" class="uk-checkbox" >
         </div>
         <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
@@ -180,7 +180,7 @@ export default {
     },
     orders:{
       handler: function (newVal) {
-        if(newVal.every(x => x.isSelected == true)){
+        if(newVal.every(x => x.isSelectedDeliver == true)){
           this.selectAllOrders = true
         }else{
           this.selectAllOrders = false
@@ -201,22 +201,20 @@ export default {
     this.orders = this.load?.Orders
     this.setOpen(false)
    this.orders.map(x => {
-      // x.isSelected = false
+        // x.isSelectedDeliver = false
         x.totalQuantity = 0
         x.totalOrdersScanned = 0
         
         x.products.forEach(z => { 
-          
-          x.totalQuantity =+  z.quantity 
+          x.totalQuantity +=  z.quantity 
           x.totalOrdersScanned += z.loadScanningCounter
-
         })
       })
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {
            if (order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
-             order.isSelected = true
+             order.isSelectedDeliver = true
             this.orderForScan(order)
            } 
           })

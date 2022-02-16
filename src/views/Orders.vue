@@ -230,13 +230,7 @@ export default {
           x.totalOrdersScanned += z.loadScanningCounter
         })
       })
-      let res = 0
-      this.load.Orders.map(x => {
-        x.products.forEach(z => { 
-          res += z.loadScanningCounter
-        })
-      })
-      console.log(res)
+      
       
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
