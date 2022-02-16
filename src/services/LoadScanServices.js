@@ -35,6 +35,7 @@ class LoadsScanServices {
         }
         
         const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
+        console.log(result)
         return result
     }
 

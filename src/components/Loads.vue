@@ -1,4 +1,5 @@
 <template>
+  
   <div class="">
     <ion-loading
       :is-open="isOpenRef"
@@ -12,13 +13,14 @@
       <ul class="uk-pagination" >
         <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
         <li><span>
-          <p class="uk-text-meta uk-margin-remove-top date">
-            <time
-              class="uk-text-bold uk-text-uppercase"
-              style="font-size: 14px"
-              >{{dateMoment}}</time
-            >
-          </p>      
+          <p class="uk-text-meta uk-margin-remove-top date ">
+              <label
+                for="date"
+                class="uk-text-bold uk-text-uppercase"
+                style="font-size: 14px"
+                >{{dateMoment}}</label
+              >
+            </p>    
         </span></li>
         <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
       </ul>
@@ -123,6 +125,7 @@ import { Mixins } from "../mixins/mixins";
 import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
 
+
 export default {
   components: {
     IonLoading,
@@ -143,7 +146,7 @@ export default {
       assignedLoads: -1,
       timeOut: 30000,
       userInfo: {},
-      reloadEvent: false
+      reloadEvent: false,
     };
   },
 

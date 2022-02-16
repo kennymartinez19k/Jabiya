@@ -120,6 +120,8 @@ import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import { IonLoading } from "@ionic/vue";
+import { Mixins} from '../../mixins/mixins'
+
 
 
 
@@ -131,6 +133,8 @@ export default {
     timeline,
     IonLoading
   },
+  mixins: [Mixins],
+
   setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
@@ -180,7 +184,7 @@ export default {
     if(loadsMounted){
        this.load = loadsMounted;
        this.orders = this.load.Orders.filter(x => !x.isReturn)
-             this.showSignaturform = this.orders.some(x =>  x.isReturn);
+       this.showSignaturform = this.orders.some(x =>  x.isReturn);
     }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -200,15 +204,18 @@ export default {
           this.firm = newVal;
           this.uploadOrDownload(this.load)
           this.postImages()
-            let isReturn = this.load.Orders.find(x => x.isReturn)
+          let isReturn = this.load.Orders.find(x => x.isReturn)
 
-                if(isReturn){
-                  localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
-                  this.$router.push({ name: 'load-status'}).catch(() => {})
-                }else{
-                  localStorage.removeItem(`startLoad${this.load.loadMapId}`)
-                  this.$router.push({ name: 'home'}).catch(() => {})
-                }
+          await this.changeRouteLoads('Delivered', this.load)
+          localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
+          
+          if(isReturn){
+            localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
+            this.$router.push({ name: 'load-status'}).catch(() => {})
+          }else{
+            localStorage.removeItem(`startLoad${this.load.loadMapId}`)
+            this.$router.push({ name: 'home'}).catch(() => {})
+          }
 
         }
       },
@@ -247,11 +254,7 @@ export default {
         this.step++;
       }
     },
-     async getLoadsId (val) {
-      const result = await this.$services.loadsServices.getOrdersByLoadId(val)
-      this.orders = result
-
-    },
+    
 
       verificacion(orders, result) {
         for (let i = 0; i < orders.length; i++) {

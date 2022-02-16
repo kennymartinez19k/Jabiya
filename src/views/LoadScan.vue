@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('4')">Escanear</button>
+    <button @click="uploadProducts('8')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -156,7 +156,7 @@ export default {
   },
   watch:{
     $route: function(newVal){
-      if (newVal){
+      if (newVal.name == 'scan-order'){
         this.stopScan()
       }
     },
@@ -253,6 +253,7 @@ export default {
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
             order = order.find(x => x)
             let productInfo = order.products.find(p => p?.qrCode == val && p.quantity == orderForScan.quantity && orderForScan.order_num == order.order_num)
+            console.log(productInfo, 'productInfo')
             if(productInfo?.scanOneByOne === "no") {
               let noScan1by1 = 0
               let scannedCounterNo1by1 = 0
@@ -308,6 +309,7 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
+      console.log(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne)
       let res = {orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne}
       let isChange = await this.updateData(orderId, boxId, productId, qrCode, quantity, scanOneByOne)
       if(isChange != false){
@@ -315,13 +317,13 @@ export default {
         res = {...isChange}
         return;
       }
+
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === res.qrCode && x.quantity == res.quantity &&  !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == res.qrCode)
         if(res.scanOneByOne){
           this.firstStructureLoad[index_first].loadScanningCounter += 1
           this.secondStructureLoad[index_second].loadScanningCounter += 1
-  
-          await this.$services.loadsScanServices.scanProduct(res.orderId, res.boxId, this.secondStructureLoad[index_second].loadScanningCounter, res.productId, res.qrCode)
+          await this.$services.loadsScanServices.scanProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
   
         }else{
           if(res.loadCounter > this.firstStructureLoad[index_first].quantity){
@@ -506,6 +508,7 @@ export default {
 
           }
         }
+        console.log(info)
         if(!info){
           return false
         }
