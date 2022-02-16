@@ -13,24 +13,12 @@
       <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
         <thead>
           <tr class="">
-            <th scope="col" style="width: 5px"></th>
-            <th scope="col" style="display: inline">Nombre del Conductor</th>
+            <th scope="col" class="driverName">Nombre del Conductor</th>
           </tr>
         </thead>
         <tbody v-for="driver in drivers" :key="driver">
           <tr>
-            <td scope="row">
-              <input
-                class="uk-radio"
-                type="radio"
-                name="driverId"
-                :id="driver.driverId"
-                :value="driver.driverId"
-                v-model="carrierSelection.driverId"
-                required
-              />
-            </td>
-            <label :for="driver.driverId">
+            <label class=" uk-flex uk-flex-center" :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
               <td>{{driver.driverName}}</td>
             </label>
           </tr>
@@ -42,37 +30,27 @@
       <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
         <thead>
           <tr>
-            <th scope="col" style="width: 0.3%"></th>
-            <label class="uk-margin-remove uk-padding-remove list uk-flex uk-flex-around">
+            <label class=" list uk-flex uk-flex-around">
               <th scope="col">Marca</th>
               <th scope="col">Color</th>
-              <th class="text" scope="col">Matrícula</th>
+              <th  scope="col">Placa</th>
+              <th  scope="col">Costo</th>
             </label>
           </tr>
         </thead>
         <tbody  v-for="details in vehicles" :key="details">
           <tr>
-            <td scope="row">
-              <input
-                class="uk-radio"
-                type="radio"
-                name="vehicleId"
-                :id="details.vehicleId"
-                :value="details.vehicleId"
-                v-model="carrierSelection.vehicleId"
-                required
-              />
-            </td>
-            <label class="uk-margin-remove uk-padding-remove uk-flex uk-flex-around list" :for="details.vehicleId">
+            <label class=" uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
               <td>{{details.brand}}</td>
               <td>{{details.color}}</td>
               <td>{{details.vehicleNo}}</td>
+              <td>${{details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</td>
               </label>
           </tr>       
         </tbody>
       </table>
       <div class=" button-opt">
-      <button type="button" :disabled="showButton" class="uk-button uk-button-primary" @click="selectDriverVehicle()">Seleccionar conductor y Vehículo </button>
+      <button type="button" :disabled="showButton" class="uk-button uk-button-primary" @click="selectDriverAndVehicle()">Seleccionar conductor y Vehículo </button>
     </div>
     </form>
   </div>
@@ -114,7 +92,19 @@ export default {
     this.transporterName = data.transporterName
   },
   methods: {
-    async selectDriverVehicle () {
+    selectVehicle(id) {
+      this.carrierSelection.vehicleId = id
+      this.vehicles.forEach(x => {
+        x.isSelectedVehicles = x.vehicleId === id
+      }) 
+    },
+     selectDriver(id) {
+      this.carrierSelection.driverId = id
+      this.drivers.forEach(x => {
+        x.isSelectedDriver = x.driverId === id
+      }) 
+    },
+    async selectDriverAndVehicle () {
       if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
         localStorage.removeItem('dateCheck');
         localStorage.setItem('dateCheck', JSON.stringify(this.detailsLoads?.dateTime?.date));
@@ -153,13 +143,19 @@ td {
     padding: 0px 0px 8px 2px;
   }
 }
+.uk-table td { 
+  padding: 10px 12px;
+}
 .list th{
-  width: 15%;
-  min-width: 76px
+  width: 10%;
+  min-width: 51px;
+  padding: 10px 0px;
+  text-align: center;
 }
 .list td{
-  width: 15%;
-  min-width: 70px;
+width: 10%;
+    min-width: 51px;
+    padding: 10px 0px;
 }
 .text {
   padding-left: 0px
@@ -174,5 +170,13 @@ td {
   position: fixed;
   bottom: 0px;
   left: 14px;
+}
+.active {
+  background-color: #1e87f0;
+  color: #fff;
+}
+.driverName {
+  padding: 10px;
+  text-align: center;
 }
 </style>
