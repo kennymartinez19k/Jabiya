@@ -1,17 +1,16 @@
 <template>
-  
   <div class="">
     <ion-loading
       :is-open="isOpenRef"
       cssClass="my-custom-class"
-      message="Por favor Espere..."
+      message="Cargando Viajes..."
       :duration="timeOut"
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
     <div uk-margin style="position: relative">
       <ul class="uk-pagination" >
-        <li @click="currentDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
+        <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
         <li><span>
           <p class="uk-text-meta uk-margin-remove-top date ">
               <label
@@ -22,9 +21,12 @@
               >
             </p>    
         </span></li>
-        <li @click="currentDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
+        <li @click="reloadNewDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
       </ul>
-      <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
+      <span class="refresh-reload">
+        <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
+        <span>&nbsp;Refrescar</span>
+      </span>
     </div>
 
     
@@ -33,7 +35,7 @@
     </div>
     <div
       v-show="assignedLoads > 0"
-      v-for="(load, i) in loads"
+      v-for="(load, i) in loadsToDisplay"
       :key="i"
     >
       <div class="uk-card uk-card-default uk-width-1-2@m container">
@@ -124,6 +126,7 @@ import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
 import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
+import {LocalStorage} from '../mixins/LocalStorage'
 
 
 export default {
@@ -131,7 +134,7 @@ export default {
     IonLoading,
   },
   
-  mixins: [Mixins, Profile],
+  mixins: [Mixins, Profile, LocalStorage],
   alias: "Cargas Disponibles",
   data() {
     return {
@@ -139,14 +142,18 @@ export default {
       userPosition,
 
       loaded: false,
-      loads: [],
       dateAvalaible: [],
       date: new Date(),
       dateMoment: null,
       assignedLoads: -1,
-      timeOut: 30000,
+      timeOut: 25000,
       userInfo: {},
-      reloadEvent: false,
+      reloadEvent: true,
+      gets: null,
+      posts: null,
+      counter: 0,
+      loadsToDisplay: [],
+      waitingMessage: true
     };
   },
 
@@ -155,9 +162,9 @@ export default {
     const setOpen = (state) => (isOpenRef.value = state);
     return { isOpenRef, setOpen };
   },
-  async beforeMount() {
-    this.setOpen(true);
-  },
+  // async beforeMount() {
+  //   this.setOpen(true);
+  // },
   
   async mounted() {
       this.$store.commit('setUserData')
@@ -169,10 +176,12 @@ export default {
       this.sortLoads()
       localStorage.removeItem('DeliveryCharges');
 
-      //   let date = localStorage.getItem('currentDate')
-      // setInterval(() => {
-      //   this.currentDate( null , date )
-      // }, 15000)
+      setInterval(() => {
+        if(!this.reloadEvent){
+          this.reloadEvent = true
+          this.currentDate()
+        }
+      }, 10000)
   },
   computed: {
     ...mapGetters(["allLoadsStore", "settings", "userData"]),
@@ -181,8 +190,7 @@ export default {
       return JSON.parse(localStorage.getItem('loadingProgress'));
     },
   },
-
-  methods: {
+   methods: {
     setOpe(val) {
       this.loaded = val;
       setTimeout(() => {
@@ -190,36 +198,49 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
-      this.assignedLoads = -1
+      if(val){
+        this.waitingMessage = true
+      }
       this.loads = []
       let contDate
       let date
-        if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
-          contDate = localStorage.getItem('dateCheck');
-          this.date = new Date(contDate);
-        }else if(val){
-          contDate = this.date.setDate(this.date.getDate() + val);
-        }    
-        else contDate = this.date
-        date = moment(contDate).format("MM/DD/YYYY");
-        localStorage.setItem('dateCheck', date)
 
-       if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+      if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
+        contDate = localStorage.getItem('dateCheck');
+        this.date = new Date(contDate);
+      }else if(val){
+        contDate = this.date.setDate(this.date.getDate() + val);
+      }    
+      else contDate = this.date
+      date = moment(contDate).format("MM/DD/YYYY");
+      localStorage.setItem('dateCheck', date)
+
+      if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
       else this.dateMoment = date
-      this.setOpen(true);
-
+      this.setOpen(this.waitingMessage);
+      let loads
+      let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
       
-      let loads = await this.$services.loadsServices.getLoadsbyDate(date);
+      try{
+        loads = await this.$services.loadsServices.getLoadsbyDate(date);
+      }catch(error){
+        alert(error)
+      }
 
+      let loadsAcummulated = []
       for (let i = 0; i < loads.length; i++) {
         const load = {...loads[i]}
-
-        let productScan = localStorage.getItem(JSON.stringify(load.loadMapId))
+        
+        let productScan = localStorage.getItem(JSON.stringify(load))
         if(productScan && (load.loadingStatus.text !== 'Approved' && load.loadingStatus.text !== 'Loading Truck')){
           localStorage.removeItem(JSON.stringify(load.loadMapId))
         }
-        const loadDetails =  await this.$services.loadsServices.getLoadDetails(load?.loadMapId);
-
+        let loadDetails;
+        try{
+          loadDetails =  await this.$services.loadsServices.getLoadDetails(load?.loadMapId);
+        }catch(error){
+          alert(error)
+        }
         Object.assign(load, loadDetails)
 
         if(!((loadDetails.loadingStatus.text === "Driver selection in progress" && this.userInfo.userType === this.userType.driver)
@@ -228,18 +249,27 @@ export default {
              || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[1]?.status == 'REJECTED' && this.userInfo.userType === this.userType.driver)
            )
         ){
-          this.loads.push(loadDetails)
+          loadsAcummulated.push(loadDetails)
         }
       }
+      this.setOpen(false)
       this.sortLoads()
-      this.setOpen(false);
-
-      this.assignedLoads = this.loads.length
-      console.log(this.loads);
-
-      this.$store.commit("setAllLoadStore", this.loads);
-      localStorage.setItem('AllLoadS', JSON.stringify(this.loads));
-
+      
+      let dateInDisplay = localStorage.getItem('dateCheck');
+      let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
+    
+      if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
+        this.waitingMessage = false
+        this.loadsToDisplay = [...loadsAcummulated]
+        this.assignedLoads = this.loadsToDisplay.length
+        this.$store.commit("setAllLoadStore", this.loadsToDisplay);
+        localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
+      }
+      this.reloadEvent = false
+    },
+    reset(){
+      this.gets = null
+      this.posts = null
     },
     async setLoad(val) {
       this.setProfile(val)
@@ -292,31 +322,32 @@ export default {
       return moment(val).format('LT')
     },
     ordenIsReturn(val){
-      let res = val?.Orders?.find(x => x)
-      localStorage.setItem('loadType', JSON.stringify(val.loadType))
       if (val.loadType === this.profile.b2b) return 'B2B'
-      if(res?.isReturn) return 'Devolver Contenedor'
-      return 'Entregar Contenedor'
+      else{
+        let res = val?.Orders?.find(x => x)
+        if(res?.isReturn) return 'Devolver Contenedor'
+        return 'Entregar Contenedor'
+      }
     },
     isReturnLoad(val){
       return val.Orders.find(x => x.isReturn)
     },
     IsDelivered(load){
       let val = 'Delivered'
-      if(load.loadingStatus.text == val){
-        this.changeRouteLoads(val, load)
+      this.changeRouteLoads(val, load)
+    },
+    reloadData(val = null){
+      if(!this.reloadEvent){
+        this.reloadEvent = true
+        this.currentDate(val)
       }
     },
-    reloadData(){
-      this.reloadEvent = true
-      setTimeout(() => {
-        this.reloadEvent = false
-      }, 500)
-      this.currentDate()
-
+    reloadNewDate(val){
+        this.reloadEvent = true
+        this.currentDate(val)
     },
     sortLoads() {
-      this.loads?.sort((a, b) => {
+      this.loadsToDisplay?.sort((a, b) => {
         a = new Date(a?.loadingStatus?.slotStartTime).getHours()
         b = new Date(b?.loadingStatus?.slotStartTime).getHours()
        return a - b
@@ -445,12 +476,16 @@ a {
   from { opacity: 1.0; }
   to { opacity: 0.8; }
 }
-
-.reload{
+.refresh-reload{
+  display: flex;
+  align-items: end;
   position: absolute;
   top: 0px;
-  right: 10%;
+  right: 5%;
   margin-top: 10px;
+  font-size: 10px;
+}
+.reload{
   font-size: 17px;
   color: #333 !important;
   transition: all 0.6s ease;
@@ -471,6 +506,15 @@ a {
 }
 .reload-event{
   transform: rotate(360deg);
+  animation: reload 500ms infinite;
+}
+@keyframes reload{
+  from{ 
+    transform: rotate(0deg);
+  }
+  to{
+    transform: rotate(360deg);
+  }
 }
 
 

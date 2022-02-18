@@ -1,6 +1,5 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
-
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
 <script>
@@ -22,7 +21,10 @@ export default {
       nameOrder: null,
       result: 0,
       sendingBI: false,
-      allrequest: []
+      allrequest: [],
+      gets: 0,
+      posts: 0,
+      patches: 0
     }
   },
   components:{
@@ -53,26 +55,25 @@ export default {
         let enqueueItem = remove()
         await this.enqueue(enqueueItem)
       }
-      this.allrequest = await this.all()
-      let queueItem = await this.peek()
-      if(queueItem){
-        if(queueItem.formInfo){
-          waitInterval = 4000
-        }else{
-          waitInterval = 2000
-        }
-        try{
-          let res = await this.$services.requestServices.request(queueItem)
-          if(res){
-            console.log(res)
-            this.dequeue()
+      let isSending = JSON.parse(localStorage.getItem('sending'))
+      if(!isSending){
+        let queueItem = await this.peek()
+        if(queueItem){
+          try{
+            localStorage.setItem('sending', JSON.stringify(true))
+            let res = await this.$services.requestServices.request(queueItem)
+            if(res){
+              this.dequeue()
+              localStorage.setItem('sending', JSON.stringify(false))
+            }
+          } 
+          catch(error){
+            console.log(error)
           }
-        } 
-        catch(error){
-          console.log(error)
         }
       }
   }, waitInterval)
+
 },
 methods:{
   setName(val){
@@ -189,5 +190,9 @@ strong{
 .uk-button-blue{
   background: #0f7ae5;
   color: #fff
+}
+.text-bold{
+  font-size: 14px;
+  color: #5c5c5c ;
 }
 </style>

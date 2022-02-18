@@ -30,7 +30,7 @@
                  <div>
                 <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.revenue * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                  <span> RD ${{getRevenue(detailsLoads)}}</span>
                 </div>
                 <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider || userData?.userType == userType?.transporter)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
@@ -183,7 +183,7 @@
       </div>
 
            <div class="uk-text-left" v-if="userData?.userType !== userType?.driver && !hasAddAdditionalInfo">
-              <p class="uk-text-bold " style="font-size: 16px !important">Información Adicional:</p>
+              <p class="uk-text-bold text-bold">Información Adicional:</p>
               <ul class="file">
                 <li v-for="order in orders" :key="order" v-show="order?.addAdditionalInfo?.length > 0">
                   <div v-for="file in order?.addAdditionalInfo" :key="file">
@@ -247,14 +247,12 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    console.log(this.userInfo, 'info')
     if (this.detailsLoadsStore) {
       this.detailsLoads = this.detailsLoadsStore;
       this.orders = this.detailsLoads.Orders
       this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
       this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
     }
-    console.log(this.detailsLoads, 'detailsLoads')
 
   },
 
@@ -345,6 +343,10 @@ export default {
   
     baseName(file){
       return file.split('/').reverse()[0];
+    },
+    getRevenue(load){
+      let revenue = load?.plannedProfitability?.allVariable?.revenueMatrix?.find(info => info?.id == load?.loadForeignkeys?.transporterId)
+      return revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning
     }
   },
 };

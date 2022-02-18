@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="md-6" style="text-align: center">
-      <h5 class="uk-text-bold uk-text-left">Asignar Chofer y Vehículo:</h5>
+      <h5 class="uk-text-bold uk-text-left text-bold">Asignar Chofer y Vehículo:</h5>
     </div>
 
     <div>
-      <h6 style="color: #666 !important">Transportista: <span>{{transporterName}}</span></h6>
+      <h6 style="color: #666 !important; font-size: 13px">Transportista: <span>{{transporterName}}</span></h6>
     </div>
     <form action="" class="table-border uk-margin-medium-bottom">
       <h5>Elija un Conductor</h5>

@@ -126,7 +126,7 @@
       
     </div>
       <div class="button-opt">
-      <button @click="scan()" :disabled="!showButton" class="uk-button uk-button-primary">Escanear y Cargar Camion
+      <button @click="scan()" :disabled="!showButton" class="uk-button uk-button-primary">Escanear y Entregar Producto
       </button>
     </div>
   </div>
@@ -215,7 +215,7 @@ export default {
           this.orders.forEach(order => {
            if (order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
              order.isSelectedDeliver = true
-            this.orderForScan(order)
+             this.orderForScan(order)
            } 
           })
         })
