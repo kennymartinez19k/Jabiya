@@ -23,8 +23,8 @@
         </span></li>
         <li @click="reloadNewDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
       </ul>
-      <span class="refresh-reload">
-        <font-awesome-icon @click="reloadData()" icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
+      <span @click="reloadData()" class="refresh-reload">
+        <font-awesome-icon  icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
         <span>&nbsp;Refrescar</span>
       </span>
     </div>
