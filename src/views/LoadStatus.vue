@@ -372,16 +372,19 @@ export default {
 
   methods: {
     async changeRoute(val) {
-      if(await this.ubication()){
-        localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
-        await this.changeRouteLoads(val, this.load);
+      try{
+        if(await this.ubication()){
+          localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
+          await this.changeRouteLoads(val, this.load);
 
-        this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
-        this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
-        this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
-        this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
+          this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
+          this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
+          this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
+          this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
+        }
+      }catch(error){
+        alert(error)
       }
-     
     },
     setInvoice() {
       this.$router.push({ name: "invoices-orders" }).catch(() => {});

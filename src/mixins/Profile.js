@@ -1,3 +1,4 @@
+import { userType} from '../types'
 export const Profile = {
   data() {
     return {
@@ -107,7 +108,11 @@ export const Profile = {
         if (val?.loadingStatus?.text == "Loading Truck") return "Cargando Vehiculo";
   
         if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0]?.status) return "Esperando Aprobación $ Flai";
-        if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0]?.status) return "Esperando Chofer Acepte Viaje";
+        if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0]?.status) {
+          let user = JSON.parse(localStorage.getItem('userInfo'))
+          if(user.userType == userType.driver) return 'Esperando que Aceptes este Viaje'
+          return "Esperando Chofer Acepte Viaje";
+        } 
   
         if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
         if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";

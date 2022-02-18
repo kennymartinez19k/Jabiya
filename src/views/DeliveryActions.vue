@@ -2,13 +2,12 @@
 <ion-loading
       :is-open="isOpenRef"
       cssClass="my-custom-class"
-      message="Por favor Espere..."
+      message="Por favor Espere Envio..."
       :duration="timeout"
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts('4')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -208,7 +207,7 @@ export default {
       checkOrder: true,
       messageReject: null,
       showProduct: true,
-      timeout: 10000
+      timeout: 5000
     };
   },
   setup() {
@@ -230,16 +229,17 @@ export default {
 
     completedOrder: function(){
       if(this.firstStructureLoad.every(x => x.completedScanned)){
-        return 'TODAS LAS ORDENES HAN SIDO CARGADAS'
+        return 'Todos los Productos han sido Entregados'
       }
       else{
-        return 'LA ORDEN HA SIDO CARGADA'
+        return 'El Producto ha sido Entregado'
       }
     },
   },
   async mounted() {
     this.load = {...this.loadStore};
-    this.orders = this.orderScan
+    this.orders = [...this.orderScan]
+    console.log(this.orders)
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
     this.orders.map(x => {
@@ -265,7 +265,6 @@ export default {
         data.scanProgress = data.loadScanningCounter > 0 && !data.completedScanned
         secondStructure.push(data)
       })
-
 
     await this.getLocation()
     this.firstStructureLoad = firstStructure
@@ -305,12 +304,13 @@ export default {
             } 
 
           }catch(error){
+            await this.changeRouteLoads('Delivered', this.load)
             localStorage.removeItem(`allProducts${this.load.loadMapId}`)
           }
-             setTimeout(() =>{
-              this.$router.push({ name: "home" }).catch(() => {});
-              this.setOpen(false)
-          }, 5000)
+          let delay = ms => new Promise(res => setTimeout(res, ms));
+          await delay(2000);
+          this.$router.push({ name: "home" }).catch(() => {});
+          this.setOpen(false)
         }
       },
     },
@@ -484,10 +484,15 @@ export default {
               }, 1000)
           }
           else{
-            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            let order
+            try{
+              order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            }catch(error){
+              let load = JSON.parse(localStorage.getItem('DeliveryCharges'))
+              order = load.Orders.filter(order => order._id == orderForScan._id)
+            }
             order = order.find(x => x)
             let productInfo = order.products.find(p => p?.qrCode == val && orderForScan.order_num == order.order_num)
-            console.log(productInfo)
             if(productInfo?.scanOneByOne === "no") {
               let noScan1by1 = 0
               let listNoScan1by = this.firstStructureLoad.filter(x => x.scanOneByOne == "no" && x.qrCode == val)
@@ -656,13 +661,11 @@ export default {
 
           this.checkOrder = false
           if(this.firstStructureLoad.every(x => x.completedScanned)){
-            console.log(this.firstStructureLoad)
             this.resultScan = true
             this.step = 1
             localStorage.removeItem('LoadScanned')
             let quantityTotal = 0
             this.load.Orders.forEach(x => quantityTotal += x.no_of_boxes)
-            
           }
           else this.scanOrder()
         }, 1000)
