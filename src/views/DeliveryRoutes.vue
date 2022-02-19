@@ -170,7 +170,6 @@ export default {
   watch:{
     listOfOrders:{
       handler: function (newVal) {
-        console.log(newVal)
        if (newVal.length === 0) {
        this.showButton = false
       } else {

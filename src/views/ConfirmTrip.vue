@@ -279,7 +279,6 @@ export default {
   },
  async mounted() {
     this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
-    console.log(this.userInfo)
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.loadStore.Orders

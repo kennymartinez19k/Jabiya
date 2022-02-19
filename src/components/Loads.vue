@@ -11,7 +11,7 @@
     <div uk-margin style="position: relative">
       <ul class="uk-pagination" >
         <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
-        <li><span>
+        <li><span style="padding: 5px">
           <p class="uk-text-meta uk-margin-remove-top date ">
               <label
                 for="date"
@@ -127,6 +127,8 @@ import { Mixins } from "../mixins/mixins";
 import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
 import {LocalStorage} from '../mixins/LocalStorage'
+import { alertController } from '@ionic/vue';
+
 
 
 export default {
@@ -224,7 +226,11 @@ export default {
       try{
         loads = await this.$services.loadsServices.getLoadsbyDate(date);
       }catch(error){
-        alert(error)
+      this.setOpen(false)
+        if(error.message == 'Network Error'){
+          this.alertError('No Hay Conexion a Internet', 'Verifique he Intente de Nuevo' )
+        }
+        return false
       }
 
       let loadsAcummulated = []
@@ -243,7 +249,7 @@ export default {
         }
         Object.assign(load, loadDetails)
 
-        if(!((loadDetails.loadingStatus.text === "Driver selection in progress" && this.userInfo.userType === this.userType.driver)
+        if(!((loadDetails?.loadingStatus?.text === "Driver selection in progress" && this.userInfo?.userType === this.userType.driver)
            || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text === "Expecting Approval" && this.userInfo.userType !== this.userType.provider )
              || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[0]?.status == 'REJECTED' && this.userInfo.userType !== this.userType.provider)
              || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[1]?.status == 'REJECTED' && this.userInfo.userType === this.userType.driver)
@@ -267,6 +273,7 @@ export default {
       }
       this.reloadEvent = false
     },
+    
     reset(){
       this.gets = null
       this.posts = null
@@ -353,6 +360,15 @@ export default {
        return a - b
       });
     },
+     async alertError(header, msg){
+        const alert = await alertController.create({
+          header: header,
+          message: msg,
+          buttons: [ 'Ok'],
+        });
+        await alert.present();
+    },
+
   },
 };
 </script>

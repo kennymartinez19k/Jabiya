@@ -68,8 +68,11 @@ export default {
             }
           } 
           catch(error){
+            localStorage.setItem('sending', JSON.stringify(false))
             console.log(error)
           }
+        }else{
+          localStorage.setItem('sending', JSON.stringify(false))
         }
       }
   }, waitInterval)

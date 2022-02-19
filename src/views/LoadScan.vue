@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('1b')">Escanear</button>
+    <button @click="uploadProducts('2')">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -253,7 +253,6 @@ export default {
             let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
             order = order.find(x => x)
             let productInfo = order.products.find(p => p?.qrCode == val && p.quantity == orderForScan.quantity && orderForScan.order_num == order.order_num)
-            console.log(productInfo, 'productInfo')
             if(productInfo?.scanOneByOne === "no") {
               let noScan1by1 = 0
               let scannedCounterNo1by1 = 0
@@ -271,7 +270,6 @@ export default {
               
               setTimeout(() => {
                 UIkit.modal('#ask-quantity').show()
-                // console.log(this.totalLimitOfBoxes, this.totalBoxesScanned)
               },1000)
               this.infoForScan = {
                 orderId: order._id,
@@ -309,7 +307,6 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne){
-      console.log(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne)
       let res = {orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne}
       let isChange = await this.updateData(orderId, boxId, productId, qrCode, quantity, scanOneByOne)
       if(isChange != false){
@@ -368,7 +365,6 @@ export default {
 
     async sendQuantityForScan(){
       let {orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne} = this.infoForScan
-      console.log(this.infoForScan)
       loadScanningCounter = this.quantityForScan
       this.quantityForScan = null
       await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne)
@@ -511,7 +507,6 @@ export default {
 
           }
         }
-        console.log(info)
         if(!info){
           return false
         }

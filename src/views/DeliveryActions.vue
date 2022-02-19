@@ -8,6 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+    <button @click="uploadProducts('2')">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -239,7 +240,6 @@ export default {
   async mounted() {
     this.load = {...this.loadStore};
     this.orders = [...this.orderScan]
-    console.log(this.orders)
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
     this.orders.map(x => {
@@ -276,7 +276,6 @@ export default {
       this.verifiedLoad()
     }
 
-    console.log(this.firstStructureLoad, this.secondStructureLoad)
 
   },
   watch: {
@@ -302,7 +301,6 @@ export default {
               localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
               localStorage.removeItem(`allProducts${this.load.loadMapId}`)
             } 
-
           }catch(error){
             await this.changeRouteLoads('Delivered', this.load)
             localStorage.removeItem(`allProducts${this.load.loadMapId}`)
@@ -387,7 +385,6 @@ export default {
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
-      console.log(this.imagiElement)
        if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
         this.step = 2;
       }

@@ -87,7 +87,6 @@ export default {
   },
   async mounted () {
     const data = await this.$services.driverVehicleAssignment.getDriverAndVehicle(this.detailsLoads.loadMapId);
-    console.log(data)
     this.drivers = [...data.drivers]
     this.vehicles = [...data.vehicles]
     this.transporterName = data.transporterName

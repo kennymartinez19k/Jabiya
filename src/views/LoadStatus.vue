@@ -351,14 +351,29 @@ export default {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.setting = JSON.parse(localStorage.getItem('setting'))
     let loadsMounted = null
-    if (this.loadStore) {
-       loadsMounted = this.loadStore
-    } else {
-      loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+    try{
+      this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+      this.load.firstOrdenInfo = this.loadStore?.Orders[0]
+      this.$store.commit("setloadStore", this.load);
+
+    } catch(error){
+      if (this.loadStore) {
+         loadsMounted = {...this.loadStore}
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+      }
+      this.load = loadsMounted
+      this.$store.commit("setloadStore", loadsMounted);
+
     }
-    console.log(loadsMounted)
-    this.$store.commit("setloadStore", loadsMounted);
-    this.load = await this.$services.loadsServices.getLoadDetails(loadsMounted?.loadMapId);
+    let orders = []
+    for (let i = 0; i < this.load.Orders.length; i++) {
+      const order = this.load.Orders[i];
+      let currentOrder = await this.$services.loadsScanServices.getProduct(order._id)      
+      orders.push(currentOrder.find(x => x))
+    }
+    localStorage.setItem('ordersDetails', JSON.stringify(orders))
+    
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
