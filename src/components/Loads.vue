@@ -11,7 +11,7 @@
     <div uk-margin style="position: relative">
       <ul class="uk-pagination" >
         <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
-        <li><span>
+        <li><span style="padding: 5px 0px">
           <p class="uk-text-meta uk-margin-remove-top date ">
               <label
                 for="date"
@@ -434,7 +434,7 @@ a {
 }
 .uk-pagination{
   justify-content: center;
-      align-items: center;
+  align-items: center;
 }
 .status-load{
   justify-content: flex-end;
