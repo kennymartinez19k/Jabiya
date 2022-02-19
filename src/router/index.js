@@ -16,6 +16,7 @@ import DetailsInvoices from '../components/DetailsInvoices.vue'
 import ReconciliationWarehouse from '../components/ReconciliationWarehouse.vue'
 import ReturnContainer from '../views/AutoScan/ReturnContainer.vue'
 import DetailsLoad from "../components/DetailsLoad.vue";
+import Version from "../components/Version.vue";
 
 import about from '../views/About.vue'
 const routes = [
@@ -113,6 +114,11 @@ const routes = [
     name: "about",
     component: about,
   },
+  {
+    path: "/version",
+    name: "version",
+    component: Version,
+  }
   
  
 ];
