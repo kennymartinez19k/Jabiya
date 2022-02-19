@@ -94,7 +94,7 @@
 import Loading from "vue-loading-overlay";
 import { mapGetters } from 'vuex';
 import { LocalStorage } from "../mixins/LocalStorage";
-import { role, userType } from '../types'
+import { role, userType, urlEnum } from '../types'
 
 export default {
   components: {
@@ -105,6 +105,7 @@ export default {
     return {
       role,
       userType,
+      urlEnum,
 
       loaded: false,
       type: "password",
@@ -146,8 +147,17 @@ export default {
       this.login.password = JSON.parse(
         localStorage.getItem("rememberPassword")
       );
-      
     }
+    const dataLocalStore = await JSON.parse(localStorage.getItem('setting'))
+      if(dataLocalStore?.url){
+        this.$store.commit("setSettings", JSON.parse(localStorage.getItem('setting')));
+      } else {
+        const settings = {
+          maps: false,
+          url: urlEnum.preprop,
+        }
+        this.$store.commit("setSettings", settings);
+      }
     let detailsException = null;
     try {
       detailsException = await this.$services.exceptionServices.getExceptionsDetails();
@@ -160,7 +170,7 @@ export default {
   },
   computed:{
     ...mapGetters([
-      'userData'
+      'userData',
     ])
   },
   methods: {
@@ -178,7 +188,6 @@ export default {
       this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
         this.loaded = true;
         this.$store.commit("setUserData");
-     
         if(this.rememberPassword){
           localStorage.setItem("rememberData", JSON.stringify(this.login.email));
           localStorage.setItem("rememberPassword", JSON.stringify(this.login.password));
@@ -201,6 +210,7 @@ export default {
         }
         this.showError = true;
       })
+      await this.resetLocalStorage()
      
     },
 
@@ -216,8 +226,20 @@ export default {
 
     active(){
       this.activeOrNot = !!navigator.geolocation
-    }    
+    },
+     resetLocalStorage () {
+      localStorage.removeItem('allLoads');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('loadType');
+      localStorage.removeItem('AllLoadS');
+      localStorage.removeItem('dateCheck');
+      localStorage.removeItem('currentProfile');
+      localStorage.removeItem('detailsException');
+      localStorage.removeItem('DeliveryCharges');
+      localStorage.removeItem('loglevel:webpack-dev-server');
+     }  
   },
+ 
 };
 </script>
 

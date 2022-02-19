@@ -1,8 +1,8 @@
 const profiles = {
     state: {
         settings: {
-            profile: 'container',
             maps: false,
+            url: null
         },
     
     },

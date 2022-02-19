@@ -5,9 +5,19 @@
         <h6>Mostrar Mapa</h6>
         <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
       </label>
+      <label  for="url" class="uk-flex uk-flex-around uk-flex-middle " style="width: 100%" >
+      <h6>Seleccione Url</h6>
+        <div  style="width: 60%" class="uk-margin uk-widht-1">
+            <select id="url" class="uk-select" v-model="settings.url">
+                <option :value="urlEnum.preprop" selected>Preprod Flai</option>
+                <option :value="urlEnum.production">Production Flai</option>
+            </select>
+        </div>
+        </label>
     </div>
+
     <div class="btn">
-        <button class="uk-button uk-button-transparent" @click="saveSettings()">Guardar Cambios</button>
+        <button :disabled="showButton === true" class="uk-button uk-button-primary" @click="saveSettings()">Guardar Cambios</button>
     </div>
   </div>
 </template>
@@ -15,29 +25,60 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Profile } from '../mixins/Profile'
+import { urlEnum } from '../types'
 export default {
-  alias: 'Configuracion',
+  alias: 'Configuraciòn',
   data() {
     return {
+      urlEnum,
+      show: 0,
+      settingsLocalStore: null,
+      showButton: true,
       settings: {
-        maps: false
+        maps: false,
+        url: null
       },
     };
   },
   mixins: [Profile],
   computed: {
-    ...mapGetters(['languageStore', 'settingsStore'])
+    ...mapGetters(['settingsStore'])
   },
-  mounted() {
-    this.settings = this.settingsStore
-    this.$store.commit("setSettings", this.settings);
-  },
+  async mounted() {
+    this.settingsLocalStore = await JSON.parse(localStorage.getItem('setting'))
 
+    if(this.settingsLocalStore?.url){
+        this.$store.commit("setSettings", JSON.parse(localStorage.getItem('setting')));
+      }
+    this.settings = this.settingsStore
+      this.showButton = true;
+    this.$store.commit("setSettings", this.settings);
+
+  },
+  watch: {
+    settings: {
+      handler: function (newVal) {
+        if (newVal.url !== this.settingsLocalStore.url || newVal.maps !== this.settingsLocalStore.maps) {
+          this.showButton = false
+        }else {
+          this.showButton = true
+        }
+      },deep: true
+    }
+  },
+  
   methods: {
     async saveSettings() {
-      await this.$store.commit("setSettings", this.settings);
-      this.$router.push({ name: "home" });
-    },
+      if (this.settings.url !== this.settingsLocalStore.url) {
+         await this.$store.commit("setSettings", this.settings);
+        this.$router.push({ name: "sign-in" });
+        localStorage.removeItem('auth');
+      } else {
+        await this.$store.commit("setSettings", this.settings);
+        this.$router.push({ name: "home" });
+      }
+    
+    }
   },
 };
 </script>
@@ -67,5 +108,10 @@ input {
 .btn{
     display: flex;
     justify-content: flex-end;;
+}
+.textUrl {
+ font-size: 16px;
+ font-weight: 500;
+ line-height: 1.2;
 }
 </style>
