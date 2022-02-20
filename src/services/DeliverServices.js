@@ -18,7 +18,6 @@ class deliverServices {
           
           let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
           add(json)
-
     }
 
     async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){
