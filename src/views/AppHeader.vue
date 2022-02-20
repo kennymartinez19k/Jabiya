@@ -51,7 +51,7 @@
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <li @click="setCurrentPage('settings')">Configuracion</li>
+            <li @click="setCurrentPage('settings')">Configuración</li>
             <li @click="setCurrentPage('version')">Version app</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>

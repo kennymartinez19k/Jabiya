@@ -2,12 +2,13 @@ import {add} from '../queue'
 
 class deliverServices {
     constructor (http) {
-      this.http = http
+      this.http = http;
+    this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
     }
 
     async postImages (images, lat, lng ,id) {
          let form = {images, lat, lng}
-         let url = 'http://preprod.flai.com.do:8756/exo/orders/'+id+'/images'
+         let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
 
          let token = localStorage.getItem('auth')
           let hdr = {
@@ -30,7 +31,7 @@ class deliverServices {
           "qrCode": qrCode
         }
       }
-      const url = `http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`
+      const url = `${this.settingsLocalStore.url}/exo/orders/${orderId}/products/${productId}/actions`
       
       const json = {'method': 'post', 'url': url, 'body': body}
       add(json)

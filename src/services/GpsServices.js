@@ -2,7 +2,8 @@ import {add} from '../queue'
 
 class GpsServices {
     constructor (http) {
-      this.http = http
+      this.http = http;
+      this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
     }
 
     async updateLocation (driverId, lat, lng, bayId){
@@ -19,7 +20,7 @@ class GpsServices {
         "bayId": bayId
     }
 
-      const url = `http://preprod.flai.com.do:8756/exo/drivers/${driverId}/locations`
+      const url = `${this.settingsLocalStore.url}/exo/drivers/${driverId}/locations`
       
       const json = {'method': 'post', 'url': url, 'body': body}
       add(json)
@@ -40,7 +41,7 @@ class GpsServices {
         "bayId": bayId
     }
 
-      const url = `http://preprod.flai.com.do:8756/exo/drivers/${driverId}/locations/first`
+      const url = `${this.settingsLocalStore.url}/exo/drivers/${driverId}/locations/first`
       
       const json = {'method': 'post', 'url': url, 'body': body}
       add(json)

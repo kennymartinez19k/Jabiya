@@ -124,7 +124,6 @@
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
 import UIkit from "uikit";
-import { mapGetters } from "vuex";
 export default {
   components: {
     SignatureAction,
@@ -148,9 +147,7 @@ export default {
       singnature: null,
     };
   },
-  computed: {
-    ...mapGetters(["settingsStore"]),
-  },
+
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
   },

@@ -2,7 +2,8 @@ import {add} from '../queue'
 
 class LoadsScanServices {
     constructor (http) {
-      this.http = http
+      this.http = http;
+      this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
     }
 
     async driverArrival (loadId) {
@@ -19,7 +20,7 @@ class LoadsScanServices {
     }
 
     async getProduct(orderId){    
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products`)
+      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/orders/${orderId}/products`)
       return result.data
     }
 
@@ -34,7 +35,7 @@ class LoadsScanServices {
           }
         }
         
-        const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
+        const result = await this.http.post(`${this.settingsLocalStore.url}/exo/orders/${orderId}/products/${productId}/actions`, params)
         console.log(result)
         return result
     }
@@ -48,7 +49,7 @@ class LoadsScanServices {
           
         }
       }
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions`, params)
+      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
       return result
     }
   

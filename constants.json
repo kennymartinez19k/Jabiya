@@ -16,5 +16,9 @@
   "profile":{
     "container": "Container Pickup/Delivery",
     "b2b": "B2B Delivery"
+  },
+  "url":{
+    "production": "http://production.flai.com.do:8756",
+    "preprop": "http://preprod.flai.com.do:8756"
   }
 }

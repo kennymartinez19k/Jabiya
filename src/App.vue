@@ -3,7 +3,6 @@
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
 <script>
-import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
 import {queue, remove} from './queue'
 import {LocalStorage} from './mixins/LocalStorage'
@@ -35,9 +34,6 @@ export default {
   },
   mixins: [LocalStorage, Profile],
   computed:{
-    ...mapGetters([
-      'settingsStore'
-    ]),
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)
     },
