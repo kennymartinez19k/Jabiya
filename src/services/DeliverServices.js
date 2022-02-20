@@ -8,7 +8,6 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
-      console.log(images, lat, lng ,id)
          let form = {images, lat, lng}
          let url = 'http://preprod.flai.com.do:8756/exo/orders/'+id+'/images'
 
@@ -24,6 +23,7 @@ class deliverServices {
     }
 
     async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){
+      console.log(orderId, boxId, loadCounter, productId, qrCode, 'deliver')
       const body = {        
         "actionName": "deliverBox",
         "params": {

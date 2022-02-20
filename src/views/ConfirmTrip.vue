@@ -213,7 +213,6 @@
     <div class="button-opt">
       <a href="#modal-center" uk-toggle class="uk-button uk-button-red"
         >Rechazar Viaje&nbsp;
-        <font-awesome-icon icon="ban" style="color: #fff; font-size: 14px" />
       </a>
       <button
         @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', load.loadForeignkeys.vehicleId)"
@@ -221,7 +220,6 @@
         :class="{disabled: disabled}"
       >
         Aceptar Viaje &nbsp;
-        <font-awesome-icon icon="check" style="color: #fff; font-size: 14px" />
       </button>
     </div>
   </div>
@@ -279,10 +277,11 @@ export default {
   },
  async mounted() {
     this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
-    console.log(this.userInfo)
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.loadStore.Orders
+      console.log(this.load)
+      this.load.firstOrdenInfo = this.orders[0]
     }
     if (this.orderScan) {
       this.completedOrden();

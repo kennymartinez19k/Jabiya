@@ -351,14 +351,29 @@ export default {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.setting = JSON.parse(localStorage.getItem('setting'))
     let loadsMounted = null
-    if (this.loadStore) {
-       loadsMounted = this.loadStore
-    } else {
-      loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+    try{
+      this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+      this.load.firstOrdenInfo = this.loadStore?.Orders[0]
+      this.$store.commit("setloadStore", this.load);
+
+    } catch(error){
+      if (this.loadStore) {
+         loadsMounted = {...this.loadStore}
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+      }
+      this.load = loadsMounted
+      this.$store.commit("setloadStore", loadsMounted);
+
     }
-    console.log(loadsMounted)
-    this.$store.commit("setloadStore", loadsMounted);
-    this.load = await this.$services.loadsServices.getLoadDetails(loadsMounted?.loadMapId);
+    let orders = []
+    for (let i = 0; i < this.load.Orders.length; i++) {
+      const order = this.load.Orders[i];
+      let currentOrder = await this.$services.loadsScanServices.getProduct(order._id)      
+      orders.push(currentOrder.find(x => x))
+    }
+    localStorage.setItem('ordersDetails', JSON.stringify(orders))
+    
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
@@ -368,6 +383,7 @@ export default {
     this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
     this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
     this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
+
   },
 
   methods: {
@@ -383,7 +399,7 @@ export default {
           this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
         }
       }catch(error){
-        alert(error)
+        console.log(error)
       }
     },
     setInvoice() {
@@ -415,7 +431,10 @@ export default {
           this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
         }
         if(error.message == 'Location permission was denied'){
-          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion acceda a la ubicacion' )
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+        }
+        if(error.message == 'User denied Geolocation'){
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
         }
         return false
       }

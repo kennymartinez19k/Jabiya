@@ -1,3 +1,4 @@
+import {add} from '../queue'
 
 class ExceptionServices {
     constructor (http) {
@@ -10,8 +11,11 @@ class ExceptionServices {
             "note": exceptions.note
         }
         
-      const result = await this.http.put(`http://preprod.flai.com.do:8756/exo/orders/${idException}/exceptions`,exception)
-      return result.data
+      let url = `http://preprod.flai.com.do:8756/exo/orders/${idException}/exceptions`
+      
+      let json =  {'method': 'put', 'body': exception, 'url': url}
+
+      add(json)
     }
     async getExceptionsDetails () {
     const result = await this.http.get('http://preprod.flai.com.do:8756/exo/exceptions')
