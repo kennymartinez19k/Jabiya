@@ -64,7 +64,8 @@
               </div>
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
-                <span v-for="order of load.Orders" :key="order">{{order.order_num}}</span>
+                <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
+                <span v-if="load.Orders.length > 3">...</span>
               </div>
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Tipo:&nbsp;</p>
