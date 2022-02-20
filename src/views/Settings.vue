@@ -86,8 +86,8 @@ export default {
     async saveSettings() {
       if (this.settings.url !== this.settingsLocalStore.url) {
          await this.$store.commit("setSettings", this.settings);
+        await this.resetLocalStorage()
         this.$router.push({ name: "sign-in" });
-        localStorage.removeItem('auth');
       } else {
         await this.$store.commit("setSettings", this.settings);
         this.$router.push({ name: "home" });
@@ -96,7 +96,21 @@ export default {
     },
     clearLocalStorage(){
       this.clear()
-    }
+    },
+     resetLocalStorage () {
+        localStorage.removeItem('auth');
+      localStorage.removeItem('allLoads');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('loadType');
+      localStorage.removeItem('AllLoadS');
+      localStorage.removeItem('dateCheck');
+      localStorage.removeItem('currentProfile');
+      localStorage.removeItem('detailsException');
+      localStorage.removeItem('DeliveryCharges');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('ordersDetails');
+      localStorage.removeItem('loglevel:webpack-dev-server');
+     }  
   },
 };
 </script>

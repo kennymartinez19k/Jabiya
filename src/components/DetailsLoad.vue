@@ -34,11 +34,11 @@
                 </div>
                 <div  v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider || userData?.userType == userType?.transporter)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
-                  <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.transportCost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                  <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.transportCost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 <div  v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.profitability * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                  <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.profitability * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 
               </div>
@@ -341,7 +341,10 @@ export default {
     },
     getRevenue(load){
       let revenue = load?.plannedProfitability?.allVariable?.revenueMatrix?.find(info => info?.id == load?.loadForeignkeys?.transporterId)
-      return revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning
+      return JSON.parse(Number.parseFloat(revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning).toFixed(3))
+    },
+    setRound (val) {
+        return JSON.parse(Number.parseFloat(val).toFixed(3));
     }
   },
 };
