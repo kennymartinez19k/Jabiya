@@ -128,7 +128,7 @@ import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
 import {LocalStorage} from '../mixins/LocalStorage'
 import { alertController } from '@ionic/vue';
-
+// import {App} from '@capacitor/app'
 
 
 export default {
@@ -200,12 +200,17 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
-      if(val){
-        this.waitingMessage = true
-      }
+      // let {isActive} = await App.getState();
+      // console.log(isActive)
+      // if(!isActive){
+      //   this.setOpen(false)
+      //   return ;
+      // }
+     
       this.loads = []
       let contDate
       let date
+      let loads
 
       if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
         contDate = localStorage.getItem('dateCheck');
@@ -215,23 +220,44 @@ export default {
       }    
       else contDate = this.date
       date = moment(contDate).format("MM/DD/YYYY");
-      localStorage.setItem('dateCheck', date)
-
-      if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
-      else this.dateMoment = date
-      this.setOpen(this.waitingMessage);
-      let loads
-      let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
       
+      // if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+      // else this.dateMoment = date
+      let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
+  
       try{
         loads = await this.$services.loadsServices.getLoadsbyDate(date);
+        if(val){
+         this.waitingMessage = true
+        }
+        this.setOpen(this.waitingMessage);
+
+        if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+        else this.dateMoment = date
+
       }catch(error){
       this.setOpen(false)
         if(error.message == 'Network Error'){
-          this.alertError('No Hay Conexion a Internet', 'Verifique he Intente de Nuevo' )
+          // this.alertError('No Hay Conexion a Internet', 'Verifique he Intente de Nuevo' )
+          this.reloadEvent = false
+          this.waitingMessage = false
+          this.loadsToDisplay = JSON.parse(localStorage.getItem('allLoads'))
+          this.assignedLoads = this.loadsToDisplay.length
+          
+          let contDate = localStorage.getItem('dateCheck')
+          let date = new Date(contDate);
+          date = moment(contDate).format("MM/DD/YYYY");
+           if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+           else this.dateMoment = date
         }
-        return false
-      }
+        return ;
+      }   
+      localStorage.setItem('dateCheck', date)
+
+
+      
+      
+      
 
       let loadsAcummulated = []
       for (let i = 0; i < loads.length; i++) {
@@ -245,7 +271,7 @@ export default {
         try{
           loadDetails =  await this.$services.loadsServices.getLoadDetails(load?.loadMapId);
         }catch(error){
-          alert(error)
+          console.log(error)
         }
         Object.assign(load, loadDetails)
 
@@ -280,12 +306,6 @@ export default {
     },
     async setLoad(val) {
       this.setProfile(val)
-
-      for(var i = 0; i < val.Orders.length; i++){
-        let order =  await this.$services.loadsScanServices.getProduct(val.Orders[i]._id);
-        val.firstOrdenInfo = val.Orders[i]
-        Object.assign(val.Orders[i], order[0])
-      }
       this.$store.commit("setloadStore", val);
       this.$store.commit("setDetailsLoadsStore", val);
       localStorage.setItem('DeliveryCharges', JSON.stringify(val));
@@ -478,20 +498,12 @@ a {
   color: green !important;
 }
 .load-assigned .status-load{
-  color: rgb(212, 129, 5);
-  -webkit-animation: asigned 500ms infinite;
+  color: #de2828;
 }
 .load-rejected .status-load{
-  color: red;
+  color: #de2828;
 }
 
-.load-assigned{
-  background: #fff6f6;
-}
-@-webkit-keyframes asigned {
-  from { opacity: 1.0; }
-  to { opacity: 0.8; }
-}
 .refresh-reload{
   display: flex;
   align-items: end;

@@ -382,13 +382,13 @@ export default {
           try {
             if(prod.scanOneByOne === "no") {
               prod.loadScanningCounter = prod.quantity
-              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product, prod.qrCode  );
             }
             else {
 
               for(let i = 0; i <= prod.quantity; i++){
                 prod.loadScanningCounter = i
-                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product, prod.qrCode  );
               }
             }
           } catch(error){

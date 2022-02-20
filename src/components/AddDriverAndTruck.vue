@@ -5,50 +5,53 @@
     </div>
 
     <div>
-      <h6 style="color: #666 !important; font-size: 13px">Transportista: <span>{{transporterName}}</span></h6>
+      <h6 class="uk-text-left" style="color: #666 !important; font-size: 13px">Transportista: <span>{{transporterName}}</span></h6>
     </div>
     <form action="" class="table-border uk-margin-medium-bottom">
-      <h5>Elija un Conductor</h5>
-
-      <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
-        <thead>
-          <tr class="">
-            <th scope="col" class="driverName">Nombre del Conductor</th>
-          </tr>
-        </thead>
-        <tbody v-for="driver in drivers" :key="driver">
-          <tr>
-            <label class=" uk-flex uk-flex-center" :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
-              <td>{{driver.driverName}}</td>
-            </label>
-          </tr>
-         
-        </tbody>
-      </table>
-      <h5>Elija un Vehículo</h5>
-
-      <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
-        <thead>
-          <tr>
-            <label class=" list uk-flex uk-flex-around">
-              <th scope="col">Marca</th>
-              <th scope="col">Color</th>
-              <th  scope="col">Placa</th>
-              <th  scope="col">Costo</th>
-            </label>
-          </tr>
-        </thead>
-        <tbody  v-for="details in vehicles" :key="details">
-          <tr>
-            <label class=" uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
-              <td>{{details.brand}}</td>
-              <td>{{details.color}}</td>
-              <td>{{details.vehicleNo}}</td>
-              <td>${{details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</td>
+      <div class="table">
+        <h5 class="uk-text-left" style="padding: 0px 15px" >1. Elija un Conductor</h5>
+        <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
+          <thead>
+            <tr class="">
+              <th scope="col" class="driverName">Nombre del Conductor</th>
+            </tr>
+          </thead>
+          <tbody v-for="driver in drivers" :key="driver">
+            <tr>
+              <label class=" uk-flex uk-flex-center" :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
+                <td>{{driver.driverName}}</td>
               </label>
-          </tr>       
-        </tbody>
-      </table>
+            </tr>
+          
+          </tbody>
+        </table>
+      </div>
+      <div class="table">
+        <h5 class="uk-text-left" style="padding: 0px 15px">2. Elija un Vehículo</h5>
+
+        <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
+          <thead>
+            <tr>
+              <label class=" list uk-flex uk-flex-around">
+                <th scope="col">Marca</th>
+                <th scope="col">Color</th>
+                <th  scope="col">Placa</th>
+                <th  scope="col">Costo</th>
+              </label>
+            </tr>
+          </thead>
+          <tbody  v-for="details in vehicles" :key="details">
+            <tr>
+              <label class=" uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
+                <td>{{details.brand}}</td>
+                <td>{{details.color}}</td>
+                <td>{{details.vehicleNo}}</td>
+                <td>${{details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</td>
+                </label>
+            </tr>       
+          </tbody>
+        </table>
+      </div>
       <div class=" button-opt">
       <button type="button" :disabled="showButton" class="uk-button uk-button-primary" @click="selectDriverAndVehicle()">Seleccionar conductor y Vehículo </button>
     </div>
@@ -121,6 +124,10 @@ export default {
 .table-border {
   border: 1px solid #000;
 }
+.table{
+  padding: 20px 0px;
+  border-bottom: 1px solid;
+}
 span {
   font-size: 13px;
   color: #6666668c;
@@ -142,6 +149,10 @@ td {
   table .vehicle {
     padding: 0px 0px 8px 2px;
   }
+}
+.uk-table{
+  padding: 20px 0px;
+  margin: 0px !important;
 }
 .uk-table td { 
   padding: 10px 12px;

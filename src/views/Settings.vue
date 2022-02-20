@@ -1,13 +1,29 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
-    <div>
-       <label class="item" for="maps">
-        <h6>Mostrar Mapa</h6>
-        <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
-      </label>
+    <div class="uk-flex uk-flex-column uk-flex-between setting">
+      <div>
+        <label class="item" for="maps">
+          <h6>Mostrar Ruta (Google Maps)</h6>
+          <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
+        </label>
+        
+        
+      </div>
+      <div class="btn">
+          <button class="uk-button uk-button-transparent" @click="saveSettings()">Guardar Cambios</button>
+      </div>
     </div>
-    <div class="btn">
-        <button class="uk-button uk-button-transparent" @click="saveSettings()">Guardar Cambios</button>
+
+    <div class="auth-section">
+      <h6 class="uk-text-center">Solo Personal Autorizado</h6>
+      <div>
+        <label class="item uk-flex uk-flex-center" for="maps">
+          <button class="uk-button btn-red" @click="clearLocalStorage()" >
+            Borrar Informacion (Solo Personal Autorizado)
+          </button>
+        </label>
+      </div>
+
     </div>
   </div>
 </template>
@@ -15,6 +31,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Profile } from '../mixins/Profile'
+import { LocalStorage } from '../mixins/LocalStorage'
 export default {
   alias: 'Configuracion',
   data() {
@@ -24,7 +41,7 @@ export default {
       },
     };
   },
-  mixins: [Profile],
+  mixins: [Profile, LocalStorage],
   computed: {
     ...mapGetters(['languageStore', 'settingsStore'])
   },
@@ -38,16 +55,18 @@ export default {
       await this.$store.commit("setSettings", this.settings);
       this.$router.push({ name: "home" });
     },
+    clearLocalStorage(){
+    this.clear()
+  }
   },
 };
 </script>
 
 <style scoped>
-.item{
+.setting .item{
   width: 100%;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #ccc;
   padding: 10px 0px;
   align-items: baseline;
 }
@@ -67,5 +86,14 @@ input {
 .btn{
     display: flex;
     justify-content: flex-end;;
+    padding: 45px 0px 15px;
+    border-bottom: 1px solid #ccc;
+}
+.btn-red{
+  background: #de2828;
+  color: white
+}
+.auth-section{
+  padding: 20px 0px;
 }
 </style>

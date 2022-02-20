@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button @click="uploadProducts('2')">Escanear</button>
+    <button @click="uploadProducts(7)">Escanear</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -250,7 +250,7 @@ export default {
             }, 1000)
           }
           else{
-            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            let order = this.load.Orders.filter(order => order._id === orderForScan._id)
             order = order.find(x => x)
             let productInfo = order.products.find(p => p?.qrCode == val && p.quantity == orderForScan.quantity && orderForScan.order_num == order.order_num)
             if(productInfo?.scanOneByOne === "no") {
@@ -381,7 +381,7 @@ export default {
           let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === orderForScan.qrCode && x.loadScanningCounter < x.quantity)
           let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == orderForScan.qrCode)
           
-            let order =  await this.$services.loadsScanServices.getProduct(orderForScan._id);
+            let order = this.load.Orders.filter(order => order._id === orderForScan._id)
             order = order.find(x => x)
             let productInfo = order.products.find(p => p.qrCode == qrCode && orderForScan.quantity == p.quantity)
             this.secondStructureLoad[index_second].loadScanningCounter += LoadDistribute

@@ -7,7 +7,8 @@ import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
 import {queue, remove} from './queue'
 import {LocalStorage} from './mixins/LocalStorage'
-
+import { Profile } from './mixins/Profile'
+import { Storage} from '@ionic/storage'
 
 export default {
   data(){
@@ -24,13 +25,15 @@ export default {
       allrequest: [],
       gets: 0,
       posts: 0,
-      patches: 0
+      patches: 0,
+      localStorage: new Storage(),
+      isSending: false
     }
   },
   components:{
-    AppHeader
+    AppHeader,
   },
-  mixins: [LocalStorage],
+  mixins: [LocalStorage, Profile],
   computed:{
     ...mapGetters([
       'settingsStore'
@@ -48,6 +51,7 @@ export default {
     },
 },
   async mounted(){
+    this.localStorage.set('sending' , "false")
     
     let waitInterval = 2000
     setInterval( async () => {
@@ -55,24 +59,27 @@ export default {
         let enqueueItem = remove()
         await this.enqueue(enqueueItem)
       }
-      let isSending = JSON.parse(localStorage.getItem('sending'))
-      if(!isSending){
+      this.isSending = await this.localStorage.get('sending')
+      if(!(JSON.parse(this.isSending)) ){
         let queueItem = await this.peek()
         if(queueItem){
           try{
-            localStorage.setItem('sending', JSON.stringify(true))
+            this.localStorage.set('sending' , JSON.stringify(true))
             let res = await this.$services.requestServices.request(queueItem)
             if(res){
               this.dequeue()
-              localStorage.setItem('sending', JSON.stringify(false))
+              await this.localStorage.set('sending' , JSON.stringify(false))
+            }else{
+              await this.localStorage.set('sending' , JSON.stringify(false))
+
             }
           } 
           catch(error){
-            localStorage.setItem('sending', JSON.stringify(false))
+            await this.localStorage.set('sending' , JSON.stringify(false))
             console.log(error)
           }
         }else{
-          localStorage.setItem('sending', JSON.stringify(false))
+          await this.localStorage.set('sending' , JSON.stringify(false))
         }
       }
   }, waitInterval)
@@ -82,6 +89,9 @@ methods:{
   setName(val){
     this.nameOrder = val
   },
+  clearLocalStorage(){
+    this.clear()
+  }
 }
 }
 </script>

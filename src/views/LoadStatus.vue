@@ -383,6 +383,7 @@ export default {
     this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
     this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
     this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
+
   },
 
   methods: {
@@ -398,7 +399,7 @@ export default {
           this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
         }
       }catch(error){
-        alert(error)
+        console.log(error)
       }
     },
     setInvoice() {
@@ -430,7 +431,10 @@ export default {
           this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
         }
         if(error.message == 'Location permission was denied'){
-          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion acceda a la ubicacion' )
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+        }
+        if(error.message == 'User denied Geolocation'){
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
         }
         return false
       }
