@@ -10,6 +10,7 @@ const profiles = {
    
         async setSettings(state, val){
             if(!val){
+              state.settings = JSON.parse(localStorage.getItem('setting'))
               localStorage.setItem('setting', JSON.stringify(state.settings))
             }else{
               state.settings = val

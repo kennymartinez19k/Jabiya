@@ -207,6 +207,8 @@ export default {
           this.showErrorText = "Error al introducir los datos";
         } else if (error.message === "Network Error") {
           this.showErrorText = "Error de conexion, verifique que este conectado";
+        } else {
+          this.showErrorText = "Error";
         }
         this.showError = true;
       })
