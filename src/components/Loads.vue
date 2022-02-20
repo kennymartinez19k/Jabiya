@@ -64,7 +64,12 @@
               </div>
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
-                <span v-for="order of load.Orders" :key="order">{{order.order_num}}</span>
+                <span v-for="(order, i) of load.Orders" :key="order">
+                  <span v-if="i < 4">
+                    {{order.order_num}}&nbsp;
+                  </span>
+                  <span v-else>...</span>
+                </span>
               </div>
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Tipo:&nbsp;</p>
@@ -252,11 +257,6 @@ export default {
       }   
       localStorage.setItem('dateCheck', date)
 
-
-      
-      
-      
-
       let loadsAcummulated = []
       for (let i = 0; i < loads.length; i++) {
         const load = {...loads[i]}
@@ -296,6 +296,8 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
       this.reloadEvent = false
+
+      console.log(this.loadsToDisplay)
     },
     
     reset(){
@@ -394,6 +396,7 @@ export default {
 <style scoped>
 p {
   margin: 3px 0px !important;
+  white-space: pre-wrap;
 }
 .uk-card {
   padding: 20px 10px;
@@ -404,6 +407,7 @@ p {
   border: 1px solid #ccc;
   align-items: center;
   padding: 16px 10px;
+  text-align: initial;
 }
 .container {
   padding: 5px 14px 5px;

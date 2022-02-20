@@ -3,7 +3,11 @@ import {add} from '../queue'
 class GpsServices {
     constructor (http) {
       this.http = http;
-      this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
+      this.settingsLocalStore;
+    }
+    
+    setURL(val){
+      this.settingsLocalStore = val
     }
 
     async updateLocation (driverId, lat, lng, bayId){

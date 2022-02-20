@@ -6,11 +6,11 @@
           <h6>Mostrar Ruta (Google Maps)</h6>
           <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
         </label>
-        <label  for="url" class="uk-flex uk-flex-around uk-flex-middle " style="width: 100%" >
+        <label  for="url" class="uk-flex uk-flex-between url-section" >
            <h6>Seleccione Url</h6>
           <div  style="width: 60%" class="uk-margin uk-widht-1">
               <select id="url" class="uk-select" v-model="settings.url">
-                  <option :value="urlEnum.preprop" selected>Preprod Flai</option>
+                  <option :value="urlEnum.preprod" selected>Preprod Flai</option>
                   <option :value="urlEnum.production">Production Flai</option>
               </select>
           </div>
@@ -86,8 +86,9 @@ export default {
     async saveSettings() {
       if (this.settings.url !== this.settingsLocalStore.url) {
          await this.$store.commit("setSettings", this.settings);
-        this.$router.push({ name: "sign-in" });
+         this.setUrl()
         localStorage.removeItem('auth');
+        this.$router.push({ name: "sign-in" });
       } else {
         await this.$store.commit("setSettings", this.settings);
         this.$router.push({ name: "home" });
@@ -96,7 +97,18 @@ export default {
     },
     clearLocalStorage(){
       this.clear()
-    }
+    },
+    async setUrl(){
+      let setting = await JSON.parse(localStorage.getItem('setting'))
+      this.$services.singInServices.setURL(setting)
+      this.$services.loadsServices.setURL(setting) 
+      this.$services.loadsScanServices.setURL(setting)
+      this.$services.invoicesSevices.setURL(setting)
+      this.$services.deliverServices.setURL(setting)
+      this.$services.gpsServices.setURL(setting)
+      this.$services.driverVehicleAssignment.setURL(setting)
+      this.$services.exceptionServices.setURL(setting)
+  }
   },
 };
 </script>
@@ -134,6 +146,10 @@ input {
 }
 .auth-section{
   padding: 20px 0px;
+}
+.url-section{
+  width: 100%;
+  align-items: baseline;
 }
 .textUrl {
  font-size: 16px;

@@ -17,9 +17,17 @@ import ReconciliationWarehouse from '../components/ReconciliationWarehouse.vue'
 import ReturnContainer from '../views/AutoScan/ReturnContainer.vue'
 import DetailsLoad from "../components/DetailsLoad.vue";
 import Version from "../components/Version.vue";
+import Page from '../views/Page.vue'
 
 import about from '../views/About.vue'
+
+
 const routes = [
+  {
+    path: '/',
+    name: 'redirect',
+    component: Page 
+  },
   {
     path: '/',
     name: 'sign-in',

@@ -18,7 +18,7 @@
     "b2b": "B2B Delivery"
   },
   "url":{
-    "production": "http://production.flai.com.do:8756",
-    "preprop": "http://preprod.flai.com.do:8756"
+    "production": "https://production.flai.com.do/orchestrator",
+    "preprod": "https://preprod.flai.com.do/orchestrator"
   }
 }

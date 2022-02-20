@@ -2,13 +2,8 @@ const Orders = {
   state: {
       scanOrder: null,
       registrationForScan: null,
-      settings: {
-        language: null,
-        maps: false,
-        url: null
-      },
+      
       orderDetails: [],
-      language: null,
     }, 
   mutations: {
     scanOrder(state, val){
