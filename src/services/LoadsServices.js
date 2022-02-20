@@ -1,22 +1,23 @@
 class LoadsServices {
     constructor (http) {
-      this.http = http
+      this.http = http;
+      this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
     }
 
     async getOrdersByLoadId (id) {
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${id}?fields=Orders`)
+      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${id}?fields=Orders`)
       return result.data.Orders
     }
     async getLoadDetails (id) {
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${id}`)
+      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${id}`)
       var whId = result.data.warehouse
-      const result2 = await this.http.get(`http://preprod.flai.com.do:8756/exo/warehouses/${whId}`)
+      const result2 = await this.http.get(`${this.settingsLocalStore.url}/exo/warehouses/${whId}`)
       result.data.warehouse = result2.data
       return result.data
     }
     async getLoadsbyDate (date = new Date()) {
       var loadDate = new Date(date).getTime() - (new Date(date).getTime() % 86400000)
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/?date=${loadDate}`)
+      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/?date=${loadDate}`)
       return result.data
     }
     async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){
@@ -30,7 +31,7 @@ class LoadsServices {
             "type": type
         }
       }
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${id}/actions`, params)
+      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${id}/actions`, params)
       return result
     }
     

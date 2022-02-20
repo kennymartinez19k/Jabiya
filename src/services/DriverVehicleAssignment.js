@@ -1,16 +1,17 @@
   
 class DriverVehicleAssignment {
     constructor (http) {
-      this.http = http
+      this.http = http;
+    this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
     }
   
     async getDriverAndVehicle (loadId) {
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/availableTransports`)
+      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${loadId}/availableTransports`)
       return result.data
     }
 
     async postDriverVehicleAssignment (loadId, idValues) {
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/drivers`, idValues)
+      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/drivers`, idValues)
       return result
     }
 

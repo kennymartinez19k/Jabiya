@@ -28,8 +28,6 @@
         <span>&nbsp;Refrescar</span>
       </span>
     </div>
-
-    
     <div v-if="assignedLoads == 0" style="height: 50px">
       <span>No Tiene Viajes Asignados Para Este Día</span>
     </div>
