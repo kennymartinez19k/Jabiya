@@ -351,11 +351,11 @@ export default {
           let prod = order.products[i]
           try {
             if(prod.scanOneByOne === "no") {
-              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product._id, prod.qrCode  );
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product, prod.qrCode  );
             }
             else {
               for(let i = 0; i <= prod.quantity; i++){
-                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+                this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product, prod.qrCode  );
               }
             }
           } catch(error){

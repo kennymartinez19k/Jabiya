@@ -32,11 +32,11 @@
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
                   <span> RD ${{getRevenue(detailsLoads)}}</span>
                 </div>
-                <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider || userData?.userType == userType?.transporter)" class="uk-flex uk-flex-middle">
+                <div  v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider || userData?.userType == userType?.transporter)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.transportCost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
-                <div  v-if="detailsLoads.loadingStatus.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)" class="uk-flex uk-flex-middle">
+                <div  v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
                   <span> RD ${{detailsLoads?.plannedProfitability?.profitability?.profitability * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</span>
                 </div>
@@ -248,9 +248,13 @@ export default {
   async beforeMount() {
     this.setOpen(true);
     if (this.detailsLoadsStore) {
-      this.detailsLoads = this.detailsLoadsStore;
+      try{
+        this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
+      }catch(error){
+        this.detailsLoads = this.detailsLoadsStore;
+      }
       this.orders = this.detailsLoads.Orders
-      this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
+      console.log(this.detailsLoads)
       this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
     }
 
@@ -268,9 +272,7 @@ export default {
   },
  async mounted () {
        this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
-
     this.$store.commit("setSettings", null);
-    console.log(this.userInfo, 'info')
      if (this.userInfo.userType  === "Transporter") {
       this.costText = 'Ingreso por el Viaje'
     } else if (this.userInfo.userType  === "Provider") {
@@ -287,12 +289,6 @@ export default {
     },
 
     async setLoad(val) {
-      for (var i = 0; i < val.Orders.length; i++) {
-        let order = await this.$services.loadsScanServices.getProduct(
-          val.Orders[i]._id
-        );
-        Object.assign(val.Orders[i], order[0]);
-      }
       this.$store.commit("setloadStore", val);
       localStorage.setItem("DeliveryCharges", JSON.stringify(val));
 
@@ -332,7 +328,6 @@ export default {
     },
     ordenIsReturn(val) {
       let res = val?.Orders?.find((x) => x);
-      localStorage.setItem('loadType', JSON.stringify(val.loadType))
       if (val.loadType === this.profile.b2b) return 'B2B'
       if (res?.isReturn) return "Devolver Contenedor";
       return "Entregar Contenedor";

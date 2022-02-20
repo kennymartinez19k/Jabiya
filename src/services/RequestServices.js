@@ -3,6 +3,8 @@ class RequestServices {
       this.http = http
     }
     async request (infoRequest) {
+
+      console.log(infoRequest)
       
       let formData = new FormData();
 
@@ -19,7 +21,8 @@ class RequestServices {
                 formData.append('lat',lat);
                 formData.append('lng',lng);
       }
-
+    try{
+        
       if (infoRequest.method === "post") {
         // localStorage.setItem('posts', localStorage.getItem('posts') + 1)
         if (infoRequest.headers){
@@ -93,6 +96,25 @@ class RequestServices {
 
         }
       }
+
+      if (infoRequest.method === "put") {
+        // // localStorage.setItem('patches', localStorage.getItem('patches') + 1)
+
+        if (infoRequest.headers)  {
+          let res = await this.http.put(infoRequest.url, infoRequest.body, infoRequest.headers)
+          // // localStorage.setItem('patches', localStorage.getItem('patches') - 1)
+          return res
+
+        }
+        else {
+          let res = await this.http.put(infoRequest.url, infoRequest.body)
+          // // localStorage.setItem('patches', localStorage.getItem('patches') - 1)
+          return res
+        }
+      }
+    }catch(error){
+      return false
+    }
       return undefined
     }
     

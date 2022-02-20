@@ -32,6 +32,7 @@ export const Mixins = {
     this.localStorageGps.create();
 
     setInterval(() => {
+      
       this.setGps().then((res) => {
         if (res) {
           Geolocation.getCurrentPosition().then((myLocation) => {
@@ -159,7 +160,11 @@ export const Mixins = {
       } 
     },
     async setGps() {
-      return await this.localStorageGps.get(`gps ${this.load?.loadMapId}`);
+      if(this.load?.loadMapId){
+        return await this.localStorageGps.get(`gps ${this.load?.loadMapId}`);
+      }else{
+        return false
+      }
     },
 
     async uploadOrDownload(val){
@@ -193,6 +198,7 @@ export const Mixins = {
       return totalOfBoxes
     },
     removeInfoInStorage(val){
+      this.load = val
       localStorage.removeItem("loadingProgress");
       this.localStorageGps.remove(`gps ${val?.loadMapId}`);
       

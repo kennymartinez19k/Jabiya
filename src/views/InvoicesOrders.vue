@@ -83,7 +83,6 @@ export default {
 
       async products () {
         const result = await axios.get('https://jabiyaerp.flai.com.do/api/order', {withCredentials: true })
-        console.log(result.data.result.data.orders, 'result')
         this.userShipper = result.data.result.data.orders
       }
   }

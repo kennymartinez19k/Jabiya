@@ -100,7 +100,7 @@
             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                <!-- uk-open -->
                 <li class="uk-margin-remove">
-                   <a class="uk-accordion-title " href="#"></a>
+                   <a class="uk-accordion-title " href="#">Mostrar/Ocultar Productos</a>
                     <div 
                      class="uk-accordion-content uk-margin-remove uk-padding-remove">
                      <div class="details-product">
@@ -449,25 +449,23 @@ li{
 }
 .uk-accordion-title{
   display: flex;
-  /* width: 100%; 
-  display: inline-block;
-  */
+  margin: 5px 0px;
+  font-size: 12px;
+  color: #3880ff;
 }
 .uk-accordion-title::before {
     content: "";
     margin-left: 20px;/* revision*/
+    margin-right: 5px;
     background-image: url('../assets/down.png');
     height: 17px;
-    background-size: 21px;
+    background-size: 15px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+    
 }
 .uk-open>.uk-accordion-title::before {
-  background-image: url('../assets/up.png');
-    height: 17px;
-    background-size: 27px;
-    background-position: 50% 50%;
-    background-repeat: no-repeat
+  transform: rotate(180deg);
 }
 .order-select{
   width: 10%;

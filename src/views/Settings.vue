@@ -1,23 +1,38 @@
 <template>
   <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
-    <div>
-       <label class="item" for="maps">
-        <h6>Mostrar Mapa</h6>
-        <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
-      </label>
-      <label  for="url" class="uk-flex uk-flex-around uk-flex-middle " style="width: 100%" >
-      <h6>Seleccione Url</h6>
-        <div  style="width: 60%" class="uk-margin uk-widht-1">
-            <select id="url" class="uk-select" v-model="settings.url">
-                <option :value="urlEnum.preprop" selected>Preprod Flai</option>
-                <option :value="urlEnum.production">Production Flai</option>
-            </select>
-        </div>
+    <div class="uk-flex uk-flex-column uk-flex-between setting">
+      <div>
+        <label class="item" for="maps">
+          <h6>Mostrar Ruta (Google Maps)</h6>
+          <input type="checkbox" id="maps" v-model="settings.maps" class="checkBox">
         </label>
+        <label  for="url" class="uk-flex uk-flex-around uk-flex-middle " style="width: 100%" >
+           <h6>Seleccione Url</h6>
+          <div  style="width: 60%" class="uk-margin uk-widht-1">
+              <select id="url" class="uk-select" v-model="settings.url">
+                  <option :value="urlEnum.preprop" selected>Preprod Flai</option>
+                  <option :value="urlEnum.production">Production Flai</option>
+              </select>
+          </div>
+        </label>
+        
+        
+      </div>
+      <div class="btn">
+          <button :disabled="showButton" class="uk-button uk-button-primary" @click="saveSettings()">Guardar Cambios</button>
+      </div>
     </div>
 
-    <div class="btn">
-        <button :disabled="showButton === true" class="uk-button uk-button-primary" @click="saveSettings()">Guardar Cambios</button>
+    <div class="auth-section">
+      <h6 class="uk-text-center">Solo Personal Autorizado</h6>
+      <div>
+        <label class="item uk-flex uk-flex-center" for="maps">
+          <button class="uk-button btn-red" @click="clearLocalStorage()" >
+            Borrar Informacion (Solo Personal Autorizado)
+          </button>
+        </label>
+      </div>
+
     </div>
   </div>
 </template>
@@ -26,12 +41,12 @@
 import { mapGetters } from 'vuex';
 import { Profile } from '../mixins/Profile'
 import { urlEnum } from '../types'
+import { LocalStorage } from '../mixins/LocalStorage'
 export default {
   alias: 'Configuraciòn',
   data() {
     return {
       urlEnum,
-      show: 0,
       settingsLocalStore: null,
       showButton: true,
       settings: {
@@ -40,7 +55,7 @@ export default {
       },
     };
   },
-  mixins: [Profile],
+  mixins: [Profile, LocalStorage],
   computed: {
     ...mapGetters(['settingsStore'])
   },
@@ -78,17 +93,19 @@ export default {
         this.$router.push({ name: "home" });
       }
     
+    },
+    clearLocalStorage(){
+      this.clear()
     }
   },
 };
 </script>
 
 <style scoped>
-.item{
+.setting .item{
   width: 100%;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #ccc;
   padding: 10px 0px;
   align-items: baseline;
 }
@@ -108,6 +125,15 @@ input {
 .btn{
     display: flex;
     justify-content: flex-end;;
+    padding: 45px 0px 15px;
+    border-bottom: 1px solid #ccc;
+}
+.btn-red{
+  background: #de2828;
+  color: white
+}
+.auth-section{
+  padding: 20px 0px;
 }
 .textUrl {
  font-size: 16px;

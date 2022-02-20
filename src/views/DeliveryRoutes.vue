@@ -170,7 +170,6 @@ export default {
   watch:{
     listOfOrders:{
       handler: function (newVal) {
-        console.log(newVal)
        if (newVal.length === 0) {
        this.showButton = false
       } else {
@@ -195,8 +194,7 @@ export default {
   async mounted() {
     this.setOpen(true)
     this.load = {...this.loadStore};
-    this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
-    this.orders = [...this.load.Orders]
+    this.orders = [...this.load?.Orders]
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
     this.setOpen(false)
