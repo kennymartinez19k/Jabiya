@@ -1,7 +1,5 @@
 import {add} from '../queue'
 
-
-
 class deliverServices {
     constructor (http) {
       this.http = http
