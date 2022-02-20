@@ -54,7 +54,7 @@ export const Mixins = {
           });
         }
       });
-    }, 30000);
+    }, 12000);
   },
 
   methods: {

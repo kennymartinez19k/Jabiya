@@ -88,6 +88,7 @@ export default {
          await this.$store.commit("setSettings", this.settings);
          this.setUrl()
         localStorage.removeItem('auth');
+        await this.resetLocalStorage()
         this.$router.push({ name: "sign-in" });
       } else {
         await this.$store.commit("setSettings", this.settings);
@@ -108,7 +109,21 @@ export default {
       this.$services.gpsServices.setURL(setting)
       this.$services.driverVehicleAssignment.setURL(setting)
       this.$services.exceptionServices.setURL(setting)
-  }
+  },
+     resetLocalStorage () {
+        localStorage.removeItem('auth');
+      localStorage.removeItem('allLoads');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('loadType');
+      localStorage.removeItem('AllLoadS');
+      localStorage.removeItem('dateCheck');
+      localStorage.removeItem('currentProfile');
+      localStorage.removeItem('detailsException');
+      localStorage.removeItem('DeliveryCharges');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('ordersDetails');
+      localStorage.removeItem('loglevel:webpack-dev-server');
+     }  
   },
 };
 </script>
