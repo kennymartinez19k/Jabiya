@@ -39,9 +39,9 @@ export const Mixins = {
             let location = myLocation.coords;
             if (
               Math.abs(location.latitude - this.lastLocation.latitude) >
-                0.0001 ||
+                0.00003 ||
               Math.abs(location.longitude - this.lastLocation.longitude) >
-                0.0001
+                0.00003
             ) {
               this.lastLocation = { ...location };
               services.gpsServices.updateLocation(
@@ -65,7 +65,7 @@ export const Mixins = {
         if (val == "Approved") await this.uploadTrip(load);
         if (val == "Dispatched") await this.startLoadRoute(load);
         if (val == "Deliver-Load")
-          router.push({ name: "delivery-actions-auto" });
+          router.push({ name: "delivery-routes" });
         if (val == "return-container")
           router.push({ name: "return-container" });
         if (val == "Delivered") this.removeInfoInStorage(load)    

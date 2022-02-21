@@ -65,6 +65,15 @@
                   }}</span
                 >
               </div>
+               <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                <span
+                  >{{ detailsLoads?.dateTime?.date }}
+                  {{
+                    setLocaleDate(detailsLoads?.Orders[0]?.expected_date)
+                  }}</span
+                >
+              </div>
 
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'" 
                   class="uk-flex uk-flex-middle">
@@ -147,7 +156,7 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(order?.expected_date)
+                    setLocaleDate(order?.expected_time)
                   }}</span
                 >
               </div>
@@ -324,6 +333,7 @@ export default {
     },
 
     setLocaleDate(val) {
+      console.log(val)
       return moment(val).format("LT");
     },
     ordenIsReturn(val) {

@@ -83,9 +83,9 @@
                 <span>{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.start}}</span>
               </div>
 
-              <div class="uk-flex uk-flex-middle">
+              <div v-if="load?.loadType == profile?.container" class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.end}}</span>
+                <span>{{load?.dateTime?.date}} {{load?.Orders[0]?.expected_time}}</span>
               </div>
               
               <div class="uk-flex uk-flex-middle">
@@ -134,6 +134,10 @@
                   <span class="font-weight-medium">Cliente: </span>
                   <span>{{ order.client_name }}</span>
                 </p>
+            <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                <span>{{load?.dateTime?.date}} {{order.expected_time}}</span>
+              </div>
             <p style="margin-right: 10px !important">
               <span class="font-weight-medium">Orden: </span
               ><span>{{ order.order_num }}</span>
