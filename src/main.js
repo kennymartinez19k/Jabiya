@@ -12,7 +12,7 @@ import { IonicVue } from "@ionic/vue";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import VueObserveVisibility from 'vue-observe-visibility'
 import "@ionic/core/css/ionic.bundle.css";
-
+import { urlEnum } from './types'
 
 library.add(faCheck);
 library.add(faSignOutAlt);
@@ -28,8 +28,14 @@ library.add(faArrowRight)
 library.add(faHome)
 library.add(faRedoAlt)
 
-
-
+if(!(JSON.parse(localStorage.getItem('setting')))){
+  let setting = {
+    maps: false,
+    url: urlEnum.production
+  }
+  localStorage.setItem('setting', JSON.stringify(setting))
+  
+}
 
 const store = createStore({ ...storeModule });
 createApp(App)

@@ -179,22 +179,10 @@ export default {
        loadsMounted = this.loadStore
     }
     this.$store.commit("setloadStore", loadsMounted);
-
+    this.orders = this.orderScan
     
     if(loadsMounted){
        this.load = loadsMounted;
-       try{
-         let orders = JSON.parse(localStorage.getItem('ordersDetails'))
-         this.orders = this.load.Orders
-          for (let i = 0; i < this.orders.length; i++) {
-            this.orders[i]
-            let currentOrder = orders.find(x => x._id == this.orders[i]._id)
-            this.orders[i].products = currentOrder.products
-          }
-          console.log(this.orders)
-       }catch(error){
-         this.orders = this.load.Orders
-       }
        this.showSignaturform = this.orders.some(x =>  x.isReturn);
     }
     if (this.orderScan?.length > 1) {
@@ -216,10 +204,30 @@ export default {
           this.uploadOrDownload(this.load)
           this.postImages()
           let isReturn = this.load.Orders.find(x => x.isReturn)
+          try{
+            await this.changeRouteLoads('Delivered', this.load)
+            localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
+            localStorage.removeItem(`startLoad${this.load.loadMapId}`)
+            localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
+          }catch(error){
+            console.log(error)
+          }
 
-          await this.changeRouteLoads('Delivered', this.load)
-          localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
-          
+
+          this.$router.push({ name: 'home'}).catch(() => {})
+
+
+          // if(await JSON.parse(localStorage.getItem('allProducts'))){
+          //   let products = await JSON.parse(localStorage.getItem('allProducts'))
+          //  isAllScanned.push(products.some(prod => this.orders.some(order => prod.order_num == order.order_num)))
+          // }
+          // if(isAllScanned?.every(x => x == true)){
+          //   localStorage.removeItem(`startLoad${this.load.loadMapId}`)
+          //   this.$router.push({ name: 'home'}).catch(() => {})
+          // }else{
+          //    localStorage.removeItem(`startLoad${this.load.loadMapId}`)
+          //   this.$router.push({ name: 'delivery-routes'}).catch(() => {})
+          // }
           if(isReturn){
             localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
             this.$router.push({ name: 'load-status'}).catch(() => {})
@@ -227,7 +235,6 @@ export default {
             localStorage.removeItem(`startLoad${this.load.loadMapId}`)
             this.$router.push({ name: 'home'}).catch(() => {})
           }
-
         }
       },
     },

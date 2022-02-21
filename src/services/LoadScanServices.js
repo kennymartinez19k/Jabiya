@@ -3,7 +3,11 @@ import {add} from '../queue'
 class LoadsScanServices {
     constructor (http) {
       this.http = http;
-      this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
+      this.settingsLocalStore
+    }
+    
+    setURL(val){
+      this.settingsLocalStore = val
     }
 
     async driverArrival (loadId) {
@@ -13,7 +17,7 @@ class LoadsScanServices {
           "statusType": "Arrival",   
         }
       }
-      let url = `http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions` 
+      let url = `${this.settingsLocalStore.url}/exo/loads/${loadId}/actions` 
       let json = {'method': 'post', 'body': params, 'url': url}
       add(json)
 

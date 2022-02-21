@@ -2,6 +2,10 @@
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
       <div style="width: 50px">
+        <div v-if="!iconType" class="status-server">
+          <img v-if="server" src="../assets/online-icon.png" alt="">
+          <img v-if="!server" src="../assets/offline-icon.png" alt="">
+        </div>
         <font-awesome-icon
             v-if="iconType"
             :icon="iconType"
@@ -64,13 +68,15 @@
 <script>
 import { mapGetters } from "vuex";
 import Uikit from "uikit";
+
 export default {
   
   props: {
     nameComponent: String,
   },
+  
   computed: {
-    ...mapGetters(["userData"]),
+    ...mapGetters(["userData", "server"]),
 
     titlePage() {
       return this.nameComponent;
@@ -78,6 +84,7 @@ export default {
   },
   watch: {
     $route: function (newVal) {
+      console.log(newVal)
       newVal.name == "home"
         ? ((this.action = "sign-in"), (this.iconType = false))
         : newVal.name == "load-status"
@@ -90,8 +97,11 @@ export default {
         : ((this.action = "back"), (this.iconType = "arrow-left"));
     
     },
+    server: function(newVal){
+      this.serverStatus = newVal
+    }
   },
-  mounted() {
+  async mounted() {
     this.userData = JSON.parse(localStorage.getItem("userInfo"));
     if (this.nameComponent) this.titlePage = this.nameComponent;
     else "";
@@ -102,6 +112,8 @@ export default {
       action: "sign-in",
       positionSticky: false,
       userData: null,
+      serverStatus: true
+
     };
   },
   methods: {
@@ -168,5 +180,8 @@ li {
   width: 25px;
   right: 5px;
   top: 10px;
+}
+.status-server img{
+  width: 18px;
 }
 </style>

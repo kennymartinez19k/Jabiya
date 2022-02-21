@@ -62,7 +62,7 @@ export const Mixins = {
       if (load.loadType === this.profile.container) {
         if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
         if (val == "Driver Arrival") await this.driverArrival(load);
-        if (val == "Approved") await this.uploadTrip(load, 'drayage-orden');
+        if (val == "Approved") await this.uploadTrip(load);
         if (val == "Dispatched") await this.startLoadRoute(load);
         if (val == "Deliver-Load")
           router.push({ name: "delivery-actions-auto" });
@@ -73,7 +73,7 @@ export const Mixins = {
       } else {
           if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
           if (val == "Driver Arrival") await this.driverArrival(load);
-          if (val == "Approved") await this.uploadTrip(load, 'orders');
+          if (val == "Approved") await this.uploadTrip(load);
           if (val == "Dispatched") await this.startLoadRoute(load);
           if (val == "Deliver-Load")
             router.push({ name: "delivery-routes" });
@@ -98,13 +98,21 @@ export const Mixins = {
       );
     },
 
-    async uploadTrip(load, route) {
+    async uploadTrip(load) {
       this.localStorageGps.remove(`gps ${load?.loadMapId}`);
 
-      if(load.loadType == this.profile.container){
+      if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
         await this.uploadOrDownload(load)
-      }else{
-        router.push({ name: route });
+        
+      }else if(load?.loadType == this.profile?.b2b && load?.scanningRequired){
+        router.push({ name: 'orders' });
+      }
+
+      if(load?.loadType == this.profile?.container && !load?.scanningRequired){
+        await this.uploadOrDownload(load)
+
+      }else if(load?.loadType == this.profile?.container && load?.scanningRequired){
+        router.push({ name: 'orders' });
       }
     },
     async startLoadRoute(val) {
@@ -202,9 +210,9 @@ export const Mixins = {
       localStorage.removeItem("loadingProgress");
       this.localStorageGps.remove(`gps ${val?.loadMapId}`);
       
-      localStorage.removeItem(`startRoute${this.load.loadMapId}`)
-      localStorage.removeItem(`deliverLoad${this.load.loadMapId}`)
-      localStorage.removeItem(`uploadStorage${this.load.loadMapId}`)
+      localStorage.removeItem(`startRoute${this.load?.loadMapId}`)
+      localStorage.removeItem(`deliverLoad${this.load?.loadMapId}`)
+      localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)
     },
 
     async setStructure(order, listOfOrders = [], listOfOrderTotal = []){

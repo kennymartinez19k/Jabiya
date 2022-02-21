@@ -8,6 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+    <button @click="uploadProducts(7)">Escanear</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}

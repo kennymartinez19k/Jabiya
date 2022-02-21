@@ -1,11 +1,13 @@
 import {add} from '../queue'
 
-
-
 class deliverServices {
     constructor (http) {
       this.http = http;
-    this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
+      this.settingsLocalStore
+    }
+  
+    setURL(val){
+      this.settingsLocalStore = val
     }
 
     async postImages (images, lat, lng ,id) {
@@ -20,7 +22,6 @@ class deliverServices {
           
           let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
           add(json)
-
     }
 
     async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){

@@ -8,11 +8,12 @@ import {queue, remove} from './queue'
 import {LocalStorage} from './mixins/LocalStorage'
 import { Profile } from './mixins/Profile'
 import { Storage} from '@ionic/storage'
+import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+
 
 export default {
   data(){
     return{
-      stopScan:  false,
       noHead: [
         'sign-in',
         'sign-up',
@@ -26,7 +27,15 @@ export default {
       posts: 0,
       patches: 0,
       localStorage: new Storage(),
-      isSending: false
+      isSending: false,
+      isServerUp: true
+    }
+  },
+  watch:{
+    $route: function(newVal){
+      if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
+        this.stopScan()
+      }
     }
   },
   components:{
@@ -47,39 +56,55 @@ export default {
     },
 },
   async mounted(){
+    this.setUrl()
     this.localStorage.set('sending' , "false")
+    this.localStorage.set('serverUp' , "true")
     
-    let waitInterval = 2000
-    setInterval( async () => {
+    let delay = ms => new Promise(res => setTimeout(res, ms));
+    
+    let condition = true
+    while (condition) {
+      await delay(2000);
       if(queue.length > 0){
         let enqueueItem = remove()
         await this.enqueue(enqueueItem)
       }
-      this.isSending = await this.localStorage.get('sending')
-      if(!(JSON.parse(this.isSending)) ){
+      this.isServerUp = await this.localStorage.get('serverUp')
+      let isConnected
+      try{
+        isConnected = await this.$services.loadsServices.serverStatus()
+      }catch(error){
+        isConnected = false
+      }
+      if(!(JSON.parse(this.isServerUp)) || !isConnected){
+        if(isConnected) {
+          this.localStorage.set('serverUp' , "true")
+          this.$store.commit('setServer', true)
+        }
+        else this.$store.commit('setServer', false)
+      }else{
+        this.$store.commit('setServer', true)
+        this.localStorage.set('serverUp' , "true")
         let queueItem = await this.peek()
         if(queueItem){
           try{
-            this.localStorage.set('sending' , JSON.stringify(true))
             let res = await this.$services.requestServices.request(queueItem)
             if(res){
               this.dequeue()
-              await this.localStorage.set('sending' , JSON.stringify(false))
-            }else{
-              await this.localStorage.set('sending' , JSON.stringify(false))
-
             }
+            await this.localStorage.set('serverUp' , JSON.stringify(true))
+            this.$store.commit('setServer', true)
+
           } 
           catch(error){
-            await this.localStorage.set('sending' , JSON.stringify(false))
+            await this.localStorage.set('serverUp' , JSON.stringify(false))
+            this.$store.commit('setServer', false)
+
             console.log(error)
           }
-        }else{
-          await this.localStorage.set('sending' , JSON.stringify(false))
         }
       }
-  }, waitInterval)
-
+    }
 },
 methods:{
   setName(val){
@@ -87,7 +112,22 @@ methods:{
   },
   clearLocalStorage(){
     this.clear()
-  }
+  },
+  async setUrl(){
+    let setting = await JSON.parse(localStorage.getItem('setting'))
+    this.$services.singInServices.setURL(setting)
+    this.$services.loadsServices.setURL(setting) 
+    this.$services.loadsScanServices.setURL(setting)
+    this.$services.invoicesSevices.setURL(setting)
+    this.$services.deliverServices.setURL(setting)
+    this.$services.gpsServices.setURL(setting)
+    this.$services.driverVehicleAssignment.setURL(setting)
+    this.$services.exceptionServices.setURL(setting)
+  },
+   async stopScan() {
+      BarcodeScanner.showBackground();
+      BarcodeScanner.stopScan();
+    },
 }
 }
 </script>

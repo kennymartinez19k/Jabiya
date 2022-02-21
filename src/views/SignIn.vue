@@ -148,21 +148,11 @@ export default {
         localStorage.getItem("rememberPassword")
       );
     }
-    const dataLocalStore = await JSON.parse(localStorage.getItem('setting'))
-      if(dataLocalStore?.url){
-        this.$store.commit("setSettings", JSON.parse(localStorage.getItem('setting')));
-      } else {
-        const settings = {
-          maps: false,
-          url: urlEnum.preprop,
-        }
-        this.$store.commit("setSettings", settings);
-      }
     let detailsException = null;
     try {
       detailsException = await this.$services.exceptionServices.getExceptionsDetails();
     } catch (error) {
-      console.log(error.error)
+      console.log(error)
     }
     if (detailsException) {
       localStorage.setItem("detailsException", JSON.stringify(detailsException));
@@ -184,7 +174,7 @@ export default {
         }
       }
       this.disabled = true;
-
+      
       this.$services.singInServices.getToken(this.AutoLogin).then((res) => {
         this.loaded = true;
         this.$store.commit("setUserData");

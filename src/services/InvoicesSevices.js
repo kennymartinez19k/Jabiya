@@ -2,6 +2,11 @@
 class InvoicesSevices {
     constructor (http) {
       this.http = http
+      this.settingsLocalStore
+    }
+    
+    setURL(val){
+      this.settingsLocalStore = val
     }
   
     async getLoginInvoices () {

@@ -66,16 +66,6 @@
                 >
               </div>
 
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span
-                  >{{ detailsLoads?.dateTime?.date }}
-                  {{
-                    setLocaleDate(detailsLoads?.loadingStatus?.slotEndTime)
-                  }}</span
-                >
-              </div>
-
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'" 
                   class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
@@ -148,9 +138,19 @@
         >
           <div class="uk-text-left uk-flex uk-flex-wrap">
             <p class="uk-width-1-1" style="margin-right: 10px !important">
-                  <span class="font-weight-medium">Cliente: </span>
+                  <span class="font-weight-medium uk-text-bold">Cliente: </span>
                   <span>{{ order?.client_name }}</span>
                 </p>
+
+              <div class="uk-flex uk-flex-middle">
+                <p class="font-weight-medium">Fecha de Entrega:&nbsp;</p>
+                <span
+                  >{{ detailsLoads?.dateTime?.date }}
+                  {{
+                    setLocaleDate(order?.expected_date)
+                  }}</span
+                >
+              </div>
             <p style="margin-right: 10px !important">
               <span class="font-weight-medium">Orden: </span
               ><span>{{ order?.order_num }}</span>

@@ -19,7 +19,7 @@
   },
   "url":{
     "production": "https://production.flai.com.do/orchestrator",
-    "preprop": "https://preprod.flai.com.do/orchestrator"
+    "preprod": "https://preprod.flai.com.do/orchestrator"
   }
 }
 

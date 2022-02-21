@@ -1,10 +1,15 @@
 class LoadsServices {
     constructor (http) {
       this.http = http;
-      this.settingsLocalStore =  JSON.parse(localStorage.getItem('setting'));
+      this.settingsLocalStore
+    }
+
+    setURL(setting){
+      this.settingsLocalStore = setting
     }
 
     async getOrdersByLoadId (id) {
+      
       const result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${id}?fields=Orders`)
       return result.data.Orders
     }
@@ -33,6 +38,9 @@ class LoadsServices {
       }
       const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${id}/actions`, params)
       return result
+    }
+    async serverStatus(){
+     return await this.http.get(`${this.settingsLocalStore.url}/ping`)
     }
     
   

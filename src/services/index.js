@@ -11,16 +11,16 @@ import DriverVehicleAssignment from './DriverVehicleAssignment'
 import ExceptionServices from './ExceptionServices'
 
 export default {
-    axiosInstance: axiosInstance,
     singInServices: new SingInServices(axiosInstance),
     loadsServices: new LoadsServices(axiosInstance),
     loadsScanServices: new LoadsScanServices(axiosInstance),
-    invoicesSevices: new InvoicesSevices(axiosInstance),
-    deliverServices: new DeliverServices(axiosInstance),
-    requestServices: new RequestServices(axiosInstance),
+    invoicesSevices: new InvoicesSevices(axiosInstance ),
+    deliverServices: new DeliverServices(axiosInstance ),
+    requestServices: new RequestServices(axiosInstance ),
     queueServices: new QueueServices(),
-    gpsServices: new GpsServices(axiosInstance), 
-    driverVehicleAssignment: new DriverVehicleAssignment(axiosInstance), 
-    exceptionServices: new ExceptionServices(axiosInstance), 
-    
+    gpsServices: new GpsServices(axiosInstance ), 
+    driverVehicleAssignment: new DriverVehicleAssignment(axiosInstance ), 
+    exceptionServices: new ExceptionServices(axiosInstance ),  
 }
+
+

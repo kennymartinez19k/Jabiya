@@ -4,7 +4,7 @@ const profiles = {
             maps: false,
             url: null
         },
-    
+        server: false
     },
     mutations: {
    
@@ -17,10 +17,13 @@ const profiles = {
               localStorage.setItem('setting', JSON.stringify(state.settings))
             }
       
-          },
-          setLanguageStore (state, lang) {
-            state.language = lang
-          }    
+        },
+        setLanguageStore (state, lang) {
+          state.language = lang
+        },
+        setServer(state, val){
+          state.server = val
+        } 
     },
     actions:{
     
@@ -39,6 +42,7 @@ const profiles = {
     getters: {
       settingsStore: state => state.settings,
       languageStore: state => state.language,
+      server: state => state.server
     }
   }
   
