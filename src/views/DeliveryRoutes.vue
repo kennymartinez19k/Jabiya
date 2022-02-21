@@ -236,7 +236,11 @@ export default {
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
-      this.$router.push({ name: "deliveryActions" }).catch(() => {});
+      if(this.load.scanningRequired){
+        this.$router.push({ name: "deliveryActions" }).catch(() => {});
+      }else{
+        this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});
+      }
     },
     shipperName(val){
       var shipper = val?.shipper?.find(x => x.name)

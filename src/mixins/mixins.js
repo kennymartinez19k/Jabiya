@@ -210,9 +210,9 @@ export const Mixins = {
       localStorage.removeItem("loadingProgress");
       this.localStorageGps.remove(`gps ${val?.loadMapId}`);
       
-      localStorage.removeItem(`startRoute${this.load.loadMapId}`)
-      localStorage.removeItem(`deliverLoad${this.load.loadMapId}`)
-      localStorage.removeItem(`uploadStorage${this.load.loadMapId}`)
+      localStorage.removeItem(`startRoute${this.load?.loadMapId}`)
+      localStorage.removeItem(`deliverLoad${this.load?.loadMapId}`)
+      localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)
     },
 
     async setStructure(order, listOfOrders = [], listOfOrderTotal = []){
