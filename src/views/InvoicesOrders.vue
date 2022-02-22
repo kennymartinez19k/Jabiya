@@ -10,7 +10,7 @@
     </ion-loading>
     <div>
       <h4 class=" uk-text-left">Ordenes</h4>
-      <div class="uk-card uk-card-default uk-card-body" style="padding: 0 8px">
+      <div class="uk-card uk-card-default uk-card-body table-scroll" style="padding: 0 8px">
         <table class="uk-table uk-table-hover uk-table-divider uk-text-center">
           <thead>
             <tr>
@@ -67,6 +67,8 @@ export default {
   methods: {
       orderDetail (val) {
         this.$store.commit("getOrdersToInvoicesId", val);
+        console.log(val, 'vall')
+        console.log(this.userShipper, 'vathis.userShipperll')
         this.$router.push({ name: 'details-invoices'}).catch(() => {})
        
       },
@@ -97,5 +99,11 @@ th{
 }
 td{
   padding: 12px 12px !important;
+}
+.table-scroll {
+  height: 489px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
 }
 </style>

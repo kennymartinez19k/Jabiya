@@ -46,7 +46,10 @@
         <div v-if="order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
           <font-awesome-icon icon="check"/>
         </div>
-        <div v-else class="order-select" >
+        <div v-else-if="load.allowOrderChangesAtDelivery === true" class="order-select" >
+          <input @click="orderForScanInvoices(order)" name="radio2" type="radio" class="uk-radio" :value="order._id">
+        </div>
+         <div v-else class="order-select" >
           <input @click="orderForScan(order)" v-model="order.isSelectedDeliver" type="checkbox" class="uk-checkbox" >
         </div>
         <div class="uk-text-left info-user ">
@@ -126,8 +129,7 @@
       
     </div>
       <div class="button-opt">
-      <button @click="scan()" :disabled="!showButton" class="uk-button uk-button-primary">Escanear y Entregar Producto
-      </button>
+      <button @click="screenSelection()" :disabled="!showButton" class="uk-button uk-button-primary">{{textButton}}</button>
     </div>
   </div>
 </template>
@@ -163,7 +165,9 @@ export default {
       listOrderDetails: [],
       listOfOrderTotal: [],
       showButton: false,
-      timeout: 10000
+      textButton: null,
+      timeout: 10000,
+      idOrderToInvoices: null
 
     };
   },
@@ -198,6 +202,11 @@ export default {
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
     this.setOpen(false)
+    if (this.load.allowOrderChangesAtDelivery) {
+     this.textButton = 'Entregar Orden'
+    } else {
+     this.textButton = 'Escanear y Entregar Producto'
+    }
    this.orders.map(x => {
         // x.isSelectedDeliver = false
         x.totalQuantity = 0
@@ -230,6 +239,16 @@ export default {
         
         }
     },
+    screenSelection () {
+      if (!this.load.allowOrderChangesAtDelivery) {
+        this.$store.commit("getOrdersToInvoicesId", this.idOrderToInvoices);
+        this.$router.push({ name: "invoices-orders" }).catch(() => {});
+        // this.$router.push({ name: "details-invoices" }).catch(() => {});
+      } else{
+        this.scan()
+      }
+
+    },
     async scan() {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       this.$store.commit("setStructureToScan", structure)
@@ -259,6 +278,20 @@ export default {
        this.listOfOrderTotal = structure.secondStructure
     }
   },
+   async orderForScanInvoices (order) {
+    console.log(order, 'orde invoices')
+      this.showButton = true
+      this.idOrderToInvoices = order
+      this.listOrderDetails = [order]
+       let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
+      this.listOfOrders = structure.firstStructure
+      this.listOfOrderTotal = structure.secondStructure
+      let OrderStructur = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      this.$store.commit("setStructureToScan", OrderStructur)
+       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
+      this.$store.commit("scanOrder", this.listOrderDetails );
+      this.$store.commit("setOrderDetails", this.listOrderDetails );
+  }
 
   },
 };

@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts(7)">Escanear</button>
+    <button @click="uploadProducts(7)">Escanear entrega</button>
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -150,7 +150,7 @@
             <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }}</span>)</p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
-                <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
+                <button class="uk-button uk-button-default uk-modal-close button-cancel" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
             </p>
         </div>
@@ -967,5 +967,10 @@ p{
 .action{
   position: absolute;
   bottom: 0px;
+}
+.button-cancel{
+  margin: 0px 10px; 
+  background: #930404;
+  color: #fff
 }
 </style>
