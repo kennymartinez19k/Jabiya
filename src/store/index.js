@@ -26,6 +26,7 @@ const storeModule = {
    
     resetData(state){
       state.userData = null
+      localStorage.clear()
       localStorage.removeItem("dateCheck")
       localStorage.removeItem('userInfo')
     },

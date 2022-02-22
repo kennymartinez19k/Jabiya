@@ -130,10 +130,18 @@ export default {
         this.$store.commit('resetData')
         this.$router.push({ name: val }).catch(() => {});
       }
-      if (val == "back") this.$router.go(-1);
-      else {
-        this.$router.push({ name: val }).catch(() => {});
-        this.hideMenu();
+      if(this.$route.name == 'delivery-routes'){
+        this.$router.push({ name: 'load-status' }).catch(() => {});
+      }
+      else if(this.$route.name == 'orders'){
+        this.$router.push({ name: 'load-status' }).catch(() => {});
+      }
+      else{
+        if (val == "back") this.$router.go(-1);
+        else {
+          this.$router.push({ name: val }).catch(() => {});
+          this.hideMenu();
+        }
       }
     },
   },

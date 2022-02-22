@@ -36,6 +36,7 @@
         </div>
       </div>
     </div>
+    
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
       <div
         v-for="order in orders"

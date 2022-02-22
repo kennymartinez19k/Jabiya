@@ -208,7 +208,7 @@ export default {
       checkOrder: true,
       messageReject: null,
       showProduct: true,
-      timeout: 5000
+      timeout: 10000
     };
   },
   setup() {
@@ -238,7 +238,6 @@ export default {
     },
   },
   async mounted() {
-    console.log('SI ENTRE AL MOUNTED')
     this.load = {...this.loadStore};
     this.orders = [...this.orderScan]
     this.firstStructureLoad = this.structureToScan.firstStructure
@@ -287,29 +286,41 @@ export default {
           this.firm = newVal;
           this.setOpen(true)
           await this.postImages()
-          let load
-          let orders;
-          let res = []
 
-          try{
-            load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
-            orders = load.Orders
-            for (let i = 0; i < orders.length; i++) {
-              const order = orders[i];
-              res.push(order.products.every(x => x.loadScanningCounter >= x.quantity))
-            }
-            if(res.every(x => x == true)){
-              await this.changeRouteLoads('Delivered', this.load)
-              localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
-              localStorage.removeItem(`allProducts${this.load.loadMapId}`)
-            } 
-          }catch(error){
-            // await this.changeRouteLoads('Delivered', this.load)
-            localStorage.removeItem(`allProducts${this.load.loadMapId}`)
-          }
           let delay = ms => new Promise(res => setTimeout(res, ms));
-          await delay(2000);
-          this.$router.push({ name: "home" }).catch(() => {});
+          await delay(5000);
+          
+          try{
+              let load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId); 
+              let allProductScanned = []
+
+              load.Orders.forEach(x => {
+                allProductScanned.push(x.products.every(prod => prod.loadScanningCounter >= prod.quantity))
+              })
+
+              let allOrderScanned = JSON.parse(localStorage.getItem('allOrderScanned'))
+
+              if(!allOrderScanned){
+                localStorage.setItem('allOrderScanned', JSON.stringify(this.orders))
+              }else{
+                allOrderScanned = [...allOrderScanned, ...this.orders]
+                localStorage.setItem('allOrderScanned', JSON.stringify(allOrderScanned))
+              }
+
+              if(allProductScanned.every(x => x == true)){
+                localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
+                localStorage.removeItem(`allProducts${this.load.loadMapId}`)
+                this.$router.push({ name: "home" }).catch(() => {});
+                await this.changeRouteLoads('Delivered', this.load)
+              }else{
+                this.$router.push({name: 'delivery-routes'})
+              }
+
+          }catch(error){
+            await this.changeRouteLoads('Delivered', this.load)
+            this.$router.push({ name: "home" }).catch(() => {});
+            localStorage.removeItem(`allProducts${this.load?.loadMapId}`)
+          }
           this.setOpen(false)
         }
       },
