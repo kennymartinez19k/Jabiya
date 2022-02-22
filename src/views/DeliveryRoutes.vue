@@ -36,14 +36,38 @@
         </div>
       </div>
     </div>
+       <header>
+        <div uk-margin class="sub-header">
+          <div class="filter-checkbox">
+            <span class="filter-message">
+          Ver Ordenes: &nbsp; Pendientes
+        </span>
+        <div class="onoffswitch">
+            <input
+              type="checkbox"
+              v-model="filterOrders"
+              name="onoffswitch"
+              class="onoffswitch-checkbox"
+              id="myonoffswitch"
+              tabindex="0"
+            />
+            <label class="onoffswitch-label" for="myonoffswitch"></label>
+        </div>
+        <span class="filter-message">
+          Todas
+        </span>
+      </div>
+          
+        </div>
+      </header>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
       <div
-        v-for="order in orders"
+        v-for="order in ordersToDisplay"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }"
       >
-        <div v-if="order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
+        <div v-if="order.sendingInfo || order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
           <font-awesome-icon icon="check"/>
         </div>
         <div v-else class="order-select" >
@@ -52,21 +76,12 @@
         <div class="uk-text-left info-user ">
           <div class="btn uk-flex">
             <div class="uk-flex uk-flex-column uk-text-left">
-              <span
-                v-if="order.completed"
-                style="
-                  display: flex;
-                  position: relative;
-                  top: -4px;
-                  color: green;
-                "
+              <p
+                v-if="order.sendingInfo && order.status !== 'Delivered'"
+                class="uk-width-1-1"
               >
-                <strong>Completado </strong>
-                <font-awesome-icon
-                  icon="check"
-                  style="font-size: 14px; margin: 3px"
-                />
-              </span>
+              <strong class="font-weight-medium">Enviando Informacion</strong>
+              </p>
               <p
                 class="uk-width-1-1"
               >
@@ -126,7 +141,7 @@
       
     </div>
       <div class="button-opt">
-      <button @click="scan()" :disabled="!showButton" class="uk-button uk-button-primary">Escanear y Entregar Producto
+      <button @click="scan()" :disabled="!showButton" class="uk-button uk-button-primary">Escanear y Entregar Orden(es)
       </button>
     </div>
   </div>
@@ -163,7 +178,9 @@ export default {
       listOrderDetails: [],
       listOfOrderTotal: [],
       showButton: false,
-      timeout: 10000
+      timeout: 10000,
+      ordersToDisplay: [],
+      filterOrders: false
 
     };
   },
@@ -176,6 +193,9 @@ export default {
        this.showButton = true
       }
       }, deep: true
+    },
+    filterOrders: function(newVal){
+      this.filterByOrders(newVal)
     },
     orders:{
       handler: function (newVal) {
@@ -193,10 +213,23 @@ export default {
   },
   async mounted() {
     this.setOpen(true)
-    this.load = {...this.loadStore};
-    this.orders = [...this.load?.Orders]
+    try{
+      this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore.loadMapId); 
+    }catch(error){
+      this.load = {...this.loadStore};
+    }
+    this.orders = this.load?.Orders
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
+
+    let orderScanned = JSON.parse(localStorage.getItem('allOrderScanned'))
+    if(orderScanned){
+      this.orders.forEach(order => {
+        order.sendingInfo = orderScanned?.some(x => x.order_num == order.order_num)
+      })
+    }
+
+    this.filterByOrders(false)
     this.setOpen(false)
    this.orders.map(x => {
         // x.isSelectedDeliver = false
@@ -211,7 +244,7 @@ export default {
       if (this.orderDetailsStore) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {
-           if (order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
+           if (!order.sendingInfo && order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
              order.isSelectedDeliver = true
              this.orderForScan(order)
            } 
@@ -259,6 +292,14 @@ export default {
        this.listOfOrderTotal = structure.secondStructure
     }
   },
+
+    filterByOrders(val){
+      if(val){
+        this.ordersToDisplay = this.orders
+      }else{
+        this.ordersToDisplay = this.orders.filter(order => order.status != 'Delivered')
+      }
+    }
 
   },
 };
@@ -417,11 +458,7 @@ li{
     background-position: 50% 50%;
 }
 .uk-open>.uk-accordion-title::before {
-  background-image: url('../assets/up.png');
-    height: 17px;
-    background-size: 27px;
-    background-position: 50% 50%;
-    background-repeat: no-repeat
+  transform: rotate(180deg);
 }
 .order-select{
   width: 10%;
@@ -446,4 +483,113 @@ li{
   font-weight: 700;
   color: green
 }
+
+header {
+  height: 60px;  /* 64 + 16px */
+  position: sticky;
+  -webkit-position: sticky;
+  top: -16px; 
+  z-index: 1;
+  text-align: center;
+  -webkit-backface-visibility: hidden;
+}
+
+header::before,
+header::after {
+  content: '';
+  display: block;
+  height: 16px;
+  position: sticky;
+  -webkit-position: sticky;
+}
+
+/* SHADOW */
+header::before {
+  top: 28px; /* shadow is at bottom of element, so at 48 + 16 = 64px */
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* COVER */
+header::after {
+  background: linear-gradient(white 10%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.4) 70%, transparent);
+  z-index: 2;
+}
+
+/* HEADER CONTENT */
+header >.sub-header {
+  background: rgb(255, 255, 255);
+  height: 44px;
+  position: sticky;
+  -webkit-position: sticky;
+  top: 0px;
+  margin-top: -16px;
+  /* content should fall over shadow and cover */
+  z-index: 3;
+}
+.onoffswitch-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.onoffswitch-label {
+  position: relative;
+  top: 3px;
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  height: 22px;
+  padding: 0;
+  line-height: 36px;
+  border: 2px solid #e3e3e3;
+  border-radius: 36px;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease-in;
+}
+.onoffswitch-label:before {
+  content: "";
+  display: block;
+  width: 20px;
+  margin: 0px;
+  background: #ffffff;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 19px;
+  border: 2px solid #e3e3e3;
+  border-radius: 36px;
+  transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+  background-color: #02cf13;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label,
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+  border-color: #02cf13;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+  right: 0px;
+}
+.onoffswitch{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50px;
+}
+
+.filter-checkbox{
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 10px;
+  width: 100% !important
+}
+.filter-message{
+  padding: 9px;
+  font-size: 10px;
+  font-weight: 600;
+
+}
+.uk-padding-small{
+  padding: 0px 15px 15px;
+}
+
 </style>

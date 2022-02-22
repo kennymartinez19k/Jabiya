@@ -68,9 +68,9 @@
                <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
                 <span
-                  >{{ detailsLoads?.dateTime?.date }}
+                  >{{ detailsLoads?.Orders[0]?.expected_date }}
                   {{
-                    setLocaleDate(detailsLoads?.Orders[0]?.expected_date)
+                    setLocaleDate(detailsLoads?.Orders[0]?.expected_time)
                   }}</span
                 >
               </div>
@@ -156,7 +156,7 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(order?.expected_time)
+                    setLocaleDate(order?.expected_date)
                   }}</span
                 >
               </div>
@@ -351,10 +351,10 @@ export default {
     },
     getRevenue(load){
       let revenue = load?.plannedProfitability?.allVariable?.revenueMatrix?.find(info => info?.id == load?.loadForeignkeys?.transporterId)
-      return JSON.parse(Number.parseFloat(revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning).toFixed(3))
+      return Math.round(revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning)
     },
     setRound (val) {
-        return JSON.parse(Number.parseFloat(val).toFixed(3));
+        return Math.round(val)
     }
   },
 };

@@ -36,13 +36,37 @@
         </div>
       </div>
     </div>
+     <header>
+        <div uk-margin class="sub-header">
+          <div class="filter-checkbox">
+            <span class="filter-message">
+          Ver Ordenes: &nbsp; Pendientes
+        </span>
+        <div class="onoffswitch">
+            <input
+              type="checkbox"
+              v-model="filterOrders"
+              name="onoffswitch"
+              class="onoffswitch-checkbox"
+              id="myonoffswitch"
+              tabindex="0"
+            />
+            <label class="onoffswitch-label" for="myonoffswitch"></label>
+        </div>
+        <span class="filter-message">
+          Todas
+        </span>
+      </div>
+          
+        </div>
+      </header>
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
       <div class="uk-flex select-all">
         <input  type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders"> &nbsp;
         <label for="all-orders">&nbsp;<strong>Seleccionar Todas las Ordenes</strong></label>
       </div>
       <div
-        v-for="order in orders"
+        v-for="order in ordersToDisplay"
         :key="order"
         class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
         :class="{ ordenCompleted: order.completed, 'order-status': order?.totalOrdersScanned === order?.totalQuantity }"
@@ -50,7 +74,7 @@
         <div v-if="order?.totalOrdersScanned !== order?.totalQuantity  " class="order-select" >
           <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" >
         </div>
-        <div v-else class="order-completed">
+        <div v-else class="order-completed" >
           <font-awesome-icon icon="check"/>
         </div>
         <div class="uk-text-left info-user ">
@@ -87,7 +111,7 @@
             <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
           </p>
           <p>
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span>{{order?.totalOrdersScanned}}/{{order?.totalQuantity}}</span>
+            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span :class="{'order-delivered': order?.status === 'Delivered'}">{{order?.totalOrdersScanned}}/{{order?.totalQuantity}}</span>
           </p>
           </div>
           <p class="uk-width-1-1">
@@ -159,6 +183,8 @@ export default {
       listOfOrderTotal: [],
       listOrderDetails: [],
       selectAllOrders: false,
+      ordersToDisplay: [],
+      filterOrders: false
     };
   },
    setup() {
@@ -210,16 +236,22 @@ export default {
       }
         
       }, deep: true
-    }
+    },
+    filterOrders: function(newVal){
+      this.filterByOrders(newVal)
+    },
   },
   
   async mounted() {
     this.setOpen(true)
-    this.load = {...this.loadStore};
-    this.load = await this.$services.loadsServices.getLoadDetails(this.load.loadMapId);
-    this.orders =  (await this.$services.loadsServices.getLoadDetails(this.load.loadMapId)).Orders
-      this.load.firstOrdenSector = this.orders[0]?.sector
-      this.orderObj();
+    try{
+      this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore.loadMapId)
+    }catch(error){
+      this.load = this.loadStore
+    }
+    this.orders =  this.load.Orders
+    this.load.firstOrdenSector = this.orders[0]?.sector
+    this.orderObj();
     this.setOpen(false)
       this.orders.map(x => {
         x.totalQuantity = 0
@@ -242,6 +274,7 @@ export default {
           })
         })
       }
+    this.filterByOrders(false)
       
 
       
@@ -306,6 +339,15 @@ export default {
       })
     }
     return loadScanned
+  },
+
+  filterByOrders(val){
+    if(val){
+      this.ordersToDisplay = this.orders
+    }else{
+      this.ordersToDisplay = this.orders.filter(order => order?.totalOrdersScanned < order?.totalQuantity)
+    }
+    console.log(this.ordersToDisplay)
   }
 }
 }
@@ -482,4 +524,118 @@ li{
 .order-status{
   background: #e0fae080;
 }
+
+
+
+header {
+  height: 60px;  /* 64 + 16px */
+  position: sticky;
+  -webkit-position: sticky;
+  top: -16px; 
+  z-index: 1;
+  text-align: center;
+  -webkit-backface-visibility: hidden;
+}
+
+header::before,
+header::after {
+  content: '';
+  display: block;
+  height: 16px;
+  position: sticky;
+  -webkit-position: sticky;
+}
+
+/* SHADOW */
+header::before {
+  top: 28px; /* shadow is at bottom of element, so at 48 + 16 = 64px */
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* COVER */
+header::after {
+  background: linear-gradient(white 10%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.4) 70%, transparent);
+  z-index: 2;
+}
+
+/* HEADER CONTENT */
+header >.sub-header {
+  background: rgb(255, 255, 255);
+  height: 44px;
+  position: sticky;
+  -webkit-position: sticky;
+  top: 0px;
+  margin-top: -16px;
+  /* content should fall over shadow and cover */
+  z-index: 3;
+}
+.onoffswitch-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.onoffswitch-label {
+  position: relative;
+  top: 3px;
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  height: 22px;
+  padding: 0;
+  line-height: 36px;
+  border: 2px solid #e3e3e3;
+  border-radius: 36px;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease-in;
+}
+.onoffswitch-label:before {
+  content: "";
+  display: block;
+  width: 20px;
+  margin: 0px;
+  background: #ffffff;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 19px;
+  border: 2px solid #e3e3e3;
+  border-radius: 36px;
+  transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+  background-color: #02cf13;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label,
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+  border-color: #02cf13;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+  right: 0px;
+}
+.onoffswitch{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50px;
+}
+.filter-checkbox{
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 10px;
+  width: 100% !important
+}
+.filter-message{
+  padding: 9px;
+  font-size: 10px;
+  font-weight: 600;
+
+}
+.uk-padding-small{
+  padding: 0px 15px 15px;
+}
+.order-completed{
+  color: green;
+  font-size: 16px;
+}
+
 </style>

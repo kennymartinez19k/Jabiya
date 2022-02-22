@@ -8,7 +8,9 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-    <div uk-margin style="position: relative">
+    
+    <header>
+  <div uk-margin class="sub-header">
       <ul class="uk-pagination" >
         <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
         <li><span style="padding: 5px">
@@ -28,86 +30,90 @@
         <span>&nbsp;Refrescar</span>
       </span>
     </div>
-    <div v-if="assignedLoads == 0" style="height: 50px">
-      <span>No Tiene Viajes Asignados Para Este Día</span>
-    </div>
-    <div
-      v-show="assignedLoads > 0"
-      v-for="(load, i) in loadsToDisplay"
-      :key="i"
-    >
-      <div class="uk-card uk-card-default uk-width-1-2@m container">
-        <div 
-          class="load-default-status" 
-          :class="{'load-delivered': load.loadingStatus.text == 'Delivered',
-                  'load-assigned': load.loadingStatus.text == 'Driver selection in progress' || 
-                  (load.loadingStatus.text == 'Expecting Approval' && !load.approvers[0].status),
-                  'load-rejected': load.loadingStatus.text == 'Denied Approval'
-                  }"
-          >
-          <div
-          :class="{ 'load-edges': load.loadMapId === loadingProgress }"
-            class="uk-card uk-card-body"
-            @click="setLoad(load)"
-          >
-          <span class="uk-badge">{{i + 1}}</span>
-           <p class="uk-flex status-load">
-                <span class="uk-text-bold">{{ loadStatus(load) }}</span>
-            </p>
-          <div class="uk-flex uk-flex-between uk-flex-middle">
+</header>
+  
+    <div class="section">
+      <div v-if="assignedLoads == 0" style="height: 50px">
+        <span>No Tiene Viajes Asignados Para Este Día</span>
+      </div>
+      <div
+        v-show="assignedLoads > 0"
+        v-for="(load, i) in loadsToDisplay"
+        :key="i"
+      >
+        <div class="uk-card uk-card-default uk-width-1-2@m container">
+          <div 
+            class="load-default-status" 
+            :class="{'load-delivered': load.loadingStatus.text == 'Delivered',
+                    'load-assigned': load.loadingStatus.text == 'Driver selection in progress' || 
+                    (load.loadingStatus.text == 'Expecting Approval' && !load.approvers[0].status),
+                    'load-rejected': load.loadingStatus.text == 'Denied Approval'
+                    }"
+            >
+            <div
+            :class="{ 'load-edges': load.loadMapId === loadingProgress }"
+              class="uk-card uk-card-body"
+              @click="setLoad(load)"
+            >
+            <span class="uk-badge">{{i + 1}}</span>
+            <p class="uk-flex status-load">
+                  <span class="uk-text-bold">{{ loadStatus(load) }}</span>
+              </p>
+            <div class="uk-flex uk-flex-between uk-flex-middle">
 
-            <div style="margin-top: 32px !important">
-              <div>
-                  <p class="uk-flex">
-                    <span>{{ load?.loadNumber }}</span>
-                  </p>
-              </div>
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">No de Orden:&nbsp;</p>
-                <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
-                <span v-if="load.Orders.length > 3">...</span>
-              </div>
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Tipo:&nbsp;</p>
-                <span>{{ordenIsReturn(load)}}</span>
-              </div>
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
-              </div>
-
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
-              </div>
-
-              <div v-if="userInfo?.userType != userType?.driver">
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Chofer:&nbsp;</p>
-                   <span v-for="info of load?.Vehicles" :key="info">
-                     {{info?.driver}}
-                    </span>
+              <div style="margin-top: 32px !important">
+                <div>
+                    <p class="uk-flex">
+                      <span>{{ load?.loadNumber }}</span>
+                    </p>
                 </div>
                 <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                  <p class="uk-text-bold">No de Orden:&nbsp;</p>
+                  <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
+                  <span v-if="load.Orders.length > 3">...</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Tipo:&nbsp;</p>
+                  <span>{{ordenIsReturn(load)}}</span>
+                </div>
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
+                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
+                </div>
+
+                <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
+                </div>
+
+                <div v-if="userInfo?.userType != userType?.driver">
+                  <div class="uk-flex uk-flex-middle">
+                    <p class="uk-text-bold">Chofer:&nbsp;</p>
                     <span v-for="info of load?.Vehicles" :key="info">
-                      {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
-                      {{ info?.license_no }}
-                   </span>
+                      {{info?.driver}}
+                      </span>
+                  </div>
+                  <div class="uk-flex uk-flex-middle">
+                    <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                      <span v-for="info of load?.Vehicles" :key="info">
+                        {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
+                        {{ info?.license_no }}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-               </div>
-              <div class="start-load">
-                <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
-              </div>
+                </div>
+                <div class="start-load">
+                  <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
+                </div>
 
+              </div>
+              <div class="uk-flex uk-flex-between">
+              </div>
             </div>
-            <div class="uk-flex uk-flex-between">
+            <div v-show="load.length <= 1" style="height: 50px">
+              <span>No Tiene Viajes Asignados Para Este Día</span>
             </div>
-          </div>
-          <div v-show="load.length <= 1" style="height: 50px">
-            <span>No Tiene Viajes Asignados Para Este Día</span>
           </div>
         </div>
       </div>
@@ -236,6 +242,7 @@ export default {
 
       }catch(error){
       this.setOpen(false)
+      console.log(error.message)
         if(error.message == 'Network Error'){
           // this.alertError('No Hay Conexion a Internet', 'Verifique he Intente de Nuevo' )
           this.reloadEvent = false
@@ -248,6 +255,9 @@ export default {
           date = moment(contDate).format("MM/DD/YYYY");
            if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
            else this.dateMoment = date
+        }
+        if(error.message == 'Request failed with status code 401'){
+           this.$router.push({name: 'sign-in'})
         }
         return ;
       }   
@@ -283,7 +293,7 @@ export default {
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-    
+      console.log(loadsAcummulated, currentLoads)
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
@@ -504,7 +514,7 @@ a {
 
 .refresh-reload{
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   position: absolute;
   top: 0px;
   right: 5%;
@@ -543,7 +553,49 @@ a {
   }
 }
 
+header {
+  height: 60px;  /* 64 + 16px */
+  position: sticky;
+  -webkit-position: sticky;
+  top: -16px; 
+  z-index: 1;
+  text-align: center;
+  -webkit-backface-visibility: hidden;
+}
+
+header::before,
+header::after {
+  content: '';
+  display: block;
+  height: 16px;
+  position: sticky;
+  -webkit-position: sticky;
+}
+
+/* SHADOW */
+header::before {
+  top: 28px; /* shadow is at bottom of element, so at 48 + 16 = 64px */
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* COVER */
+header::after {
+  background: linear-gradient(white 10%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.4) 70%, transparent);
+  z-index: 2;
+}
+
+/* HEADER CONTENT */
+header >div {
+  background: rgb(255, 255, 255);
+  height: 44px;
+  position: sticky;
+  -webkit-position: sticky;
+  top: 0px;
+  margin-top: -16px;
+  /* content should fall over shadow and cover */
+  z-index: 3;
+}
 
 
-  
+
 </style>

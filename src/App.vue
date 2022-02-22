@@ -34,7 +34,7 @@ export default {
   watch:{
     $route: function(newVal){
       if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
-        this.stopScan()
+          this.stopScan()
       }
     }
   },
@@ -125,8 +125,12 @@ methods:{
     this.$services.exceptionServices.setURL(setting)
   },
    async stopScan() {
-      BarcodeScanner.showBackground();
-      BarcodeScanner.stopScan();
+     try{
+       BarcodeScanner.showBackground();
+       BarcodeScanner.stopScan();
+     }catch(error){
+       console.log('good')
+     }
     },
 }
 }
