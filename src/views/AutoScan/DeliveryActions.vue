@@ -8,6 +8,7 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
+    
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -121,6 +122,7 @@ import timeline from "../../components/timeline-action.vue";
 import { Camera, CameraResultType } from "@capacitor/camera";
 import { IonLoading } from "@ionic/vue";
 import { Mixins} from '../../mixins/mixins'
+import { profile } from '../../types'
 
 
 
@@ -174,17 +176,19 @@ export default {
     ]),
   },
   async mounted() {
-    let loadsMounted = null
+    let loadsMounted = this.loadStore
     if (this.loadStore) {
-       loadsMounted = this.loadStore
+       this.$store.commit("setloadStore", loadsMounted);
     }
-    this.$store.commit("setloadStore", loadsMounted);
-    this.orders = this.orderScan
     
-    if(loadsMounted){
-       this.load = loadsMounted;
-       this.showSignaturform = this.orders.some(x =>  x.isReturn);
+    this.load = {...this.loadStore};
+    if(this.load?.loadType == profile?.container){
+      this.orders = this.load?.Orders
+    }else{
+      this.orders = this.orderScan
     }
+    this.showSignaturform = this.orders.some(x =>  x.isReturn);
+
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -201,40 +205,63 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-          this.uploadOrDownload(this.load)
+          this.uploadOrDownload(this.orders)
           this.postImages()
           let isReturn = this.load.Orders.find(x => x.isReturn)
+          
+          let delay = ms => new Promise(res => setTimeout(res, ms));
+          await delay(5000);
+
+          
+
           try{
-            await this.changeRouteLoads('Delivered', this.load)
-            localStorage.setItem(`sendInfo${this.load.loadMapId}`, true)
-            localStorage.removeItem(`startLoad${this.load.loadMapId}`)
-            localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
+              let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId); 
+              let allProductScanned = []
+
+              load.Orders.forEach(x => {
+                allProductScanned.push(x.products.every(prod => prod?.loadScanningCounter >= prod?.quantity))
+              })
+              
+              let allOrderScanned = JSON.parse(localStorage.getItem('allOrderScanned'))
+
+              if(!allOrderScanned){
+                localStorage.setItem('allOrderScanned', JSON.stringify(this.orders))
+              }else{
+                allOrderScanned = [...allOrderScanned, ...this.orders]
+                localStorage.setItem('allOrderScanned', JSON.stringify(allOrderScanned))
+              }
+
+              if(allProductScanned.every(x => x == true) || load?.Orders?.every(order => this.orders?.some(x => x?.order_num == order?.order_num))){
+                localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true)
+                localStorage.removeItem(`allProducts${this.load?.loadMapId}`)
+                await this.changeRouteLoads('Delivered', this.load)
+
+                if(isReturn){
+                  localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
+                  this.$router.push({ name: 'load-status'}).catch(() => {})
+                  
+                }else if(load.loadType == profile.container){
+                  this.$router.push({name: 'home'})
+                }else{
+                  this.$router.push({name: 'delivery-routes'})
+                }
+
+              }else{
+                if(load.loadType == profile.container){
+                  localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true)
+                  localStorage.removeItem(`allProducts${this.load?.loadMapId}`)
+                  this.$router.push({name: 'home'})
+                }else{
+                  this.$router.push({name: 'delivery-routes'})
+                }
+              }
+
           }catch(error){
-            console.log(error)
+            await this.changeRouteLoads('Delivered', this.load)
+            localStorage.removeItem(`allProducts${this.load?.loadMapId}`)
+            this.$router.push({ name: "home" }).catch(() => {});
           }
-
-
-          this.$router.push({ name: 'home'}).catch(() => {})
-
-
-          // if(await JSON.parse(localStorage.getItem('allProducts'))){
-          //   let products = await JSON.parse(localStorage.getItem('allProducts'))
-          //  isAllScanned.push(products.some(prod => this.orders.some(order => prod.order_num == order.order_num)))
-          // }
-          // if(isAllScanned?.every(x => x == true)){
-          //   localStorage.removeItem(`startLoad${this.load.loadMapId}`)
-          //   this.$router.push({ name: 'home'}).catch(() => {})
-          // }else{
-          //    localStorage.removeItem(`startLoad${this.load.loadMapId}`)
-          //   this.$router.push({ name: 'delivery-routes'}).catch(() => {})
-          // }
-          if(isReturn){
-            localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5)
-            this.$router.push({ name: 'load-status'}).catch(() => {})
-          }else{
-            localStorage.removeItem(`startLoad${this.load.loadMapId}`)
-            this.$router.push({ name: 'home'}).catch(() => {})
-          }
+          this.setOpen(false)
         }
       },
     },
@@ -377,10 +404,10 @@ export default {
 
     },
     setLoadTruck(val){
-      this.timeOut = 5000
+      this.timeOut = 10000
       this.setOpen(true);
       let totalOfBoxes = 0
-      let orders = val.Orders.filter(x => !x.isReturn)
+      let orders = val.filter(x => !x.isReturn)
       for(let cont = 0; cont < orders.length; cont++){
         let order = orders[cont]
         totalOfBoxes += order.no_of_boxes

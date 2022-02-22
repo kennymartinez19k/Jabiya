@@ -65,7 +65,7 @@ export const Mixins = {
         if (val == "Approved") await this.uploadTrip(load);
         if (val == "Dispatched") await this.startLoadRoute(load);
         if (val == "Deliver-Load")
-          router.push({ name: "delivery-routes" });
+          router.push({ name: "delivery-actions-auto" });
         if (val == "return-container")
           router.push({ name: "return-container" });
         if (val == "Delivered") this.removeInfoInStorage(load)    
@@ -118,7 +118,6 @@ export const Mixins = {
     async startLoadRoute(val) {
       if (this.setting.maps) await this.setMap(val);
       this.localStorageGps.set(`gps ${val.loadMapId}`, true);
-
       localStorage.setItem(`startRoute${val.loadMapId}`, JSON.stringify(true));
       
     },
@@ -180,6 +179,9 @@ export const Mixins = {
       let totalOfBoxes = await this.setLoadTruck(val)
       await this.$services.loadsScanServices.completeLoad(val.loadMapId, totalOfBoxes ) 
       localStorage.setItem(`uploadStorage${this.load.loadMapId}`,JSON.stringify(true))
+      let delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(2000);
+
     },
     async setLoadTruck(val){
       let totalOfBoxes = 0

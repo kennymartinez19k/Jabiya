@@ -18,7 +18,7 @@
           </thead>
           <tbody v-for="driver in drivers" :key="driver">
             <tr>
-              <label class=" uk-flex uk-flex-center" :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
+              <label class="list-name uk-flex uk-flex-center" :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
                 <td>{{driver.driverName}}</td>
               </label>
             </tr>
@@ -46,7 +46,7 @@
                 <td>{{details.brand}}</td>
                 <td>{{details.color}}</td>
                 <td>{{details.vehicleNo}}</td>
-                <td>${{details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning}}</td>
+                <td>RD${{setRound(details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</td>
                 </label>
             </tr>       
           </tbody>
@@ -115,6 +115,9 @@ export default {
         this.$router.push({ name: "home" }).catch(() => {});
       }
     
+    },
+       setRound (val) {
+        return JSON.parse(Number.parseFloat(val).toFixed(3));
     }
   },
 };
@@ -155,17 +158,29 @@ td {
   margin: 0px !important;
 }
 .uk-table td { 
-  padding: 10px 12px;
+  padding: 10px 5px;
+}
+.list-name{
+  width: 100%;
+  padding: 5px 0px;
+}
+.list{
+  width: 100%;
+  padding: 5px 0px;
 }
 .list th{
-  width: 10%;
-  min-width: 51px;
+  width: 25%;
+  /* min-width: 51px; */
   padding: 10px 0px;
   text-align: center;
 }
 .list td{
-width: 10%;
-    min-width: 51px;
+width: 20%;
+font-size: 11px;
+
+    /* max-width: 51px;
+    min-width: 51px; */
+
     padding: 10px 0px;
 }
 .text {

@@ -45,19 +45,19 @@
           >
             <h6 class="uk-text-center">Detalles del Viaje</h6>
            
-            <div class="uk-margin-top">
+            <div class="uk-margin-top uk-text-left">
                 <div>
                 <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span> RD ${{load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                  <span> RD ${{setRound(load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 <div  v-if="userData?.userType !== userType?.driver" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
-                  <span> RD ${{load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                  <span> RD ${{setRound(load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span> RD ${{load?.plannedProfitability?.profitability?.profitability * load?.currencyExchange?.atTheTimeOfAssigning}}</span>
+                  <span> RD ${{setRound(load?.plannedProfitability?.profitability?.profitability * load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 
               </div>
@@ -80,12 +80,12 @@
               </div>
               <div class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{load?.dateTime?.slotTime?.start}}</span>
+                <span>{{load?.dateTime?.date}} {{setLocaleDate(detailsLoads?.loadingStatus?.slotStartTime)}}</span>
               </div>
 
               <div v-if="load?.loadType == profile?.container" class="uk-flex uk-flex-middle">
                 <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{load?.Orders[0]?.expected_time}}</span>
+                <span>{{setDateFormat(load?.Orders[0]?.expected_date)}}  {{setLocaleDate(load?.Orders[0]?.expected_date)}}</span>
               </div>
               
               <div class="uk-flex uk-flex-middle">
@@ -134,12 +134,13 @@
                   <span class="font-weight-medium">Cliente: </span>
                   <span>{{ order.client_name }}</span>
                 </p>
-            <div class="uk-flex uk-flex-middle">
+            <div class="uk-flex uk-flex-middle uk-width-1-1">
                 <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{order.expected_time}}</span>
+                <span>{{setDateFormat(order.expected_date)}} &nbsp;</span>
+                <span> {{setLocaleDate(order.expected_date)}}</span>
               </div>
             <p style="margin-right: 10px !important">
-              <span class="font-weight-medium">Orden: </span
+              <span class="font-weight-medium uk-wi">Orden: </span
               ><span>{{ order.order_num }}</span>
             </p>
             <p>
@@ -233,6 +234,7 @@
 import { mapGetters } from "vuex";
 import { Mixins } from '../mixins/mixins'
 import { ref } from "vue";
+import moment from "moment";
 import { IonLoading } from "@ionic/vue";
 import { userType, userPosition, profile } from '../types'
 
@@ -324,7 +326,7 @@ export default {
       let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
       let userId
       if(!load.approvers[0].status){
-        userId = this.userInfo?.id
+        userId = load?.approvers[0]?.approver_id?._id
       }
       else{
         userId = (load.Vehicles.find(x => x)).driver_id._id
@@ -352,6 +354,18 @@ export default {
       var shipper = val?.shipper[0]?.name;
       return shipper;
     },
+
+    setRound (val) {
+        return Math.round(val)
+    },
+
+    setLocaleDate(val) {
+      console.log(val)
+      return moment(val).format("LT");
+    },
+    setDateFormat(val){
+     return moment(val).format('MM/DD/YYYY')
+    }
     
   },
 };

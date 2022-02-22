@@ -98,6 +98,8 @@ export default {
     },
     clearLocalStorage(){
       this.clear()
+      this.$router.push({ name: "sign-in" });
+
     },
     async setUrl(){
       let setting = await JSON.parse(localStorage.getItem('setting'))
