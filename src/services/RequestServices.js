@@ -4,8 +4,6 @@ class RequestServices {
     }
     async request (infoRequest) {
 
-      console.log(infoRequest)
-      
       let formData = new FormData();
 
       if(infoRequest.formInfo){

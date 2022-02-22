@@ -129,7 +129,9 @@ methods:{
        BarcodeScanner.showBackground();
        BarcodeScanner.stopScan();
      }catch(error){
-       console.log('good')
+       error
+       console.clear()
+
      }
     },
 }

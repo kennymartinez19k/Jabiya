@@ -29,7 +29,6 @@ class LoadsScanServices {
     }
 
     async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
-      console.log(orderId, boxId, loadCounter, productId, qrCode)
         const params = {
           "actionName": "loadBox",
           "params": {
@@ -40,12 +39,10 @@ class LoadsScanServices {
         }
         
         const result = await this.http.post(`${this.settingsLocalStore.url}/exo/orders/${orderId}/products/${productId}/actions`, params)
-        console.log(result)
         return result
     }
 
     async completeLoad(loadId, loadQuantity){
-      console.log(loadId, loadQuantity)
       const params = {
         "actionName": "completeLoadProcess",
         "params": {

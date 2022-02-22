@@ -25,7 +25,6 @@ class deliverServices {
     }
 
     async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){
-      console.log(orderId, boxId, loadCounter, productId, qrCode, 'deliver')
       const body = {        
         "actionName": "deliverBox",
         "params": {

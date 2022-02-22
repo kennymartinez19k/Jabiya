@@ -286,7 +286,6 @@ export default {
     if (this.loadStore) {
       this.load = this.loadStore;
       this.orders = this.loadStore.Orders
-      console.log(this.load)
       this.load.firstOrdenInfo = this.orders[0]
     }
     if (this.orderScan) {
@@ -360,7 +359,6 @@ export default {
     },
 
     setLocaleDate(val) {
-      console.log(val)
       return moment(val).format("LT");
     },
     setDateFormat(val){

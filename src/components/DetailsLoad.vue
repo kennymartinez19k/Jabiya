@@ -262,9 +262,9 @@ export default {
       }catch(error){
         this.detailsLoads = this.detailsLoadsStore;
       }
-      this.orders = this.detailsLoads.Orders
+      this.orders = this.detailsLoads?.Orders
       console.log(this.detailsLoads)
-      this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
+      this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
     }
 
   },
@@ -273,8 +273,8 @@ export default {
     ...mapGetters(["detailsLoadsStore", "userData"]),
 
     hasAddAdditionalInfo(){
-      if(this.orders.some(order => order.addAdditionalInfo))
-        return this.orders.every(order => order.addAdditionalInfo <= 0)
+      if(this.orders?.some(order => order?.addAdditionalInfo))
+        return this.orders.every(order => order?.addAdditionalInfo <= 0)
       else
       return true
     }

@@ -147,7 +147,7 @@
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
 
             <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }}</span>)</p>
-            <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders" class="uk-input" >
+            <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned" class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
@@ -274,8 +274,6 @@ export default {
       this.allProductScanned = true
       this.verifiedLoad()
     }
-    console.log(this.firstStructureLoad)
-
 
   },
   watch: {
@@ -365,6 +363,7 @@ export default {
       handler: function (newVal) {
         if (newVal) {
           this.step = 1
+          this.stopScan()
         } else if (newVal === false && this.orders.some(x => {return x.products.some(z => z.loadScanningCounter !== 0)}) === false) {
           this.step = 0
         }
@@ -474,13 +473,11 @@ export default {
 
 
      async uploadProducts(val){
-       console.log(this.firstStructureLoad, 'inside uploadProducts')
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
           x.loadScanningCounter < x.quantity &&
           !x.completedScanned
         )
-        console.log(orderForScan, 'segundo inside UploadProd')
         if(orderForScan){
           let detailsOrderToScan = this.secondStructureLoad.find(x => x.qrCode == orderForScan.qrCode)
           if(detailsOrderToScan.loadScanningCounter >= detailsOrderToScan.totalOfOrders ){

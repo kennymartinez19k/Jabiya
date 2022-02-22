@@ -226,8 +226,7 @@ export default {
       else contDate = this.date
       date = moment(contDate).format("MM/DD/YYYY");
       
-      // if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
-      // else this.dateMoment = date
+
       let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
   
       try{
@@ -293,7 +292,6 @@ export default {
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-      console.log(loadsAcummulated, currentLoads)
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
@@ -303,7 +301,6 @@ export default {
       }
       this.reloadEvent = false
 
-      console.log(this.loadsToDisplay)
     },
     
     reset(){
