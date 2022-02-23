@@ -72,6 +72,10 @@
                   <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
                   <span v-if="load.Orders.length > 3">...</span>
                 </div>
+                 <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
+                  <span>{{productQuantity(load)}}</span>
+                </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Tipo:&nbsp;</p>
                   <span>{{ordenIsReturn(load)}}</span>
@@ -79,11 +83,6 @@
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
-                </div>
-
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
                 </div>
 
                 <div v-if="userInfo?.userType != userType?.driver">
@@ -300,6 +299,7 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
       this.reloadEvent = false
+      console.log(this.loadsToDisplay)
 
     },
     
@@ -391,6 +391,14 @@ export default {
         });
         await alert.present();
     },
+
+    productQuantity(val){
+      let totalProduct = 0
+      val.Orders.forEach(order => {
+        totalProduct += order.no_of_boxes
+      });
+      return totalProduct
+    }
 
   },
 };

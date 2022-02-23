@@ -329,8 +329,8 @@ export default {
     },
     
     quantityForScan: function(newVal){
-      if(newVal > this.totalLimitOfBoxes.totalOfOrders){
-        this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders
+      if(newVal > (this.totalLimitOfBoxes.totalOfOrders - this.totalLimitOfBoxes.scanned)){
+        this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders - this.totalLimitOfBoxes.scanned
       }
     },
     firstStructureLoad:{
@@ -369,6 +369,7 @@ export default {
         }
       }, deep: true
     },
+
   },
 
   methods: {
@@ -580,6 +581,7 @@ export default {
       this.verifiedLoad()
     },
     async scanOrder() {
+      this.quantityForScan = null
       this.statusOrders = 'start';
       if (await this.checkPermission()) {
         this.showProduct = false

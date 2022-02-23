@@ -70,7 +70,7 @@
                 <span
                   >{{ detailsLoads?.Orders[0]?.expected_date }}
                   {{
-                    setLocaleDate(detailsLoads?.Orders[0]?.expected_time)
+                    setLocaleHour(detailsLoads?.Orders[0]?.expected_date)
                   }}</span
                 >
               </div>
@@ -156,7 +156,7 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(order?.expected_date)
+                    setLocaleHour(order?.expected_date)
                   }}</span
                 >
               </div>
@@ -355,6 +355,10 @@ export default {
     },
     setRound (val) {
         return Math.round(val)
+    },
+    setLocaleHour(val){
+      let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
+     return moment(date).format('hh:mm A')
     }
   },
 };
