@@ -72,6 +72,10 @@
                   <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
                   <span v-if="load.Orders.length > 3">...</span>
                 </div>
+                 <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
+                  <span>{{productQuantity(load)}}</span>
+                </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Tipo:&nbsp;</p>
                   <span>{{ordenIsReturn(load)}}</span>
@@ -79,11 +83,6 @@
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
-                </div>
-
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
                 </div>
 
                 <div v-if="userInfo?.userType != userType?.driver">
@@ -226,8 +225,7 @@ export default {
       else contDate = this.date
       date = moment(contDate).format("MM/DD/YYYY");
       
-      // if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
-      // else this.dateMoment = date
+
       let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
   
       try{
@@ -293,7 +291,6 @@ export default {
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-      console.log(loadsAcummulated, currentLoads)
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
@@ -302,8 +299,8 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
       this.reloadEvent = false
-
       console.log(this.loadsToDisplay)
+
     },
     
     reset(){
@@ -394,6 +391,14 @@ export default {
         });
         await alert.present();
     },
+
+    productQuantity(val){
+      let totalProduct = 0
+      val.Orders.forEach(order => {
+        totalProduct += order.no_of_boxes
+      });
+      return totalProduct
+    }
 
   },
 };

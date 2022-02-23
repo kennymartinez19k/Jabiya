@@ -73,11 +73,8 @@ export default {
     async  longIn(){
        const signIn = {"jsonrpc": "2.0", "params": {"login": "809123121","password":"admin"}}
 
-      const resultLogin = await axios.post('https://jabiyaerp.flai.com.do/api/auth/sign_in', signIn, {withCredentials: true })
-      console.log(resultLogin.data.result, 'loguin')
-        //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
-        // console.log(resultLogin)
-        // this.userShipper = resultLogin.data.result.data
+      await axios.post('https://jabiyaerp.flai.com.do/api/auth/sign_in', signIn, {withCredentials: true })
+  
         await this.products()
       },
 

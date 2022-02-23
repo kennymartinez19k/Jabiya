@@ -70,7 +70,7 @@
                 <span
                   >{{ detailsLoads?.Orders[0]?.expected_date }}
                   {{
-                    setLocaleDate(detailsLoads?.Orders[0]?.expected_time)
+                    setLocaleHour(detailsLoads?.Orders[0]?.expected_date)
                   }}</span
                 >
               </div>
@@ -156,7 +156,7 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(order?.expected_date)
+                    setLocaleHour(order?.expected_date)
                   }}</span
                 >
               </div>
@@ -262,9 +262,9 @@ export default {
       }catch(error){
         this.detailsLoads = this.detailsLoadsStore;
       }
-      this.orders = this.detailsLoads.Orders
+      this.orders = this.detailsLoads?.Orders
       console.log(this.detailsLoads)
-      this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
+      this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
     }
 
   },
@@ -273,8 +273,8 @@ export default {
     ...mapGetters(["detailsLoadsStore", "userData"]),
 
     hasAddAdditionalInfo(){
-      if(this.orders.some(order => order.addAdditionalInfo))
-        return this.orders.every(order => order.addAdditionalInfo <= 0)
+      if(this.orders?.some(order => order?.addAdditionalInfo))
+        return this.orders.every(order => order?.addAdditionalInfo <= 0)
       else
       return true
     }
@@ -355,6 +355,10 @@ export default {
     },
     setRound (val) {
         return Math.round(val)
+    },
+    setLocaleHour(val){
+      let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
+     return moment(date).format('hh:mm A')
     }
   },
 };
