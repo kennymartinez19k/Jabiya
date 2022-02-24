@@ -1,6 +1,7 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+  <div @appRestoredResult="log($event)"></div>
 </template>
 <script>
 import AppHeader from './views/AppHeader.vue'
@@ -28,7 +29,8 @@ export default {
       patches: 0,
       localStorage: new Storage(),
       isSending: false,
-      isServerUp: true
+      isServerUp: true,
+      picture: null
     }
   },
   watch:{
@@ -56,6 +58,7 @@ export default {
     },
 },
   async mounted(){
+
     this.setUrl()
     this.localStorage.set('sending' , "false")
     this.localStorage.set('serverUp' , "true")
@@ -134,6 +137,8 @@ methods:{
 
      }
     },
+  
+
 }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+  <div class="uk-container uk-flex uk-flex-column uk-flex-between"  :class="{backg: resultScan}">
       <ion-loading
       :is-open="isOpenRef"
       cssClass="my-custom-class"
@@ -39,6 +39,7 @@
     </div>
     <div 
       class="result-info"
+      v-if="!cameraOn && !image"
       >
       <ul
         class="uk-list uk-list-divider"
@@ -84,7 +85,7 @@
             </div>
       </div>
       
-       <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 15px 10px !important">
+       <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 0px 10px !important">
       <div class="uk-flex img-scroll">
              <span v-for="(src, index) in imagiElement"  :key="src" style="position: relative; width: 85px; display: flex; margin: 0px 10px">
               <img class="img-result" :src="src"  alt="Red dot" />
@@ -94,8 +95,27 @@
     </div>
       </ul>
     </div>
-    
+    <div v-if="image" class="showCamera">
+      <img class="result-scan " :src="image" alt="">
+    </div>
+    <div :class="{showCamera: cameraOn, hideCamera: !cameraOn}">
+      <font-awesome-icon v-if="cameraOn" icon="times" class="close" @click="stopCamera()" />
+      <camera class="camera" :resolution="{ width: 1320, height: 1320 }"  ref="Camera"></camera>
+    </div>
+     <div
+      v-if="cameraOn || image"
+      class="cont-camera uk-flex-between uk-flex-wrap uk-card uk-card-default uk-card-hover uk-card-body"
+      style="z-index: 0; padding: 4px 0px  !important; border: 1px solid #ccc"
+    >
+      <h6 class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px ">Tomar las Fotos</h6>
+      <button @click="stopCamera()" class="uk-button uk-button-red">Cancelar</button>
+      <div @click="snapshot()" class="take-photo"></div>
+      <button @click="setImage()" class="uk-button uk-button-blue">Enviar</button>
+
+    </div>
+    <div v-if="cameraOn"></div>
     <div
+      v-if="!cameraOn && !image"
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 4px 0px  !important;"
     >
@@ -110,6 +130,7 @@
         @resetSign="resetSign()"
       />
     </div>
+   
   </div>
 </template>
 
@@ -119,12 +140,10 @@ import { ref } from "vue";
 import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import timeline from "../../components/timeline-action.vue";
-import { Camera, CameraResultType } from "@capacitor/camera";
 import { IonLoading } from "@ionic/vue";
 import { Mixins} from '../../mixins/mixins'
 import { profile } from '../../types'
-
-
+import Camera from "simple-vue-camera";
 
 
 export default {
@@ -133,7 +152,8 @@ export default {
 
   components: {
     timeline,
-    IonLoading
+    IonLoading,
+    Camera
   },
   mixins: [Mixins],
 
@@ -142,6 +162,7 @@ export default {
     const setOpen = (state) => (isOpenRef.value = state);
 
     return { isOpenRef, setOpen };
+    
   },
   data() {
     return {
@@ -161,6 +182,10 @@ export default {
       },
       timeOut: null,
       showSignaturform: false,
+      picture: null,
+      camera: null,
+      image: '',
+      cameraOn: false
 
     };
   },
@@ -176,6 +201,10 @@ export default {
     ]),
   },
   async mounted() {
+        
+    this.camera = this.$refs.Camera
+
+
     let loadsMounted = this.loadStore
     if (this.loadStore) {
        this.$store.commit("setloadStore", loadsMounted);
@@ -322,35 +351,30 @@ export default {
       return false;
     },
 
+  
     async getCam() {
-      this.getCheckPermissions();
-      const ele = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        limit: 3,
-        resultType: CameraResultType.Base64,
-      });
-      const image = `data:image/${ele.format};base64, ${ele.base64String}`;
-      this.imagiElement.push(image);
-      if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
-        this.step = 2;
-      }
-      this.cont = this.cont + 1;
+      this.cameraOn = true
+      await this.camera?.start();
+
+
+      // const ele = await Camera.getPhoto({
+      //   quality: 90,
+      //   allowEditing: false,
+      //   limit: 3,
+      //   resultType: CameraResultType.Base64,
+      //   promptLabelPhoto: 'Galeria',
+      //   promptLabelPicture: 'Camara',
+      //   promptLabelHeader: 'Tomar Foto de'
+      // });
+      // const image = `data:image/${ele.format};base64, ${ele.base64String}`;
+      // this.imagiElement.push(image);
+      // if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
+      //   this.step = 2;
+      // }
+      // this.cont = this.cont + 1;
     },
 
-    async getPickImages() {
-      let imagi = [];
-      imagi.push(
-        await Camera.pickImages({
-          quality: 90,
-          allowEditing: true,
-          correctOrientation: true,
-          width: "25%",
-          limit: null,
-          resultType: CameraResultType.Uri,
-        })
-      );
-    },
+
 
     async getCheckPermissions() {
       const permissions = Camera.checkPermissions(['prompt' | 'prompt-with-rationale' | 'granted' | 'denied']);
@@ -444,6 +468,34 @@ export default {
     },
     resetSign(){
       this.step = 2
+    },
+
+    async snapshot(){
+      const blob = await this.camera?.snapshot();
+      let reader = new FileReader();
+      reader.readAsDataURL(blob);
+      let img;
+       reader.onloadend = async function() {
+        img = reader.result;  
+      }
+      let delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(1000);
+      this.image = img
+      this.cameraOn = false
+    },
+    setImage(){
+      this.imagiElement.push(this.image);
+      if(this.imagiElement.length > 0){
+        this.step = 2;
+      }
+      this.stopCamera()
+      console.log(this.imagiElement)
+    },
+    
+    async stopCamera(){
+      this.cameraOn = false
+      this.image = null
+      await this.camera?.stop();
     }
   },
 };
@@ -603,6 +655,8 @@ li::before {
   padding: 16px 15px;
 }
 .cont{
+  position: sticky;
+  bottom: 0px;
   border-top: 1px solid #ccc;
 }
 .icon-close{
@@ -622,5 +676,49 @@ li::before {
 }
 .img-card{
   width: 100%;
+}
+.showCamera{
+  position: fixed;
+  top: 105px;
+  width: 100%;
+  height: 420px;
+}
+.hideCamera{
+  display: none;
+}
+.close{
+  position: absolute;
+    top: 5px;
+    z-index: 2;
+    right: 5%;
+    font-size: 35px;
+    color: white;
+   
+    width: 34px;
+}
+.take-photo{
+  height: 60px;
+    background: #000;
+    width: 60px;
+    border-radius: 30px;
+    border: 5px solid #ccc;
+}
+.cont-camera{
+    z-index: 0px;
+    display: flex;
+    
+    padding: 4px 0px !important;
+    border: 1px solid #ccc;
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+
+}
+.result-scan{
+      height: 410px;
+    width: 100%;
+}
+.camera{
+  height: 200px;
 }
 </style>

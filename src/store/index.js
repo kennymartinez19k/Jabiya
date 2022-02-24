@@ -26,9 +26,15 @@ const storeModule = {
    
     resetData(state){
       state.userData = null
-      localStorage.clear()
-      localStorage.removeItem("dateCheck")
-      localStorage.removeItem('userInfo')
+        let email = localStorage.getItem('rememberData')
+        let password = localStorage.getItem('rememberPassword')
+        localStorage.clear()
+  
+        if(email && password){
+          localStorage.setItem('rememberData', email)
+          localStorage.setItem('rememberPassword', password)
+        }
+  
     },
     ...currentPage.mutations,
     ...loads.mutations,

@@ -88,6 +88,8 @@
       </button>
     </form>
   </div>
+
+ 
 </template>
 
 <script>
@@ -141,6 +143,7 @@ export default {
     },
   },
   async mounted() {
+    await this.resetLocalStorage()
     if (JSON.parse(localStorage.getItem("rememberData"))) {
       this.rememberPassword = true;
       this.login.email = JSON.parse(localStorage.getItem("rememberData"));
@@ -202,7 +205,7 @@ export default {
         }
         this.showError = true;
       })
-      await this.resetLocalStorage()
+
      
     },
 
@@ -219,17 +222,9 @@ export default {
     active(){
       this.activeOrNot = !!navigator.geolocation
     },
-     resetLocalStorage () {
-      localStorage.removeItem('allLoads');
-      localStorage.removeItem('userInfo');
-      localStorage.removeItem('loadType');
-      localStorage.removeItem('AllLoadS');
-      localStorage.removeItem('dateCheck');
-      localStorage.removeItem('currentProfile');
-      localStorage.removeItem('detailsException');
-      localStorage.removeItem('DeliveryCharges');
-      localStorage.removeItem('loglevel:webpack-dev-server');
-     }  
+    async resetLocalStorage () {
+      this.$store.commit('resetData')
+    }  
   },
  
 };

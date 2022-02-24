@@ -170,7 +170,18 @@ import { Mixins} from '../mixins/mixins'
 import UIkit from "uikit";
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
+import { App } from '@capacitor/app';
 
+
+App.addListener('appRestoredResult', data => {
+  console.log('Restored state:', data);
+  let route = JSON.parse(localStorage.getItem('route'))
+  if(route){
+    this.$router.push({ name: route}).catch(() => {})
+  }else{
+    this.$router.push({name: 'load-status'})
+  }
+});
 
 export default {
   name: "DeliveryActions",
@@ -242,7 +253,7 @@ export default {
     this.firstStructureLoad = this.structureToScan.firstStructure
     this.secondStructureLoad = this.structureToScan.secondStructure
     this.orders.map(x => {
-       if (x.totalOrdersScanned) {
+       if (x.totalOrdersScanned >= x.totalQuantity) {
           this.step = 1
         }
       x.completedScanned = false
@@ -388,12 +399,16 @@ export default {
     },
    
     async getCam() {
-      this.getCheckPermissions();
+      localStorage.setItem('route', JSON.stringify(this.$route.name))
+
       const ele = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
-        limit: 3,
+        limit: null,
         resultType: CameraResultType.Base64,
+        promptLabelPhoto: 'Galeria',
+        promptLabelPicture: 'Camara',
+        promptLabelHeader: 'Tomar Foto de'
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
       this.imagiElement.push(image);
@@ -401,20 +416,6 @@ export default {
         this.step = 2;
       }
       this.cont = this.cont + 1;
-    },
-
-    async getPickImages() {
-      let imagi = [];
-      imagi.push(
-        await Camera.pickImages({
-          quality: 90,
-          allowEditing: true,
-          correctOrientation: true,
-          width: "25%",
-          limit: null,
-          resultType: CameraResultType.Uri,
-        })
-      );
     },
 
     async getCheckPermissions() {
