@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"
@@ -36,7 +35,7 @@
       style="z-index: 1; padding: 15px 0px !important"
     >
       <div v-if="statusOrders == 'start'">
-        <h5 style="margin: 5px 0px">
+        <h5 style="margin: 5px 0px"></h5>
           
           <span>
             Escanee Ordenes
