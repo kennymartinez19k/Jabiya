@@ -70,9 +70,9 @@
         <div v-if="order.sendingInfo || order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
           <font-awesome-icon icon="check"/>
         </div>
-        <div v-else-if="load.allowOrderChangesAtDelivery === true" class="order-select" >
-          <input @click="orderForScanInvoices(order)" name="radio2" type="radio" class="uk-radio" :value="order._id">
-        </div>
+        <!-- <div v-else-if="load.allowOrderChangesAtDelivery === true" class="order-select" >
+          <input @click="orderForScanInvoices(order)" name="radio2" type="radio" class="uk-radio" v-model="isSelectedInvoices" :id="order._id">
+        </div> -->
          <div v-else class="order-select" >
           <input @click="orderForScan(order)" v-model="order.isSelectedDeliver" type="checkbox" class="uk-checkbox" >
         </div>
@@ -172,7 +172,7 @@ export default {
   data() {
     return {
       status: null,
-      result: null,
+      isSelectedInvoices: null,
       load: null,
       orders: null,
       completed: "background-color: #2a307c !important",
@@ -235,11 +235,11 @@ export default {
 
     this.filterByOrders(false)
     this.setOpen(false)
-    if (this.load.allowOrderChangesAtDelivery) {
-     this.textButton = 'Entregar Orden'
-    } else {
+    // if (this.load.allowOrderChangesAtDelivery) {
+    //  this.textButton = 'Entregar Orden'
+    // } else {
      this.textButton = 'Escanear y Entregar Producto'
-    }
+    // }
    this.orders.map(x => {
         // x.isSelectedDeliver = false
         x.totalQuantity = 0
@@ -260,6 +260,7 @@ export default {
           })
         })
       }
+      // this.isSelectedInvoices = this.isSelectedInvoicesStore, "isSelectedInvoicesStore"
   },
   methods: {
     async location () {
@@ -273,13 +274,13 @@ export default {
         }
     },
     screenSelection () {
-      if (!this.load.allowOrderChangesAtDelivery) {
-        this.$store.commit("getOrdersToInvoicesId", this.idOrderToInvoices);
-        this.$router.push({ name: "invoices-orders" }).catch(() => {});
-        // this.$router.push({ name: "details-invoices" }).catch(() => {});
-      } else{
+      // if (this.load.allowOrderChangesAtDelivery) {
+      //   this.$store.commit("getOrdersToInvoicesId", JSON.parse(Array.from(this.idOrderToInvoices).splice(3,5).join('')))
+      //   // this.$router.push({ name: "invoices-orders" }).catch(() => {});
+      //   this.$router.push({ name: "details-invoices" }).catch(() => {});
+      // } else{
         this.scan()
-      }
+      // }
 
     },
     async scan() {
@@ -311,20 +312,21 @@ export default {
        this.listOfOrderTotal = structure.secondStructure
     }
   },
-   async orderForScanInvoices (order) {
-    console.log(order, 'orde invoices')
-      this.showButton = true
-      this.idOrderToInvoices = order
-      this.listOrderDetails = [order]
-       let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
-      this.listOfOrders = structure.firstStructure
-      this.listOfOrderTotal = structure.secondStructure
-      let OrderStructur = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
-      this.$store.commit("setStructureToScan", OrderStructur)
-       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
-      this.$store.commit("scanOrder", this.listOrderDetails );
-      this.$store.commit("setOrderDetails", this.listOrderDetails );
-  },
+  //  async orderForScanInvoices (order) {
+  //   console.log(order, 'orde invoices')
+  //     this.showButton = true
+  //     this.idOrderToInvoices = order.order_num
+  //     this.listOrderDetails = [order]
+  //      let structure = await this.setStructure(order, this.listOfOrders, this.listOfOrderTotal)
+  //     this.listOfOrders = structure.firstStructure
+  //     this.listOfOrderTotal = structure.secondStructure
+  //     let OrderStructur = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+  //     this.$store.commit("getSelectedInvoices", order)
+  //     this.$store.commit("setStructureToScan", OrderStructur)
+  //      localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
+  //     this.$store.commit("scanOrder", this.listOrderDetails );
+  //     this.$store.commit("setOrderDetails", this.listOrderDetails );
+  // },
 
     filterByOrders(val){
       if(val){

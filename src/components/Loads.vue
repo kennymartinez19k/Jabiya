@@ -81,7 +81,7 @@
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
                 </div>
 
-                <div class="uk-flex uk-flex-middle">
+                <div v-if="load.loadingStatus.text !== 'Driver selection in progress'" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
                 </div>

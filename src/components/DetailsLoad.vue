@@ -28,6 +28,10 @@
               </div>
               
                  <div>
+                     <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Tipo:&nbsp;</p>
+                <span>{{ ordenIsReturn(detailsLoads) }}</span>
+              </div>
                 <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Ingreso:&nbsp;</p>
                   <span> RD ${{getRevenue(detailsLoads)}}</span>
@@ -42,6 +46,32 @@
                 </div>
                 
               </div>
+              <div  v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && !isReturnLoad(detailsLoads)"  class="uk-flex uk-flex-middle" :class="{'info-driver':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">
+                    <p class="uk-text-bold" :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}"
+                    >Recoger en:&nbsp;</p>
+                    <p>
+                      <span v-for="info in load?.shipper" :key="info">
+                        {{ info?.name }}
+                      </span>
+                    </p>
+                    <p>{{detailsLoads?.warehouse?.location?.address}}</p>
+
+                  </div>
+                    <div v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && isReturnLoad(detailsLoads) && detailsLoads?.loadType == profile?.container" :class="{'info-driver':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">
+                      <p class="uk-text-bold" :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">Recoger en:&nbsp;</p>
+                      <p> {{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
+                      <p> {{ detailsLoads?.firstOrdenInfo?.address }}</p>
+                    </div>
+
+                  <div class="uk-flex uk-flex-middle">
+                <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
+                <span
+                  >{{ detailsLoads?.dateTime?.date }}
+                  {{
+                    setLocaleDate(detailsLoads?.loadingStatus?.slotStartTime)
+                  }}</span
+                >
+              </div>
 
               <div
                 v-if="detailsLoads.loadType == profile?.container"
@@ -52,21 +82,22 @@
                   detailsLoads?.Orders[0]?.order_num
                 }}</span>
               </div>
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Tipo:&nbsp;</p>
-                <span>{{ ordenIsReturn(detailsLoads) }}</span>
-              </div>
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
-                <span
-                  >{{ detailsLoads?.dateTime?.date }}
-                  {{
-                    setLocaleDate(detailsLoads?.loadingStatus?.slotStartTime)
-                  }}</span
-                >
-              </div>
-               <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+             <div v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && detailsLoads.loadType == profile.container &&  !isReturnLoad(detailsLoads)"  :class="{'info-driver':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">
+                      <p :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}" class="uk-text-bold">Entregar en:</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.client_name }} {{ detailsLoads?.firstOrdenInfo?.address }}</p>
+                    </div>
+           <div  v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && isReturnLoad(detailsLoads) && detailsLoads?.loadType == profile?.container" :class="{'info-driver':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">
+                      <p class="uk-text-bold" :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">Entregar en:</p>
+                      <p>
+                        <span v-for="info in detailsLoads.shipper" :key="info">
+                          {{ info?.name }}
+                        </span>
+                      </p>
+                      <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
+                    </div>
+               
+               <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle info-driver" >
+                <p class="uk-text-bold position-text" :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">Fecha de Entrega:&nbsp;</p>
                 <span
                   >{{ detailsLoads?.Orders[0]?.expected_date }}
                   {{
@@ -94,7 +125,7 @@
             </div>
             <div class="uk-flex uk-flex-between">
                 <div style="width: 100%">
-                  <div
+                  <!-- <div
                     v-if="isReturnLoad(detailsLoads) && detailsLoads?.loadType == profile?.container"
                     class="uk-text-left info-user"
                   >
@@ -112,9 +143,9 @@
                       </p>
                       <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
                     </div>
-                  </div>
-                  <div v-else-if="detailsLoads.loadType == profile.container" class="uk-text-left info-user">
-                    <div>
+                  </div> -->
+                  <div if="detailsLoads.loadType == profile.container" class="uk-text-left info-user">
+                    <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
                       <p class="uk-text-bold">Recoger en:</p>
                       <p>
                         <span v-for="info in detailsLoads.shipper" :key="info">
@@ -123,7 +154,8 @@
                       </p>
                       <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
                     </div>
-                    <div>
+                   
+                    <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
                       <p class="uk-text-bold">Entregar en:</p>
                       <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
                       <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
@@ -137,11 +169,11 @@
            
           </div>
           
-        <div v-if="detailsLoads?.loadType == profile?.b2b && detailsLoads.loadingStatus.text !== 'Driver selection in progress'">
-        <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
+        <div v-if="detailsLoads?.loadType == profile?.b2b">
+        <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Número de Ordenes: {{orders?.length}}</h6>
         <div
-          v-for="order in orders"
-          :key="order"
+          v-for="(order, i) in orders"
+          :key="order" v-show="i < 3"
           class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
           :class="{ ordenCompleted: order?.completed }"
         >
@@ -169,8 +201,8 @@
               >{{ order?.products?.length }}<span></span>
             </p>
             
-            <div class="uk-text-left info-user">
-                  <div>
+            <div class="uk-text-left info-user" :class="{'info-driver':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">
+                  <div  v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
                     <p class="uk-text-bold">Warehouse:</p>
                     <p>
                       <span v-for="info in load?.shipper" :key="info">
@@ -180,16 +212,21 @@
                     <p>{{detailsLoads?.warehouse?.location?.address}}</p>
 
                   </div>
-                  <div>
-                    <p class="uk-text-bold">Entregar en:</p>
-                    <p>{{detailsLoads?.firstOrdenInfo?.client_name}}</p>
-                    <p>{{detailsLoads?.firstOrdenInfo?.address}}</p>
+                  <div v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress'" :class="{'info-driver':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">
+                    <p class="uk-text-bold" :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}"
+                    >Entregar en:</p>
+                    <p>{{detailsLoads?.firstOrdenInfo?.client_name}} {{detailsLoads?.firstOrdenInfo?.address}}</p>
                   </div>
-                
+                <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
+                      <p class="uk-text-bold">Entregar en:</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
+                      <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
+                    </div>
                 </div>
           </div>
         </div>
       </div>
+          <span v-if="orders.length > 3 && detailsLoads?.loadType == profile?.b2b" style="font-size:16px; font-weight: 900">.....</span>
 
            <div class="uk-text-left" v-if="userData?.userType !== userType?.driver && !hasAddAdditionalInfo">
               <p class="uk-text-bold text-bold">Información Adicional:</p>
@@ -258,7 +295,7 @@ export default {
     this.setOpen(true);
     if (this.detailsLoadsStore) {
       try{
-        this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoads.loadMapId);
+        this.detailsLoads = await this.$services.loadsServices.getLoadDetails(this.detailsLoadsStore.loadMapId);
       }catch(error){
         this.detailsLoads = this.detailsLoadsStore;
       }
@@ -351,10 +388,10 @@ export default {
     },
     getRevenue(load){
       let revenue = load?.plannedProfitability?.allVariable?.revenueMatrix?.find(info => info?.id == load?.loadForeignkeys?.transporterId)
-      return Math.round(revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning)
+      return (revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning).toFixed(2)
     },
     setRound (val) {
-        return Math.round(val)
+        return val.toFixed(2)
     }
   },
 };
@@ -386,6 +423,12 @@ p {
 }
 .info-user div {
   width: 45%;
+}
+.info-driver {
+  width: 100% !important;
+  display: flex;
+  align-items: stretch;
+
 }
 .info-user p {
   margin-right: 10px !important;
@@ -426,7 +469,9 @@ a {
 .load-assigned .status-load{
   color: red;
 }
-
+.position-text{
+  white-space: nowrap;
+}
 .file{
   margin: 15px 0px ;
   padding-left: 15px;

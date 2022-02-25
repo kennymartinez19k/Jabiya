@@ -226,7 +226,6 @@ export default {
       localStorage.removeItem('AllLoadS');
       localStorage.removeItem('dateCheck');
       localStorage.removeItem('currentProfile');
-      localStorage.removeItem('detailsException');
       localStorage.removeItem('DeliveryCharges');
       localStorage.removeItem('loglevel:webpack-dev-server');
      }  

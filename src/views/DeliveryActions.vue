@@ -8,7 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
-    <button @click="uploadProducts(7)">Escanear entrega</button>
+    <!-- <button @click="uploadProducts('12LAP')">Escanear entrega</button> -->
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -124,8 +124,10 @@
               v-model="exception"
               name="onoffswitch"
               class="onoffswitch-checkbox"
+              :class="{'checkbox-default':isChangeQuantityStore.exception}"
               id="myonoffswitch"
               tabindex="0"
+              :disabled="isChangeQuantityStore.exception === true"
             />
             <label class="onoffswitch-label" for="myonoffswitch"></label>
           </div>
@@ -225,7 +227,8 @@ export default {
       "causeExceptionsStore",
       "digitalFirmStore",
       "settings",
-      "structureToScan"
+      "structureToScan",
+      "isChangeQuantityStore"
     ]),
 
     completedOrder: function(){
@@ -276,7 +279,10 @@ export default {
       this.verifiedLoad()
     }
     console.log(this.firstStructureLoad)
-
+    if (this.isChangeQuantityStore.exception) {
+    this.exception = this.isChangeQuantityStore.exception
+      
+    }
 
   },
   watch: {
@@ -397,6 +403,8 @@ export default {
         resultType: CameraResultType.Base64,
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
+      console.log(ele, 'ele')
+      console.log(image, 'kenny')
       this.imagiElement.push(image);
        if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
         this.step = 2;
@@ -459,11 +467,13 @@ export default {
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
         let resultId = []
+        console.log(this.orders ,'orders')
         this.orders.forEach(x => {
           if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
            resultId.push(x._id)
           }
         })
+        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
         if (this.causeExceptionsStore && resultId.length > 0) {
          for (let x = 0; x < resultId.length; x++) {
             this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
@@ -760,6 +770,9 @@ export default {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+.checkbox-default:checked + .onoffswitch-label{
+  background-color: #898989 !important;
 }
 .onoffswitch-label {
   position: relative;

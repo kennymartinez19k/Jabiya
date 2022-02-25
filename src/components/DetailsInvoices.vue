@@ -38,20 +38,10 @@
               <td class="uk-table-small  ">{{product.productName}}</td>
               <td class=" ">{{product.currencySymbol}}{{product.price}}</td>
               <td :class="{showActive: product.productQuantity !== NewOrdersQuantyti[i]}">{{product.productQuantity}}</td>
-              <span >
-              <font-awesome-icon icon="plus" class="Space font-awesome" @click="product.productQuantity += 1 && product.productQuantity < NewOrdersQuantyti[i], showProductQuantity(product.productQuantity, NewOrdersQuantyti[i], product)" />
-               <font-awesome-icon icon="minus"  class="Space font-awesome" @click="product.productQuantity -= 1, showProductQuantity(product.productQuantity, NewOrdersQuantyti[i], product)" />
-              </span>
-              <!-- <pre>{{product.productQuantity}} </pre> -->
+              <font-awesome-icon icon="plus" :class="{'plus-disabled':product.productQuantity >= structureToScan?.firstStructure[i].quantity}" class="Space font-awesome" @click="product.productQuantity += 1, showProductQuantity('plus',product.productQuantity,  NewOrdersQuantyti[i], product)" />
+               <font-awesome-icon icon="minus" :class="{'plus-disabled':product.productQuantity == 0}" class="Space font-awesome" @click="product.productQuantity -= 1, showProductQuantity('min',product.productQuantity, NewOrdersQuantyti[i], product)" />
             </tr>
-            
           </tbody>
-          <!-- <tfoot>
-            <td>Anterior</td>
-            <td class="uk-text-right">1/1</td>
-            <td></td>
-            <td>Siguiente</td>
-          </tfoot> -->
         </table>
       </div>
     </div>
@@ -123,11 +113,15 @@ export default {
   },
   data() {
     return {
-      cont: null,
+      isChangeQuantity: {
+        changeQuantity: null,
+        exception: false,
+      },
       btnSave: true,
       btnInvoices: false,
       btnScan: true,
-      total: null,
+      productOrder: null,
+      OrderQuantity: null,
       order_lines: null,
       customerDetails: null,
       NewOrdersQuantyti: [],
@@ -146,19 +140,25 @@ export default {
   },
  
   computed: {
-    ...mapGetters(["invoicesIdStore", "structureToScan"]),
+    ...mapGetters(["invoicesIdStore", "structureToScan", "isChangeQuantityStore"]),
 
   
   },
+  mounted (){
+    this.isChangeQuantity.changeQuantity = this.isChangeQuantityStore.changeQuantity
+  },
   watch: {
-    btnSave: {
+      showUpdating: {
       handler: function (newVal) {
-        if (!newVal) {
+        console.log(newVal.length,'(newVal.length')
+        if (newVal.length !== 0) {
           this.btnScan = true
+          this.btnSave = false
           this.btnInvoices = true
-        } else {
+        } else  if (newVal.length == 0) {
           this.btnInvoices = false
         }
+      
 
       }, deep: true
     }
@@ -166,25 +166,42 @@ export default {
   },
   methods: {
       async productsOfOrders () {
+        try {
+       const signIn = {"jsonrpc": "2.0", "params": {"login": "809123121","password":"admin"}}
+
+      const resultLogin = await axios.post('https://jabiyaerp.flai.com.do/api/auth/sign_in', signIn, {withCredentials: true })
+      console.log(resultLogin.data.result, 'loguin')
+        //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
+        // console.log(resultLogin)
+        // this.userShipper = resultLogin.data.result.data
         const result = await axios.get(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}`, {withCredentials: true })
         this.order_lines = result.data.result.data.order_lines
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(x => {
           return x.productQuantity
         })
         this.customerDetails = result.data.result.data.order;
+         } catch (error) {
+          alert(error)
+          alert('error')
+        }
       this.setOpen(false);
      },
     
      async productQuantityChange (){
-      this.btnSave = true
-      this.btnInvoices = false
       this.setOpen(true);
 
       const order_lines = this.order_lines.map(x => { 
         return {order_line_id: x.line_id, qty: x.productQuantity}
       })
+    this.isChangeQuantity.changeQuantity =+ 1;
+    this.isChangeQuantity.exception = true;
+      this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity)
 
+    this.showUpdating = []
      await this.servicesToApi (order_lines)
+          this.btnSave = true
+          this.btnInvoices = false
+
     },
 
     async servicesToApi (orderLine) {
@@ -196,38 +213,70 @@ export default {
        console.log(result, 'productQuantityChange')
        await this.productsOfOrders()
     },
-    showProductQuantity (value, index, product) {
-     
-      console.log(value, 'value')
-      console.log(index, 'index')
-      console.log(this.NewOrdersQuantyti, 'this.NewOrdersQuantyti')
-      if (value >= index) {
-       this.btnSave = true
-       this.showUpdating.splice(0, 1)
-      } else {
+
+    showProductQuantity (signo,value, index, product) {
+      if (signo === 'plus' && value == index) {
+         this.btnSave = true
+        this.showUpdating = []
+      }else if(signo === 'plus' &&  !this.changeQuantity) {
+        this.btnSave = true
+        this.showUpdating.push(value)
+      }else if(signo === 'plus' && value == index) {
+        this.btnSave = true
+        this.showUpdating.splice(0,1)
+      }else if(signo === 'plus' && value < index) {
         this.btnSave = false
-        this.showUpdating.push(false)
+        this.showUpdating.splice(0,1)
+      }else if(signo === 'min' && value == index) {
+        this.btnSave = true
+        this.showUpdating.splice(0,1)
+      }else {
+        this.btnSave = false
+        this.showUpdating.push(value)
       }
-      this.setStructureInvoices(value, product)
+
+      this.OrderQuantity = value
+      this.productOrder = product
     },
     createInvoice () {
       alert('imprimiendo')
       this.btnScan = false
       this.btnInvoices = true
+      if (this.OrderQuantity) {
+      this.setStructureInvoices( this.OrderQuantity, this.productOrder)
+      }
 
     },
     ScanOrder () {
+        if (this.OrderQuantity) {
+      this.setStructureInvoices( this.OrderQuantity, this.productOrder)
+      }
         this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
-    setStructureInvoices (quantity, product) {
-        console.log(quantity,'quantity')
-        console.log(product,'product')
-        console.log(this.structureToScan,'this.structureToScan')
+    async setStructureInvoices (quantity, product) {
+      //  let structure = await this.setStructure(this.order_lines, this.listOfOrders, this.listOfOrderTotal, quantity, product)
+      //  this.listOfOrders = structure.firstStructure
+      //  this.listOfOrderTotal = structure.secondStructure
+      //  let structureInvoices = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      // this.$store.commit("setStructureToScan", structureInvoices)
+      
+   console.log(this.order_lines, 'qqqqqqqqqqq')
+   console.log(product, 'ssssssssssss')
+   console.log(quantity, 'pppppp')
+   console.log(this.structureToScan, 'this.structureToScan')
+      //   this.setStructure()
       // this.structureToScan.firstStructure.forEach(x => {
-      //   if (x !== product) {
-      //     x.quantity = quantity
+      //   if (x.name == product.productName) {
+      //     x.quantity = product.productQuantity
       //   }
       // });
+      //  this.structureToScan.secondStructure.forEach(x => {
+      //   if (x.name == product.productName) {
+      //     x.quantity = product.productQuantity
+      //   }
+      // });
+        console.log(this.structureToScan,'this.structureToScan')
+
     }
   },
 };
@@ -293,6 +342,9 @@ th{
 }
 .disabled-status{
   background-color: #fff !important;
+}
+.plus-disabled {
+  pointer-events: none;
 }
 
 </style>

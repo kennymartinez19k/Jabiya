@@ -100,7 +100,7 @@ export const Mixins = {
 
     async uploadTrip(load) {
       this.localStorageGps.remove(`gps ${load?.loadMapId}`);
-
+      
       if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
         await this.uploadOrDownload(load)
         
@@ -195,7 +195,7 @@ export const Mixins = {
           let prod = order.products[i]
           if(prod.scanOneByOne === "no") {
             prod.loadScanningCounter = prod.quantity
-            await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
+           await this.$services.loadsScanServices.scanProduct(order._id, prod._id, prod.loadScanningCounter, prod.product._id, prod.qrCode  );
           }
           else {
             for(let i = 0; i <= prod.quantity; i++){
@@ -224,6 +224,9 @@ export const Mixins = {
         const x = order?.products[i];
           let {order_num, _id} = order
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
+          // if (x._id ) {
+          //   quantity = quantityInvoices
+          // }
           firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
           listOfOrders.unshift(firstProductInfo)
   

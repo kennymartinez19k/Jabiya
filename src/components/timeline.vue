@@ -165,12 +165,11 @@ export default {
       handler: function (newVal) {
         if (newVal.length === 0) {
           this.showSingnatureAndException = true;
-        } else if (newVal.length > 0 ) {
+        } else if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
           this.$emit("action", 'exception');
           this.showSingnatureAndException = false;
-        } else {
-          this.showSingnatureAndException = false;
-        }
+        } 
+        
       },
       deep: true,
     },
