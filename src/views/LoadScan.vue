@@ -35,7 +35,7 @@
       style="z-index: 1; padding: 15px 0px !important"
     >
       <div v-if="statusOrders == 'start'">
-        <h5 style="margin: 5px 0px"></h5>
+        <h5 style="margin: 5px 0px">
           
           <span>
             Escanee Ordenes

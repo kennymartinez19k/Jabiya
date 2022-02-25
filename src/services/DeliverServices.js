@@ -11,6 +11,7 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
+      console.log(images, lat, lng ,id)
          let form = {images, lat, lng}
          let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
 
@@ -21,6 +22,8 @@ class deliverServices {
           }
           
           let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
+
+          console.log(json)
           add(json)
     }
 

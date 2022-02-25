@@ -6,6 +6,8 @@ class RequestServices {
 
       let formData = new FormData();
 
+      console.log(infoRequest)
+
       if(infoRequest.formInfo){
         const {images, lng, lat } = infoRequest.formInfo
            let file = null
@@ -18,6 +20,8 @@ class RequestServices {
           }
                 formData.append('lat',lat);
                 formData.append('lng',lng);
+
+        console.log(formData)
       }
     try{
         

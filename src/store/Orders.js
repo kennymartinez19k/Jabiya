@@ -2,7 +2,7 @@ const Orders = {
   state: {
       scanOrder: null,
       registrationForScan: null,
-      
+      imagesStructure: null,
       orderDetails: [],
     }, 
   mutations: {
@@ -16,6 +16,9 @@ const Orders = {
     setOrderDetails(state, val){
       state.orderDetails = val
     }, 
+    setImagiElement(state, val){
+      state.imagesStructure = val
+    }
   },
   actions:{
     changeLoadScannedInStore({commit}, val){
@@ -30,7 +33,8 @@ const Orders = {
     orderScan : state => state.scanOrder,
     languageStore: state => state.language,
     structureToScan: state => state.registrationForScan,
-    orderDetailsStore: state => state.orderDetails
+    orderDetailsStore: state => state.orderDetails,
+    imagesStore: state => state.imagesStructure
   }
 }
 

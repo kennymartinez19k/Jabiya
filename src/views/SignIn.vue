@@ -201,6 +201,7 @@ export default {
         } else if (error.message === "Network Error") {
           this.showErrorText = "Error de conexion, verifique que este conectado";
         } else {
+          console.log(error.message)
           this.showErrorText = "Error";
         }
         this.showError = true;
@@ -223,7 +224,7 @@ export default {
       this.activeOrNot = !!navigator.geolocation
     },
     async resetLocalStorage () {
-      this.$store.commit('resetData')
+      // this.$store.commit('resetData')
     }  
   },
  
@@ -232,7 +233,7 @@ export default {
 
 <style scoped>
 .place {
-  background-image: url(/img/call.5b440c14.png);
+  /* background-image: url(/img/call.5b440c14.png); */
   background-position: 96%;
   background-size: 15px;
   background-repeat: no-repeat;

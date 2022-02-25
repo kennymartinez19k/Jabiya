@@ -2,7 +2,7 @@ const profiles = {
     state: {
         settings: {
             maps: false,
-            url: null
+            url: 'https://production.flai.com.do/orchestrator'
         },
         server: false
     },

@@ -22,7 +22,7 @@
               :key="exception"
               :value="exception"
             >
-              {{ exception }}
+            {{exception}}
             </option>
           </select>
         </div>
@@ -67,9 +67,9 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
-        <span>Escanear</span>
-      </li>
 
+        <span>Escanear  {{imagesStore?.length}}</span>
+      </li>
       <li
         class="stepTwo"
         :class="{
@@ -103,19 +103,18 @@
           }"
         ></div>
       </li>
-
       <li
         class="stepThree"
         :class="{
-          'uk-disabled': showSingnatureAndException,
+          'uk-disabled': exception || emptyImage,
           active: singnature !== null
         }"
         @click="getShow('Singnature')"
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
-        <span>Firma</span>
-        <div :class="{ disabled: showSingnatureAndException }"></div>
+        <span>Firma </span>
+        <div :class="{ disabled: (exception || emptyImage) && !causeExceptions.type}"></div>
       </li>
     </ul>
   </div>
@@ -124,6 +123,7 @@
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
 import UIkit from "uikit";
+import { mapGetters } from 'vuex';
 export default {
   components: {
     SignatureAction,
@@ -165,17 +165,15 @@ export default {
       handler: function (newVal) {
         if (newVal.length === 0) {
           this.showSingnatureAndException = true;
-        } else if (newVal.length > 0 ) {
+        } else if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
           this.$emit("action", 'exception');
           this.showSingnatureAndException = false;
-        } else {
-          this.showSingnatureAndException = false;
         }
-      },
-      deep: true,
-    },
+      }, deep: true
+    }, 
     exception: {
       handler: function (newVal) {
+
         if (newVal === false && this.step >= 2) {
           this.showSingnatureAndException = false;
           this.causeExceptions.note = null;
@@ -188,8 +186,10 @@ export default {
           this.step >= 2
         ) {
           this.showSingnatureAndException = false;
-        } else {
+        } else if(newVal == true) {
           this.showSingnatureAndException = true;
+        }else if(newVal == false){
+          this.showSingnatureAndException = true
         }
       },
       deep: true,
@@ -267,8 +267,32 @@ export default {
       this.showSingnatureAndException = true;
         this.$emit("resetSign", false);
     },
+    changeImage(){
+      if (this.imageTimeline?.length === 0) {
+          this.showSingnatureAndException = true;
+        } else if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
+          this.$emit("action", 'exception');
+          this.showSingnatureAndException = false;
+        }
+    }
     
   },
+  computed:{
+    ...mapGetters([
+      'imagesStore'
+    ]),
+    imageTimeline(){
+      console.log(1)
+      if(this.imagesStore){
+        this.changeImage()
+      }
+      return this.imagesStore
+    },
+    emptyImage(){
+      return this.imagesStore?.length <= 0
+    }
+    
+  }
 };
 </script>
 

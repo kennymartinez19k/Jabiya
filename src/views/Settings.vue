@@ -51,7 +51,7 @@ export default {
       showButton: true,
       settings: {
         maps: false,
-        url: null
+        url: 'https://production.flai.com.do/orchestrator'
       },
     };
   },

@@ -1,7 +1,6 @@
 <template>
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
-  <div @appRestoredResult="log($event)"></div>
 </template>
 <script>
 import AppHeader from './views/AppHeader.vue'
@@ -30,7 +29,8 @@ export default {
       localStorage: new Storage(),
       isSending: false,
       isServerUp: true,
-      picture: null
+      server: null,
+      sending: null
     }
   },
   watch:{
@@ -60,6 +60,8 @@ export default {
   async mounted(){
 
     this.setUrl()
+    this.getInfo()
+   
     this.localStorage.set('sending' , "false")
     this.localStorage.set('serverUp' , "true")
     
@@ -113,9 +115,6 @@ methods:{
   setName(val){
     this.nameOrder = val
   },
-  clearLocalStorage(){
-    this.clear()
-  },
   async setUrl(){
     let setting = await JSON.parse(localStorage.getItem('setting'))
     this.$services.singInServices.setURL(setting)
@@ -133,10 +132,14 @@ methods:{
        BarcodeScanner.stopScan();
      }catch(error){
        error
-       console.clear()
+      //  console.clear()
 
      }
     },
+    getInfo(){
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      this.$store.commit("setSettings",setting);
+    }
   
 
 }
