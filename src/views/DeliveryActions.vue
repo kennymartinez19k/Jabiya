@@ -373,6 +373,7 @@ export default {
       "digitalFirmStore",
       "settings",
       "structureToScan",
+      "isChangeQuantityStore"
     ]),
 
     completedOrder: function () {
@@ -605,16 +606,20 @@ export default {
           order._id
         );
       }
-      let resultId = [];
-      this.orders.forEach((x) => {
-        if (
-          !x.products.every(
-            (product) => product.loadScanningCounter >= product.quantity
-          )
-        ) {
-          resultId.push(x._id);
+        let resultId = []
+        console.log(this.orders ,'orders')
+        this.orders.forEach(x => {
+          if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
+           resultId.push(x._id)
+          }
+        })
+        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
+        if (this.causeExceptionsStore && resultId.length > 0) {
+         for (let x = 0; x < resultId.length; x++) {
+            this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
+           
+         } 
         }
-      });
       if (this.causeExceptionsStore && resultId.length > 0) {
         for (let x = 0; x < resultId.length; x++) {
           this.$services.exceptionServices.putExceptions(
@@ -1060,6 +1065,9 @@ export default {
   opacity: 0;
   pointer-events: none;
 }
+.checkbox-default:checked + .onoffswitch-label{
+  background-color: #898989 !important;
+}
 .onoffswitch-label {
   position: relative;
   top: 3px;
@@ -1364,5 +1372,10 @@ p {
   color: #999;
   border: 1px solid #e5e5e5;
   pointer-events: none;
+}
+.button-cancel{
+  margin: 0px 10px; 
+  background: #930404;
+  color: #fff
 }
 </style>

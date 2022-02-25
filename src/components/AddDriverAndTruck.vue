@@ -34,9 +34,9 @@
             <tr>
               <label class=" list uk-flex uk-flex-around">
                 <th scope="col">Marca</th>
-                <th scope="col">Color</th>
                 <th  scope="col">Placa</th>
                 <th  scope="col">Costo</th>
+              <th scope="col">Chofer Habitual</th>
               </label>
             </tr>
           </thead>
@@ -44,9 +44,9 @@
             <tr>
               <label class=" uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
                 <td>{{details.brand}}</td>
-                <td>{{details.color}}</td>
                 <td>{{details.vehicleNo}}</td>
                 <td>RD${{setRound(details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</td>
+                <td>{{details?.driverName}}</td>
                 </label>
             </tr>       
           </tbody>
@@ -93,6 +93,7 @@ export default {
     this.drivers = [...data.drivers]
     this.vehicles = [...data.vehicles]
     this.transporterName = data.transporterName
+    console.log(data,'fffffffff')
   },
   methods: {
     selectVehicle(id) {
@@ -141,7 +142,7 @@ h5 {
   color: #212529;
 }
 th {
-  font-size: 11px; 
+  font-size: 10px; 
   font-weight: 600;
   color: #666;
 }
@@ -170,18 +171,13 @@ td {
 }
 .list th{
   width: 25%;
-  /* min-width: 51px; */
   padding: 10px 0px;
   text-align: center;
 }
 .list td{
 width: 20%;
-font-size: 11px;
-
-    /* max-width: 51px;
-    min-width: 51px; */
-
-    padding: 10px 0px;
+font-size: 10px;
+padding: 10px 0px;
 }
 .text {
   padding-left: 0px

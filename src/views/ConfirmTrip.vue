@@ -355,7 +355,7 @@ export default {
     },
 
     setRound (val) {
-        return Math.round(val)
+        return val.toFixed(2)
     },
 
     setLocaleDate(val) {

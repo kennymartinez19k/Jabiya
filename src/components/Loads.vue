@@ -67,8 +67,8 @@
                       <span>{{ load?.loadNumber }}</span>
                     </p>
                 </div>
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">No de Orden:&nbsp;</p>
+                <div class="uk-flex uk-flex-middle info-Order">
+                  <p class="uk-text-bold position-text">No de Orden:&nbsp;</p>
                   <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
                   <span v-if="load.Orders.length > 3">...</span>
                 </div>
@@ -85,15 +85,20 @@
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
                 </div>
 
+                <div v-if="load.loadingStatus.text !== 'Driver selection in progress'" class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
+                </div>
+
                 <div v-if="userInfo?.userType != userType?.driver">
-                  <div class="uk-flex uk-flex-middle">
-                    <p class="uk-text-bold">Chofer:&nbsp;</p>
+                  <div class="uk-flex uk-flex-middle info-Order">
+                    <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
                     <span v-for="info of load?.Vehicles" :key="info">
                       {{info?.driver}}
                       </span>
                   </div>
-                  <div class="uk-flex uk-flex-middle">
-                    <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                  <div class="uk-flex uk-flex-middle info-Order">
+                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
                       <span v-for="info of load?.Vehicles" :key="info">
                         {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
                         {{ info?.license_no }}
@@ -467,6 +472,15 @@ p {
 button {
   font-size: 9px !important;
   line-height: 15px;
+}
+.position-text{
+  white-space: nowrap;
+}
+.info-Order {
+  width: 100% !important;
+  display: flex;
+  align-items: baseline;
+
 }
 
 a {

@@ -1,4 +1,4 @@
-package com.example.app;
+package com.jabiya.app;
 
 import com.getcapacitor.BridgeActivity;
 
