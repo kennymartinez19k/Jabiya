@@ -11,7 +11,6 @@ class SingInServices {
     }
   
     async getToken (signIn) {
-      console.log(`${this.settingsLocalStore.url}/exo/authenticate`, signIn)
       localStorage.removeItem('auth');
       const result = await this.http.post(`${this.settingsLocalStore.url}/exo/authenticate`, signIn)
       localStorage.setItem('auth', result.data.data.cookie[0]);

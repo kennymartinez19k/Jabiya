@@ -84,7 +84,6 @@ export default {
   },
   watch: {
     $route: function (newVal) {
-      console.log(newVal)
       newVal.name == "home"
         ? ((this.action = "sign-in"), (this.iconType = false))
         : newVal.name == "load-status"

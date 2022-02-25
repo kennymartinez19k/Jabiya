@@ -160,11 +160,12 @@ export default {
         this.stopScan()
       }
     },
-    // quantityForScan: function(newVal){
-    //   if(newVal > this.totalLimitOfBoxes){
-    //     this.quantityForScan = this.totalLimitOfBoxes
-    //   }
-    // },
+      
+    quantityForScan: function(newVal){
+      if(newVal > (this.totalLimitOfBoxes.totalOfOrders - this.totalLimitOfBoxes.scanned)){
+        this.quantityForScan = this.totalLimitOfBoxes.totalOfOrders - this.totalLimitOfBoxes.scanned
+      }
+    },
 
     firstStructureLoad:{
       handler: function (newVal) {
@@ -349,6 +350,7 @@ export default {
     async scanOrder() {
       this.totalBoxesScanned = 0
       this.totalLimitOfBoxes = 0
+      this.quantityForScan = null
       UIkit.modal('#ask-quantity').hide()
       this.statusOrders = 'start';
       if (await this.checkPermission()) {

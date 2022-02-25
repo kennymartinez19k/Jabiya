@@ -67,10 +67,14 @@
                       <span>{{ load?.loadNumber }}</span>
                     </p>
                 </div>
-                <div class="uk-flex uk-flex-middle">
-                  <p class="uk-text-bold">No de Orden:&nbsp;</p>
+                <div class="uk-flex uk-flex-middle info-Order">
+                  <p class="uk-text-bold position-text">No de Orden:&nbsp;</p>
                   <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
                   <span v-if="load.Orders.length > 3">...</span>
+                </div>
+                 <div class="uk-flex uk-flex-middle">
+                  <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
+                  <span>{{productQuantity(load)}}</span>
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Tipo:&nbsp;</p>
@@ -87,14 +91,14 @@
                 </div>
 
                 <div v-if="userInfo?.userType != userType?.driver">
-                  <div class="uk-flex uk-flex-middle">
-                    <p class="uk-text-bold">Chofer:&nbsp;</p>
+                  <div class="uk-flex uk-flex-middle info-Order">
+                    <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
                     <span v-for="info of load?.Vehicles" :key="info">
                       {{info?.driver}}
                       </span>
                   </div>
-                  <div class="uk-flex uk-flex-middle">
-                    <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+                  <div class="uk-flex uk-flex-middle info-Order">
+                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
                       <span v-for="info of load?.Vehicles" :key="info">
                         {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
                         {{ info?.license_no }}
@@ -226,8 +230,7 @@ export default {
       else contDate = this.date
       date = moment(contDate).format("MM/DD/YYYY");
       
-      // if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
-      // else this.dateMoment = date
+
       let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
   
       try{
@@ -293,7 +296,6 @@ export default {
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-      console.log(loadsAcummulated, currentLoads)
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
@@ -302,8 +304,8 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
       this.reloadEvent = false
-
       console.log(this.loadsToDisplay)
+
     },
     
     reset(){
@@ -395,6 +397,14 @@ export default {
         await alert.present();
     },
 
+    productQuantity(val){
+      let totalProduct = 0
+      val.Orders.forEach(order => {
+        totalProduct += order.no_of_boxes
+      });
+      return totalProduct
+    }
+
   },
 };
 </script>
@@ -462,6 +472,15 @@ p {
 button {
   font-size: 9px !important;
   line-height: 15px;
+}
+.position-text{
+  white-space: nowrap;
+}
+.info-Order {
+  width: 100% !important;
+  display: flex;
+  align-items: baseline;
+
 }
 
 a {

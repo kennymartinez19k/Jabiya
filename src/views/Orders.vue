@@ -270,7 +270,9 @@ export default {
            if (order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {
              order.isSelected = true
             this.orderForScan(order)
-           } 
+           } else{
+             order.isSelected = false
+           }
           })
         })
       }
@@ -347,7 +349,6 @@ export default {
     }else{
       this.ordersToDisplay = this.orders.filter(order => order?.totalOrdersScanned < order?.totalQuantity)
     }
-    console.log(this.ordersToDisplay)
   }
 }
 }

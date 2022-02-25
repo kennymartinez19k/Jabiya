@@ -188,6 +188,7 @@ export default {
 
     };
   },
+ 
   watch:{
     listOfOrders:{
       handler: function (newVal) {
@@ -250,7 +251,7 @@ export default {
           x.totalOrdersScanned += z.loadScanningCounter
         })
       })
-      if (this.orderDetailsStore) {
+      if (this.orderDetailsStore ) {
         this.orderDetailsStore.forEach(x => {
           this.orders.forEach(order => {
            if (!order.sendingInfo && order.order_num === x.order_num && !(order.products.every(prod => prod.loadScanningCounter >= prod.quantity))) {

@@ -101,7 +101,7 @@
                 <span
                   >{{ detailsLoads?.Orders[0]?.expected_date }}
                   {{
-                    setLocaleDate(detailsLoads?.Orders[0]?.expected_time)
+                    setLocaleHour(detailsLoads?.Orders[0]?.expected_date)
                   }}</span
                 >
               </div>
@@ -144,7 +144,7 @@
                       <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
                     </div>
                   </div> -->
-                  <div if="detailsLoads.loadType == profile.container" class="uk-text-left info-user">
+                  <div v-if="detailsLoads.loadType == profile.container" class="uk-text-left info-user">
                     <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
                       <p class="uk-text-bold">Recoger en:</p>
                       <p>
@@ -188,7 +188,7 @@
                 <span
                   >{{ detailsLoads?.dateTime?.date }}
                   {{
-                    setLocaleDate(order?.expected_date)
+                    setLocaleHour(order?.expected_date)
                   }}</span
                 >
               </div>
@@ -230,9 +230,10 @@
 
            <div class="uk-text-left" v-if="userData?.userType !== userType?.driver && !hasAddAdditionalInfo">
               <p class="uk-text-bold text-bold">Información Adicional:</p>
-              <ul class="file">
-                <li v-for="order in orders" :key="order" v-show="order?.addAdditionalInfo?.length > 0">
-                  <div v-for="file in order?.addAdditionalInfo" :key="file">
+              <ul v-for="order in orders" :key="order" v-show="order?.addAdditionalInfo?.length > 0" class="file">
+                <li  v-for="file in order?.addAdditionalInfo" :key="file">
+                  <!-- <pre>{{order}} </pre> -->
+                  <div>
                     <a target="_blank" style="color: red;" :href="file">{{baseName(file)}}</a>
                     </div>
                 </li>
@@ -299,9 +300,9 @@ export default {
       }catch(error){
         this.detailsLoads = this.detailsLoadsStore;
       }
-      this.orders = this.detailsLoads.Orders
+      this.orders = this.detailsLoads?.Orders
       console.log(this.detailsLoads)
-      this.detailsLoads.firstOrdenInfo = this.detailsLoads?.Orders[0]
+      this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
     }
 
   },
@@ -310,8 +311,8 @@ export default {
     ...mapGetters(["detailsLoadsStore", "userData"]),
 
     hasAddAdditionalInfo(){
-      if(this.orders.some(order => order.addAdditionalInfo))
-        return this.orders.every(order => order.addAdditionalInfo <= 0)
+      if(this.orders?.some(order => order?.addAdditionalInfo))
+        return this.orders.every(order => order?.addAdditionalInfo <= 0)
       else
       return true
     }
@@ -392,6 +393,10 @@ export default {
     },
     setRound (val) {
         return val.toFixed(2)
+    },
+    setLocaleHour(val){
+      let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
+     return moment(date).format('hh:mm A')
     }
   },
 };
