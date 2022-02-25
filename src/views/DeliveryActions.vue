@@ -8,6 +8,7 @@
     >
     </ion-loading>
   <div class="container uk-flex uk-flex-column uk-flex-between" :class="{backg: resultScan}">
+    <!-- <button @click="uploadProducts('12LAP')">Escanear entrega</button> -->
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -123,8 +124,10 @@
               v-model="exception"
               name="onoffswitch"
               class="onoffswitch-checkbox"
+              :class="{'checkbox-default':isChangeQuantityStore.exception}"
               id="myonoffswitch"
               tabindex="0"
+              :disabled="isChangeQuantityStore.exception === true"
             />
             <label class="onoffswitch-label" for="myonoffswitch"></label>
           </div>
@@ -149,7 +152,7 @@
             <p style="font-size: 15px;">Cantidad (hasta el máximo de <span>{{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned }}</span>)</p>
             <input type="number" v-model="quantityForScan" :max="totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned" class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
-                <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
+                <button class="uk-button uk-button-default uk-modal-close button-cancel" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
             </p>
         </div>
@@ -224,7 +227,8 @@ export default {
       "causeExceptionsStore",
       "digitalFirmStore",
       "settings",
-      "structureToScan"
+      "structureToScan",
+      "isChangeQuantityStore"
     ]),
 
     completedOrder: function(){
@@ -273,6 +277,11 @@ export default {
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.allProductScanned = true
       this.verifiedLoad()
+    }
+    console.log(this.firstStructureLoad)
+    if (this.isChangeQuantityStore.exception) {
+    this.exception = this.isChangeQuantityStore.exception
+      
     }
 
   },
@@ -396,6 +405,8 @@ export default {
         resultType: CameraResultType.Base64,
       });
       const image = `data:image/${ele.format};base64, ${ele.base64String}`;
+      console.log(ele, 'ele')
+      console.log(image, 'kenny')
       this.imagiElement.push(image);
        if (this.imagiElement.length >= 1 && this.imagiElement.length <= 20) {
         this.step = 2;
@@ -458,11 +469,13 @@ export default {
           this.$services.deliverServices.postImages(images, this.location.latitude, this.location.longitude, order._id);
       }
         let resultId = []
+        console.log(this.orders ,'orders')
         this.orders.forEach(x => {
           if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
            resultId.push(x._id)
           }
         })
+        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
         if (this.causeExceptionsStore && resultId.length > 0) {
          for (let x = 0; x < resultId.length; x++) {
             this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
@@ -759,6 +772,9 @@ export default {
   opacity: 0;
   pointer-events: none;
 }
+.checkbox-default:checked + .onoffswitch-label{
+  background-color: #898989 !important;
+}
 .onoffswitch-label {
   position: relative;
   top: 3px;
@@ -976,5 +992,10 @@ p{
 .action{
   position: absolute;
   bottom: 0px;
+}
+.button-cancel{
+  margin: 0px 10px; 
+  background: #930404;
+  color: #fff
 }
 </style>

@@ -122,6 +122,7 @@ import { Camera, CameraResultType } from "@capacitor/camera";
 import { Geolocation } from "@capacitor/geolocation";
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
+import { profile } from '../../types'
 
 export default {
   name: "DeliveryActions",
@@ -167,13 +168,20 @@ export default {
     ]),
   },
   async mounted() {
+    let loadsMounted = this.loadStore
     this.getLocation();
     if (this.loadStore) {
-      this.load = this.loadStore;
-      this.load.firstOrdenInfo = this.load?.Orders[0]
-      this.orders = this.load.Orders.filter((x) => x.isReturn);
-      this.showSignaturform = this.orders.some(x =>  x.isReturn );
+       this.$store.commit("setloadStore", loadsMounted);
     }
+    
+    this.load = {...this.loadStore};
+    if(this.load?.loadType == profile?.container){
+      this.orders = this.load?.Orders
+    }else{
+      this.orders = this.orderScan
+    }
+    this.showSignaturform = this.orders.some(x =>  !x.isReturn);
+
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -188,7 +196,7 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.singnature = newVal;
-          this.uploadOrDownload(this.load);
+          this.uploadOrDownload(this.orders);
           this.postImages();
           this.$router.push({ name: "home" }).catch(() => {});
         }
@@ -339,11 +347,11 @@ export default {
     uploadOrDownload(val) {
       this.setLoadTruck(val);
     },
-   setLoadTruck(val){
-      this.timeOut = 5000
+setLoadTruck(val){
+      this.timeOut = 10000
       this.setOpen(true);
       let totalOfBoxes = 0
-      let orders = val.Orders.filter(x => x.isReturn)
+      let orders = val.filter(x => x.isReturn)
       for(let cont = 0; cont < orders.length; cont++){
         let order = orders[cont]
         totalOfBoxes += order.no_of_boxes
@@ -351,10 +359,12 @@ export default {
           let prod = order.products[i]
           try {
             if(prod.scanOneByOne === "no") {
-              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product, prod.qrCode  );
+              prod.loadScanningCounter = prod.quantity
+              this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product, prod.qrCode  );
             }
             else {
               for(let i = 0; i <= prod.quantity; i++){
+                prod.loadScanningCounter = i
                 this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product, prod.qrCode  );
               }
             }
@@ -369,6 +379,37 @@ export default {
       }
       return totalOfBoxes
     },
+
+  //  setLoadTruck(val){
+  //     this.timeOut = 5000
+  //     this.setOpen(true);
+  //     let totalOfBoxes = 0
+  //     let orders = val.Orders.filter(x => x.isReturn)
+  //     for(let cont = 0; cont < orders.length; cont++){
+  //       let order = orders[cont]
+  //       totalOfBoxes += order.no_of_boxes
+  //       for(var i = 0; i < order.products.length; i++){
+  //         let prod = order.products[i]
+  //         try {
+  //           if(prod.scanOneByOne === "no") {
+  //             this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.ScanningCounter, prod.product, prod.qrCode  );
+  //           }
+  //           else {
+  //             for(let i = 0; i <= prod.quantity; i++){
+  //               this.$services.deliverServices.deliverProduct(order._id, prod._id, prod.loadScanningCounter, prod.product, prod.qrCode  );
+  //             }
+  //           }
+  //         } catch(error){
+  //           if (error.message === 'Request failed with status code 401') {
+  //             console.log('Error al introducir los datos')
+  //           }else if (error.message === 'Network Error') {
+  //             console.log('Error de conexion, verifique que este conectado')
+  //           }
+  //         }
+  //       }
+  //     }
+  //     return totalOfBoxes
+  //   },
   },
 };
 </script>
