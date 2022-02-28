@@ -732,12 +732,13 @@ export default {
           await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
   
         }else{
-          if(res?.loadCounter > this.firstStructureLoad[index_first].quantity){
-                let LoadDistribute = res.loadCounter - this.firstStructureLoad[index_first].quantity
-                let secondLoadDistribute = res.loadCounter - LoadDistribute
+          let productMissing = this.firstStructureLoad[index_first]?.quantity - this.firstStructureLoad[index_first]?.loadScanningCounter
+
+          if(res?.loadCounter > productMissing){
+                let LoadDistribute = res.loadCounter - productMissing
   
-                this.secondStructureLoad[index_second].loadScanningCounter += secondLoadDistribute
-                this.firstStructureLoad[index_first].loadScanningCounter += secondLoadDistribute
+                this.secondStructureLoad[index_second].loadScanningCounter += productMissing
+                this.firstStructureLoad[index_first].loadScanningCounter += productMissing
   
                 await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
                 await this.distributeProductScan(LoadDistribute, res.qrCode , orderNum)
@@ -799,25 +800,27 @@ export default {
           (p) => p.qrCode == qrCode && orderForScan.quantity == p.quantity
         );
 
-          if(LoadDistribute > this.firstStructureLoad[index_first].quantity){
-                let loadCounter = LoadDistribute - this.firstStructureLoad[index_first].quantity;
-                let secondLoadDistribute = LoadDistribute - loadCounter;
+           let productMissing = this.firstStructureLoad[index_first]?.quantity - this.firstStructureLoad[index_first]?.loadScanningCounter
 
-                this.secondStructureLoad[index_second].loadScanningCounter +=
-                  secondLoadDistribute;
-                this.firstStructureLoad[index_first].loadScanningCounter +=
-                  secondLoadDistribute;
+         
+          if(LoadDistribute > productMissing){
+            let loadCounter = LoadDistribute - productMissing
 
-                await this.$services.deliverServices.deliverProduct(
-                  order._id,
-                  productInfo._id,
-                  this.firstStructureLoad[index_first].loadScanningCounter,
-                  productInfo.product,
-                  qrCode
-                );
-                if(loadCounter > 0){
-                  this.distributeProductScan(loadCounter, qrCode, orderNum)
-                }
+            this.secondStructureLoad[index_second].loadScanningCounter +=
+              productMissing;
+            this.firstStructureLoad[index_first].loadScanningCounter +=
+              productMissing;
+
+            await this.$services.deliverServices.deliverProduct(
+              order._id,
+              productInfo._id,
+              this.firstStructureLoad[index_first].loadScanningCounter,
+              productInfo.product,
+              qrCode
+            );
+            if(loadCounter > 0){
+              this.distributeProductScan(loadCounter, qrCode, orderNum)
+            }
           }
 
           else{
