@@ -68,7 +68,7 @@
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
 
-        <span>Escanear  {{imagesStore?.length}}</span>
+        <span>Escanear</span>
       </li>
       <li
         class="stepTwo"

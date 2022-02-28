@@ -8,12 +8,12 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-    
     <header>
   <div uk-margin class="sub-header">
       <ul class="uk-pagination" >
         <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
-        <li><span style="padding: 5px">
+        <li @click="setCalendar()" ><label style="padding: 5px">
+          <Datepicker ref="calendar" showNowButton="true" nowButtonLabel="AHORA" autoApply="true" locale="es-419" id="calendar" v-model="dateSelected"></Datepicker>
           <p class="uk-text-meta uk-margin-remove-top date ">
               <label
                 for="date"
@@ -22,7 +22,10 @@
                 >{{dateMoment}}</label
               >
             </p>    
-        </span></li>
+        </label>
+          
+        
+        </li>
         <li @click="reloadNewDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
       </ul>
       <span @click="reloadData()" class="refresh-reload">
@@ -137,12 +140,16 @@ import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
 import {LocalStorage} from '../mixins/LocalStorage'
 import { alertController } from '@ionic/vue';
+import Datepicker from 'vue3-date-time-picker';
+import 'vue3-date-time-picker/dist/main.css'
+
 // import {App} from '@capacitor/app'
 
 
 export default {
   components: {
     IonLoading,
+    Datepicker
   },
   
   mixins: [Mixins, Profile, LocalStorage],
@@ -164,7 +171,9 @@ export default {
       posts: null,
       counter: 0,
       loadsToDisplay: [],
-      waitingMessage: true
+      waitingMessage: true,
+      calendar: null,
+      dateSelected: new Date()
     };
   },
 
@@ -178,6 +187,7 @@ export default {
   // },
   
   async mounted() {
+      this.calendar = this.$refs.calendar;
       this.$store.commit('setUserData')
       this.$store.commit("setSettings", false);
       this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
@@ -194,6 +204,11 @@ export default {
         }
       }, 10000)
   },
+  watch:{
+    dateSelected: function(newVal){
+      this.currentDate({calendar: true, dateCalendar: newVal})
+    }
+  },
   computed: {
     ...mapGetters(["allLoadsStore", "settings", "userData"]),
 
@@ -209,19 +224,19 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
-      // let {isActive} = await App.getState();
-      // console.log(isActive)
-      // if(!isActive){
-      //   this.setOpen(false)
-      //   return ;
-      // }
+
+      if(this.$route.name != 'home'){
+        return;
+      }
      
       this.loads = []
       let contDate
       let date
       let loads
-
-      if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
+      if(val?.calendar){
+        contDate = val?.dateCalendar
+      }
+      else if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
         contDate = localStorage.getItem('dateCheck');
         this.date = new Date(contDate);
       }else if(val){
@@ -403,6 +418,12 @@ export default {
         totalProduct += order.no_of_boxes
       });
       return totalProduct
+    },
+    setCalendar(){
+      this.calendar.openMenu()
+    },
+    alerta(){
+      alert(1)
     }
 
   },
@@ -434,6 +455,8 @@ p {
   color: #000;
   border-radius: 5px;
   padding: 1px 10px;
+      z-index: 1;
+    position: relative;
 }
 .icon-load {
   width: 60px;
@@ -615,6 +638,10 @@ header >div {
   z-index: 3;
 }
 
+#calendar{
+  position: absolute;
+  opacity: 0;
+}
 
 
 </style>

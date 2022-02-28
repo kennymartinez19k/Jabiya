@@ -64,16 +64,18 @@ export default {
 
     if(this.settingsLocalStore?.url){
         this.$store.commit("setSettings", JSON.parse(localStorage.getItem('setting')));
-      }
-    this.settings = this.settingsStore
-      this.showButton = true;
+    }
+    if(this.settingsStore){
+      this.settings = this.settingsStore
+    }
+    this.showButton = true;
     // this.$store.commit("setSettings", this.settings);
 
   },
   watch: {
     settings: {
       handler: function (newVal) {
-        if (newVal.url !== this.settingsLocalStore.url || newVal.maps !== this.settingsLocalStore.maps) {
+        if (newVal?.url !== this.settingsLocalStore?.url || newVal?.maps !== this.settingsLocalStore?.maps) {
           this.showButton = false
         }else {
           this.showButton = true
@@ -84,7 +86,7 @@ export default {
   
   methods: {
     async saveSettings() {
-      if (this.settings.url !== this.settingsLocalStore.url) {
+      if (this.settings?.url !== this.settingsLocalStore?.url) {
          await this.$store.commit("setSettings", this.settings);
          this.setUrl()
         localStorage.removeItem('auth');

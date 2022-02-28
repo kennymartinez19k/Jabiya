@@ -11,6 +11,10 @@ import { faCheck, faSignOutAlt, faArrowLeft, faHome, faArrowRight, faMapMarkerAl
 import { IonicVue } from "@ionic/vue";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import VueObserveVisibility from 'vue-observe-visibility'
+
+import Datepicker from 'vue3-date-time-picker';
+import 'vue3-date-time-picker/dist/main.css'
+
 import "@ionic/core/css/ionic.bundle.css";
 import { urlEnum } from './types'
 
@@ -42,6 +46,7 @@ if(!(JSON.parse(localStorage.getItem('setting')))){
 const store = createStore({ ...storeModule });
 createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon)
+  .component('DatePicker', Datepicker)
   .use(IonicVue)
   .use(router)
   .use(store)

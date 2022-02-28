@@ -19,8 +19,15 @@
         uk-card-body
         uk-width-1-3@s
       "
-      style="padding: 0px 20px !important; min-width: 400px"
     >
+       <div class="uk-margin uk-width-1-3 setting">
+        <div class="uk-form-controls">
+            <select v-model="settings.url" class="uk-select" id="form-stacked-select">
+                <option :value="urlEnum.preprod" selected>Preprod Flai</option>
+                <option :value="urlEnum.production">Production Flai</option>
+            </select>
+        </div>
+    </div>
       <img class="logo" src="../assets/logo.png" alt="" />
       <h4 class="uk-text-light">Entrar a su cuenta</h4>
       <span class="uk-text-muted" style="margin-bottom: 30px; display: block"
@@ -96,13 +103,14 @@
 import Loading from "vue-loading-overlay";
 import { mapGetters } from 'vuex';
 import { LocalStorage } from "../mixins/LocalStorage";
+import {Mixins} from "../mixins/mixins"
 import { role, userType, urlEnum } from '../types'
 
 export default {
   components: {
     Loading,
   },
-  mixins: [LocalStorage],
+  mixins: [LocalStorage, Mixins],
   data() {
     return {
       role,
@@ -126,11 +134,21 @@ export default {
         password: "",
       },
       activeOrNot: null,
-      geo: null
+      geo: null,
+      settings: {
+        maps: false,
+        url: 'https://production.flai.com.do/orchestrator'
+      },
 
     };
   },
   watch: {
+    settings: {
+      handler: function () {
+        this.$store.commit("setSettings", this.settings);
+        this.setUrl()
+      },deep: true
+    },
     "login.email": function (newVal) {
       if (newVal) {
         this.showError = false;
@@ -144,6 +162,8 @@ export default {
   },
   async mounted() {
     await this.resetLocalStorage()
+    this.$store.commit("setSettings", this.settings);
+    this.setUrl()
     if (JSON.parse(localStorage.getItem("rememberData"))) {
       this.rememberPassword = true;
       this.login.email = JSON.parse(localStorage.getItem("rememberData"));
@@ -168,7 +188,11 @@ export default {
   },
   methods: {
     async changeRoute(path) {
-    
+      if(path == 'settings-out'){
+        this.$router.push({ name: path }).catch(() => {}) 
+        return;
+      }
+
       if (path == "home") {
         if (this.login.email !== "" && this.login.password !== "") {
           this.loaded = true;
@@ -288,5 +312,18 @@ export default {
 }
 .disabled {
   pointer-events: none;
+}
+.uk-card-body{
+  padding: 65px 20px !important;
+  min-width: 400px;
+  position: relative;
+}
+.setting{
+  position: absolute;
+  top: 0px;
+  right: 15px;
+}
+.setting select{
+  border-radius: 20px;
 }
 </style>

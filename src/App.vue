@@ -1,4 +1,5 @@
 <template>
+
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
@@ -10,8 +11,8 @@ import { Profile } from './mixins/Profile'
 import { Storage} from '@ionic/storage'
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 
-
 export default {
+
   data(){
     return{
       noHead: [
@@ -30,7 +31,7 @@ export default {
       isSending: false,
       isServerUp: true,
       server: null,
-      sending: null
+      sending: null,
     }
   },
   watch:{

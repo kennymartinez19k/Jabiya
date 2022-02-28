@@ -1299,7 +1299,7 @@ p {
 }
 .close {
   position: absolute;
-  top: 5px;
+  top: 10px;
   z-index: 2;
   right: 5%;
   font-size: 35px;
