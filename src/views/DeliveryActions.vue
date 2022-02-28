@@ -11,6 +11,8 @@
     class="container uk-flex uk-flex-column uk-flex-between"
     :class="{ backg: resultScan }"
   >
+    <button @click="uploadProducts(1)">Escanear</button>
+
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -718,67 +720,40 @@ export default {
         }
       }
     },
-     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, order_num){
+     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum){
+      console.log(quantity)
+      let res = {orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum}
 
-      let index_first = this.firstStructureLoad.findIndex(
-        (x) =>
-          x.qrCode === qrCode && x.order_num === order_num && !x.completedScanned
-      );
-      let index_second = this.secondStructureLoad.findIndex(
-        (x) => x.qrCode == qrCode
-      );
-
-      if (scanOneByOne) {
-        this.firstStructureLoad[index_first].loadScanningCounter += 1;
-        this.secondStructureLoad[index_second].loadScanningCounter += 1;
-        this.$services.deliverServices.deliverProduct(
-          orderId,
-          boxId,
-          this.secondStructureLoad[index_second].loadScanningCounter,
-          productId,
-          qrCode
-        );
-      } else {
-        if (loadCounter > this.firstStructureLoad[index_first].quantity) {
-          let LoadDistribute = loadCounter - this.firstStructureLoad[index_first].quantity;
-          let secondLoadDistribute = loadCounter - LoadDistribute;
-
-          this.secondStructureLoad[index_second].loadScanningCounter +=
-            secondLoadDistribute;
-          this.firstStructureLoad[index_first].loadScanningCounter +=
-            secondLoadDistribute;
-
-          await this.$services.deliverServices.deliverProduct(
-            orderId,
-            boxId,
-            secondLoadDistribute,
-            productId,
-            qrCode
-          );
-          await this.distributeProductScan(LoadDistribute, qrCode);
-        } else {
-          this.firstStructureLoad[index_first].loadScanningCounter +=
-            loadCounter;
-          await this.$services.deliverServices.deliverProduct(
-            orderId,
-            boxId,
-            this.firstStructureLoad[index_first].loadScanningCounter,
-            productId,
-            qrCode
-          );
-
-          this.secondStructureLoad[index_second].loadScanningCounter +=
-            loadCounter;
+      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === res?.qrCode && x.order_num == res?.orderNum &&  !x.completedScanned)
+      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == res.qrCode)
+        if(res.scanOneByOne){
+          this.firstStructureLoad[index_first].loadScanningCounter += 1
+          this.secondStructureLoad[index_second].loadScanningCounter += 1
+          await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
+  
+        }else{
+          if(res?.loadCounter > this.firstStructureLoad[index_first].quantity){
+                let LoadDistribute = res.loadCounter - this.firstStructureLoad[index_first].quantity
+                let secondLoadDistribute = res.loadCounter - LoadDistribute
+  
+                this.secondStructureLoad[index_second].loadScanningCounter += secondLoadDistribute
+                this.firstStructureLoad[index_first].loadScanningCounter += secondLoadDistribute
+  
+                await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
+                await this.distributeProductScan(LoadDistribute, res.qrCode , orderNum)
+          }
+          else{
+              this.firstStructureLoad[index_first].loadScanningCounter += res.loadCounter
+              await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, res.qrCode)
+  
+              this.secondStructureLoad[index_second].loadScanningCounter += res.loadCounter
+              }     
+  
         }
-      }
-      let data = {
-        firstStructure: this.firstStructureLoad,
-        secondStructure: this.secondStructureLoad,
-        name: this.load.loadMapId,
-      };
-      await this.$store.dispatch("changeLoadScannedInStore", data);
-
-      this.verifiedLoad();
+        let data = {firstStructure: this.firstStructureLoad, secondStructure: this.secondStructureLoad, name:this.load.loadMapId }
+        await this.$store.dispatch("changeLoadScannedInStore", data)
+        this.verifiedLoad()
+     
     },
     async scanOrder() {
       this.quantityForScan = null;
@@ -803,7 +778,7 @@ export default {
       this.quantityForScan = null
     },
 
-    async distributeProductScan(LoadDistribute, qrCode) {
+    async distributeProductScan(LoadDistribute, qrCode, orderNum) {
       var orderForScan = this.firstStructureLoad.find(
         (x) =>
           x.qrCode == qrCode &&
@@ -811,11 +786,7 @@ export default {
           !x.completedScanned
       );
       if (orderForScan) {
-        let index_first = this.firstStructureLoad.findIndex(
-          (x) =>
-            x.qrCode === orderForScan.qrCode &&
-            x.loadScanningCounter < x.quantity
-        );
+        let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.order_num != orderNum &&  !x.completedScanned)
         let index_second = this.secondStructureLoad.findIndex(
           (x) => x.qrCode == orderForScan.qrCode
         );
@@ -827,18 +798,34 @@ export default {
         let productInfo = order.products.find(
           (p) => p.qrCode == qrCode && orderForScan.quantity == p.quantity
         );
-        this.secondStructureLoad[index_second].loadScanningCounter +=
-          LoadDistribute;
-        this.firstStructureLoad[index_first].loadScanningCounter +=
-          LoadDistribute;
 
-        await this.$services.deliverServices.deliverProduct(
-          order._id,
-          productInfo._id,
-          LoadDistribute,
-          productInfo.product,
-          qrCode
-        );
+          if(LoadDistribute > this.firstStructureLoad[index_first].quantity){
+                let loadCounter = LoadDistribute - this.firstStructureLoad[index_first].quantity;
+                let secondLoadDistribute = LoadDistribute - loadCounter;
+
+                this.secondStructureLoad[index_second].loadScanningCounter +=
+                  secondLoadDistribute;
+                this.firstStructureLoad[index_first].loadScanningCounter +=
+                  secondLoadDistribute;
+
+                await this.$services.deliverServices.deliverProduct(
+                  order._id,
+                  productInfo._id,
+                  this.firstStructureLoad[index_first].loadScanningCounter,
+                  productInfo.product,
+                  qrCode
+                );
+                if(loadCounter > 0){
+                  this.distributeProductScan(loadCounter, qrCode, orderNum)
+                }
+          }
+
+          else{
+              this.firstStructureLoad[index_first].loadScanningCounter += LoadDistribute
+              this.secondStructureLoad[index_second].loadScanningCounter += LoadDistribute
+              await this.$services.deliverServices.deliverProduct(order._id, productInfo?._id, this.firstStructureLoad[index_first].loadScanningCounter, productInfo?.product, qrCode)
+          }     
+        
       }
     },
     async getLocation() {

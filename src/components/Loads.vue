@@ -422,10 +422,6 @@ export default {
     setCalendar(){
       this.calendar.openMenu()
     },
-    alerta(){
-      alert(1)
-    }
-
   },
 };
 </script>
