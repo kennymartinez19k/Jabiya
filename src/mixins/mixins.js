@@ -259,6 +259,18 @@ export const Mixins = {
            
       }
       return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
-    }
+    },
+
+    async setUrl(){
+      let setting = await JSON.parse(localStorage.getItem('setting'))
+      this.$services.singInServices.setURL(setting)
+      this.$services.loadsServices.setURL(setting) 
+      this.$services.loadsScanServices.setURL(setting)
+      this.$services.invoicesSevices.setURL(setting)
+      this.$services.deliverServices.setURL(setting)
+      this.$services.gpsServices.setURL(setting)
+      this.$services.driverVehicleAssignment.setURL(setting)
+      this.$services.exceptionServices.setURL(setting)
+    },
   },
 };

@@ -7,12 +7,17 @@ import servicesPlugins from "./plugins";
 import VueSignaturePad from "vue-signature-pad";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheck, faSignOutAlt, faArrowLeft, faHome, faArrowRight, faMapMarkerAlt, faBan, faCheckCircle, faEnvelope, faEye , faEyeSlash, faMinus, faPlus, faRedoAlt  } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSignOutAlt, faArrowLeft, faHome, faArrowRight, faMapMarkerAlt, faBan, faCheckCircle, faEnvelope, faEye , faEyeSlash, faMinus, faPlus, faRedoAlt, faTimes, faImages  } from "@fortawesome/free-solid-svg-icons";
 import { IonicVue } from "@ionic/vue";
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import VueObserveVisibility from 'vue-observe-visibility'
+
+import Datepicker from 'vue3-date-time-picker';
+import 'vue3-date-time-picker/dist/main.css'
+
 import "@ionic/core/css/ionic.bundle.css";
 import { urlEnum } from './types'
+
 
 library.add(faCheck);
 library.add(faSignOutAlt);
@@ -27,6 +32,8 @@ library.add(faMinus, faPlus)
 library.add(faArrowRight)
 library.add(faHome)
 library.add(faRedoAlt)
+library.add(faTimes)
+library.add(faImages)
 
 if(!(JSON.parse(localStorage.getItem('setting')))){
   let setting = {
@@ -34,12 +41,12 @@ if(!(JSON.parse(localStorage.getItem('setting')))){
     url: urlEnum.production
   }
   localStorage.setItem('setting', JSON.stringify(setting))
-  
 }
 
 const store = createStore({ ...storeModule });
 createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon)
+  .component('DatePicker', Datepicker)
   .use(IonicVue)
   .use(router)
   .use(store)
@@ -48,3 +55,5 @@ createApp(App)
   .use(VueSignaturePad)
   .use(defineCustomElements)
   .mount("#app");
+
+  defineCustomElements(window)

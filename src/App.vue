@@ -1,4 +1,5 @@
 <template>
+
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
@@ -10,8 +11,8 @@ import { Profile } from './mixins/Profile'
 import { Storage} from '@ionic/storage'
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 
-
 export default {
+
   data(){
     return{
       noHead: [
@@ -28,7 +29,9 @@ export default {
       patches: 0,
       localStorage: new Storage(),
       isSending: false,
-      isServerUp: true
+      isServerUp: true,
+      server: null,
+      sending: null,
     }
   },
   watch:{
@@ -56,7 +59,10 @@ export default {
     },
 },
   async mounted(){
+
     this.setUrl()
+    this.getInfo()
+   
     this.localStorage.set('sending' , "false")
     this.localStorage.set('serverUp' , "true")
     
@@ -110,9 +116,6 @@ methods:{
   setName(val){
     this.nameOrder = val
   },
-  clearLocalStorage(){
-    this.clear()
-  },
   async setUrl(){
     let setting = await JSON.parse(localStorage.getItem('setting'))
     this.$services.singInServices.setURL(setting)
@@ -130,10 +133,16 @@ methods:{
        BarcodeScanner.stopScan();
      }catch(error){
        error
-       console.clear()
+      //  console.clear()
 
      }
     },
+    getInfo(){
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      this.$store.commit("setSettings",setting);
+    }
+  
+
 }
 }
 </script>

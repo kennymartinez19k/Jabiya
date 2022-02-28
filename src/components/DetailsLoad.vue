@@ -99,7 +99,7 @@
                <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle info-driver" >
                 <p class="uk-text-bold position-text">Fecha de Entrega:&nbsp;</p>
                 <span
-                  >{{ detailsLoads?.Orders[0]?.expected_date }}
+                  >{{setDateFormat(detailsLoads?.Orders[0]?.expected_date)}}
                   {{
                     setLocaleHour(detailsLoads?.Orders[0]?.expected_date)
                   }}</span
@@ -186,7 +186,7 @@
               <div class="uk-flex uk-flex-middle info-driver">
                 <p class="font-weight-medium position-text">Fecha de Entrega:&nbsp;</p>
                 <span
-                  >{{ detailsLoads?.dateTime?.date }}
+                  >{{setDateFormat(order?.expected_date)}}
                   {{
                     setLocaleHour(order?.expected_date)
                   }}</span
@@ -373,7 +373,6 @@ export default {
     },
 
     setLocaleDate(val) {
-      console.log(val)
       return moment(val).format("LT");
     },
     ordenIsReturn(val) {
@@ -399,6 +398,9 @@ export default {
     setLocaleHour(val){
       let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
      return moment(date).format('hh:mm A')
+    },
+    setDateFormat(val){
+     return moment(val).format('MM/DD/YYYY')
     },
      setShowOrders (value, quantity) {
       this.showOrders = value;
