@@ -561,7 +561,7 @@ export default {
         }      
     },
      async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, order_num){
-       
+       alert('kenny borralo')
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.order_num === order_num &&  !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
 
