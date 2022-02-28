@@ -683,17 +683,11 @@ export default {
               productQrCode: productInfo.qrCode,
               quantity: productInfo.quantity,
               scanOneByOne: false,
+              order_num: order.order_num
             };
           } else {
-            await this.setMessageConfirmation(
-              order._id,
-              productInfo._id,
-              productInfo.loadScanningCounter,
-              productInfo.product,
-              productInfo.qrCode,
-              productInfo.quantity,
-              true
-            );
+            await this.setMessageConfirmation(order._id, productInfo._id,  productInfo.loadScanningCounter, productInfo.product, productInfo.qrCode, productInfo.quantity, true,order.order_num)
+
           }
         }
       } else {
@@ -724,18 +718,11 @@ export default {
         }
       }
     },
-    async setMessageConfirmation(
-      orderId,
-      boxId,
-      loadCounter,
-      productId,
-      qrCode,
-      quantity,
-      scanOneByOne
-    ) {
+     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, order_num){
+
       let index_first = this.firstStructureLoad.findIndex(
         (x) =>
-          x.qrCode === qrCode && x.quantity == quantity && !x.completedScanned
+          x.qrCode === qrCode && x.order_num === order_num && !x.completedScanned
       );
       let index_second = this.secondStructureLoad.findIndex(
         (x) => x.qrCode == qrCode
