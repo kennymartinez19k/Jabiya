@@ -753,8 +753,7 @@ export default {
         );
       } else {
         if (loadCounter > this.firstStructureLoad[index_first].quantity) {
-          let LoadDistribute =
-            loadCounter - this.firstStructureLoad[index_first].quantity;
+          let LoadDistribute = loadCounter - this.firstStructureLoad[index_first].quantity;
           let secondLoadDistribute = loadCounter - LoadDistribute;
 
           this.secondStructureLoad[index_second].loadScanningCounter +=
