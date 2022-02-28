@@ -38,8 +38,6 @@ const routes = [
     name: 'settings',
     component: Settings 
   },
-
-
   {
     path: "/recover",
     name: "recover-password",
