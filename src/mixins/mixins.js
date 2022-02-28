@@ -217,16 +217,16 @@ export const Mixins = {
       localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)
     },
 
-    async setStructure(order, listOfOrders = [], listOfOrderTotal = []){
+    async setStructure(order, listOfOrders = [], listOfOrderTotal = [], quantityInvoices = null, productInvoices = null){
       let firstProductInfo;
       let totalOfOrders = 0;
       for (let i = 0; i < order.products.length; i++) {
         const x = order?.products[i];
           let {order_num, _id} = order
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
-          // if (x._id ) {
-          //   quantity = quantityInvoices
-          // }
+          if (x.name === productInvoices?.productName) {
+            quantity = quantityInvoices
+          }
           firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
           listOfOrders.unshift(firstProductInfo)
   
@@ -256,7 +256,7 @@ export const Mixins = {
              }
            })
            listOfOrderTotal = products
-  
+           
       }
       return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
     },

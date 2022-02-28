@@ -97,7 +97,7 @@
                     </div>
                
                <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle info-driver" >
-                <p class="uk-text-bold position-text" :class="{'position-text':detailsLoads?.loadingStatus?.text === 'Driver selection in progress'}">Fecha de Entrega:&nbsp;</p>
+                <p class="uk-text-bold position-text">Fecha de Entrega:&nbsp;</p>
                 <span
                   >{{setDateFormat(detailsLoads?.Orders[0]?.expected_date)}}
                   {{
@@ -173,7 +173,7 @@
         <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Número de Ordenes: {{orders?.length}}</h6>
         <div
           v-for="(order, i) in orders"
-          :key="order" v-show="i < 3"
+          :key="order" v-show="i < quantityShow"
           class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
           :class="{ ordenCompleted: order?.completed }"
         >
@@ -183,8 +183,8 @@
                   <span>{{ order?.client_name }}</span>
                 </p>
 
-              <div class="uk-flex uk-flex-middle">
-                <p class="font-weight-medium">Fecha de Entrega:&nbsp;</p>
+              <div class="uk-flex uk-flex-middle info-driver">
+                <p class="font-weight-medium position-text">Fecha de Entrega:&nbsp;</p>
                 <span
                   >{{setDateFormat(order?.expected_date)}}
                   {{
@@ -226,13 +226,13 @@
           </div>
         </div>
       </div>
-          <span v-if="orders.length > 3 && detailsLoads?.loadType == profile?.b2b" style="font-size:16px; font-weight: 900">.....</span>
+         <span v-if="orders?.length > quantityShow && load?.loadType == profile?.b2b && showOrders" style="font-size:16px; font-weight: 900" @click="setShowOrders(false, orders.length)">.....Ver Más</span>
+         <span v-if="orders?.length >= quantityShow && load?.loadType == profile?.b2b && showOrders === false" style="font-size:16px; font-weight: 900" @click="setShowOrders(true, 3)">.....Ver Menos</span>
 
            <div class="uk-text-left" v-if="userData?.userType !== userType?.driver && !hasAddAdditionalInfo">
               <p class="uk-text-bold text-bold">Información Adicional:</p>
               <ul v-for="order in orders" :key="order" v-show="order?.addAdditionalInfo?.length > 0" class="file">
                 <li  v-for="file in order?.addAdditionalInfo" :key="file">
-                  <!-- <pre>{{order}} </pre> -->
                   <div>
                     <a target="_blank" style="color: red;" :href="file">{{baseName(file)}}</a>
                     </div>
@@ -283,6 +283,8 @@ export default {
       loaded: false,
       detailsLoads: [],
       dateAvalaible: [],
+      showOrders: true,
+      quantityShow: 3,
     };
   },
 
@@ -400,6 +402,10 @@ export default {
     setDateFormat(val){
      return moment(val).format('MM/DD/YYYY')
     },
+     setShowOrders (value, quantity) {
+      this.showOrders = value;
+      this.quantityShow = quantity
+    }
   },
 };
 </script>

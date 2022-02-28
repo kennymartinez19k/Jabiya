@@ -103,6 +103,8 @@ import axios from 'axios'
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { mapGetters } from 'vuex'
+import { Mixins} from '../mixins/mixins'
+
 export default {
   alias: "Detalles de la Orden",
     components: {
@@ -111,6 +113,8 @@ export default {
     props: {
     timeout: { type: Number, default: 15000 },
   },
+  mixins: [Mixins],
+
   data() {
     return {
       isChangeQuantity: {
@@ -140,7 +144,7 @@ export default {
   },
  
   computed: {
-    ...mapGetters(["invoicesIdStore", "structureToScan", "isChangeQuantityStore"]),
+    ...mapGetters(["invoicesIdStore", "structureToScan", "isChangeQuantityStore", "orderScan"]),
 
   
   },
@@ -254,29 +258,12 @@ export default {
         this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     async setStructureInvoices (quantity, product) {
-      //  let structure = await this.setStructure(this.order_lines, this.listOfOrders, this.listOfOrderTotal, quantity, product)
-      //  this.listOfOrders = structure.firstStructure
-      //  this.listOfOrderTotal = structure.secondStructure
-      //  let structureInvoices = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
-      // this.$store.commit("setStructureToScan", structureInvoices)
-      
-   console.log(this.order_lines, 'qqqqqqqqqqq')
-   console.log(product, 'ssssssssssss')
-   console.log(quantity, 'pppppp')
-   console.log(this.structureToScan, 'this.structureToScan')
-      //   this.setStructure()
-      // this.structureToScan.firstStructure.forEach(x => {
-      //   if (x.name == product.productName) {
-      //     x.quantity = product.productQuantity
-      //   }
-      // });
-      //  this.structureToScan.secondStructure.forEach(x => {
-      //   if (x.name == product.productName) {
-      //     x.quantity = product.productQuantity
-      //   }
-      // });
-        console.log(this.structureToScan,'this.structureToScan')
-
+       let structure = await this.setStructure(this.orderScan[0], [], [], quantity, product)
+       this.listOfOrders = structure.firstStructure
+       this.listOfOrderTotal = structure.secondStructure
+       let structureInvoices = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+      this.$store.commit("setStructureToScan", structureInvoices)
+     
     }
   },
 };

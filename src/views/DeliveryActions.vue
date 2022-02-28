@@ -809,27 +809,11 @@ export default {
       }
     },
 
-    async sendQuantityForScan() {
-      let {
-        orderId,
-        boxId,
-        loadScanningCounter,
-        productId,
-        productQrCode,
-        quantity,
-        scanOneByOne,
-      } = this.infoForScan;
-      loadScanningCounter = this.quantityForScan;
-      await this.setMessageConfirmation(
-        orderId,
-        boxId,
-        loadScanningCounter,
-        productId,
-        productQrCode,
-        quantity,
-        scanOneByOne
-      );
-      this.quantityForScan = null;
+    async sendQuantityForScan(){
+      let {orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne, order_num} = this.infoForScan
+      loadScanningCounter = this.quantityForScan
+      await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne, order_num)
+      this.quantityForScan = null
     },
 
     async distributeProductScan(LoadDistribute, qrCode) {

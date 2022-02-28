@@ -92,8 +92,8 @@
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of load?.Vehicles" :key="info">{{info?.driver}}</span>
               </div> 
-              <div class="uk-flex uk-flex-middle">
-                <p class="uk-text-bold">Vehiculo:&nbsp;</p>
+              <div class="uk-flex uk-flex-middle info-driver">
+                <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
                 <span v-for="info of load?.Vehicles" :key="info">{{info?.brand}} {{info?.model}} {{info?.color}}, Placa: {{info?.license_no}} </span>
               </div>
               
@@ -122,10 +122,10 @@
             <div>
       </div>
       <div v-if="load?.loadType == profile?.b2b">
-        <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Ordenes: {{orders?.length}}</h6>
+        <h6  class="font-weight-medium uk-margin-top" style="font-size: 14px; margin-top: 5px">Número de Ordenes: {{orders?.length}}</h6>
         <div
-          v-for="order in orders"
-          :key="order"
+          v-for="(order, i) in orders"
+          :key="order"  v-show="i < quantityShow"
           class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
           :class="{ ordenCompleted: order?.completed }"
         >
@@ -169,6 +169,9 @@
           </div>
         </div>
       </div>
+          <span v-if="orders?.length > quantityShow && load?.loadType == profile?.b2b && showOrders" style="font-size:16px; font-weight: 900" @click="setShowOrders(false, orders.length)">.....Ver Más</span>
+          <span v-if="orders?.length >= quantityShow && load?.loadType == profile?.b2b && showOrders === false" style="font-size:16px; font-weight: 900" @click="setShowOrders(true, 3)">.....Ver Menos</span>
+
           </div>
         </div>
       </div>
@@ -262,7 +265,9 @@ export default {
       orders: null,
       userInfo: {},
       disabled: false,
-      timeout: 10000
+      timeout: 10000,
+      showOrders: true,
+      quantityShow: 3,
     };
   },
   mixins: [Mixins],
@@ -367,6 +372,10 @@ export default {
       setLocaleHour(val){
       let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
      return moment(date).format('hh:mm A')
+    },
+    setShowOrders (value, quantity) {
+      this.showOrders = value;
+      this.quantityShow = quantity
     }
     
   },
@@ -510,5 +519,14 @@ p {
 }
 .disabled {
   pointer-events: none;
+}
+.position-text{
+  white-space: nowrap;
+}
+.info-driver {
+  width: 100% !important;
+  display: flex;
+  align-items: stretch;
+
 }
 </style>
