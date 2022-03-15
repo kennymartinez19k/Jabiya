@@ -402,9 +402,6 @@ export default {
         console.log(error)
       }
     },
-    setInvoice() {
-      this.$router.push({ name: "invoices-orders" }).catch(() => {});
-    },
     shipperName(val) {
       var shipper = val?.shipper?.find((x) => x.name);
       return shipper?.name;
