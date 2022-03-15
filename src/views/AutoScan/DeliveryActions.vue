@@ -90,7 +90,7 @@
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
           style="padding: 5px 0px 10px !important"
         >
-          <div class="uk-flex img-scroll">
+          <div class="uk-flex uk-flex-wrap img-scroll">
             <span
               v-for="(src, index) in imagiElement"
               :key="src"
@@ -288,9 +288,10 @@ export default {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
+
           this.uploadOrDownload(this.orders);
           this.postImages();
-          let isReturn = this.load.Orders.find((x) => x.isReturn);
+          let isReturn = this.load?.Orders?.find((x) => x.isReturn);
 
           let delay = (ms) => new Promise((res) => setTimeout(res, ms));
           await delay(5000);
@@ -354,10 +355,10 @@ export default {
               }
             }
           } catch (error) {
-            await this.changeRouteLoads("Delivered", this.load);
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
             this.$router.push({ name: "home" }).catch(() => {});
           }
+
           this.setOpen(false);
         }
       },
@@ -517,13 +518,13 @@ export default {
     },
 
     async snapshot() {
-      const blob = await this.camera?.snapshot({ width: 1620, height: 1450 });
+      const blob = await this.camera?.snapshot({ width: 540, height: 480 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
       reader.onloadend = async function () {
         img = reader.result;
-      };
+      }
       let delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await delay(1000);
       this.image = img;

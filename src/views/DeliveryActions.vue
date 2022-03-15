@@ -11,8 +11,6 @@
     class="container uk-flex uk-flex-column uk-flex-between"
     :class="{ backg: resultScan }"
   >
-    <button @click="uploadProducts(1)">Escanear</button>
-
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
@@ -71,7 +69,6 @@
       <ul
         v-if="showProduct"
         class="uk-list uk-list-divider"
-        style="list-style: none"
       >
         <div
           v-for="order in orders"
@@ -119,7 +116,7 @@
           v-if="imagiElement.length > 0"
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
         >
-          <div class="uk-flex img-scroll">
+          <div class="uk-flex uk-flex-wrap img-scroll">
             <span
               v-for="(src, index) in imagiElement"
               :key="src"
@@ -193,7 +190,6 @@
 
       <div class="snapshot-div">
         <div @click="snapshot()" class="take-photo"></div>
-        <!-- <input type="file" id="file-img" style="position: absolute; opacity: 0" accept="image/*" capture="filesystem"> -->
       </div>
       <div class="button-div">
         <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
@@ -245,50 +241,23 @@
         </div>
       </div>
     </div>
-    <div  id="deliver-quantity" class="uk-flex-top" uk-modal>
-      <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
-        <button
-          class="uk-modal-close-default"
-          @click="scanOrder()"
-          type="button"
-          uk-close
-        ></button>
-
-        <p style="font-size: 15px">
-          Cantidad (hasta el máximo de
-          <span>{{
-            totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned
-          }}</span
-          >)
-        </p>
-        <input
-          type="number"
-          v-model="quantityForScan"
-          :max="totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes.scanned"
-          class="uk-input"
-        />
-        <p
-          class="uk-text-right uk-flex uk-flex-around"
-          style="margin-top: 20px !important"
-        >
-          <button
-            class="uk-button uk-button-default uk-modal-close"
-            style="margin: 0px 10px"
-            @click="scanOrder()"
-            type="button"
-          >
-            Cancelar
-          </button>
-          <button
-            class="uk-button uk-button-primary uk-modal-close"
-            @click="sendQuantityForScan()"
-            type="button"
-          >
-            Guardar
-          </button>
-        </p>
+    <transition name="modal">
+      <div v-if="isOpen">
+        <div class="overlay" @click.self="isOpen = false;">
+          <div class="modal">
+            <div class="">
+            <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
+            <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
+            <input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" >
+            <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
+                <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
+                <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
+            </p>
+        </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -299,7 +268,6 @@ import { Vibration } from "@ionic-native/vibration";
 import timeline from "../components/timeline.vue";
 import { Geolocation } from "@capacitor/geolocation";
 import { Mixins } from "../mixins/mixins";
-import UIkit from "uikit";
 import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { App } from "@capacitor/app";
@@ -328,6 +296,7 @@ export default {
   mixins: [Mixins],
   data() {
     return {
+      isOpen: false,
       show: null,
       orders: null,
       resultScan: false,
@@ -487,7 +456,6 @@ export default {
               this.$router.push({ name: "delivery-routes" });
             }
           } catch (error) {
-            await this.changeRouteLoads("Delivered", this.load);
             this.$router.push({ name: "home" }).catch(() => {});
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
           }
@@ -500,9 +468,11 @@ export default {
         this.stopScan();
       }
     },
+    isOpen: function(newVal){
+      if(!newVal) this.scanOrder()
+    },
     imagiElement:{
       handler: function(newVal){
-        console.log(newVal, 'si')
         this.$store.commit('setImagiElement',newVal)
       }, deep: true
     },
@@ -676,7 +646,8 @@ export default {
             this.totalLimitOfBoxes.scanned =
               detailsOrderToScan.loadScanningCounter;
             this.totalLimitOfBoxes.totalOfOrders = noScan1by1;
-            UIkit.modal("#deliver-quantity").show();
+            // UIkit.modal("#deliver-quantity").show();
+            this.isOpen = true
             this.infoForScan = {
               orderId: order._id,
               boxId: productInfo._id,
@@ -720,34 +691,33 @@ export default {
         }
       }
     },
-     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum){
-      console.log(quantity)
-      let res = {orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum}
+     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum, quantityForScan){
+      console.log(quantity, loadCounter)
 
-      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === res?.qrCode && x.order_num == res?.orderNum &&  !x.completedScanned)
-      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == res.qrCode)
-        if(res.scanOneByOne){
+      let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.order_num == orderNum &&  !x.completedScanned)
+      let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
+        if(scanOneByOne){
           this.firstStructureLoad[index_first].loadScanningCounter += 1
           this.secondStructureLoad[index_second].loadScanningCounter += 1
-          await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
+          await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
   
         }else{
           let productMissing = this.firstStructureLoad[index_first]?.quantity - this.firstStructureLoad[index_first]?.loadScanningCounter
 
-          if(res?.loadCounter > productMissing){
-                let LoadDistribute = res.loadCounter - productMissing
+          if(quantityForScan > productMissing){
+                let LoadDistribute = quantityForScan - productMissing
   
                 this.secondStructureLoad[index_second].loadScanningCounter += productMissing
                 this.firstStructureLoad[index_first].loadScanningCounter += productMissing
   
-                await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, res.productId, res.qrCode)
-                await this.distributeProductScan(LoadDistribute, res.qrCode , orderNum)
+                await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
+                await this.distributeProductScan(LoadDistribute, qrCode , orderNum)
           }
           else{
-              this.firstStructureLoad[index_first].loadScanningCounter += res.loadCounter
-              await this.$services.deliverServices.deliverProduct(res.orderId, res.boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, res.qrCode)
+              this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
+              this.secondStructureLoad[index_second].loadScanningCounter += quantityForScan
+              await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
   
-              this.secondStructureLoad[index_second].loadScanningCounter += res.loadCounter
               }     
   
         }
@@ -757,6 +727,7 @@ export default {
      
     },
     async scanOrder() {
+      this.isOpen = false
       this.quantityForScan = null;
       this.statusOrders = "start";
       if (await this.checkPermission()) {
@@ -773,9 +744,9 @@ export default {
     },
 
     async sendQuantityForScan(){
+      this.isOpen = false
       let {orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne, order_num} = this.infoForScan
-      loadScanningCounter = this.quantityForScan
-      await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne, order_num)
+      await this.setMessageConfirmation(orderId, boxId, loadScanningCounter, productId, productQrCode, quantity, scanOneByOne, order_num, this.quantityForScan)
       this.quantityForScan = null
     },
 
@@ -956,7 +927,7 @@ export default {
     },
 
     async snapshot() {
-      const blob = await this.camera?.snapshot({ width: 1620, height: 1450 });
+      const blob = await this.camera?.snapshot({ width: 540, height: 480 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
@@ -1138,6 +1109,7 @@ li::before {
 .img-result {
   width: 98%;
   height: 80px;
+  margin-bottom: 10px;
   border: 1px solid #000;
 }
 .icon-close {
@@ -1178,6 +1150,11 @@ p {
   width: 25px;
   border: 1px solid #a2a2a2;
   margin: 1px;
+}
+.uk-list{
+  list-style: none;
+  overflow: scroll;
+  height: 285px;
 }
 .status-order {
   width: 100%;
@@ -1337,5 +1314,48 @@ p {
   margin: 0px 10px; 
   background: #930404;
   color: #fff
+}
+
+
+
+
+.modal {
+  width: 500px;
+  margin: 0px auto;
+  padding: 20px;
+  margin: 0px 20px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px 3px;
+  transition: all 0.2s ease-in;
+  font-family: Helvetica, Arial, sans-serif;
+}
+.fadeIn-enter {
+  opacity: 0;
+}
+
+.fadeIn-leave-active {
+  opacity: 0;
+  transition: all 0.2s step-end;
+}
+
+.fadeIn-enter .modal,
+.fadeIn-leave-active.modal {
+  transform: scale(1.1);
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #00000094;
+  z-index: 999;
+  transition: opacity 0.2s ease;
 }
 </style>

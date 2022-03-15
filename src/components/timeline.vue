@@ -49,7 +49,7 @@
             Cancelar
           </button>
           <button
-            :disabled="showException === true"
+            :disabled="causeExceptions?.note?.length < 10"
             class="uk-button uk-button-primary uk-modal-close"
             type="button"
             @click="setException()"
@@ -106,7 +106,7 @@
       <li
         class="stepThree"
         :class="{
-          'uk-disabled': exception || emptyImage,
+          'uk-disabled':  (exception || emptyImage) && !causeExceptions.type,
           active: singnature !== null
         }"
         @click="getShow('Singnature')"
@@ -249,6 +249,7 @@ export default {
         this.causeExceptions.note !== null &&
         this.causeExceptions.type !== null
       ) {
+        this.showException = false
         this.$store.commit("setExceptions", this.causeExceptions);
         if (
           this.exception === true &&

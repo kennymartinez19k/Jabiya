@@ -90,7 +90,7 @@
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
           style="padding: 5px 0px 10px !important"
         >
-          <div class="uk-flex img-scroll">
+          <div class="uk-flex uk-flex-wrap img-scroll">
             <span
               v-for="(src, index) in imagiElement"
               :key="src"

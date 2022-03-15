@@ -161,6 +161,9 @@ export default {
     },
   },
   async mounted() {
+    if(localStorage.getItem('setting')){
+      this.settings.url = JSON.parse(localStorage.getItem('setting')).url
+    }
     await this.resetLocalStorage()
     this.$store.commit("setSettings", this.settings);
     this.setUrl()

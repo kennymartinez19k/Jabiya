@@ -1,4 +1,4 @@
-import {add} from '../queue'
+// import {add} from '../queue'
 
 class LoadsScanServices {
     constructor (http) {
@@ -17,9 +17,11 @@ class LoadsScanServices {
           "statusType": "Arrival",   
         }
       }
-      let url = `${this.settingsLocalStore.url}/exo/loads/${loadId}/actions` 
-      let json = {'method': 'post', 'body': params, 'url': url}
-      add(json)
+      // let url = `${this.settingsLocalStore.url}/exo/loads/${loadId}/actions` 
+      // let json = {'method': 'post', 'body': params, 'url': url}
+
+      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
+      console.log(result)
 
     }
 

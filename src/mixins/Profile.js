@@ -99,7 +99,7 @@ export const Profile = {
     },
 
     setStatus(val){
-      if(val.loadType == 'Container Pickup/Delivery'){
+      if(val?.loadType == 'Container Pickup/Delivery'){
         if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
         if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
         if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[0]?.status == 'REJECTED') return "Rechazado por Flai Admin";

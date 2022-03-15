@@ -176,7 +176,6 @@ export default {
       const resultLogin = await axios.post('https://jabiyaerp.flai.com.do/api/auth/sign_in', signIn, {withCredentials: true })
       console.log(resultLogin.data.result, 'loguin')
         //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
-        // console.log(resultLogin)
         // this.userShipper = resultLogin.data.result.data
         const result = await axios.get(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}`, {withCredentials: true })
         this.order_lines = result.data.result.data.order_lines
@@ -186,7 +185,6 @@ export default {
         this.customerDetails = result.data.result.data.order;
          } catch (error) {
           alert(error)
-          alert('error')
         }
       this.setOpen(false);
      },

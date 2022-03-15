@@ -336,7 +336,7 @@ export default {
         userId = (load.Vehicles.find(x => x)).driver_id._id
       } 
 
-      localStorage.setItem('loadingProgress', JSON.stringify(load.loadMapId));
+      localStorage.setItem('loadInProgress', JSON.stringify(load.loadMapId));
       localStorage.setItem('dateCheck', JSON.stringify(load?.dateTime?.date));
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,

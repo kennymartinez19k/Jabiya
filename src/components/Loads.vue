@@ -47,14 +47,14 @@
         <div class="uk-card uk-card-default uk-width-1-2@m container">
           <div 
             class="load-default-status" 
-            :class="{'load-delivered': load.loadingStatus.text == 'Delivered',
-                    'load-assigned': load.loadingStatus.text == 'Driver selection in progress' || 
-                    (load.loadingStatus.text == 'Expecting Approval' && !load.approvers[0].status),
-                    'load-rejected': load.loadingStatus.text == 'Denied Approval'
+            :class="{'load-delivered': load?.loadingStatus?.text == 'Delivered',
+                    'load-assigned': load?.loadingStatus?.text == 'Driver selection in progress' || 
+                    (load?.loadingStatus?.text == 'Expecting Approval' && !load?.approvers[0]?.status),
+                    'load-rejected': load?.loadingStatus?.text == 'Denied Approval'
                     }"
             >
             <div
-            :class="{ 'load-edges': load.loadMapId === loadingProgress }"
+            :class="{ 'load-edges': load?.loadMapId === loadInProgress }"
               class="uk-card uk-card-body"
               @click="setLoad(load)"
             >
@@ -72,8 +72,8 @@
                 </div>
                 <div class="uk-flex uk-flex-middle info-Order">
                   <p class="uk-text-bold position-text">No de Orden:&nbsp;</p>
-                  <span v-for="(order, index) of load.Orders" v-show="index < 3" :key="order">{{order.order_num}}<span v-if="load.Orders.length > 1">, </span> </span>
-                  <span v-if="load.Orders.length > 3">...</span>
+                  <span v-for="(order, index) of load?.Orders" v-show="index < 3" :key="order">{{order?.order_num}}<span v-if="load?.Orders?.length > 1">, </span> </span>
+                  <span v-if="load?.Orders?.length > 3">...</span>
                 </div>
                  <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
@@ -85,12 +85,12 @@
                 </div>
                 <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
-                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotStartTime)}}</span>
+                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load?.loadingStatus?.slotStartTime)}}</span>
                 </div>
 
-                <div v-if="load.loadingStatus.text !== 'Driver selection in progress'" class="uk-flex uk-flex-middle">
+                <div v-if="load?.loadingStatus?.text !== 'Driver selection in progress'" class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load.loadingStatus.slotEndTime)}}</span>
+                  <span>{{load?.dateTime?.date}} {{setLocaleDate(load?.loadingStatus?.slotEndTime)}}</span>
                 </div>
 
                 <div v-if="userInfo?.userType != userType?.driver">
@@ -118,7 +118,7 @@
               <div class="uk-flex uk-flex-between">
               </div>
             </div>
-            <div v-show="load.length <= 1" style="height: 50px">
+            <div v-show="load?.length <= 1" style="height: 50px">
               <span>No Tiene Viajes Asignados Para Este Día</span>
             </div>
           </div>
@@ -182,10 +182,7 @@ export default {
     const setOpen = (state) => (isOpenRef.value = state);
     return { isOpenRef, setOpen };
   },
-  // async beforeMount() {
-  //   this.setOpen(true);
-  // },
-  
+
   async mounted() {
       this.calendar = this.$refs.calendar;
       this.$store.commit('setUserData')
@@ -207,13 +204,17 @@ export default {
   watch:{
     dateSelected: function(newVal){
       this.currentDate({calendar: true, dateCalendar: newVal})
+    },
+    loadStore: function(newVal){
+      this.loadsToDisplay = newVal
     }
+    
   },
   computed: {
-    ...mapGetters(["allLoadsStore", "settings", "userData"]),
+    ...mapGetters(["allLoadsStore", "settings", "userData", "loadStore"]),
 
-    loadingProgress: function () {
-      return JSON.parse(localStorage.getItem('loadingProgress'));
+    loadInProgress: function () {
+      return JSON.parse(localStorage.getItem('loadInProgress'));
     },
   },
    methods: {
@@ -225,10 +226,6 @@ export default {
     },
     async currentDate(val = null) {
 
-      if(this.$route.name != 'home'){
-        return;
-      }
-     
       this.loads = []
       let contDate
       let date
@@ -275,7 +272,7 @@ export default {
            else this.dateMoment = date
         }
         if(error.message == 'Request failed with status code 401'){
-           this.$router.push({name: 'sign-in'})
+          //  this.$router.push({name: 'sign-in'})
         }
         return ;
       }   
@@ -307,7 +304,6 @@ export default {
         }
       }
       this.setOpen(false)
-      this.sortLoads()
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
@@ -318,8 +314,16 @@ export default {
         this.$store.commit("setAllLoadStore", this.loadsToDisplay);
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
+      this.sortLoads()
       this.reloadEvent = false
       console.log(this.loadsToDisplay)
+
+      for (let i = 0; i < this.loadsToDisplay?.length; i++) {
+        const load = this.loadsToDisplay[i];
+        if(load?.loadingStatus?.text === "Delivered"){
+          await this.IsDelivered(load)
+        }
+      }
 
     },
     
@@ -372,7 +376,7 @@ export default {
       return moment(val).format('LT')
     },
     ordenIsReturn(val){
-      if (val.loadType === this.profile.b2b) return 'B2B'
+      if (val?.loadType === this.profile?.b2b) return 'B2B'
       else{
         let res = val?.Orders?.find(x => x)
         if(res?.isReturn) return 'Devolver Contenedor'
@@ -382,9 +386,9 @@ export default {
     isReturnLoad(val){
       return val.Orders.find(x => x.isReturn)
     },
-    IsDelivered(load){
+    async IsDelivered(load){
       let val = 'Delivered'
-      this.changeRouteLoads(val, load)
+     await this.changeRouteLoads(val, load)
     },
     reloadData(val = null){
       if(!this.reloadEvent){
@@ -414,7 +418,7 @@ export default {
 
     productQuantity(val){
       let totalProduct = 0
-      val.Orders.forEach(order => {
+      val?.Orders?.forEach(order => {
         totalProduct += order.no_of_boxes
       });
       return totalProduct

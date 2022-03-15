@@ -100,6 +100,7 @@ export default {
     },
     clearLocalStorage(){
       this.clear()
+      localStorage.clear()
       this.$router.push({ name: "sign-in" });
 
     },
