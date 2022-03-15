@@ -33,7 +33,7 @@ export const LocalStorage = {
     },
     async all(){
       let elements =  JSON.parse(await this.localStorage.get(this.queueId))
-      return elements
+      return elements.length
     },
     async clear(){
       this.localStorage.clear()

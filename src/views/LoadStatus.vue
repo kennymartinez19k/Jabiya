@@ -214,7 +214,6 @@ export default {
       load: [],
       loadStartRoute: null,
       LoadReturn: null,
-      currentStatusLoad: null,
       allOrderIsReturn: null,
       setting: {},
       userInfo: {},
@@ -366,38 +365,52 @@ export default {
       this.$store.commit("setloadStore", loadsMounted);
 
     }
-    let orders = []
-    for (let i = 0; i < this.load.Orders.length; i++) {
-      const order = this.load.Orders[i];
-      let currentOrder = await this.$services.loadsScanServices.getProduct(order._id)      
-      orders.push(currentOrder.find(x => x))
-    }
-    localStorage.setItem('ordersDetails', JSON.stringify(orders))
-    
-    this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
-    this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
-    this.currentStatusLoad = localStorage.getItem(`loadStatus${this.load.loadMapId}`)
-    localStorage.removeItem('dateCheck');
-    localStorage.setItem('dateCheck', JSON.stringify(this.load.dateTime.date));
+
+    let allLoads = JSON.parse(localStorage.getItem('allLoads'))
+    allLoads.forEach(x => {
+      if(x?.loadMapId == this.load?.loadMapId){
+        Object.assign(x , this.load)
+      }
+    })
+    console.log(allLoads)
+    localStorage.setItem('allLoads', JSON.stringify(allLoads))
 
     this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
     this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
     this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
+    
+    this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
+    this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
+    localStorage.setItem('dateCheck', JSON.stringify(this.load.dateTime.date));
 
   },
 
   methods: {
     async changeRoute(val) {
       try{
-        if(await this.ubication()){
-          localStorage.setItem('loadingProgress', JSON.stringify(this.load.loadMapId));
-          await this.changeRouteLoads(val, this.load);
+        let ubication = await this.ubication()
+          if(ubication){
+            localStorage.setItem('ubication', JSON.stringify(ubication))
+            localStorage.setItem('loadInProgress', JSON.stringify(this.load.loadMapId));
+            await this.changeRouteLoads(val, this.load);
+  
+            this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
+            this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
+            this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
+            
+            this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
+            console.log(this.load)
+            let allLoads = JSON.parse(localStorage.getItem('allLoads'))
+            allLoads.forEach(x => {
+              if(x?.loadMapId == this.load?.loadMapId){
+                Object.assign(x , this.load)
+              }
+            })
+            console.log(allLoads)
+            localStorage.setItem('allLoads', JSON.stringify(allLoads))
+          }
 
-          this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
-          this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
-          this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
-          this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
-        }
+      
       }catch(error){
         console.log(error)
       }
@@ -421,9 +434,10 @@ export default {
     },
     async ubication(){
       try{
-        await Geolocation.getCurrentPosition()
+        await Geolocation.getCurrentPosition({timeout: 5000})
         return true
       }catch(error){
+        console.log(error.message)
         if(error.message == 'location disabled'){
           this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
         }

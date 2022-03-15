@@ -17,6 +17,9 @@ import ReturnContainer from '../views/AutoScan/ReturnContainer.vue'
 import DetailsLoad from "../components/DetailsLoad.vue";
 import Version from "../components/Version.vue";
 import Page from '../views/Page.vue'
+import OrderRegistration from '../views/Orders/OrderRegistration.vue'
+import ManageOrders from '../views/Orders/ManageOrders.vue'
+import ListOrders from '../views/Orders/ListOrders.vue'
 
 import about from '../views/About.vue'
 
@@ -118,8 +121,23 @@ const routes = [
     path: "/version",
     name: "version",
     component: Version,
-  }
+  },
+  {
+    path: "/manage-orders",
+    name: "manage-orders",
+    component: ManageOrders,
+  },
   
+  {
+    path: "/order-registration",
+    name: "order-registration",
+    component: OrderRegistration,
+  },
+  {
+    path: "/list-orders",
+    name: "list-orders",
+    component: ListOrders,
+  },
  
 ];
 

@@ -1,4 +1,4 @@
-import {add} from '../queue'
+
 
 class GpsServices {
     constructor (http) {
@@ -11,6 +11,7 @@ class GpsServices {
     }
 
     async updateLocation (driverId, lat, lng, bayId){
+      
       const body = {
         "lat": lat,
         "lng": lng,
@@ -23,15 +24,13 @@ class GpsServices {
         "color": "blue",
         "bayId": bayId
     }
-
-      const url = `${this.settingsLocalStore.url}/exo/drivers/${driverId}/locations`
-      
-      const json = {'method': 'post', 'url': url, 'body': body}
-      add(json)
-      
+        this.http.post(`${this.settingsLocalStore.url}/exo/drivers/${driverId}/locations`, body).then(res => {
+          console.log(res)
+        })
     }
 
     async updateFirstLocation (driverId, lat, lng, bayId){
+
       const body = {
         "lat": lat,
         "lng": lng,
@@ -43,13 +42,10 @@ class GpsServices {
         "imei": "",
         "color": "red",
         "bayId": bayId
-    }
-
-      const url = `${this.settingsLocalStore.url}/exo/drivers/${driverId}/locations/first`
-      
-      const json = {'method': 'post', 'url': url, 'body': body}
-      add(json)
-      
+      }
+      this.http.post(`${this.settingsLocalStore.url}/exo/drivers/${driverId}/locations/first`, body).then(res => {
+        console.log(res)
+      })
     }
 }
   export default GpsServices

@@ -1,5 +1,3 @@
-// import orders from "../store/Orders";
-// import profiles from "../store/Profiles";
 import router from "../router";
 import services from "../services/index";
 import { Geolocation } from "@capacitor/geolocation";
@@ -11,10 +9,11 @@ export const Mixins = {
   data() {
     return {
       profile,
-
       myLocation: null,
       load: null,
       localStorageGps: new Storage(),
+      localStorage: new Storage(),
+
       lastLocation: {
         latitude: 0,
         longitude: 0,
@@ -24,37 +23,14 @@ export const Mixins = {
     };
   },
   mixins: [LocalStorage],
-  mounted() {
+  async mounted() {
     this.$store.dispatch("SettingStorage");
     this.setting = JSON.parse(localStorage.getItem("setting"));
 
     this.user = JSON.parse(localStorage.getItem("userInfo"));
     this.localStorageGps.create();
+    this.localStorage.create()
 
-    setInterval(() => {
-      
-      this.setGps().then((res) => {
-        if (res) {
-          Geolocation.getCurrentPosition().then((myLocation) => {
-            let location = myLocation.coords;
-            if (
-              Math.abs(location.latitude - this.lastLocation.latitude) >
-                0.00003 ||
-              Math.abs(location.longitude - this.lastLocation.longitude) >
-                0.00003
-            ) {
-              this.lastLocation = { ...location };
-              services.gpsServices.updateLocation(
-                this.user.id,
-                location.latitude,
-                location.longitude,
-                this.load.bay_id._id
-              );
-            }
-          });
-        }
-      });
-    }, 12000);
   },
 
   methods: {
@@ -68,7 +44,7 @@ export const Mixins = {
           router.push({ name: "delivery-actions-auto" });
         if (val == "return-container")
           router.push({ name: "return-container" });
-        if (val == "Delivered") this.removeInfoInStorage(load)    
+        if (val == "Delivered") await this.removeInfoInStorage(load)    
   
       } else {
           if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
@@ -78,28 +54,36 @@ export const Mixins = {
           if (val == "Deliver-Load")
             router.push({ name: "delivery-routes" });
           if (val == "Delivered") {
-            this.removeInfoInStorage()
-            localStorage.removeItem("loadingProgress");
-            this.localStorageGps.remove(`gps ${load?.loadMapId}`);
+            await this.removeInfoInStorage(load)
+            localStorage.removeItem("loadInProgress");
+            localStorage.removeItem(`gps ${load.loadMapId}`);
+
             localStorage.removeItem(`loadStatus${load?.loadMapId}`);
           }
       }
     },
     async driverArrival(val) {
-      services.loadsScanServices.driverArrival(val.loadMapId);
-      let location = await this.location();
-      this.localStorageGps.set(`gps ${val.loadMapId}`, true);
+      await services.loadsScanServices.driverArrival(val.loadMapId);
+      localStorage.setItem(`gps ${val.loadMapId}`, true);
       this.load = val;
-      services.gpsServices.updateFirstLocation(
-        this.user?.id,
-        location?.latitude,
-        location?.longitude,
-        this.load?.bay_id._id
-      );
+      try{
+        let location = await JSON.parse(localStorage.getItem('ubication'))
+        services.gpsServices.updateFirstLocation(
+          this.user?.id,
+          location?.latitude,
+          location?.longitude,
+          this.load?.bay_id?._id
+        );
+        this.localStorage.set('serverUp' , "true")
+      } catch(error){
+        this.localStorage.set('serverUp' , "false")
+      }
     },
 
     async uploadTrip(load) {
-      this.localStorageGps.remove(`gps ${load?.loadMapId}`);
+      localStorage.removeItem(`gps ${load.loadMapId}`);
+
+      
       
       if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
         await this.uploadOrDownload(load)
@@ -117,7 +101,8 @@ export const Mixins = {
     },
     async startLoadRoute(val) {
       if (this.setting.maps) await this.setMap(val);
-      this.localStorageGps.set(`gps ${val.loadMapId}`, true);
+      localStorage.setItem(`gps ${val.loadMapId}`, true);
+
       localStorage.setItem(`startRoute${val.loadMapId}`, JSON.stringify(true));
       
     },
@@ -168,14 +153,15 @@ export const Mixins = {
     },
     async setGps() {
       if(this.load?.loadMapId){
-        return await this.localStorageGps.get(`gps ${this.load?.loadMapId}`);
+        return await localStorage.getItem(`gps ${this.load?.loadMapId}`);
       }else{
         return false
       }
     },
 
     async uploadOrDownload(val){
-      this.localStorageGps.remove(`gps ${val.loadMapId}`)
+      localStorage.removeItem(`gps ${val.loadMapId}`);
+
       let totalOfBoxes = await this.setLoadTruck(val)
       await this.$services.loadsScanServices.completeLoad(val.loadMapId, totalOfBoxes ) 
       localStorage.setItem(`uploadStorage${this.load.loadMapId}`,JSON.stringify(true))
@@ -207,10 +193,10 @@ export const Mixins = {
       }
       return totalOfBoxes
     },
-    removeInfoInStorage(val){
+    async removeInfoInStorage(val){
       this.load = val
-      localStorage.removeItem("loadingProgress");
-      this.localStorageGps.remove(`gps ${val?.loadMapId}`);
+      localStorage.removeItem("loadInProgress");
+      localStorage.removeItem(`gps ${this.load?.loadMapId}`);
       
       localStorage.removeItem(`startRoute${this.load?.loadMapId}`)
       localStorage.removeItem(`deliverLoad${this.load?.loadMapId}`)

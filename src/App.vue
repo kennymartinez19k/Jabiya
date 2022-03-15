@@ -1,5 +1,4 @@
 <template>
-
   <app-header v-if="!currentPage" :nameComponent="currentName"/>
   <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
 </template>
@@ -10,6 +9,9 @@ import {LocalStorage} from './mixins/LocalStorage'
 import { Profile } from './mixins/Profile'
 import { Storage} from '@ionic/storage'
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+import { Geolocation } from "@capacitor/geolocation";
+
+
 
 export default {
 
@@ -21,19 +23,33 @@ export default {
         'recover-password'
       ],
       nameOrder: null,
-      result: 0,
-      sendingBI: false,
-      allrequest: [],
-      gets: 0,
-      posts: 0,
-      patches: 0,
       localStorage: new Storage(),
-      isSending: false,
+      localStorageGps: new Storage(),
       isServerUp: true,
-      server: null,
-      sending: null,
+      connection: null,
+      proofQueue: [],
+      intervalForGps: 0,
+      step: 0,
+      lastLocation: {
+        latitude: 0,
+        longitude: 0
+      }
     }
   },
+  // created(){
+  //   this.connection = new WebSocket(`ws://localhost:8080`)
+
+  //   this.connection.onmessage = function (event) {
+  //     const data = JSON.parse(event.data)
+  //     this.$store.dispatch('setEvent', data)
+      
+  //   }.bind(this)
+
+  //   this.connection.onopen = function (event) {
+  //     console.log('Successfully connected to the echo websocket server...', event)
+  //   }
+  // },
+  
   watch:{
     $route: function(newVal){
       if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
@@ -57,93 +73,130 @@ export default {
       }
       return ''
     },
-},
+  },
   async mounted(){
+    this.localStorageGps.create()
 
-    this.setUrl()
-    this.getInfo()
-   
-    this.localStorage.set('sending' , "false")
-    this.localStorage.set('serverUp' , "true")
+      this.setUrl()
+      this.getInfo()
     
-    let delay = ms => new Promise(res => setTimeout(res, ms));
-    
-    let condition = true
-    while (condition) {
-      await delay(2000);
-      if(queue.length > 0){
-        let enqueueItem = remove()
-        await this.enqueue(enqueueItem)
-      }
-      this.isServerUp = await this.localStorage.get('serverUp')
-      let isConnected
-      try{
-        isConnected = await this.$services.loadsServices.serverStatus()
-      }catch(error){
-        isConnected = false
-      }
-      if(!(JSON.parse(this.isServerUp)) || !isConnected){
-        if(isConnected) {
-          this.localStorage.set('serverUp' , "true")
-          this.$store.commit('setServer', true)
-        }
-        else this.$store.commit('setServer', false)
-      }else{
-        this.$store.commit('setServer', true)
-        this.localStorage.set('serverUp' , "true")
-        let queueItem = await this.peek()
-        if(queueItem){
-          try{
-            let res = await this.$services.requestServices.request(queueItem)
-            if(res){
-              this.dequeue()
-            }
-            await this.localStorage.set('serverUp' , JSON.stringify(true))
-            this.$store.commit('setServer', true)
+      this.localStorage.set('sending' , "false")
+      this.localStorage.set('serverUp' , "true")
 
-          } 
-          catch(error){
-            await this.localStorage.set('serverUp' , JSON.stringify(false))
-            this.$store.commit('setServer', false)
+      let delay = ms => new Promise(res => setTimeout(res, ms));
+      
+      let condition = true
+      const intervalLimit = 5
 
-            console.log(error)
+      while (condition) {
+        let user = JSON.parse(localStorage.getItem("userInfo"));
+        await delay(2000);
+
+        this.intervalForGps += 1
+
+        let load = JSON.parse(localStorage.getItem('DeliveryCharges'))
+        
+        if(this.intervalForGps > intervalLimit && await localStorage.getItem(`gps ${load?.loadMapId}`) ){
+          this.intervalForGps = 0
+        Geolocation.getCurrentPosition().then((myLocation) => {
+          let location = myLocation.coords;
+        
+          if (
+            Math.abs(location.latitude - this.lastLocation.latitude) >
+              0.00003 ||
+            Math.abs(location.longitude - this.lastLocation.longitude) >
+              0.00003
+          ) {
+            this.lastLocation.latitude =  location?.latitude
+            this.lastLocation.longitude = location?.longitude
+            this.$services.gpsServices.updateLocation(
+              user.id,
+              location?.latitude,
+              location?.longitude,
+              load?.bay_id?._id
+            );
           }
+        });
+  
         }
+        
+        if(queue.length > 0){
+          let enqueueItem = remove()
+          await this.enqueue(enqueueItem)
+        }
+        this.isServerUp = await this.localStorage.get('serverUp')
+        let isConnected
+
+        try{
+          isConnected = await this.$services.loadsServices.serverStatus()
+        }catch(error){
+          isConnected = false
+        }
+        if(!(JSON.parse(this.isServerUp)) || !isConnected){
+          if(isConnected) {
+            this.localStorage.set('serverUp' , "true")
+            this.$store.commit('setServer', true)
+          }
+          else this.$store.commit('setServer', false)
+        }else{
+
+          this.$store.commit('setServer', true)
+          this.localStorage.set('serverUp' , "true")
+          let queueItem = await this.peek()
+          if(queueItem){
+            try{
+              let res = await this.$services.requestServices.request(queueItem)
+              if(res){
+                this.dequeue()
+              }
+              await this.localStorage.set('serverUp' , JSON.stringify(true))
+              this.$store.commit('setServer', true)
+
+            } 
+            catch(error){
+              await this.localStorage.set('serverUp' , JSON.stringify(false))
+              this.$store.commit('setServer', false)
+
+              console.log(error)
+            }
+          }
       }
     }
-},
-methods:{
-  setName(val){
-    this.nameOrder = val
   },
-  async setUrl(){
-    let setting = await JSON.parse(localStorage.getItem('setting'))
-    this.$services.singInServices.setURL(setting)
-    this.$services.loadsServices.setURL(setting) 
-    this.$services.loadsScanServices.setURL(setting)
-    this.$services.invoicesSevices.setURL(setting)
-    this.$services.deliverServices.setURL(setting)
-    this.$services.gpsServices.setURL(setting)
-    this.$services.driverVehicleAssignment.setURL(setting)
-    this.$services.exceptionServices.setURL(setting)
-  },
-   async stopScan() {
-     try{
-       BarcodeScanner.showBackground();
-       BarcodeScanner.stopScan();
-     }catch(error){
-       error
-      //  console.clear()
-
-     }
+  methods:{
+    setName(val){
+      this.nameOrder = val
     },
-    getInfo(){
-      let setting = JSON.parse(localStorage.getItem('setting'))
-      this.$store.commit("setSettings",setting);
-    }
-  
+    async setUrl(){
+      let setting = await JSON.parse(localStorage.getItem('setting'))
+      this.$services.singInServices.setURL(setting)
+      this.$services.loadsServices.setURL(setting) 
+      this.$services.loadsScanServices.setURL(setting)
+      this.$services.invoicesSevices.setURL(setting)
+      this.$services.deliverServices.setURL(setting)
+      this.$services.gpsServices.setURL(setting)
+      this.$services.driverVehicleAssignment.setURL(setting)
+      this.$services.exceptionServices.setURL(setting)
+      this.$services.manageOrders.setURL(setting)
 
-}
+    },
+    async stopScan() {
+      try{
+        BarcodeScanner.showBackground();
+        BarcodeScanner.stopScan();
+      }catch(error){
+        error
+        //  console.clear()
+
+      }
+      },
+      getInfo(){
+        let setting = JSON.parse(localStorage.getItem('setting'))
+        this.$store.commit("setSettings",setting);
+      }
+    
+
+  }
 }
 </script>
 <style>
@@ -245,7 +298,6 @@ strong{
  background: #2a307c;
  font-weight: 300 !important;
  text-align: center;
-  box-shadow: 1px 0px 5px #898989;
 }
 .uk-button-green{
   background: green;
