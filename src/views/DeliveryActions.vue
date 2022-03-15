@@ -11,7 +11,7 @@
     class="container uk-flex uk-flex-column uk-flex-between"
     :class="{ backg: resultScan }"
   >
-    <button @click="uploadProducts(1)">Escanear</button>
+    <!-- <button @click="uploadProducts('12LAP')">Escanear</button> -->
 
     <div class="stiky">
       <p style="font-size: 13px !important; font-weight: 500">
@@ -226,9 +226,11 @@
                 type="checkbox"
                 v-model="exception"
                 name="onoffswitch"
+                :class="{'checkbox-default':isChangeQuantityStore.exception}"
                 class="onoffswitch-checkbox"
                 id="myonoffswitch"
                 tabindex="0"
+                :disabled="isChangeQuantityStore.exception === true"
               />
               <label class="onoffswitch-label" for="myonoffswitch"></label>
             </div>
@@ -353,7 +355,7 @@ export default {
       checkOrder: true,
       messageReject: null,
       showProduct: true,
-      timeout: 10000,
+      timeout: 20000,
       picture: null,
       camera: null,
       image: "",
@@ -435,6 +437,11 @@ export default {
       this.allProductScanned = true;
       this.verifiedLoad();
     }
+     if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
+    this.exception = this.isChangeQuantityStore.exception
+     } else if (localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)){
+       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)).exception
+     }
   },
   watch: {
     digitalFirmStore: {
@@ -444,8 +451,8 @@ export default {
           this.setOpen(true);
           await this.postImages();
 
-          let delay = (ms) => new Promise((res) => setTimeout(res, ms));
-          await delay(5000);
+          // let delay = (ms) => new Promise((res) => setTimeout(res, ms));
+          // await delay(5000);
 
           try {
             let load = await this.$services.loadsServices.getLoadDetails(
@@ -491,6 +498,8 @@ export default {
             this.$router.push({ name: "home" }).catch(() => {});
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
           }
+          localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+
           this.setOpen(false);
         }
       },
@@ -956,6 +965,7 @@ export default {
     },
 
     async snapshot() {
+      this.stopScan();
       const blob = await this.camera?.snapshot({ width: 1620, height: 1450 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);

@@ -106,7 +106,7 @@
       <li
         class="stepThree"
         :class="{
-          'uk-disabled': exception || emptyImage,
+          'uk-disabled': (exception || emptyImage)  && !causeExceptions.type,
           active: singnature !== null
         }"
         @click="getShow('Singnature')"
@@ -145,11 +145,27 @@ export default {
       showSingnatureAndException: true,
       showSingnature: null,
       singnature: null,
+      detailsException: []
     };
   },
 
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
+  },
+  computed: {
+    ...mapGetters([
+      'imagesStore'
+    ]),
+    imageTimeline(){
+      console.log(1)
+      if(this.imagesStore){
+        this.changeImage()
+      }
+      return this.imagesStore
+    },
+    emptyImage(){
+      return this.imagesStore?.length <= 0
+    }
   },
   watch: {
     singnature: {
@@ -223,12 +239,13 @@ export default {
     },
   },
   methods: {
-    getShow(value) {
+   async getShow(value) {
       this.$emit("action", value);
       if (value === "scan") {
         this.$emit("action", value);
       }
       if (value === "exception") {
+        this.dataExteions(await JSON.parse(localStorage.getItem('detailsException')))
         UIkit.modal("#exception").show();
         if (this.imagiElement.length > 0) {
         this.$emit("action", value);
@@ -274,25 +291,14 @@ export default {
           this.$emit("action", 'exception');
           this.showSingnatureAndException = false;
         }
+    },
+    async dataExteions(value) {
+    this.detailsException = value
+
     }
     
   },
-  computed:{
-    ...mapGetters([
-      'imagesStore'
-    ]),
-    imageTimeline(){
-      console.log(1)
-      if(this.imagesStore){
-        this.changeImage()
-      }
-      return this.imagesStore
-    },
-    emptyImage(){
-      return this.imagesStore?.length <= 0
-    }
-    
-  }
+
 };
 </script>
 
