@@ -28,11 +28,13 @@ const storeModule = {
       state.userData = null
         let email = localStorage.getItem('rememberData')
         let password = localStorage.getItem('rememberPassword')
+        let setting = JSON.parse(localStorage.getItem('setting'))
         localStorage.clear()
   
         if(email && password){
           localStorage.setItem('rememberData', email)
           localStorage.setItem('rememberPassword', password)
+          localStorage.setItem('setting', JSON.stringify(setting))
         }
   
     },

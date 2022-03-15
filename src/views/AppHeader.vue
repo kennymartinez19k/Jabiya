@@ -55,6 +55,7 @@
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
+            <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li>
             <li @click="setCurrentPage('settings')">Configuración</li>
             <li @click="setCurrentPage('version')">Version app</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
@@ -67,6 +68,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { userType} from '../types/index'
 import Uikit from "uikit";
 
 export default {
@@ -102,11 +104,14 @@ export default {
   },
   async mounted() {
     this.userData = JSON.parse(localStorage.getItem("userInfo"));
+
     if (this.nameComponent) this.titlePage = this.nameComponent;
     else "";
   },
   data() {
     return {
+      userType,
+
       iconType: "arrow-left",
       action: "sign-in",
       positionSticky: false,

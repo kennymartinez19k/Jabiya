@@ -9,6 +9,7 @@ import QueueServices from './QueueServices'
 import GpsServices from './GpsServices'
 import DriverVehicleAssignment from './DriverVehicleAssignment'
 import ExceptionServices from './ExceptionServices'
+import ManageOrders from './ManageOrders'
 
 export default {
     singInServices: new SingInServices(axiosInstance),
@@ -21,6 +22,7 @@ export default {
     gpsServices: new GpsServices(axiosInstance ), 
     driverVehicleAssignment: new DriverVehicleAssignment(axiosInstance ), 
     exceptionServices: new ExceptionServices(axiosInstance ),  
+    manageOrders: new ManageOrders(axiosInstance)
 }
 
 

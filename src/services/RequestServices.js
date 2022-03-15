@@ -6,7 +6,6 @@ class RequestServices {
 
       let formData = new FormData();
 
-      console.log(infoRequest)
 
       if(infoRequest.formInfo){
         const {images, lng, lat } = infoRequest.formInfo
@@ -21,16 +20,13 @@ class RequestServices {
                 formData.append('lat',lat);
                 formData.append('lng',lng);
 
-        console.log(formData)
       }
     try{
         
       if (infoRequest.method === "post") {
-        // localStorage.setItem('posts', localStorage.getItem('posts') + 1)
         if (infoRequest.headers){
           if(infoRequest.body && formData){
             let res = await this.http.post(infoRequest.url, infoRequest.body, formData, infoRequest.headers)
-            // // localStorage.setItem('posts', localStorage.getItem('posts') - 1)
             return res
           }
           else{
