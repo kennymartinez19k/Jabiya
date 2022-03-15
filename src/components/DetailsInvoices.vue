@@ -223,8 +223,6 @@ export default {
   async beforeMount() {
     this.setOpen(true);
     this.idInvoices = this.invoicesIdStore
-    alert(this.idInvoices)
-    alert('this.idInvoices')
     try {
       const signIn = {
         jsonrpc: "2.0",
