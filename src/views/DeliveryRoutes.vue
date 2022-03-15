@@ -115,7 +115,7 @@
             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                <!-- uk-open -->
                 <li class="uk-margin-remove">
-                   <a class="uk-accordion-title " href="#"></a>
+                   <a class="uk-accordion-title " href="#"> Mostrar/Ocultar Productos</a>
                     <div 
                      class="uk-accordion-content uk-margin-remove uk-padding-remove">
                      <div class="details-product">
@@ -212,7 +212,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["loadStore", "orderScan","orderDetailsStore","isSelectedInvoicesStore", "structureToScan"]),
+    ...mapGetters(["loadStore", "orderScan","orderDetailsStore","isSelectedInvoicesStore", "structureToScan", "invoicesIdStore"]),
 
   },
   async mounted() {
@@ -260,6 +260,9 @@ export default {
           })
         })
       }
+      if (this.invoicesIdStore) {
+       this.idOrderToInvoices = this.invoicesIdStore
+      }
   },
   methods: {
     async location () {
@@ -275,7 +278,6 @@ export default {
     screenSelection () {
       if (this.load.allowOrderChangesAtDelivery) {
         this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices)
-        // this.$router.push({ name: "invoices-orders" }).catch(() => {});
         this.$router.push({ name: "details-invoices" }).catch(() => {});
       } else{
         this.scan()
@@ -490,9 +492,9 @@ li{
 }
 .uk-accordion-title{
   display: flex;
-  /* width: 100%; 
-  display: inline-block;
-  */
+  margin: 5px 0px;
+  font-size: 12px;
+  color: #3880ff;
 }
 .uk-accordion-title::before {
     content: "";

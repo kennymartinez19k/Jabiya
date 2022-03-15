@@ -203,19 +203,26 @@ export const Mixins = {
       localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)
     },
 
-    async setStructure(order, listOfOrders = [], listOfOrderTotal = [], quantityInvoices = null, productInvoices = null){
+    async setStructure(order, listOfOrders = [], listOfOrderTotal = [], quantityToInvoice = null, currentProdutFromInvoicesOdoo = null, productsOdoo = null){
       let firstProductInfo;
       let totalOfOrders = 0;
       for (let i = 0; i < order.products.length; i++) {
-        const x = order?.products[i];
+        const currentProductExo = order?.products[i];
+
           let {order_num, _id} = order
-          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = x 
-          if (x.name === productInvoices?.productName) {
-            quantity = quantityInvoices
+          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = currentProductExo 
+          if (productsOdoo !== null) {
+
+            if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId) {
+              quantity = quantityToInvoice
+            } else {
+              let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name )
+              quantity =  productsOdoo[productIndexOdoo]?.productQuantity
+            }
+
           }
           firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
           listOfOrders.unshift(firstProductInfo)
-  
   
           listOfOrders.forEach( x => {
             let {qrCode,  loadScanningCounter, order_num} = x
@@ -229,7 +236,7 @@ export const Mixins = {
                 listOfOrderTotal.unshift(SecondProductInfo)
                 totalOfOrders = 0
            })
-           
+
            let products = []
            listOfOrderTotal.forEach(x => {
              let product = products.find(p => p.qrCode == x.qrCode)
@@ -242,7 +249,6 @@ export const Mixins = {
              }
            })
            listOfOrderTotal = products
-           
       }
       return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
     },
