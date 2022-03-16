@@ -57,28 +57,30 @@
         >
           <thead>
             <tr class="title">
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Cant.</th>
+              <th :class="{'th-text': customerDetails?.has_invoice}">Producto</th>
+              <th :class="{'th-text': customerDetails?.has_invoice}">Precio</th>
+              <th :class="{'th-text': customerDetails?.has_invoice}">Cant.</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, i) in order_lines" :key="product">
-              <td class="uk-table-small">{{ product.productName }}</td>
-              <td class="">{{ product.currencySymbol }}{{ product.price }}</td>
+              <td :class="{'td-text': customerDetails?.has_invoice}" class="uk-table-small">{{ product.productName }}</td>
+              <td :class="{'td-text': customerDetails?.has_invoice}">{{ product.currencySymbol }}{{ product.price }}</td>
               <td
                 :class="{
                   showActive: product.productQuantity !== NewOrdersQuantyti[i],
+                  'td-text': customerDetails?.has_invoice
                 }"
               >
                 {{ product.productQuantity }}
               </td>
               <font-awesome-icon
+              v-if="!customerDetails?.has_invoice"
                 icon="plus"
                 :class="{
                   'plus-disabled':
                     product.productQuantity >= orderStoreQuantity[i] ||
-                    this.customerDetails?.has_invoice,
+                    customerDetails?.has_invoice,
                 }"
                 class="Space font-awesome"
                 @click="
@@ -92,11 +94,12 @@
                 "
               />
               <font-awesome-icon
+              v-if="!customerDetails?.has_invoice"
                 icon="minus"
                 :class="{
                   'plus-disabled':
                     product.productQuantity == 0 ||
-                    this.customerDetails?.has_invoice,
+                    customerDetails?.has_invoice,
                 }"
                 class="Space font-awesome"
                 @click="
@@ -155,13 +158,20 @@
         </button>
       </div>
       <div class="uk-margin-top">
-        <button
+        <button  v-if="!customerDetails?.has_invoice"
           :disabled="btnInvoices"
+          type="button"
+          class="uk-button uk-button-primary"
+          @click="createInvoice()"
+        >
+          Crear Factura
+        </button>
+          <button v-if="customerDetails?.has_invoice"
           type="button"
           class="uk-button uk-button-primary"
           @click="downloadPDF()"
         >
-          Crear Factura
+          Descargar Factura
         </button>
       </div>
       <div class="uk-margin-top">
@@ -260,18 +270,17 @@ export default {
   },
   methods: {
     async downloadPDF() {
-      try {
-         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice`,{ withCredentials: true });
-      } catch (error) {
-        console.log(error);
-      }
       let delay = (ms) => new Promise((res) => setTimeout(res, ms));
       var link = document.createElement("a");
-      link.href = `https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice/download?report_type=pdf&download=true`;
+      let stringA ="\"https://jabiyaerp.flai.com.do/api/order/"+this.idInvoices+"/invoice/download?report_type=pdf&download=true\" download"
+        console.log(stringA,'string')
+        
+      link.href = `https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/invoice/download?report_type=pdf&download=true`;
       link.download = "file.pdf";
+      // link.target = "_self"
+      // link.dispatchEvent(new TouchEvent("click"));
       link.dispatchEvent(new MouseEvent("click"));
       await delay(3000);
-      this.createInvoice();
     },
     async productsOfOrders() {
       try {
@@ -400,7 +409,15 @@ export default {
       this.setStructureInvoices(this.OrderQuantity, this.productOrder);
     },
 
-    createInvoice() {
+    async createInvoice() {
+       try {
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice`,{ withCredentials: true });
+      } catch (error) {
+        console.log(error);
+        alert(error)
+      }
+      this.downloadPDF();
+
       this.btnScan = false;
       this.btnInvoices = true;
     },
@@ -437,6 +454,13 @@ p {
 td {
   padding: 5px 0px 6px;
   width: 1%;
+}
+.td-text {
+  padding: 10px 12px !important;
+  /* width: 1%; */
+}
+.th-text {
+  text-align: center;
 }
 th {
   font-size: 10.5px;
