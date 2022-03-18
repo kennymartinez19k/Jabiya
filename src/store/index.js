@@ -5,6 +5,7 @@ import singInStore from '../store/SingInStore'
 import orders from '../store/Orders'
 import profiles from './Profiles'
 import invoicesStore from './InvoicesStore'
+import manageOrders from './manageOrders'
 
 const storeModule = {
   state: () => (
@@ -16,6 +17,7 @@ const storeModule = {
       ...orders.state,
       ...profiles.state,
       ...invoicesStore.state,
+      ...manageOrders.state,
       profile: {
         container: true,
         
@@ -45,6 +47,7 @@ const storeModule = {
     ...orders.mutations,
     ...profiles.mutations,
     ...invoicesStore.mutations,
+    ...manageOrders.mutations
     
   },
   actions: {
@@ -65,6 +68,7 @@ const storeModule = {
     ...orders.getters,
     ...profiles.getters,
     ...invoicesStore.getters,
+    ...manageOrders.getters
 
   }
 }

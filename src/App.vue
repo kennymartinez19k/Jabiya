@@ -234,7 +234,7 @@ button{
   border-radius: 5px !important
 }
 .uk-button-red{
-  background: #be1515;
+  background: #930404;
   color: #fff
 }
 .uk-button-orange{
