@@ -144,8 +144,6 @@ export default {
                 if(newVal.length < 70){
                     let result = await this.$services.manageOrders.getOrders()
                     this.orderToDisplay = result?.data
-                    console.log(newVal)
-                    console.log(this.orderToDisplay)
                 }
             },
             deep: true
@@ -168,7 +166,6 @@ export default {
                 this.currentPage = this.currentPage + val
             }
             
-            console.log(this.totalInPages, this.currentPage)
         },
         setLocaleHour(val){
             let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
@@ -186,7 +183,6 @@ export default {
             this.isOpenModal = true
         },
         async deleteOrder(){
-            console.log(this.order)
             let i = this.orderToDisplay.findIndex(x => x.order_num == this.order.order_num)
             this.orderToDisplay.splice(i, 1)
             await this.$services.manageOrders.deleteOrder(this.order._id)
@@ -208,7 +204,6 @@ export default {
                        driver_name, 
                        serviceType
                    )
-                   console.log(result)
                    this.orderToDisplay = result.data
                }else{
                    this.clearFilters()

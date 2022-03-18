@@ -116,6 +116,8 @@
                 </div>
             </div>
 
+            <pre>{{client}}</pre>
+
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Id Oficial:</label>
                 <div class="uk-form-controls">
@@ -133,8 +135,9 @@
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Provincia: *</label>
                 <div class="uk-form-controls">
+                    {{client.province}}
                     <select v-model="client.province" :class="{isEmpty: !client.province && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}"  class="uk-select" name="" id="">
-                        <option v-for="currentProvince in listProvinces" :key="currentProvince">{{currentProvince}}</option>
+                        <option v-for="currentProvince in listProvinces" :key="currentProvince" :selected="client.province" :value="currentProvince">{{currentProvince}}</option>
                     </select>
                 </div>
             </div>
@@ -143,7 +146,7 @@
                 <label class="uk-form-label text-small" for="form-stacked-text">Ciudad: *</label>
                 <div class="uk-form-controls">
                 <select :class="{isEmpty: !client.city && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}" v-model="client.city" class="uk-select" name="" id="">
-                        <option v-for="currentCity in listCities" :key="currentCity">{{currentCity?.name}}</option>
+                        <option v-for="currentCity in listCities" :key="currentCity" >{{currentCity?.name}}</option>
                     </select>
                 </div>
             </div>
@@ -574,7 +577,6 @@ export default {
             this.productsCreated = [...products]
             this.productsCreated.map(x => x.productId = x.name)
 
-            console.log(this.productsCreated)
             this.$store.commit('editOrder', null)
 
             let cities = this.cities.filter(city => city?.province?.toUpperCase() == this.client?.province?.toUpperCase())
@@ -623,11 +625,7 @@ export default {
             },
       deep: true
         },
-        productsCreated:{
-            handler: function(newVal){
-                console.log(newVal)
-            }, deep: true
-        }
+        
     },
     methods:{
     
@@ -700,8 +698,7 @@ export default {
             files: this.files
         }
         console.log(this.generalData, this.client, this.productsCreated)
-        let result = await this.$services.manageOrders.createOrder(data)
-        console.log(result)
+         await this.$services.manageOrders.createOrder(data)
         
         
 

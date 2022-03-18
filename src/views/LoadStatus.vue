@@ -100,6 +100,7 @@
           </div>
           <div
             @click="changeRoute('Approved')"
+            :class="{'disabled-event': isMountProduct}"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
             <h6>{{messageStatus?.approved?.message}}</h6>
@@ -189,7 +190,7 @@ import { Mixins } from "../mixins/mixins";
 import { Profile } from '../mixins/Profile'
 import { alertController } from '@ionic/vue';
 import { Geolocation} from '@capacitor/geolocation'
-import { userType, userPosition } from '../types'
+import { userType, userPosition, profile } from '../types'
 
 
 
@@ -200,6 +201,8 @@ export default {
     return {
       userType,
       userPosition,
+      profile,
+
       step:{
         expectingApprovalProvider: 0,
         expectingApproval: 1,
@@ -220,7 +223,8 @@ export default {
 
       startRouteStorage: false,
       deliverStorage: false,
-      uploadStorage: false
+      uploadStorage: false,
+      isMountProduct: false
     };
   },
  
@@ -387,6 +391,12 @@ export default {
   methods: {
     async changeRoute(val) {
       try{
+        if(val == "Approved" &&  this.profile.container == this.load.loadType){
+          this.isMountProduct = true
+          let delay = (ms) => new Promise((res) => setTimeout(res, ms));
+          await delay(5000);
+          this.isMountProduct = false
+        }
         let ubication = await this.ubication()
           if(ubication){
             localStorage.setItem('ubication', JSON.stringify(ubication))

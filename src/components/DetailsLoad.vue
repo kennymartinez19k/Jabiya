@@ -302,7 +302,7 @@ export default {
     }
   },
  async mounted () {
-       this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
+    this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
     this.$store.commit("setSettings", null);
      if (this.userInfo.userType  === "Transporter") {
       this.costText = 'Ingreso por el Viaje'

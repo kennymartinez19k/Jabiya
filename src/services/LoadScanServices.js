@@ -20,8 +20,7 @@ class LoadsScanServices {
       // let url = `${this.settingsLocalStore.url}/exo/loads/${loadId}/actions` 
       // let json = {'method': 'post', 'body': params, 'url': url}
 
-      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
-      console.log(result)
+      await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
 
     }
 
@@ -31,7 +30,6 @@ class LoadsScanServices {
     }
 
     async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
-      // console.log(orderId, boxId, loadCounter, productId, qrCode)
         const params = {
           "actionName": "loadBox",
           "params": {
