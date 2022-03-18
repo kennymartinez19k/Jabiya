@@ -327,8 +327,10 @@ export default {
     async acceptOrRejectLoad(id, version, status,vehicleId) {
       this.setOpen(true)
       this.disabled = true
-      let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
+
       let userId
+      let load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
+      
       if(!load.approvers[0].status){
         userId = load?.approvers[0]?.approver_id?._id
       }

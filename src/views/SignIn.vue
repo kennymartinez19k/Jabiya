@@ -252,7 +252,8 @@ export default {
     },
     async resetLocalStorage () {
       // this.$store.commit('resetData')
-    }  
+    },
+    
   },
  
 };

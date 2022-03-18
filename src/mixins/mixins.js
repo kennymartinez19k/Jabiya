@@ -264,5 +264,13 @@ export const Mixins = {
       this.$services.driverVehicleAssignment.setURL(setting)
       this.$services.exceptionServices.setURL(setting)
     },
+
+    translateOrderStatus(status){
+      if(status == "Assigned") return "Asignada"
+      if(status == "en-route") return "En Ruta"
+      if(status == "Delivered") return "Entregada"
+      if(status == "Delivered with exceptions") return "Entregada Con Excepciones"
+      if(status == "Created") return "Creada"
+    }
   },
 };

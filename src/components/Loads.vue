@@ -314,7 +314,6 @@ export default {
       }
       this.sortLoads()
       this.reloadEvent = false
-      console.log(this.loadsToDisplay)
 
       for (let i = 0; i < this.loadsToDisplay?.length; i++) {
         const load = this.loadsToDisplay[i];

@@ -217,7 +217,6 @@ export default {
   },
   async mounted() {
     this.setOpen(true)
-    console.log(this.structureToScan,'structureToScan')
     try{
       this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore.loadMapId); 
     }catch(error){

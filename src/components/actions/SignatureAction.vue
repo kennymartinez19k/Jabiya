@@ -12,7 +12,7 @@
       <button class="uk-button uk-button-secondary btn" @click="undo()">
         Deshacer
       </button>
-      <button class="uk-button uk-button-primary btn" @click="save()">
+      <button class="uk-button uk-button-primary btn" :disabled="isDisabled" @click="save()">
         Guardar y Finalizar
       </button>
     </div>
@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       singnature: null,
+      isDisabled: false
     };
   },
   methods: {
@@ -33,6 +34,7 @@ export default {
       this.$refs.signaturePad.undoSignature();
     },
     save() {
+      this.isDisabled = true
       const { data } = this.$refs.signaturePad.saveSignature();
       if(data){
         this.singnature = data;

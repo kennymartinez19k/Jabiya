@@ -249,9 +249,7 @@ export default {
     IonLoading,
     DriverTruck
   },
-  props: {
-    timeout: {  default: 1000 },
-  },
+  
   mixins: [Mixins, Profile],
   data() {
     return {
@@ -266,6 +264,7 @@ export default {
       dateAvalaible: [],
       showOrders: true,
       quantityShow: 3,
+      timeOut: 10000
     };
   },
 
@@ -287,6 +286,8 @@ export default {
       console.log(this.detailsLoads)
       this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
     }
+    this.setOpen(false)
+
 
   },
 
@@ -301,7 +302,7 @@ export default {
     }
   },
  async mounted () {
-       this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
+    this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
     this.$store.commit("setSettings", null);
      if (this.userInfo.userType  === "Transporter") {
       this.costText = 'Ingreso por el Viaje'

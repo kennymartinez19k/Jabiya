@@ -1,5 +1,13 @@
 <template>
   <div>
+    <ion-loading
+      :is-open="isOpenRef"
+      cssClass="my-custom-class"
+      message="Por favor Espere..."
+      :duration="timeout"
+      @didDismiss="setOpen(false)"
+    >
+    </ion-loading>
     <div class="md-6" style="text-align: center">
       <h5 class="uk-text-bold uk-text-left text-bold">Asignar Chofer y Vehículo:</h5>
     </div>
@@ -53,15 +61,28 @@
         </table>
       </div>
       <div class=" button-opt">
-      <button type="button" :disabled="showButton" class="uk-button uk-button-primary" @click="selectDriverAndVehicle()">Seleccionar conductor y Vehículo </button>
+      <button type="button" :disabled="disabledButton" class="uk-button uk-button-primary" @click="selectDriverAndVehicle()">Seleccionar Conductor y Vehículo </button>
     </div>
     </form>
   </div>
 </template>
 
 <script>
+import { IonLoading } from "@ionic/vue";
+import { ref } from "vue";
+
+
 export default {
   name: "AddDriverAndTruck",
+   components: {
+    IonLoading,
+  },
+  setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
+  },
 
   props: {
     detailsLoads: Object
@@ -75,25 +96,27 @@ export default {
       drivers: [],
       vehicles: [],
       transporterName: null,
-      showButton: true
+      disabledButton: true,
+      timeOut: 10000
     };
   },
   watch: {
     carrierSelection: {
       handler: function () {
         if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
-         this.showButton = false;
+         this.disabledButton = false;
         }
       },
       deep: true
     },
   },
   async mounted () {
+    this.setOpen(true)
     const data = await this.$services.driverVehicleAssignment.getDriverAndVehicle(this.detailsLoads.loadMapId);
+    this.setOpen(false)
     this.drivers = [...data.drivers]
     this.vehicles = [...data.vehicles]
     this.transporterName = data.transporterName
-    console.log(data, 'dta driver')
   },
   methods: {
     selectVehicle(id) {
@@ -109,15 +132,22 @@ export default {
       }) 
     },
     async selectDriverAndVehicle () {
+      this.setOpen(true)
+      this.disabledButton = true
       if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
         localStorage.removeItem('dateCheck');
         localStorage.setItem('dateCheck', JSON.stringify(this.detailsLoads?.dateTime?.date));
-        await this.$services.driverVehicleAssignment.postDriverVehicleAssignment(this.detailsLoads.loadMapId, this.carrierSelection);
+        try{
+          await this.$services.driverVehicleAssignment.postDriverVehicleAssignment(this.detailsLoads.loadMapId, this.carrierSelection);
+        }catch(error){
+          console.log(error)
+        }
+        this.setOpen(false)
         this.$router.push({ name: "home" }).catch(() => {});
       }
     
     },
-       setRound (val) {
+      setRound (val) {
         return JSON.parse(Number.parseFloat(val).toFixed(3));
     }
   },
