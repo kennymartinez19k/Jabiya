@@ -182,7 +182,6 @@ export default {
     },
       
     quantityForScan: function(newVal){
-      console.log(newVal)
       if(newVal > (this.totalLimitOfBoxes - this.totalBoxesScanned)){
         this.quantityForScan = this.totalLimitOfBoxes - this.totalBoxesScanned
       }
@@ -191,7 +190,6 @@ export default {
     firstStructureLoad:{
       handler: function (newVal) {
         if(newVal){
-          console.log(newVal, 'firstStructure')
           this.firstStructureLoad.forEach(x => {
             x.completedScanned = x.loadScanningCounter >= x.quantity
             x.scanProgress = x.loadScanningCounter > 0 && !x.completedScanned
@@ -336,7 +334,7 @@ export default {
         }      
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum, quantityForScan){
-      console.log((orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum, quantityForScan))
+      // console.log((orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum, quantityForScan))
 
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.order_num == orderNum &&  !x?.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
@@ -360,7 +358,6 @@ export default {
           else{
               this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
               this.secondStructureLoad[index_second].loadScanningCounter += quantityForScan
-              console.log( this.firstStructureLoad[index_first].loadScanningCounter)
               await this.$services.loadsScanServices.scanProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
 
           }     
@@ -442,7 +439,6 @@ export default {
           }
           else{
               this.firstStructureLoad[index_first].loadScanningCounter += LoadDistribute
-              console.log(this.firstStructureLoad)
               this.secondStructureLoad[index_second].loadScanningCounter += LoadDistribute
               await this.$services.loadsScanServices.scanProduct(order._id, productInfo?._id, this.firstStructureLoad[index_first].loadScanningCounter, productInfo?.product, qrCode)
           }     

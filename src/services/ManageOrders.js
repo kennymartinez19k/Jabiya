@@ -125,7 +125,6 @@ class ManageOrders {
             "data": {}
         }
         const result = await this.http.post(`https://preprod.flai.com.do/orchestrator/exo/requests`,  body)
-        console.log(result.data.Result)
         return result?.data?.Result
     }
 

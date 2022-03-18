@@ -690,7 +690,6 @@ export default {
             this.product.weight = product.weight
             this.product.quantity = product.unitDetails.defaultNumberOfUnit
         }
-
     },
     async sendInfo(){
 

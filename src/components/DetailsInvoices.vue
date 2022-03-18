@@ -57,28 +57,30 @@
         >
           <thead>
             <tr class="title">
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Cant.</th>
+              <th :class="{'th-text': customerDetails?.has_invoice}">Producto</th>
+              <th :class="{'th-text': customerDetails?.has_invoice}">Precio</th>
+              <th :class="{'th-text': customerDetails?.has_invoice}">Cant.</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(product, i) in order_lines" :key="product">
-              <td class="uk-table-small">{{ product.productName }}</td>
-              <td class="">{{ product.currencySymbol }}{{ product.price }}</td>
+              <td :class="{'td-text': customerDetails?.has_invoice}" class="uk-table-small">{{ product.productName }}</td>
+              <td :class="{'td-text': customerDetails?.has_invoice}">{{ product.currencySymbol }}{{ product.price }}</td>
               <td
                 :class="{
                   showActive: product.productQuantity !== NewOrdersQuantyti[i],
+                  'td-text': customerDetails?.has_invoice
                 }"
               >
                 {{ product.productQuantity }}
               </td>
               <font-awesome-icon
+              v-if="!customerDetails?.has_invoice"
                 icon="plus"
                 :class="{
                   'plus-disabled':
                     product.productQuantity >= orderStoreQuantity[i] ||
-                    this.customerDetails?.has_invoice,
+                    customerDetails?.has_invoice,
                 }"
                 class="Space font-awesome"
                 @click="
@@ -92,11 +94,12 @@
                 "
               />
               <font-awesome-icon
+              v-if="!customerDetails?.has_invoice"
                 icon="minus"
                 :class="{
                   'plus-disabled':
                     product.productQuantity == 0 ||
-                    this.customerDetails?.has_invoice,
+                    customerDetails?.has_invoice,
                 }"
                 class="Space font-awesome"
                 @click="
@@ -114,6 +117,16 @@
         </table>
       </div>
     </div>
+<!-- This is the modal -->
+<div id="invoicesPdf" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h5 class="uk-modal-title">Detalles</h5>
+        <p>Su factura  fue descargada en la carpeta de <strong style="font-size: 17px !important">"Documents"</strong> de su teléfono </p>
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-primary uk-modal-close" type="button">Aceptar</button>
+        </p>
+    </div>
+</div>
 
     <!-- This is the modal -->
     <div id="products" uk-modal>
@@ -133,6 +146,7 @@
           </div>
           <div>
             <button
+             :disabled="btnChange"
               class="uk-button uk-button-primary uk-modal-close"
               type="button"
               @click="productQuantityChange()"
@@ -155,13 +169,20 @@
         </button>
       </div>
       <div class="uk-margin-top">
-        <button
+        <button  v-if="!customerDetails?.has_invoice"
           :disabled="btnInvoices"
+          type="button"
+          class="uk-button uk-button-primary"
+          @click="createInvoice()"
+        >
+          Crear Factura
+        </button>
+          <button v-if="customerDetails?.has_invoice"
           type="button"
           class="uk-button uk-button-primary"
           @click="downloadPDF()"
         >
-          Crear Factura
+          Descargar Factura
         </button>
       </div>
       <div class="uk-margin-top">
@@ -184,6 +205,11 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import UIkit from "uikit";
+import moment from "moment";
+import "moment/locale/es";
+
 export default {
   alias: "Detalles de la Orden",
   components: {
@@ -212,6 +238,7 @@ export default {
       showUpdating: [],
       orderStoreQuantity: [],
       idInvoices: null,
+      btnChange: false,
     };
   },
   setup() {
@@ -223,7 +250,6 @@ export default {
   async beforeMount() {
     this.setOpen(true);
     this.idInvoices = this.invoicesIdStore
-    
     try {
       const signIn = {
         jsonrpc: "2.0",
@@ -260,20 +286,36 @@ export default {
     },
   },
   methods: {
-    async downloadPDF() {
-      try {
-         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice`,{ withCredentials: true });
-      } catch (error) {
-        console.log(error);
-      }
-      let delay = (ms) => new Promise((res) => setTimeout(res, ms));
-      var link = document.createElement("a");
-      link.href = `https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice/download?report_type=pdf&download=true`;
-      link.download = "file.pdf";
-      link.dispatchEvent(new MouseEvent("click"));
-      await delay(3000);
-      this.createInvoice();
+     async downloadPDF() {
+      let date = moment(new Date()).format("DD-MM-YYYY,h:mm:ss a");
+      let invoices = `Inv${date}.pdf`
+      var urlFile ="https://jabiyaerp.flai.com.do/api/order/7577/invoice/download?report_type=pdf&download=true";
+      var request = new XMLHttpRequest();
+      request.open("GET", urlFile, true);
+      request.responseType = "blob";
+      request.onload = function () {
+        var reader = new FileReader();
+        reader.readAsDataURL(request.response);
+        reader.onload = function (e) {
+          Filesystem.writeFile({
+            path: invoices,
+            data: e.target.result,
+            directory: Directory.Documents,
+            recursive: true,
+          })
+            .then((result) => {
+              const path = result.uri;
+              console.log("result:", path);
+              UIkit.modal('#invoicesPdf').show();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        };
+      };
+      request.send();
     },
+
     async productsOfOrders() {
       try {
         //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
@@ -290,10 +332,8 @@ export default {
             if (this.orderStoreQuantity[i] !== x.productQuantity) {
               this.isChangeQuantity.exception = true;
               this.isChangeQuantity.order_num = this.customerDetails.id;
-              this.$store.commit(
-                "getChageQuantityToProduct",
-                this.isChangeQuantity
-              );
+              localStorage.setItem(`isChangeQuantity${this.customerDetails.id}`,JSON.stringify(this.isChangeQuantity));
+              this.$store.commit("getChageQuantityToProduct",this.isChangeQuantity);
             }
             return x.productQuantity;
           }
@@ -318,6 +358,7 @@ export default {
     },
 
     async productQuantityChange() {
+      this.btnChange = true
       this.setOpen(true);
       let quantityLocal = [];
       const order_lines = this.order_lines.map((x) => {
@@ -401,11 +442,19 @@ export default {
       this.setStructureInvoices(this.OrderQuantity, this.productOrder);
     },
 
-    createInvoice() {
+    async createInvoice() {
+       try {
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice`,{ withCredentials: true });
+      } catch (error) {
+        console.log(error);
+      }
+      this.downloadPDF();
+
       this.btnScan = false;
       this.btnInvoices = true;
     },
     ScanOrder() {
+      this.btnScan = true
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     async setStructureInvoices(quantity, product) {
@@ -438,6 +487,13 @@ p {
 td {
   padding: 5px 0px 6px;
   width: 1%;
+}
+.td-text {
+  padding: 10px 12px !important;
+  /* width: 1%; */
+}
+.th-text {
+  text-align: center;
 }
 th {
   font-size: 10.5px;

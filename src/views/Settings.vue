@@ -86,6 +86,7 @@ export default {
   
   methods: {
     async saveSettings() {
+      this.showButton = true
       if (this.settings?.url !== this.settingsLocalStore?.url) {
          await this.$store.commit("setSettings", this.settings);
          this.setUrl()
