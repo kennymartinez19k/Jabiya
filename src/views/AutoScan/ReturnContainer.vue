@@ -535,7 +535,6 @@ export default {
         this.step = 2;
       }
       this.stopCamera();
-      console.log(this.imagiElement);
     },
 
     async stopCamera() {
@@ -555,7 +554,6 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
-      console.log(this.image);
     },
   },
 };

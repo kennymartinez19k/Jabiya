@@ -93,7 +93,7 @@ export default {
     this.drivers = [...data.drivers]
     this.vehicles = [...data.vehicles]
     this.transporterName = data.transporterName
-    console.log(data,'fffffffff')
+    console.log(data, 'dta driver')
   },
   methods: {
     selectVehicle(id) {

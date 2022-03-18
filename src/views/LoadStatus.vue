@@ -372,7 +372,6 @@ export default {
         Object.assign(x , this.load)
       }
     })
-    console.log(allLoads)
     localStorage.setItem('allLoads', JSON.stringify(allLoads))
 
     this.startRouteStorage = localStorage.getItem(`startRoute${this.load.loadMapId}`)
@@ -399,14 +398,12 @@ export default {
             this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
             
             this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
-            console.log(this.load)
             let allLoads = JSON.parse(localStorage.getItem('allLoads'))
             allLoads.forEach(x => {
               if(x?.loadMapId == this.load?.loadMapId){
                 Object.assign(x , this.load)
               }
             })
-            console.log(allLoads)
             localStorage.setItem('allLoads', JSON.stringify(allLoads))
           }
 

@@ -125,25 +125,6 @@
             </div>
             <div class="uk-flex uk-flex-between">
                 <div style="width: 100%">
-                  <!-- <div
-                    v-if="isReturnLoad(detailsLoads) && detailsLoads?.loadType == profile?.container"
-                    class="uk-text-left info-user"
-                  >
-                    <div>
-                      <p class="uk-text-bold">Recoger en:</p>
-                      <p>{{ detailsLoads?.firstOrdenInfo?.client_name }}</p>
-                      <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
-                    </div>
-                    <div>
-                      <p class="uk-text-bold">Entregar en:</p>
-                      <p>
-                        <span v-for="info in detailsLoads.shipper" :key="info">
-                          {{ info?.name }}
-                        </span>
-                      </p>
-                      <p>{{ detailsLoads?.warehouse?.location?.address }}</p>
-                    </div>
-                  </div> -->
                   <div v-if="detailsLoads.loadType == profile.container" class="uk-text-left info-user">
                     <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
                       <p class="uk-text-bold">Recoger en:</p>

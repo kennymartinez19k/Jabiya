@@ -36,7 +36,6 @@ export default {
     },
     async mounted() {
         this.orders = await this.$services.manageOrders.getOrders()
-        console.log(this.orders)
     },
 }
 </script>
