@@ -157,7 +157,6 @@ export default {
       'imagesStore'
     ]),
     imageTimeline(){
-      console.log(1)
       if(this.imagesStore){
         this.changeImage()
       }

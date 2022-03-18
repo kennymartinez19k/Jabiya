@@ -36,20 +36,7 @@ export default {
       }
     }
   },
-  // created(){
-  //   this.connection = new WebSocket(`ws://localhost:8080`)
-
-  //   this.connection.onmessage = function (event) {
-  //     const data = JSON.parse(event.data)
-  //     this.$store.dispatch('setEvent', data)
-      
-  //   }.bind(this)
-
-  //   this.connection.onopen = function (event) {
-  //     console.log('Successfully connected to the echo websocket server...', event)
-  //   }
-  // },
-  
+ 
   watch:{
     $route: function(newVal){
       if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){

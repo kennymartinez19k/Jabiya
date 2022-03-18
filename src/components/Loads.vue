@@ -257,9 +257,7 @@ export default {
 
       }catch(error){
       this.setOpen(false)
-      console.log(error.message)
         if(error.message == 'Network Error'){
-          // this.alertError('No Hay Conexion a Internet', 'Verifique he Intente de Nuevo' )
           this.reloadEvent = false
           this.waitingMessage = false
           this.loadsToDisplay = JSON.parse(localStorage.getItem('allLoads'))
@@ -324,7 +322,6 @@ export default {
           await this.IsDelivered(load)
         }
       }
-
     },
     
     reset(){

@@ -394,7 +394,6 @@ export default {
         generalData:{
             handler: async function(newVal){
                 if(newVal){
-                    console.log(newVal?.orderNum)
                     
                     if(newVal?.orderNum > 0 && newVal.orderNum){
                         let delay = ms => new Promise(res => setTimeout(res, ms));
@@ -457,15 +456,12 @@ export default {
           this.client.latitudeClient = newVal.latitude
           this.client.longitudeClient = newVal.longitude
 
-          console.log(this.client)
     },
     async changeShipper(){
-        console.log(this.client.customer)
         try{
             let result = await this.$services.manageOrders.getProductForShipper(this.client.customer._id)
 
             if(result){
-                console.log(result)
                 this.products = result
             }
         }catch(error){
@@ -477,7 +473,6 @@ export default {
     },
     async changeProduct(val){
         let product = this.products.find(prod => prod.productId == val.productId)
-        console.log( product)
         if(product){
             this.product.qrCode_Default = product.qrCode
             this.product.qrCode = product.qrCode
@@ -486,10 +481,6 @@ export default {
             this.product.weight = product.weight
             this.product.quantity = product.unitDetails.defaultNumberOfUnit
         }
-        console.log(this.product)
-        console.log(product)
-        
-
     },
     sendInfo(){
         console.log(this.client, this.product, this.generalData)

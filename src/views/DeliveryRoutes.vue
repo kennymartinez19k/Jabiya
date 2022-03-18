@@ -276,6 +276,7 @@ export default {
         }
     },
     screenSelection () {
+      this.showButton = false
       if (this.load.allowOrderChangesAtDelivery) {
         this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices)
         this.$router.push({ name: "details-invoices" }).catch(() => {});

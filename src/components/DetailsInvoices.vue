@@ -117,6 +117,16 @@
         </table>
       </div>
     </div>
+<!-- This is the modal -->
+<div id="invoicesPdf" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h5 class="uk-modal-title">Detalles</h5>
+        <p>Su factura  fue descargada en la carpeta de <strong style="font-size: 17px !important">"Documents"</strong> de su teléfono </p>
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-primary uk-modal-close" type="button">Aceptar</button>
+        </p>
+    </div>
+</div>
 
     <!-- This is the modal -->
     <div id="products" uk-modal>
@@ -136,6 +146,7 @@
           </div>
           <div>
             <button
+             :disabled="btnChange"
               class="uk-button uk-button-primary uk-modal-close"
               type="button"
               @click="productQuantityChange()"
@@ -194,6 +205,11 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import UIkit from "uikit";
+import moment from "moment";
+import "moment/locale/es";
+
 export default {
   alias: "Detalles de la Orden",
   components: {
@@ -222,6 +238,7 @@ export default {
       showUpdating: [],
       orderStoreQuantity: [],
       idInvoices: null,
+      btnChange: false,
     };
   },
   setup() {
@@ -269,19 +286,36 @@ export default {
     },
   },
   methods: {
-    async downloadPDF() {
-      let delay = (ms) => new Promise((res) => setTimeout(res, ms));
-      var link = document.createElement("a");
-      let stringA ="\"https://jabiyaerp.flai.com.do/api/order/"+this.idInvoices+"/invoice/download?report_type=pdf&download=true\" download"
-        console.log(stringA,'string')
-        
-      link.href = `https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/invoice/download?report_type=pdf&download=true`;
-      link.download = "file.pdf";
-      // link.target = "_self"
-      // link.dispatchEvent(new TouchEvent("click"));
-      link.dispatchEvent(new MouseEvent("click"));
-      await delay(3000);
+     async downloadPDF() {
+      let date = moment(new Date()).format("DD-MM-YYYY,h:mm:ss a");
+      let invoices = `Inv${date}.pdf`
+      var urlFile ="https://jabiyaerp.flai.com.do/api/order/7577/invoice/download?report_type=pdf&download=true";
+      var request = new XMLHttpRequest();
+      request.open("GET", urlFile, true);
+      request.responseType = "blob";
+      request.onload = function () {
+        var reader = new FileReader();
+        reader.readAsDataURL(request.response);
+        reader.onload = function (e) {
+          Filesystem.writeFile({
+            path: invoices,
+            data: e.target.result,
+            directory: Directory.Documents,
+            recursive: true,
+          })
+            .then((result) => {
+              const path = result.uri;
+              console.log("result:", path);
+              UIkit.modal('#invoicesPdf').show();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        };
+      };
+      request.send();
     },
+
     async productsOfOrders() {
       try {
         //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
@@ -298,10 +332,8 @@ export default {
             if (this.orderStoreQuantity[i] !== x.productQuantity) {
               this.isChangeQuantity.exception = true;
               this.isChangeQuantity.order_num = this.customerDetails.id;
-              this.$store.commit(
-                "getChageQuantityToProduct",
-                this.isChangeQuantity
-              );
+              localStorage.setItem(`isChangeQuantity${this.customerDetails.id}`,JSON.stringify(this.isChangeQuantity));
+              this.$store.commit("getChageQuantityToProduct",this.isChangeQuantity);
             }
             return x.productQuantity;
           }
@@ -326,6 +358,7 @@ export default {
     },
 
     async productQuantityChange() {
+      this.btnChange = true
       this.setOpen(true);
       let quantityLocal = [];
       const order_lines = this.order_lines.map((x) => {
@@ -414,7 +447,6 @@ export default {
          await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice`,{ withCredentials: true });
       } catch (error) {
         console.log(error);
-        alert(error)
       }
       this.downloadPDF();
 
@@ -422,6 +454,7 @@ export default {
       this.btnInvoices = true;
     },
     ScanOrder() {
+      this.btnScan = true
       this.$router.push({ name: "deliveryActions" }).catch(() => {});
     },
     async setStructureInvoices(quantity, product) {

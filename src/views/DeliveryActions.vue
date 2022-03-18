@@ -588,13 +588,11 @@ export default {
         );
       }
         let resultId = []
-        console.log(this.orders ,'orders')
         this.orders.forEach(x => {
           if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
            resultId.push(x._id)
           }
         })
-        console.log(this.causeExceptionsStore, 'this.causeExceptionsStore')
         if (this.causeExceptionsStore && resultId.length > 0) {
          for (let x = 0; x < resultId.length; x++) {
             this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
@@ -701,7 +699,6 @@ export default {
       }
     },
      async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum, quantityForScan){
-      console.log(quantity, loadCounter)
 
       let index_first = this.firstStructureLoad.findIndex(x => x.qrCode === qrCode && x.order_num == orderNum &&  !x.completedScanned)
       let index_second = this.secondStructureLoad.findIndex(x => x.qrCode == qrCode)
@@ -955,7 +952,6 @@ export default {
         this.step = 2;
       }
       this.stopCamera();
-      console.log(this.imagiElement, 'image');
     },
 
     async stopCamera() {
@@ -975,7 +971,6 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
-      console.log(this.image);
     },
   },
 };
