@@ -250,6 +250,8 @@ export default {
       this.load = this.loadStore
     }
     this.orders =  this.load.Orders
+    this.filterOrders = this.orders.every(order => order.status == 'Delivered')
+   
     this.load.firstOrdenSector = this.orders[0]?.sector
     this.orderObj();
     this.setOpen(false)

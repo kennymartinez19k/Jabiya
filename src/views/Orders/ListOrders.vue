@@ -138,17 +138,7 @@ export default {
 
         }
     },
-    watch:{
-        orderToDisplay:{
-            handler: async function (newVal) {
-                if(newVal.length < 70){
-                    let result = await this.$services.manageOrders.getOrders()
-                    this.orderToDisplay = result?.data
-                }
-            },
-            deep: true
-        }
-    },
+
     async mounted() {
         this.orders = this.listOrdersStore?.data
         this.orderToDisplay = [...this.orders]
@@ -186,6 +176,8 @@ export default {
             let i = this.orderToDisplay.findIndex(x => x.order_num == this.order.order_num)
             this.orderToDisplay.splice(i, 1)
             await this.$services.manageOrders.deleteOrder(this.order._id)
+            let result = await this.$services.manageOrders.getOrders()
+            this.orderToDisplay = result?.data
             this.isOpenModal = false
             this.order = null
         },

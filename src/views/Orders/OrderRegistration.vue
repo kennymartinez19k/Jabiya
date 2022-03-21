@@ -116,7 +116,6 @@
                 </div>
             </div>
 
-            <pre>{{client}}</pre>
 
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Id Oficial:</label>
@@ -135,9 +134,9 @@
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Provincia: *</label>
                 <div class="uk-form-controls">
-                    {{client.province}}
+                    
                     <select v-model="client.province" :class="{isEmpty: !client.province && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}"  class="uk-select" name="" id="">
-                        <option v-for="currentProvince in listProvinces" :key="currentProvince" :selected="client.province" :value="currentProvince">{{currentProvince}}</option>
+                        <option v-for="currentProvince in listProvinces" :key="currentProvince" :value="currentProvince">{{currentProvince}}</option>
                     </select>
                 </div>
             </div>
@@ -211,7 +210,7 @@
           </div>
 
           <h6 class="uk-width-1-1">Agregar Nuevo Producto:</h6>
-          <div class="section-data" :class="{isEmpty: productsCreated.length == 0 && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}">
+          <div class="section-data" :class="{isEmpty: productsCreated.length == 0 && isValidate}">
             <div style="width: 100%" v-for="(product, i) in productsCreated" :key="product">
                 <div class="uk-card product-item">
                     <span class="uk-badge">{{i + 1}}</span>
@@ -222,87 +221,14 @@
                         <p><strong>Cantidad:</strong> {{product?.quantity}}</p>
                     </div>
                     <div class="icon">
-                        <font-awesome-icon @click="editProduct(i)" icon="pen" class="icon-action"/>
-                        <font-awesome-icon @click="deleteProduct(i)" icon="trash-alt" class="icon-action"/>
+                        <font-awesome-icon  @click="editProduct(i)" icon="pen" class="icon-action"/>
+                        <font-awesome-icon :class="{'icon-disabled': isNotModificate}" @click="deleteProduct(i)" icon="trash-alt" class="icon-action"/>
                     </div>
-                </div>
-            </div>
-            <div v-if="addProduct" class="uk-flex uk-flex-between uk-flex-wrap">
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">ID del Producto:</label>
-                    <div class="uk-form-controls">
-                        <select v-model="product.productId" :class="{}" @change="changeProduct(product)" class="uk-select" name="" id="">
-                            <option v-for="prod in products" :key="prod" >{{prod.productId}}</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">Escanear 1 por 1: *</label>
-                    <div class="uk-form-controls">
-                    <select v-model="product.scan1by1" class="uk-select" name="" id="">
-                        <option value="no">No</option>
-                        <option value="yes">Si</option>
-                    </select>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">QrCode por Defecto:</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.qrCode_Default" class="uk-input" id="form-stacked-text" type="text">
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">QrCode para usar en Orden:</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.qrCode" class="uk-input" id="form-stacked-text" type="text">
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">Descripcion: *</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.description" class="uk-input" id="form-stacked-text" type="text">
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">Cantidad: *</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.quantity" class="uk-input" id="form-stacked-text" type="number">
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">Volumen (m<sup>3</sup>):</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.volume" class="uk-input" id="form-stacked-text" type="text">
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">Peso (Kg):</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.weight" class="uk-input" id="form-stacked-text" type="text">
-                    </div>
-                </div>
-
-                <div class="item">
-                    <label class="uk-form-label text-small" for="form-stacked-text">Manejo especial y tipo de facturación:</label>
-                    <div class="uk-form-controls">
-                        <input v-model="product.typeInvoices" class="uk-input" id="form-stacked-text" type="text">
-                    </div>
-                </div>
-
-                <div v-if="addProduct" class="uk-flex uk-flex-column uk-flex-right item">
-                    <button type="button" @click="saveProduct()" class="uk-button-blue uk-button">Guardar Producto</button>
                 </div>
             </div>
 
             <div v-if="!addProduct"  @click="isOpenModal = true" class="uk-flex uk-flex-middle">
-                <p style="margin: 10px 0px"> &nbsp;<font-awesome-icon icon="plus" class="plus"/></p>
+                <p style="margin: 10px 0px"> &nbsp;<font-awesome-icon :class="{'icon-disabled': isNotModificate}" icon="plus" class="plus"/></p>
             <p v-if="!client.customer?.name" style="margin: 0px 10px"> Por favor, Elija un Shipper</p>
 
             </div>
@@ -313,9 +239,9 @@
       <h6 class="uk-width-1-1">Agregar Información Adicional:</h6>
       <div class="files-container">
           <div class="add-file">
-              <label for="file">
+              <label for="file" :class="{'icon-disabled': isNotModificate}">
                   <span>
-                    <font-awesome-icon icon="plus" class="plus"/>
+                    <font-awesome-icon  icon="plus" class="plus"/>
                   </span>
                 <input type="file" id="file" ref="File" @change="pickFile($event)">
               </label>
@@ -344,20 +270,22 @@
             <p class="uk-text-center" style="margin: 0px 0px 10px"><strong>Añadir Producto</strong></p>
             <div class="uk-flex uk-flex-between uk-flex-wrap">
                 <div class="item">
+                    
                     <label class="uk-form-label text-small" for="form-stacked-text">ID del Producto:</label>
                     <div class="uk-form-controls">
-                        <select v-model="product.productId" @change="changeProduct(product)" class="uk-select" name="" id="">
+                        <select  :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.productId" @change="changeProduct(product)" class="uk-select" name="" id="">
                             <option v-for="prod in products" :key="prod" >{{prod.productId}}</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="item">
+                    
                     <label class="uk-form-label text-small" for="form-stacked-text">Escanear 1 por 1: *</label>
                     <div class="uk-form-controls">
-                    <select v-model="product.scan1by1" class="uk-select" name="" id="">
-                        <option :value="false">No</option>
-                        <option :value="true">Si</option>
+                    <select :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.scanOneByOne" class="uk-select" name="" id="">
+                        <option value="no">No</option>
+                        <option value="yes">Si</option>
                     </select>
                     </div>
                 </div>
@@ -365,49 +293,49 @@
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">QrCode por Defecto:</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.qrCode_Default" class="uk-input" id="form-stacked-text" type="text">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.qrCode_Default" class="uk-input" id="form-stacked-text" type="text">
                     </div>
                 </div>
 
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">QrCode para usar en Orden:</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.qrCode" class="uk-input" id="form-stacked-text" type="text">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.qrCode" class="uk-input" id="form-stacked-text" type="text">
                     </div>
                 </div>
 
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">Descripcion: *</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.description" class="uk-input" id="form-stacked-text" type="text">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.description" class="uk-input" id="form-stacked-text" type="text">
                     </div>
                 </div>
 
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">Cantidad: *</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.quantity" class="uk-input" id="form-stacked-text" type="number">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.quantity" class="uk-input" id="form-stacked-text" type="number">
                     </div>
                 </div>
 
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">Volumen (m<sup>3</sup>):</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.volume" class="uk-input" id="form-stacked-text" type="text">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.volume" class="uk-input" id="form-stacked-text" type="text">
                     </div>
                 </div>
 
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">Peso (Kg):</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.weight" class="uk-input" id="form-stacked-text" type="text">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.weight" class="uk-input" id="form-stacked-text" type="text">
                     </div>
                 </div>
 
                 <div class="item">
                     <label class="uk-form-label text-small" for="form-stacked-text">Manejo especial y tipo de facturación:</label>
                     <div class="uk-form-controls">
-                        <input v-model="product.typeInvoices" class="uk-input" id="form-stacked-text" type="text">
+                        <input :class="{'disabled-item': !client?.customer?.name || isNotModificate}" v-model="product.typeInvoices" class="uk-input" id="form-stacked-text" type="text">
                     </div>
                 </div>
 
@@ -453,6 +381,7 @@ export default {
             listCities: [],
             listSectors: [],
             listOrders: [],
+            typeScan: [{yes: 'si', no: 'no'}],
 
             generalData:{
                 order_num: null,
@@ -476,7 +405,7 @@ export default {
                 },
                 client_name: null,
                 address: null,
-                province: 'Azucar',
+                province: '',
                 city: null,
                 sector: null,
                 zipCode: null,
@@ -489,7 +418,7 @@ export default {
             },
             product:{
                 productId: null,
-                scan1by1: 'no',
+                scanOneByOne: 'no',
                 qrCode_Default: null,
                 qrCode: null,
                 description: null,
@@ -517,7 +446,8 @@ export default {
             clientForReset: {},
             isOrderEdit: false,
             isNotModificate:false,
-            timeout: 10000
+            timeout: 10000,
+            selectedItem: 2
         }
     },
     setup() {
@@ -554,43 +484,19 @@ export default {
             provinces.push(city.province)
         })
 
+        provinces = new Set(provinces)
+        this.listProvinces = [...provinces]
+
         this.productForReset = {...this.product}
         this.clientForReset = {...this.client}
 
-        provinces = new Set(provinces)
-        this.listProvinces = [...provinces]
         this.sectors = await this.$services.manageOrders.getSector()
+        console.log(this.sectors)
 
         if(this.orderManageStore){
-            console.log(this.orderManageStore)
-            if(this.orderManageStore.status != 'Created') this.isNotModificate = true
-            this.isOrderEdit = true
-            let {
-                order_num, expected_date, warehouse, isReturn, hasAssociatedOrder, serviceType, status, deliverCycle,
-                customer, client_name, Official_ID, address, province, city, sector, zipCode, latitude, longitude,
-                email, phone, products
-            } = this.orderManageStore
-
-            this.generalData = {order_num, expected_date, warehouse, isReturn, hasAssociatedOrder, status, serviceType, deliverCycle, 'orderSequence': null}
-            this.client = {customer, client_name, Official_ID, address, province, city, sector, zipCode, 'lat_Long_Sector': `${latitude} ${longitude}`, latitude, longitude, email, phone}
-
-            this.productsCreated = [...products]
-            this.productsCreated.map(x => x.productId = x.name)
-
-            this.$store.commit('editOrder', null)
-
-            let cities = this.cities.filter(city => city?.province?.toUpperCase() == this.client?.province?.toUpperCase())
-              if(cities){
-                this.listCities = [...cities]
-              }
-              let sectors = this.sectors.filter(sector => sector?.province == this.client?.province)
-              if(sectors){
-                this.listSectors = [...sectors]
-              }
+           this.editManageOrder()
         }
         this.setOpen(false)
-
-        
     },
     watch:{
         generalData:{
@@ -677,6 +583,42 @@ export default {
         }catch(error){
             console.log(error)
         }
+    },
+    async editManageOrder(){
+         if(this.orderManageStore.status != 'Created') this.isNotModificate = true
+            this.isOrderEdit = true
+            let {
+                order_num, expected_date, warehouse, isReturn, hasAssociatedOrder, serviceType, status, deliverCycle,
+                customer, client_name, Official_ID, address, province, city, sector, zipCode, latitude, longitude,
+                email, phone, products
+            } = this.orderManageStore
+
+            this.generalData = {order_num, expected_date, warehouse, isReturn, hasAssociatedOrder, status, serviceType, deliverCycle, 'orderSequence': null}
+            
+            province = province.toLowerCase()
+            city = city.toLowerCase()
+            sector = sector.toLowerCase()
+            this.client = {customer, client_name, Official_ID, address, province, city, sector, zipCode, 'lat_Long_Sector': `${latitude} ${longitude}`, latitude, longitude, email, phone}
+
+            this.productsCreated = [...products]
+            this.productsCreated.map(x => x.productId = x.name)
+            this.$store.commit('editOrder', null)
+
+            this.cities.forEach(city => city.province = city?.province?.toLowerCase())
+
+            let cities = this.cities.filter(city => city?.province == this.client?.province)
+              if(cities){
+                this.listCities = [...cities]
+              }
+              let sectors = this.sectors.filter(sector => sector?.province == this.client?.province)
+              if(sectors){
+                this.listSectors = [...sectors]
+              }
+            let result = await this.$services.manageOrders.getProductForShipper(this.client?.customer?._id)
+            if(result){
+                this.products = result
+            }
+            
     },
     async changeProduct(val){
         let product = this.products.find(prod => prod.productId == val.productId)
@@ -927,5 +869,9 @@ button{
 .disabled-item{
     pointer-events: none;
     background: #f2f2f2;
+}
+.icon-disabled{
+    color: #868484;
+    pointer-events: none;
 }
 </style>

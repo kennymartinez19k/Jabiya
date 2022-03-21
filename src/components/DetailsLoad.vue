@@ -20,7 +20,7 @@
             <p class="uk-flex status-load">
               <span class="uk-text-bold">{{ loadStatus(detailsLoads) }} </span>
             </p>
-            <div class="uk-margin-top" style="margin-top: 25px !important">
+            <div class="uk-margin-top uk-text-left" style="margin-top: 25px !important">
               <div>
                   <p class="uk-flex">
                     <span>{{ detailsLoads?.loadNumber }}</span>
