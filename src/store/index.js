@@ -19,9 +19,10 @@ const storeModule = {
       ...invoicesStore.state,
       ...manageOrders.state,
       profile: {
-        container: true,
-        
-      }
+        container: true,   
+      },
+      isQueueEmpty: false,
+      isRequestError: false
     }
   ),
   mutations: {
@@ -39,6 +40,12 @@ const storeModule = {
           localStorage.setItem('setting', JSON.stringify(setting))
         }
   
+    },
+    changeQueueStatus(state, val){
+      state.isQueueEmpty = val
+    },
+    changeRequestStatus(state, val){
+      state.isRequestError = val
     },
     ...currentPage.mutations,
     ...loads.mutations,
@@ -68,7 +75,11 @@ const storeModule = {
     ...orders.getters,
     ...profiles.getters,
     ...invoicesStore.getters,
-    ...manageOrders.getters
+    ...manageOrders.getters,
+
+    isQueueEmpty: state => state.isQueueEmpty,
+    isRequestError: state => state.isRequestError
+
 
   }
 }

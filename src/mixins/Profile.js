@@ -26,7 +26,7 @@ export const Profile = {
             route: 'drayage-orden'
           },
           startRoute: {
-            message: "Iniciar Ruta",
+            message: "Iniciar / Continuar Ruta",
             pastMessage: "Comenzo la Ruta",
             route: ''
           },
@@ -67,7 +67,7 @@ export const Profile = {
             route: 'drayage-orden'
           },
           startRoute: {
-            message: "Iniciar Ruta",
+            message: "Iniciar / Continuar Ruta",
             pastMessage: "Comenzo la Ruta",
             route: ''
           },
@@ -117,9 +117,7 @@ export const Profile = {
         if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
         if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
         if (val?.loadingStatus?.text == "Dispatched") {
-          if(val.Orders.length > 1 && val.Orders.some(order => order.status == 'Delivered'))
-            return 'Entregando Ordenes Restantes'
-
+          
           if(localStorage.getItem(`sendInfo${val.loadMapId}`)){
             return 'Enviando Informacion'
           }

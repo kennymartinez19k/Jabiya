@@ -33,7 +33,8 @@ export default {
       lastLocation: {
         latitude: 0,
         longitude: 0
-      }
+      },
+      hasUbicationServer: false
     }
   },
  
@@ -69,7 +70,6 @@ export default {
     
       this.localStorage.set('sending' , "false")
       this.localStorage.set('serverUp' , "true")
-
       let delay = ms => new Promise(res => setTimeout(res, ms));
       
       let condition = true
@@ -85,26 +85,31 @@ export default {
         
         if(this.intervalForGps > intervalLimit && await localStorage.getItem(`gps ${load?.loadMapId}`) ){
           this.intervalForGps = 0
-        Geolocation.getCurrentPosition().then((myLocation) => {
-          let location = myLocation.coords;
-        
-          if (
-            Math.abs(location.latitude - this.lastLocation.latitude) >
-              0.00003 ||
-            Math.abs(location.longitude - this.lastLocation.longitude) >
-              0.00003
-          ) {
-            this.lastLocation.latitude =  location?.latitude
-            this.lastLocation.longitude = location?.longitude
-            this.$services.gpsServices.updateLocation(
-              user.id,
-              location?.latitude,
-              location?.longitude,
-              load?.bay_id?._id
-            );
+          if(!load?.Vehicles[0]?.gpsProvider || load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App'){
+            
+            Geolocation.getCurrentPosition().then((myLocation) => {
+              let location = myLocation.coords;
+              if (
+                Math.abs(location.latitude - this.lastLocation.latitude) >
+                  0.00003 ||
+                Math.abs(location.longitude - this.lastLocation.longitude) >
+                  0.00003
+              ) {
+                this.lastLocation.latitude =  location?.latitude
+                this.lastLocation.longitude = location?.longitude
+                this.$services.gpsServices.updateLocation(
+                  user.id,
+                  location?.latitude,
+                  location?.longitude,
+                  load?.bay_id?._id
+                );
+              }
+            });
           }
-        });
-  
+          else{
+            // Send request to Gps Server
+            return true
+          }
         }
         
         if(queue.length > 0){
@@ -112,7 +117,7 @@ export default {
           await this.enqueue(enqueueItem)
         }
         this.isServerUp = await this.localStorage.get('serverUp')
-        let isConnected
+        let isConnected 
 
         try{
           isConnected = await this.$services.loadsServices.serverStatus()
@@ -126,11 +131,11 @@ export default {
           }
           else this.$store.commit('setServer', false)
         }else{
-
           this.$store.commit('setServer', true)
           this.localStorage.set('serverUp' , "true")
           let queueItem = await this.peek()
           if(queueItem){
+            this.$store.commit('changeQueueStatus', false)
             try{
               let res = await this.$services.requestServices.request(queueItem)
               if(res){
@@ -138,14 +143,17 @@ export default {
               }
               await this.localStorage.set('serverUp' , JSON.stringify(true))
               this.$store.commit('setServer', true)
-
             } 
             catch(error){
+              if(error.message != 'Network Error'){
+                this.$store.commit('changeRequestStatus', true)
+                this.dequeue()
+              }
               await this.localStorage.set('serverUp' , JSON.stringify(false))
               this.$store.commit('setServer', false)
-
-              console.log(error)
             }
+          }else{
+            this.$store.commit('changeQueueStatus', true)
           }
       }
     }
@@ -172,7 +180,6 @@ export default {
         BarcodeScanner.showBackground();
         BarcodeScanner.stopScan();
       }catch(error){
-        error
         //  console.clear()
 
       }

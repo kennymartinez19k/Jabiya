@@ -13,7 +13,7 @@ class ManageOrders {
     async getOrders(){
         let body = {
             "method": "get",
-            "uri": "trk/order?take=70",
+            "uri": "trk/order?take=150",
             "data": {}
         }
         const result = await this.http.post(`https://preprod.flai.com.do/orchestrator/exo/requests`,  body)
@@ -93,7 +93,6 @@ class ManageOrders {
             "data": {}
         }
         const result = await this.http.post(`https://preprod.flai.com.do/orchestrator/exo/requests`,  body)
-        console.log(result)
         return result.data.Result
 
     }
@@ -129,30 +128,47 @@ class ManageOrders {
     }
 
     async createOrder(order){
+        let productsForPost = []
+
+        for (let i = 0; i < order.products.length; i++) {
+            const product = order.products[i];
+            let productPost = {
+                "product.qrCode" : product.qrCode, 
+                "product.scanOneByOne" : product.scanOneByOne,
+                "product.quantity" : product.quantity,
+                "product.unitVolume" : `${product.volume}`,
+                "product.unitWeight" : product.weight,
+                "product.volume" : `${product.volume}`,
+                "product.weight" : product.weight,
+            }
+
+            productsForPost.push(productPost)
+        }
+
         const OrderPost = {
-            "order_num": order?.generalData?.orderNum,
-            "expected_date": order?.generalData?.expectedDate,
-            "expected_time": "...........",
+            "order_num": order?.generalData?.order_num,
+            "expected_date": order?.generalData?.expected_date,
+            "expected_time": "17:07",
             "warehouse": order?.generalData?.warehouse,
             "isReturn": order?.generalData?.isReturn,
             "hasAssociatedOrder": order?.generalData?.hasAssociatedOrder,
-            "serviceType": order.generalData.servicesType,
-            "client_id": order.client.id,
-            "client_name": order.client.name,
+            "serviceType": order.generalData.serviceType,
+            "client_id": order.client.Official_ID,
+            "client_name": order.client.client_name,
             "email": order.client.email,
             "countryCode": order.client.phoneCountryCode,
-            "phone": order.client.phoneNo,
+            "phone": order.client.phone,
             "customer": order.client.customer,
             "zone": '',
             "address": order.client.address,
             "sector": order.client.sector,
             "city": order.client.city,
             "province": order.client.province,
-            "zipCode": order.client.codeZip,
-            "latitude": order.client.latitudeClient,
-            "longitude": order.client.longitudeClient,
+            "zipCode": order.client.zipCode,
+            "latitude": order.client.latitude,
+            "longitude": order.client.longitude,
             "status": 'Created',
-            "products": order.products,
+            "products": productsForPost,
             "volume": 0,
             "no_of_boxes": 0,
             "weight": 0,
@@ -162,24 +178,28 @@ class ManageOrders {
             "createdAt": new Date(),
             "oldFilesFromOrder": order.files
         }
+
+        
+
+        console.log(OrderPost)
         let cookie = localStorage.getItem('auth')
 
         const OrderEXO = JSON.stringify(OrderPost)
         const formData = new FormData()
-        formData.append('uploadFile', OrderEXO)
+        formData.append('order', OrderEXO)
 
-        let body = {
-            "method": "post",
-            "uri": "trk/order",
-            "data":{}
-        }
-
+        // let body = {
+        //     "method": "post",
+        //     "uri": "trk/order",
+        //     "data":{}
+        // }
         let headers ={
           'Content-Type': 'multipart/form-data',
           auth: cookie,
         }
 
-        const result = await this.http.post(`https://preprod.flai.com.do/orchestrator/exo/requests`, body, formData, headers)
+        const result = await this.http.post(`https://991d-179-52-157-140.ngrok.io/exo/ordersV2`, formData, headers )
+        console.log(result)
         return result
 
     }
@@ -191,7 +211,6 @@ class ManageOrders {
             "data":{}
         }
         const result = await this.http.post(`https://preprod.flai.com.do/orchestrator/exo/requests`, body)
-        console.log(result)
         return result
     }
 
