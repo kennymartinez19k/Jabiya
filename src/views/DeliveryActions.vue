@@ -260,6 +260,7 @@
         </div>
       </div>
     </transition>
+    <ion-alert-controller></ion-alert-controller>
   </div>
 </template>
 
@@ -274,6 +275,10 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { App } from "@capacitor/app";
 import Camera from "simple-vue-camera";
+import { alertController } from '@ionic/vue';
+import { profile } from "../types";
+
+
 
 
 App.addListener("appRestoredResult", (data) => {
@@ -298,6 +303,7 @@ export default {
   mixins: [Mixins],
   data() {
     return {
+      profile,
       isOpen: false,
       show: null,
       orders: null,
@@ -423,6 +429,25 @@ export default {
           // let delay = (ms) => new Promise((res) => setTimeout(res, ms));
           // await delay(5000);
 
+          let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
+          let orderFinished = ordersMissing?.filter(orderNum => this.firstStructureLoad.some(structure => structure.order_num == orderNum))
+
+          let isOrdersFinished = new Set(orderFinished)
+          orderFinished = [...isOrdersFinished]
+          
+          console.log(ordersMissing)
+          console.log(orderFinished)
+
+          orderFinished?.forEach(orderNumFinished => {
+            let index = ordersMissing?.findIndex(orderNum => orderNum == orderNumFinished)
+
+            console.log(index)
+            if(index >= 0){
+              ordersMissing.splice(index, 1)
+            }
+          })
+          localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing))
+
           try {
             let load = await this.$services.loadsServices.getLoadDetails(
               this.load.loadMapId
@@ -454,7 +479,8 @@ export default {
               );
             }
 
-            if (allProductScanned.every((x) => x == true)) {
+            if (ordersMissing.length == 0) {
+              localStorage.removeItem(`ordersMissing${this.load.loadMapId}`)
               localStorage.setItem(`sendInfo${this.load.loadMapId}`, true);
               localStorage.removeItem(`allProducts${this.load.loadMapId}`);
               this.$router.push({ name: "home" }).catch(() => {});
@@ -808,18 +834,52 @@ export default {
         
       }
     },
+     async alertUbication(header, msg){
+        const alert = await alertController.create({
+          header: header,
+          message: msg,
+          buttons: [ 'Ok'],
+        });
+        await alert.present();
+    },
     async getLocation() {
       try {
         const geo = await Geolocation.getCurrentPosition();
         this.location.latitude = geo.coords.latitude;
         this.location.longitude = geo.coords.longitude;
-      } catch (e) {
-        if (e.code === 1 || e.message === "location disabled") {
-          alert("Debe activar la localización.");
-        } else {
-          alert("Error inesperado. Favor contactese con el Administrador.");
+      } catch (error) {
+        if(error.message == 'location disabled'){
+          this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
         }
-        console.log(e);
+        if(error.message == 'Location permission was denied'){
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+        }
+        if(error.message == 'User denied Geolocation'){
+          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+        }
+        return false
+      }
+    },
+    async ubication(load){
+      if(load.isGps){
+        this.$services.gpsServices.getTokenGps
+      }else{
+        try {
+         const geo = await Geolocation.getCurrentPosition();
+         this.location.latitude = geo.coords.latitude;
+         this.location.longitude = geo.coords.longitude;
+       } catch (error) {
+         if(error.message == 'location disabled'){
+           this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+         }
+         if(error.message == 'Location permission was denied'){
+           this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+         }
+         if(error.message == 'User denied Geolocation'){
+           this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+         }
+         return false
+       }
       }
     },
     async stopScan() {
@@ -934,7 +994,8 @@ export default {
 
     async snapshot() {
       this.stopScan();
-      const blob = await this.camera?.snapshot({ width: 540, height: 480 });
+      const blob = await this.camera?.snapshot({ width: 780, height: 720 });
+
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;

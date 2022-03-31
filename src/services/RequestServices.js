@@ -21,7 +21,6 @@ class RequestServices {
                 formData.append('lng',lng);
 
       }
-    try{
         
       if (infoRequest.method === "post") {
         if (infoRequest.headers){
@@ -110,9 +109,7 @@ class RequestServices {
           return res
         }
       }
-    }catch(error){
-      return false
-    }
+    
       return undefined
     }
     

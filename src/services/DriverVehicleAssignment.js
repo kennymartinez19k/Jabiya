@@ -11,16 +11,25 @@ class DriverVehicleAssignment {
     }
   
     async getDriverAndVehicle (loadId) {
-      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${loadId}/availableTransports`)
+      let result = {}
+      try{
+        result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${loadId}/availableTransports`)
+      }catch(error){
+        console.log(error.message)
+      }
       return result.data
     }
 
     async postDriverVehicleAssignment (loadId, idValues) {
-      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/drivers`, idValues)
+      let result = {}
+      try{
+        result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/drivers`, idValues)
+      }catch(error){
+        console.log(error)
+      }
       return result
     }
 
-   
   }
   export default DriverVehicleAssignment
   

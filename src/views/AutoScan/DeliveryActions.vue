@@ -224,6 +224,7 @@ export default {
   },
   data() {
     return {
+      profile,
       show: null,
       orders: null,
       resultScan: null,
@@ -291,6 +292,18 @@ export default {
 
           this.uploadOrDownload(this.orders);
           this.postImages();
+
+          let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
+          let orderFinished = ordersMissing?.filter(orderNum => this.orderScan?.some(structure => structure.order_num == orderNum))
+
+          orderFinished?.forEach(orderNumFinished => {
+            let index = ordersMissing?.findIndex(orderNum => orderNum == orderNumFinished)
+            if(index >= 0){
+              ordersMissing.splice(index, 1)
+            }
+          })
+          localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing))
+
           let isReturn = this.load?.Orders?.find((x) => x.isReturn);
 
           let delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -327,33 +340,21 @@ export default {
               );
             }
 
-            if (
-              allProductScanned.every((x) => x == true) ||
-              load?.Orders?.every((order) =>
-                this.orders?.some((x) => x?.order_num == order?.order_num)
-              )
-            ) {
-              localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
-              localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
-              await this.changeRouteLoads("Delivered", this.load);
+             if ((ordersMissing?.length == 0 || load.loadType == profile.container) && !isReturn){
+               localStorage.removeItem(`ordersMissing${this.load.loadMapId}`)
+               localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
+               localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
+               await this.changeRouteLoads("Delivered", this.load);
+               this.$router.push({ name: "home" });
 
-              if (isReturn) {
+             }else if(isReturn) {
                 localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5);
-                this.$router.push({ name: "load-status" }).catch(() => {});
-              } else if (load.loadType == profile.container) {
-                this.$router.push({ name: "home" });
-              } else {
+                this.$router.push({ name: "load-status" });
+             }else{
                 this.$router.push({ name: "delivery-routes" });
-              }
-            } else {
-              if (load.loadType == profile.container) {
-                localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
-                localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
-                this.$router.push({ name: "home" });
-              } else {
-                this.$router.push({ name: "delivery-routes" });
-              }
-            }
+             }
+
+            
           } catch (error) {
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
             this.$router.push({ name: "home" }).catch(() => {});
@@ -412,7 +413,6 @@ export default {
       if (status.granted) {
         return true;
       }
-
       return false;
     },
 
@@ -518,7 +518,7 @@ export default {
     },
 
     async snapshot() {
-      const blob = await this.camera?.snapshot({ width: 540, height: 480 });
+      const blob = await this.camera?.snapshot({ width: 780, height: 720 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
