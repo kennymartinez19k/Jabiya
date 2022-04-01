@@ -321,6 +321,7 @@ export default {
           await this.IsDelivered(load)
         }
       }
+      console.log( this.loadsToDisplay,' this.loadsToDisplay')
     },
     
     reset(){

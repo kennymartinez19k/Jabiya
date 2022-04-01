@@ -276,8 +276,19 @@ export default {
     },
     screenSelection () {
       this.showButton = false
-      if (this.load.allowOrderChangesAtDelivery) {
-        this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices)
+      // let orderId;
+      // let plus = false
+
+      // for (let i = 0; i < this.idOrderToInvoices.length; i++) {
+      //     if(this.idOrderToInvoices[i] > 0){
+      //         plus = true
+      //         orderId += `${this.idOrderToInvoices[i]}`
+      //     }else if(this.idOrderToInvoices[i] == 0 && plus){
+      //         orderId += `${this.idOrderToInvoices[i]}`
+      //     }
+      // }
+   if (this.load.allowOrderChangesAtDelivery) {
+        this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
         this.$router.push({ name: "details-invoices" }).catch(() => {});
       } else{
         this.scan()

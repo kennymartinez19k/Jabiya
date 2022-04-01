@@ -174,14 +174,14 @@
     </div>
     <div v-if="cameraOn"></div>
     <div
-      v-if="!cameraOn && !image"
+      v-if="!cameraOn && !image && showSignaturform"
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 4px 0px !important"
     >
       <h6 style="margin: 0px 0px 10px; font-size: 14px">
         Click Para Tomar las Fotos y Firma
       </h6>
-      <timeline
+      <timeline-action
         :step="step"
         :exception="exception"
         :resultScan="resultScan"
@@ -191,6 +191,31 @@
         @resetSign="resetSign()"
       />
     </div>
+        <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
+          <strong class="exception uk-padding-small">
+            Hubo Alguna Excepción? No
+            <div class="onoffswitch">
+              <input
+                type="checkbox"
+                v-model="exception"
+                name="onoffswitch"
+                class="onoffswitch-checkbox"
+                id="myonoffswitch"
+                tabindex="0"
+              />
+              <label class="onoffswitch-label" for="myonoffswitch"></label>
+            </div>
+            Si
+          </strong>
+          <timeline
+            :step="step"
+            :exception="exception"
+            :resultScan="resultScan"
+            :imagiElement="imagiElement"
+            @action="getShow($event)"
+            @resetSign="resetSign()"
+          />
+        </div>
   </div>
 </template>
 
@@ -199,7 +224,8 @@ import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { ref } from "vue";
 import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
-import timeline from "../../components/timeline-action.vue";
+import timeline from "../../components/timeline.vue";
+import timelineAction from "../../components/timeline-action.vue";
 import { IonLoading } from "@ionic/vue";
 import { Mixins } from "../../mixins/mixins";
 import { profile } from "../../types";
@@ -211,6 +237,7 @@ export default {
 
   components: {
     timeline,
+    timelineAction,
     IonLoading,
     Camera,
   },
@@ -255,10 +282,12 @@ export default {
       "settings",
       "allLoadsStore",
     ]),
+ 
   },
   async mounted() {
-    this.camera = this.$refs.Camera;
+    this.$store.commit('setImagiElement',[])
 
+    this.camera = this.$refs.Camera;
     let loadsMounted = this.loadStore;
     if (this.loadStore) {
       this.$store.commit("setloadStore", loadsMounted);
@@ -367,6 +396,16 @@ export default {
       if (newVal) {
         this.stopScan();
       }
+    },
+     imagiElement:{
+      handler: function(newVal){
+        console.log(newVal,'qqqqqqq')
+        if (newVal.length == 0) {
+        this.$store.commit('setImagiElement',[])
+        } else {
+        this.$store.commit('setImagiElement',newVal)
+        }
+      }, deep: true
     },
   },
 
