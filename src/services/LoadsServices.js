@@ -17,6 +17,7 @@ class LoadsServices {
       }
       return result.data.Orders
     }
+
     async getLoadDetails (id) {
       let result = null
       let res = null
@@ -41,6 +42,7 @@ class LoadsServices {
       }
       return result.data
     }
+    
     async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){
       const params = {
         "actionName": "confirmOrder",

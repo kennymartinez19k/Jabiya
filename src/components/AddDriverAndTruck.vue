@@ -112,7 +112,12 @@ export default {
   },
   async mounted () {
     this.setOpen(true)
-    const data = await this.$services.driverVehicleAssignment.getDriverAndVehicle(this.detailsLoads.loadMapId);
+    let data = null
+    try {
+     data = await this.$services.driverVehicleAssignment.getDriverAndVehicle(this.detailsLoads.loadMapId);
+    } catch (error) {
+    this.setOpen(false)
+    }
     this.setOpen(false)
     this.drivers = [...data.drivers]
     this.vehicles = [...data.vehicles]

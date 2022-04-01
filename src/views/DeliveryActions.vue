@@ -275,6 +275,7 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { App } from "@capacitor/app";
 import Camera from "simple-vue-camera";
+import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 
@@ -352,7 +353,8 @@ export default {
       "digitalFirmStore",
       "settings",
       "structureToScan",
-      "isChangeQuantityStore"
+      "isChangeQuantityStore",
+      "invoicesIdStore"
     ]),
 
     completedOrder: function () {
@@ -416,6 +418,9 @@ export default {
     this.exception = this.isChangeQuantityStore.exception
      } else if (localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)){
        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)).exception
+     }
+     if (this.orderScan.some(x => x.products.some(product => product.loadScanningCounter !== 0))) {
+       this.confirmAndFinalizeCreationOfInvoices ()
      }
   },
   watch: {
@@ -769,6 +774,7 @@ export default {
         if (result.hasContent) {
           BarcodeScanner.hideBackground();
           this.uploadProducts(result.content);
+          this.confirmAndFinalizeCreationOfInvoices()
         } else {
           this.statusOrders = "start";
         }
@@ -1032,6 +1038,16 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
+    },
+
+    async confirmAndFinalizeCreationOfInvoices () {
+      // este es la confirmacion debo ponerlo cuando escane todo
+        try {
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
+      } catch (error) {
+        console.log(error);
+      }
+
     },
   },
 };

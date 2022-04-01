@@ -203,12 +203,12 @@ export const Mixins = {
           let {order_num, _id} = order
           let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = currentProductExo 
           if (productsOdoo !== null) {
-
+            
             if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId) {
               quantity = quantityToInvoice
             } else {
               let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name )
-              quantity =  productsOdoo[productIndexOdoo]?.productQuantity
+              quantity =  productsOdoo[productIndexOdoo]?.productQuantityInvoiced
             }
 
           }

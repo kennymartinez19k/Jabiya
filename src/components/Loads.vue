@@ -347,6 +347,7 @@ export default {
            localStorage.removeItem(`sendInfo${load?.loadMapId}`);
         }
       }
+      console.log( this.loadsToDisplay,' this.loadsToDisplay')
     },
     
     reset(){

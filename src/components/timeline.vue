@@ -49,7 +49,7 @@
             Cancelar
           </button>
           <button
-            :disabled="causeExceptions?.note?.length < 10"
+            :disabled="showException"
             class="uk-button uk-button-primary uk-modal-close"
             type="button"
             @click="setException()"
@@ -106,7 +106,7 @@
       <li
         class="stepThree"
         :class="{
-          'uk-disabled': (exception || emptyImage)  && !causeExceptions.type,
+          'uk-disabled': (exception || emptyImage)  && (!causeExceptions.type || emptyImage),
           active: singnature !== null
         }"
         @click="getShow('Singnature')"
@@ -114,7 +114,7 @@
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span>Firma </span>
-        <div :class="{ disabled: (exception || emptyImage) && !causeExceptions.type}"></div>
+        <div :class="{ disabled: (exception || emptyImage ) && (!causeExceptions.type || emptyImage)}"></div>
       </li>
     </ul>
   </div>
@@ -159,7 +159,9 @@ export default {
     imageTimeline(){
       if(this.imagesStore){
         this.changeImage()
+
       }
+
       return this.imagesStore
     },
     emptyImage(){
@@ -203,8 +205,10 @@ export default {
           this.showSingnatureAndException = false;
         } else if(newVal == true) {
           this.showSingnatureAndException = true;
-        }else if(newVal == false){
-          this.showSingnatureAndException = true
+        }
+        if(newVal == false){
+           this.causeExceptions.note = null;
+          this.causeExceptions.type = null;
         }
       },
       deep: true,
