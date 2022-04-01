@@ -20,6 +20,7 @@ export const Mixins = {
       },
       user: null,
       setting: null,
+      hasUbicationServer: false
     };
   },
   mixins: [LocalStorage],
@@ -40,41 +41,36 @@ export const Mixins = {
         if (val == "Driver Arrival") await this.driverArrival(load);
         if (val == "Approved") await this.uploadTrip(load);
         if (val == "Dispatched") await this.startLoadRoute(load);
-        if (val == "Deliver-Load")
-          router.push({ name: "delivery-actions-auto" });
-        if (val == "return-container")
-          router.push({ name: "return-container" });
+        if (val == "Deliver-Load") router.push({ name: "delivery-actions-auto" });
+        if (val == "return-container") router.push({ name: "return-container" });
         if (val == "Delivered") await this.removeInfoInStorage(load)    
-  
       } else {
-          if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
-          if (val == "Driver Arrival") await this.driverArrival(load);
-          if (val == "Approved") await this.uploadTrip(load);
-          if (val == "Dispatched") await this.startLoadRoute(load);
-          if (val == "Deliver-Load")
-            router.push({ name: "delivery-routes" });
-          if (val == "Delivered") {
-            await this.removeInfoInStorage(load)
-            localStorage.removeItem("loadInProgress");
-            localStorage.removeItem(`gps ${load.loadMapId}`);
-
-            localStorage.removeItem(`loadStatus${load?.loadMapId}`);
-          }
+        if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
+        if (val == "Driver Arrival") await this.driverArrival(load);
+        if (val == "Approved") await this.uploadTrip(load);
+        if (val == "Dispatched") await this.startLoadRoute(load);
+        if (val == "Deliver-Load") router.push({ name: "delivery-routes" });
+        if (val == "Delivered") await this.removeInfoInStorage(load)
       }
     },
-    async driverArrival(val) {
-      await services.loadsScanServices.driverArrival(val.loadMapId);
-      localStorage.setItem(`gps ${val.loadMapId}`, true);
-      this.load = val;
+    async driverArrival(load) {
+      this.load = load;
+      await services.loadsScanServices.driverArrival(this.load.loadMapId);
+      localStorage.setItem(`gps ${this.load.loadMapId}`, true);
       try{
-        let location = await JSON.parse(localStorage.getItem('ubication'))
-        services.gpsServices.updateFirstLocation(
-          this.user?.id,
-          location?.latitude,
-          location?.longitude,
-          this.load?.bay_id?._id
-        );
-        this.localStorage.set('serverUp' , "true")
+        if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+          let location = await JSON.parse(localStorage.getItem('ubication'))
+          services.gpsServices.updateFirstLocation(
+            this.user?.id,
+            location?.latitude,
+            location?.longitude,
+            this.load?.bay_id?._id
+          );
+          this.localStorage.set('serverUp' , "true")
+        }
+        else{
+          // send gps services
+        }
       } catch(error){
         this.localStorage.set('serverUp' , "false")
       }
@@ -82,8 +78,6 @@ export const Mixins = {
 
     async uploadTrip(load) {
       localStorage.removeItem(`gps ${load.loadMapId}`);
-
-      
       
       if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
         await this.uploadOrDownload(load)
@@ -102,9 +96,7 @@ export const Mixins = {
     async startLoadRoute(val) {
       if (this.setting.maps) await this.setMap(val);
       localStorage.setItem(`gps ${val.loadMapId}`, true);
-
       localStorage.setItem(`startRoute${val.loadMapId}`, JSON.stringify(true));
-      
     },
 
     async setMap(val) {
@@ -143,9 +135,7 @@ export const Mixins = {
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
       if (val?.loadingStatus?.text == "Dispatched")  return "Listo para Entregar";
-    
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
-
       if (val?.loadingStatus?.text == "Delivered") {
         localStorage.removeItem(`sendInfo${val.loadMapId}`)
         return "Viaje Entregado";
@@ -197,7 +187,8 @@ export const Mixins = {
       this.load = val
       localStorage.removeItem("loadInProgress");
       localStorage.removeItem(`gps ${this.load?.loadMapId}`);
-      
+      localStorage.removeItem(`loadStatus${this.load?.loadMapId}`);
+      localStorage.removeItem('DeliveryCharges');
       localStorage.removeItem(`startRoute${this.load?.loadMapId}`)
       localStorage.removeItem(`deliverLoad${this.load?.loadMapId}`)
       localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)

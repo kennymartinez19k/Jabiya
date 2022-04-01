@@ -140,6 +140,9 @@ export default {
       else if(this.$route.name == 'orders'){
         this.$router.push({ name: 'load-status' }).catch(() => {});
       }
+      else if(this.$route.name == 'manage-orders'){
+        this.$router.push({name: 'home'})
+      }
       else{
         if (val == "back") this.$router.go(-1);
         else {

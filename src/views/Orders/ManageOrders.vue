@@ -42,7 +42,12 @@ export default {
     async mounted(){
 
         this.setOpen(true)
-        let result = await this.$services.manageOrders.getOrders()
+        let result
+        try{
+            result = await this.$services.manageOrders.getOrders()
+        }catch(error){
+            result = []
+        }
         this.$store.commit('setListOrders', result)
         this.setOpen(false)
     },

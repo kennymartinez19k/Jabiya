@@ -24,10 +24,10 @@
                                 <option value="en-route" >En Ruta</option>
                                 </select>
                             </label>
-                            <label><span>Fecha de Espera</span><input v-model="filters.expected_date" class="uk-input" type="date" checked></label>
+                            <label><span>Fecha de Entrega</span><input v-model="filters.expected_date" class="uk-input" type="date" checked></label>
                             <label><span>Nombre del Cliente</span> <input v-model="filters.client_name" class="uk-input" type="input"></label>
                             <label><span>Shipper</span><input v-model="filters.shipper" class="uk-input" type="input" checked></label>
-                            <label><span>No de Carga</span><input v-model="filters.loadNumber" class="uk-input" type="input" checked></label>
+                            <label><span>No. de Carga</span><input v-model="filters.loadNumber" class="uk-input" type="input" checked></label>
                             <label><span>Nombre del Chofer</span><input v-model="filters.driver_name" class="uk-input" type="input" checked></label>
                             <label><span>Tipo de Servicio</span><input v-model="filters.serviceType" class="uk-input" type="input" checked></label>
                             <div class="uk-width-1-1 uk-flex uk-flex-right" style="padding: 0px 10px">
@@ -63,12 +63,18 @@
                     </div>
                 </div>
             </div>
+            <div v-if="orderToDisplay.length == 0 && isFiltered">
+                <p class="has-no-orders">No Encontro Ordenes Con Esos Filtros</p>
+            </div>
+            <div v-if="orderToDisplay.length == 0 && !isFiltered">
+                <p class="has-no-orders">No Tiene Ordenes Disponibles</p>
+            </div>
         </div>
       </div>
       <div class="uk-width-1-1" >
         <ul class="uk-pagination uk-flex-center" uk-margin>
             <li @click="changePage(-10)"><a href="#"><span uk-pagination-previous></span></a></li>
-            <li v-for="(page, i) in pages" :key="page" v-show="page < 8"><a :class="{active: (i + 1) == (totalInPages / 10)} ">{{page}}</a></li>
+            <li v-for="(page, i) in pages" :key="page" v-show="page < lastPage && page > firstPage"><a :class="{active: (i + 1) == (totalInPages / 10)} ">{{page}}</a></li>
             <li @click="changePage(10, true)"><a href="#"><span uk-pagination-next></span></a></li>
        </ul>
 
@@ -134,13 +140,25 @@ export default {
                 serviceType: null
             },
             isFiltered: false,
-            isOpenModal: false
+            isOpenModal: false,
+            lastPage: 8,
+            firstPage: 0
 
         }
     },
 
     async mounted() {
-        this.orders = this.listOrdersStore?.data
+        if(this.listOrdersStore){
+            this.orders = this.listOrdersStore?.data
+        }
+        else{
+            try{
+                let result = await this.$services.manageOrders.getOrders()
+                this.orders = result.data
+            }catch(error){
+                this.$router.push({name: 'home'})
+            }
+        }
         this.orderToDisplay = [...this.orders]
         this.totalOrders = this.orders?.length        
     },
@@ -148,10 +166,14 @@ export default {
     methods:{
         changePage(val, plus){
             if(plus && this.totalInPages < this.totalOrders){
+                this.lastPage++
+                this.firstPage++
                 this.totalInPages = this.totalInPages + val
                 this.currentPage = this.currentPage + val
 
             }else if(!plus && this.currentPage > 0){
+                this.lastPage--
+                this.firstPage--
                 this.totalInPages = this.totalInPages + val
                 this.currentPage = this.currentPage + val
             }
@@ -183,7 +205,11 @@ export default {
         },
         async setFilters(){
              let {expected_date, orderNum , client_name, status, shipper, loadNumber, driver_name, serviceType} = this.filters
-               
+               let date = null
+               if(expected_date){
+                  date = expected_date?.replaceAll('-', '/')
+               }
+               expected_date = date
                if(expected_date || orderNum || client_name || status || shipper || loadNumber || driver_name || serviceType){
                    this.isFiltered = true
                    let result = await this.$services.manageOrders.getOrdersFilter(
@@ -196,7 +222,7 @@ export default {
                        driver_name, 
                        serviceType
                    )
-                   this.orderToDisplay = result.data
+                   this.orderToDisplay = result?.data
                }else{
                    this.clearFilters()
                    
@@ -270,7 +296,7 @@ p{
     margin-bottom: 10px;
 }
 .uk-pagination li{
-    margin: 0px 4px
+    margin: 0px 3px
 }
 
 .filter-Card{
@@ -279,7 +305,7 @@ p{
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;
-    padding: 0px 0px 10px;
+    padding: 0px 0px;
     border-bottom: 1px solid rgb(223, 223, 223);
 }
 
@@ -343,7 +369,7 @@ p{
 
 .uk-pagination>*>* {
     display: block;
-    padding: 7px 8px;
+    padding: 7px 7px;
     color: #999;
     transition: color .1s ease-in-out;
 }
@@ -396,5 +422,7 @@ p{
   z-index: 999;
   transition: opacity 0.2s ease;
 }
-
+.has-no-orders{
+    margin: 30px 0px;
+}
 </style>

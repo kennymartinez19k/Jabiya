@@ -301,7 +301,17 @@ export default {
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
-      if(this.load.scanningRequired){
+
+      let ordersMissing = []
+      if(!localStorage.getItem(`ordersMissing${this.load.loadMapId}`)){
+          for (let i = 0; i < this.orders.length; i++) {
+            const order = this.orders[i];
+            if(order.status != 'Delivered') ordersMissing.push(order.order_num)
+          }
+          localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing) )
+      }
+
+      if(this.load?.scanningRequired){
         this.$router.push({ name: "deliveryActions" }).catch(() => {});
       }else{
         this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});

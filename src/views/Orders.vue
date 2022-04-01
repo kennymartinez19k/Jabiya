@@ -299,14 +299,20 @@ export default {
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
       let allProducts = []
+      
+      
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
+
       for (let i = 0; i < this.orders.length; i++) {
         const order = this.orders[i];
+   
         order.products.forEach(x => {
           x.order_num = order.order_num
           allProducts.push(x)        
         })
       }
+
+
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(allProducts))
       this.$store.commit("setStructureToScan", structure)
       this.$router.push({ name: "scan-order" }).catch(() => {});

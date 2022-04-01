@@ -23,17 +23,18 @@
             </div>
 
             <div class="item">
-                <label class="uk-form-label text-small" for="form-stacked-text">Fecha Esperada: *</label>
+                <label class="uk-form-label text-small" for="form-stacked-text">Fecha de Entrega: *</label>
                 <div class="uk-form-controls">
-                    <input :class="{isEmpty: !generalData?.expected_date && isValidate, 'disabled-item': isNotModificate}" v-model="generalData.expected_date" class="uk-input" id="form-stacked-text" type="datetime-local">
+                    
+                    <input :class="{isEmpty: !generalData?.expected_date && isValidate, 'disabled-item': isNotModificate}" v-model="generalData.expected_date" class="uk-input" style="padding: 0px 0px 0px 3px !important" id="form-stacked-text" type="datetime-local">
                 </div>
             </div>
 
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Almacen: *</label>
                 <div class="uk-form-controls">
-                    <select :class="{isEmpty: !generalData?.warehouse?.name && isValidate, 'disabled-item': isNotModificate}" v-model="generalData.warehouse.name" class="uk-select">
-                        <option v-for="currentWarehouse in listWarehouse" :key="currentWarehouse" :value="currentWarehouse?.name">{{currentWarehouse?.name}}</option>               
+                    <select :class="{isEmpty: !generalData?.warehouse?.name && isValidate, 'disabled-item': isNotModificate}" v-model="generalData.warehouse.name"  class="uk-select">
+                        <option v-for="currentWarehouse in listWarehouse" :key="currentWarehouse">{{currentWarehouse?.name}}</option>               
                     </select>
                 </div>
             </div>
@@ -102,8 +103,8 @@
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Nombre del Cliente: *</label>
                 <div class="uk-form-controls" style="position: relative">
-                    <input :class="{isEmpty: !client.client_name && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}" v-model="client.client_name" @input="onChange" autocomplete="off" class="uk-input" id="form-stacked-text" type="text">
-                    <ul v-show="isOpen" class="autocomplete-results">
+                    <input :class="{isEmpty: !client.client_name && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}" v-model="client.client_name" @keyup="onChange()" autocomplete="off" class="uk-input" id="form-stacked-text" type="text">
+                    <ul v-show="isOpen && results?.length > 0" class="autocomplete-results">
                         <li
                             v-for="(result, i) in results"
                             :key="i"
@@ -127,7 +128,7 @@
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Dirección: *</label>
                 <div class="uk-form-controls">
-                    <input :class="{isEmpty: !client.address && isValidate, 'disabled-item': !client?.customer?.name, isNotModificate}" v-model="client.address" class="uk-input" id="form-stacked-text" type="text">
+                    <input :class="{isEmpty: !client.address && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}" v-model="client.address" class="uk-input" id="form-stacked-text" type="text">
                 </div>
             </div>
 
@@ -241,7 +242,7 @@
           <div class="add-file">
               <label for="file" :class="{'icon-disabled': isNotModificate}">
                   <span>
-                    <font-awesome-icon  icon="plus" class="plus"/>
+                    <font-awesome-icon :class="{'icon-disabled': isNotModificate}"  icon="plus" class="plus"/>
                   </span>
                 <input type="file" id="file" ref="File" @change="pickFile($event)">
               </label>
@@ -259,12 +260,12 @@
 
       <div class="uk-margin uk-flex uk-flex-right">
           <button @click="cancel()" class="uk-button-red uk-button">Cancelar</button>
-          <button @click="sendInfo()" :disabled="isEmptyFields"  class="uk-button-primary uk-button">Guardar</button>
+          <button @click="sendInfo()" :disabled="isEmptyFields || isNotModificate"  class="uk-button-primary uk-button">Guardar</button>
       </div>
 
       <transition name="modal">
       <div v-if="isOpenModal">
-        <div class="overlay" @click.self="isOpenModal = false;">
+        <div class="overlay" @click.self="closeModal()">
           <div class="modal">
             <div class="">
             <p class="uk-text-center" style="margin: 0px 0px 10px"><strong>Añadir Producto</strong></p>
@@ -339,13 +340,11 @@
                     </div>
                 </div>
 
-                <div v-if="addProduct" class="uk-flex uk-flex-column uk-flex-right item">
-                    <button type="button" @click="saveProduct()" class="uk-button-blue uk-button">Guardar Producto</button>
-                </div>
+                
             </div>
             <p class="uk-text-right uk-flex uk-flex-right" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-red uk-modal-close" style="margin: 0px 10px" @click="closeModal()" type="button">Cancelar</button>
-                <button class="uk-button uk-button-primary uk-modal-close" @click="saveProduct()" type="button">Guardar</button>
+                <button class="uk-button uk-button-primary uk-modal-close" :disabled="productEmptyFields || isNotModificate" @click="saveProduct()" type="button">Guardar</button>
             </p>
         </div>
         
@@ -446,7 +445,7 @@ export default {
             clientForReset: {},
             isOrderEdit: false,
             isNotModificate:false,
-            timeout: 10000,
+            timeout: 20000,
             selectedItem: 2
         }
     },
@@ -471,17 +470,27 @@ export default {
             )
 
             return requireFields?.some(field => field === null || field === '' || field?.length ==  0)
+        },
+        productEmptyFields(){
+           let { productId, scanOneByOne, qrCode_Default, qrCode, description, quantity, volume, weight} = this.product
+           let emptyFields = [productId, scanOneByOne, qrCode_Default, qrCode, description, quantity, volume, weight]
+           return emptyFields.some(field => field === null || field === '' || field?.length ==  0)
         }
     },
     async mounted(){
         this.setOpen(true)
-        this.listCustomers = await this.$services.manageOrders.getCustomers()
-        this.listservicesType = await this.$services.manageOrders.getServicesType()
-        this.listWarehouse = await this.$services.manageOrders.getWarehouse()
-        this.cities = await this.$services.manageOrders.getCity()
+        try{
+            this.listCustomers = await this.$services.manageOrders.getCustomers()
+            this.listservicesType = await this.$services.manageOrders.getServicesType()
+            this.listWarehouse = await this.$services.manageOrders.getWarehouse()
+            console.log(this.listWarehouse)
+            this.cities = await this.$services.manageOrders.getCity()
+        }catch(error){
+            alert(error)
+        }
         let provinces = []
         this.cities.forEach(city => {
-            provinces.push(city.province)
+            provinces.push(city?.province)
         })
 
         provinces = new Set(provinces)
@@ -491,7 +500,6 @@ export default {
         this.clientForReset = {...this.client}
 
         this.sectors = await this.$services.manageOrders.getSector()
-        console.log(this.sectors)
 
         if(this.orderManageStore){
            this.editManageOrder()
@@ -531,6 +539,21 @@ export default {
             },
       deep: true
         },
+        'generalData.warehouse.name': {
+            handler: function(newVal){
+                if(newVal){
+                   let warehouse = this.listWarehouse.find(x => x.name == newVal)
+                   if(warehouse){
+                       this.generalData.warehouse = {...warehouse}
+                   }
+                }
+            }, deep: true
+        }, 
+        // 'client.client_name': {
+        //     handler: function(){
+        //         this.onChange()
+        //     }
+        // }
         
     },
     methods:{
@@ -545,25 +568,29 @@ export default {
         }
     },
     onChange() {
+        console.log(1)
       this.filterResults();
       this.isOpen = true;
     },
     autoComplete(newVal){
         this.isOpen = false
-        if(newVal)
-          this.client.client_name = newVal.client_name
-          this.client.Official_ID = newVal.Official_ID
-          this.client.address = newVal.address
-          this.client.province = newVal.province
-          this.client.city = newVal.city
-          this.client.sector = newVal.sector
-          this.client.zipCode = newVal.zipCode
-          this.client.lat_Long_Sector = `${newVal.latitude} ${newVal.longitude}`
-          this.client.email = newVal.email
-          this.client.phoneCountryCode = newVal.countryCode
-          this.client.phone = newVal.phone
-          this.client.latitude = newVal.latitude
-          this.client.longitude = newVal.longitude
+        if(newVal){
+            this.client.client_name = newVal.client_name
+            this.client.Official_ID = newVal.Official_ID
+            this.client.address = newVal.address
+            this.client.province = newVal.province
+            this.client.city = newVal.city
+            this.client.sector = newVal.sector
+            this.client.zipCode = newVal.zipCode
+            this.client.lat_Long_Sector = `${newVal.latitude} ${newVal.longitude}`
+            this.client.email = newVal.email
+            this.client.phoneCountryCode = newVal.countryCode
+            this.client.phone = newVal.phone
+            this.client.latitude = newVal.latitude
+            this.client.longitude = newVal.longitude
+        }
+        this.results = []
+
 
     },
     async changeShipper(){
@@ -585,6 +612,7 @@ export default {
         }
     },
     async editManageOrder(){
+        console.log(this.orderManageStore)
          if(this.orderManageStore.status != 'Created') this.isNotModificate = true
             this.isOrderEdit = true
             let {
@@ -593,7 +621,9 @@ export default {
                 email, phone, products
             } = this.orderManageStore
 
-            this.generalData = {order_num, expected_date, warehouse, isReturn, hasAssociatedOrder, status, serviceType, deliverCycle, 'orderSequence': null}
+            expected_date = expected_date.split('.')
+
+            this.generalData = {order_num, expected_date: expected_date[0], warehouse, isReturn, hasAssociatedOrder, status, serviceType, deliverCycle, 'orderSequence': null}
             
             province = province.toLowerCase()
             city = city.toLowerCase()
@@ -646,6 +676,10 @@ export default {
 
     },
     saveProduct(){
+        let index = this.productsCreated.findIndex(prod => prod.productId == this.product.productId)
+        if(index >= 0){
+            this.productsCreated.splice(index, 1)
+        }
         this.productsCreated.push(this.product)
         this.isOpenModal = false
         this.product = {...this.productForReset}
@@ -668,10 +702,7 @@ export default {
     },
     closeModal(){
         this.isOpenModal = false
-        
-        if(this.productsCreated.every(x => x.productId != this.product.productId)){
-            this.product = {...this.productForReset}
-        }
+        this.product = {...this.productForReset}
     },
     orderIsReturn(){
        this.generalData.hasAssociatedOrder = this.generalData.isReturn == false
@@ -707,7 +738,7 @@ form{
 }
 .item{
     margin: 10px 0px;
-    width: 45%
+    width: 47%
 }
 .files-container{
     width: 100%;

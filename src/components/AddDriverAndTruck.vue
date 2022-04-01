@@ -137,8 +137,8 @@ export default {
       }) 
     },
     async selectDriverAndVehicle () {
-      this.setOpen(true)
       this.disabledButton = true
+      this.setOpen(true)
       if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
         localStorage.removeItem('dateCheck');
         localStorage.setItem('dateCheck', JSON.stringify(this.detailsLoads?.dateTime?.date));

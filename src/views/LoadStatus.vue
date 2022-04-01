@@ -114,7 +114,7 @@
 
         </li>
         <li
-        :class="{active: loadStatus.step == step.truckLoaded, 'completed-status': loadStatus.step > step.truckLoaded}">
+        :class="{active: loadStatus.step == step.truckLoaded && !sendingInfo, 'completed-status': loadStatus.step > step.truckLoaded}">
           <div class="info">
             <span>4</span>
           </div>
@@ -142,7 +142,7 @@
         </li>
         <li
           v-if="!allOrderIsReturn"
-          :class="{active: loadStatus.step == step.delivered, 'completed-status': loadStatus.step > step.delivered}">
+          :class="{active: loadStatus.step == step.delivered && !sendingInfo, 'completed-status': loadStatus.step > step.delivered}">
           
           <div class="info"><span>5</span></div>
           <div   
@@ -224,7 +224,8 @@ export default {
       startRouteStorage: false,
       deliverStorage: false,
       uploadStorage: false,
-      isMountProduct: false
+      isMountProduct: false,
+      sendingInfo: false
     };
   },
  
@@ -369,6 +370,8 @@ export default {
       this.$store.commit("setloadStore", loadsMounted);
 
     }
+    this.sendingInfo = localStorage.getItem(`sendInfo${this.load.loadMapId}`)
+
 
     let allLoads = JSON.parse(localStorage.getItem('allLoads'))
     allLoads.forEach(x => {
@@ -390,14 +393,15 @@ export default {
 
   methods: {
     async changeRoute(val) {
+      localStorage.setItem('DeliveryCharges', JSON.stringify(this.load));
       try{
-        if(val == "Approved" &&  this.profile.container == this.load.loadType){
+        if(val == "Approved" &&  this.profile?.container == this.load?.loadType){
           this.isMountProduct = true
           let delay = (ms) => new Promise((res) => setTimeout(res, ms));
           await delay(5000);
           this.isMountProduct = false
         }
-        let ubication = await this.ubication()
+        let ubication = await this.ubication(this.load)
           if(ubication){
             localStorage.setItem('ubication', JSON.stringify(ubication))
             localStorage.setItem('loadInProgress', JSON.stringify(this.load.loadMapId));
@@ -439,22 +443,27 @@ export default {
         });
         await alert.present();
     },
-    async ubication(){
-      try{
-        await Geolocation.getCurrentPosition({timeout: 5000})
+    async ubication(load){
+      if(!load?.Vehicles[0]?.gpsProvider || load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+        try{
+          let res = await Geolocation.getCurrentPosition({timeout: 5000})
+          return res
+        }catch(error){
+          console.log(error.message)
+          if(error.message == 'location disabled'){
+            this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+          }
+          if(error.message == 'Location permission was denied'){
+            this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+          }
+          if(error.message == 'User denied Geolocation'){
+            this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+          }
+          return false
+        }
+      }else{
+        // Request to Gps server
         return true
-      }catch(error){
-        console.log(error.message)
-        if(error.message == 'location disabled'){
-          this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
-        }
-        if(error.message == 'Location permission was denied'){
-          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
-        }
-        if(error.message == 'User denied Geolocation'){
-          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
-        }
-        return false
       }
     },
 
