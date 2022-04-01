@@ -205,8 +205,10 @@ export default {
           this.showSingnatureAndException = false;
         } else if(newVal == true) {
           this.showSingnatureAndException = true;
-        }else if(newVal == false){
-          this.showSingnatureAndException = true
+        }
+        if(newVal == false){
+           this.causeExceptions.note = null;
+          this.causeExceptions.type = null;
         }
       },
       deep: true,
