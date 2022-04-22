@@ -202,6 +202,7 @@ export default {
     resultScan: String,
     imagiElement: Array,
   },
+  
   data() {
     return {
       causeExceptions: {
