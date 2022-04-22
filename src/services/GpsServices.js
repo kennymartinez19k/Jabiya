@@ -11,7 +11,6 @@ class GpsServices {
     }
 
     async updateLocation (driverId, lat, lng, bayId){
-      
       const body = {
         "lat": lat,
         "lng": lng,

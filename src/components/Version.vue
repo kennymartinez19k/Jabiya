@@ -17,7 +17,7 @@ export default {
     name: 'Version',
     data() {
         return {
-            version: '1.0.6',
+            version: '1.0.7',
             date: 'Feb 20, 2022',
             authors: 'Wilson Soto, Kenny Martinez, Miguel Gonzalez',
             copyright: `Flai Logistics, 2022 `

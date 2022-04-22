@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <button @click="uploadProducts('6b')">Enviar</button>
     <div class="stiky">
       <p
         style=" font-size: 13px !important; font-weight: 500"

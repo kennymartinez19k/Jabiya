@@ -11,6 +11,8 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
+      console.log('lat ', lat),
+      console.log('lng', lng)
          let form = {images, lat, lng}
          let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
 
@@ -21,7 +23,6 @@ class deliverServices {
           }
           
           let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
-
           add(json)
     }
 
@@ -35,7 +36,6 @@ class deliverServices {
         }
       }
       const url = `${this.settingsLocalStore.url}/exo/orders/${orderId}/products/${productId}/actions`
-      
       const json = {'method': 'post', 'url': url, 'body': body}
       add(json)
       

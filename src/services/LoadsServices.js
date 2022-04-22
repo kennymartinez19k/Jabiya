@@ -1,3 +1,4 @@
+import router from '../router/index'
 class LoadsServices {
     constructor (http) {
       this.http = http;
@@ -14,6 +15,9 @@ class LoadsServices {
         result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${id}?fields=Orders`)
       }catch(error){
         console.log(error.message)
+        if(error.message == 'Request failed with status code 401'){
+          router.push({name: 'sign-in'})
+        }
       }
       return result.data.Orders
     }
@@ -28,6 +32,9 @@ class LoadsServices {
         result.data.warehouse = res.data
       }catch(error){
         console.log(error.message)
+        if(error.message == 'Request failed with status code 401'){
+          router.push({name: 'sign-in'})
+        }
       }
       return result.data
     }
@@ -39,6 +46,9 @@ class LoadsServices {
         result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/?date=${loadDate}`)
       }catch(error){
         console.log(error.message)
+        if(error.message == 'Request failed with status code 401'){
+          router.push({name: 'sign-in'})
+        }
       }
       return result.data
     }

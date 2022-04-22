@@ -150,11 +150,13 @@ export default {
   },
 
   async mounted() {
+    console.log(this.loadStore)
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
   },
   computed: {
     ...mapGetters([
-      'imagesStore'
+      'imagesStore',
+      'loadStore'
     ]),
     imageTimeline(){
       if(this.imagesStore){
@@ -166,6 +168,43 @@ export default {
     },
     emptyImage(){
       return this.imagesStore?.length <= 0
+    },
+    activeSignature(){
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let exception = this.exception
+      let exceptionInfo = ( this.causeExceptions.type && this.causeExceptions.note != null)
+      let img = !this.emptyImage
+      let downloadInvoices = {status: true}
+      
+
+      if(scanRequired && allowInvoices && exception && this.resultScan &&  exceptionInfo && img && downloadInvoices.status){
+        return true
+
+      }else if (scanRequired && allowInvoices && !exception && this.resultScan && !exceptionInfo && img && downloadInvoices.status){
+        return true
+
+      }else if (scanRequired && !allowInvoices && exception && this.resultScan && exceptionInfo && img && !downloadInvoices.status){
+        return true
+      
+      }else if (scanRequired && !allowInvoices && !exception && this.resultScan && !exceptionInfo && img && !downloadInvoices.status){
+        return true
+        
+      }else if (!scanRequired && allowInvoices && exception && !this.resultScan && exceptionInfo && img && downloadInvoices.status){
+        return true
+        
+      }else if (!scanRequired && allowInvoices && !exception && !this.resultScan && !exceptionInfo && img && downloadInvoices.status){
+        return true
+        
+      }else if (!scanRequired && !allowInvoices && exception && !this.resultScan && exceptionInfo && img && !downloadInvoices.status){
+        return true
+        
+      }else if (!scanRequired && !allowInvoices && !exception && !this.resultScan && !exceptionInfo && img && !downloadInvoices.status){
+        return true
+      }else{
+        return false
+      }
+
     }
   },
   watch: {

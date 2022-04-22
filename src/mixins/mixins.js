@@ -56,9 +56,9 @@ export const Mixins = {
     async driverArrival(load) {
       this.load = load;
       await services.loadsScanServices.driverArrival(this.load.loadMapId);
-      localStorage.setItem(`gps ${this.load.loadMapId}`, true);
       try{
-        if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+        localStorage.setItem(`gps ${this.load.loadMapId}`, true);
+        if(this.load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !this.load?.Vehicles[0]?.gpsProvider){
           let location = await JSON.parse(localStorage.getItem('ubication'))
           services.gpsServices.updateFirstLocation(
             this.user?.id,
@@ -70,6 +70,7 @@ export const Mixins = {
         }
         else{
           // send gps services
+          await services.gpsProviderServices.createGps(this.load)
         }
       } catch(error){
         this.localStorage.set('serverUp' , "false")
@@ -77,7 +78,14 @@ export const Mixins = {
     },
 
     async uploadTrip(load) {
-      localStorage.removeItem(`gps ${load.loadMapId}`);
+      if(load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !load.Vehicles[0].gpsProvider){
+        console.log('flai')
+        localStorage.removeItem(`gps ${load.loadMapId}`);
+      }else{
+        console.log('server')
+        localStorage.removeItem(`gps ${load.loadMapId}`);
+        await services.gpsProviderServices.stopGps(load.Vehicles[0].gpsId)
+      }
       
       if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
         await this.uploadOrDownload(load)
@@ -93,10 +101,16 @@ export const Mixins = {
         router.push({ name: 'orders' });
       }
     },
-    async startLoadRoute(val) {
-      if (this.setting.maps) await this.setMap(val);
-      localStorage.setItem(`gps ${val.loadMapId}`, true);
-      localStorage.setItem(`startRoute${val.loadMapId}`, JSON.stringify(true));
+    async startLoadRoute(load) {
+      if (this.setting.maps) await this.setMap(load);
+      console.log(load)
+      localStorage.setItem(`gps ${load?.loadMapId}`, true);
+      if(load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App' || !load?.Vehicles[0]?.gpsProvider){
+        console.log('flai')
+      }else{
+        await services.gpsProviderServices.startGps(load?.Vehicles[0]?.gpsId)
+      }
+      localStorage.setItem(`startRoute${load.loadMapId}`, JSON.stringify(true));
     },
 
     async setMap(val) {
@@ -186,7 +200,14 @@ export const Mixins = {
     async removeInfoInStorage(val){
       this.load = val
       localStorage.removeItem("loadInProgress");
-      localStorage.removeItem(`gps ${this.load?.loadMapId}`);
+      let statusGpsProvider = JSON.parse(localStorage.getItem(`gpsProvider ${this.load.loadMapId}`))
+      if(this.load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !this.load?.Vehicles[0]?.gpsProvider){
+        localStorage.removeItem(`gps ${this.load.loadMapId}`);
+      }else if(statusGpsProvider){
+        await services.gpsProviderServices.stopGps(this.load.Vehicles[0].gpsId)
+        localStorage.removeItem(`gps ${this.load.loadMapId}`);
+
+      }
       localStorage.removeItem(`loadStatus${this.load?.loadMapId}`);
       localStorage.removeItem('DeliveryCharges');
       localStorage.removeItem(`startRoute${this.load?.loadMapId}`)

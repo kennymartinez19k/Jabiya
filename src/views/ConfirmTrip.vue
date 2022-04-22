@@ -181,9 +181,6 @@
       "
       style="margin-bottom: 50px !important"
     >
-  
-      
-      
     </div>
 
     <div id="modal-center" class="uk-flex-top" uk-modal>

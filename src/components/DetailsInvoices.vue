@@ -434,13 +434,11 @@ export default {
       var request = new XMLHttpRequest();
       request.open("GET", urlFile, true);
       request.responseType = "blob";
-      // console.log(request,'resffff')
-      // console.log(request.responseURL,'resffff')
+    
       request.onload = function () {
         var reader = new FileReader();
         reader.readAsDataURL(request.response);
         reader.onload = function (e) {
-          // console.log(e, 'fddddddddddddd')
           Filesystem.writeFile({
             path: invoices,
             data: e.target.result,

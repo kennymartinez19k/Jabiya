@@ -82,19 +82,17 @@ export default {
         this.intervalForGps += 1
 
         let load = JSON.parse(localStorage.getItem('DeliveryCharges'))
-        
-        if(this.intervalForGps > intervalLimit && await localStorage.getItem(`gps ${load?.loadMapId}`) ){
+        if(this.intervalForGps > intervalLimit && ( localStorage.getItem(`gps ${load?.loadMapId}`) || JSON.parse(localStorage.getItem('gpsProvider'))) ){
           this.intervalForGps = 0
-          if(!load?.Vehicles[0]?.gpsProvider || load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App'){
             
-            Geolocation.getCurrentPosition().then((myLocation) => {
-              let location = myLocation.coords;
-              if (
-                Math.abs(location.latitude - this.lastLocation.latitude) >
-                  0.00003 ||
-                Math.abs(location.longitude - this.lastLocation.longitude) >
-                  0.00003
-              ) {
+            this.location(load).then((locationUpdate) => {
+              let location = locationUpdate;
+              // if (
+              //   Math.abs(location.latitude - this.lastLocation.latitude) >
+              //     0.00003 ||
+              //   Math.abs(location.longitude - this.lastLocation.longitude) >
+              //     0.00003
+              // ) {
                 this.lastLocation.latitude =  location?.latitude
                 this.lastLocation.longitude = location?.longitude
                 this.$services.gpsServices.updateLocation(
@@ -103,15 +101,11 @@ export default {
                   location?.longitude,
                   load?.bay_id?._id
                 );
-              }
+              // }
             });
-          }
-          else{
-            // Send request to Gps Server
-            return true
-          }
+          
+      
         }
-        
         if(queue.length > 0){
           let enqueueItem = remove()
           await this.enqueue(enqueueItem)
@@ -183,13 +177,26 @@ export default {
         //  console.clear()
 
       }
-      },
-      getInfo(){
-        let setting = JSON.parse(localStorage.getItem('setting'))
-        this.$store.commit("setSettings",setting);
+    },
+    getInfo(){
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      this.$store.commit("setSettings",setting);
+    },
+  
+    async location(load){
+    if(!load?.Vehicles[0]?.gpsProvider || load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App'){
+      try{
+        let result = await Geolocation.getCurrentPosition()
+        console.log(result)
+        return {latitude: result.coords.latitude, longitude: result.coords.longitude}
+      }catch(error){
+        console.log(error)
       }
-    
-
+    }else{
+      let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
+      return {latitude: result.lat, longitude: result.lng}
+    }
+    }
   }
 }
 </script>

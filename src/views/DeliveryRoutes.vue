@@ -150,7 +150,6 @@
 </template>
 
 <script>
-import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
@@ -264,36 +263,15 @@ export default {
       }
   },
   methods: {
-    async location () {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location1.latitude = geo.coords.latitude
-          this.location1.longitude = geo.coords.longitude
-        } catch (e) {
-          console.log(e)
-        
-        }
-    },
+    
     screenSelection () {
-      this.showButton = false
-      // let orderId;
-      // let plus = false
 
-      // for (let i = 0; i < this.idOrderToInvoices.length; i++) {
-      //     if(this.idOrderToInvoices[i] > 0){
-      //         plus = true
-      //         orderId += `${this.idOrderToInvoices[i]}`
-      //     }else if(this.idOrderToInvoices[i] == 0 && plus){
-      //         orderId += `${this.idOrderToInvoices[i]}`
-      //     }
-      // }
-   if (this.load.allowOrderChangesAtDelivery) {
+      this.showButton = false 
+
+      if (this.load.allowOrderChangesAtDelivery) {
         this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
-        this.$router.push({ name: "details-invoices" }).catch(() => {});
-      } else{
-        this.scan()
       }
-
+        this.scan()
     },
     async scan() {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
