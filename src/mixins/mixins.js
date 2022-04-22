@@ -201,14 +201,20 @@ export const Mixins = {
         const currentProductExo = order?.products[i];
 
           let {order_num, _id} = order
-          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = currentProductExo 
+        let { name, qrCode, quantity, scanOneByOne, loadScanningCounter } = currentProductExo
+        
           if (productsOdoo !== null) {
-            
-            if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId) {
-              quantity = quantityToInvoice
+            if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId && quantityToInvoice !== null) {
+                let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
+                quantity = productsOdoo[productIndexOdoo]?.productQuantity - quantityToInvoice 
+
             } else {
-              let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name )
-              quantity =  productsOdoo[productIndexOdoo]?.productQuantityInvoiced
+              
+                if (productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name && !curretProductOdoo.isRewardLine )>= 0) {
+                  let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
+                  quantity = productsOdoo[productIndexOdoo]?.productQuantity - productsOdoo[productIndexOdoo]?.productQuantityToInvoice
+                }
+            
             }
 
           }

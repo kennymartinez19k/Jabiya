@@ -9,10 +9,9 @@
     >
     </ion-loading>
     <div>
-      <h4 class="uk-text-small">Procesar Facturas y Devolución</h4>
+      <h4 class="uk-text-small">Procesar Facturas y Devoluciones</h4>
       <div
-        class="uk-card uk-card-default uk-card-body uk-width-1-2@m"
-        style="padding: 0px 8px 8px"
+        class="uk-card uk-card-default uk-card-body uk-width-1-2@m details-order"
       >
         <p>
           <strong>Orden:</strong>&nbsp;<span>{{ customerDetails?.order?.name }}</span>
@@ -30,7 +29,7 @@
         <p>
           <strong>Total:</strong>&nbsp;<span
             >{{ customerDetails?.order?.currencySymbol
-            }}{{ customerDetails?.order?.amount_total }}
+            }}{{customerDetails?.order?.total_invoice.toFixed(2) }}
             <span
               v-if="showUpdating.length > 0"
               :class="{ recalculating: showUpdating.length > 0 }"
@@ -40,25 +39,20 @@
         </p>
       </div>
     </div>
-    <div class="uk-flex uk-flex-between uk-flex-middle">
-      <h4 class="uk-text-small">Lista de Productos</h4>
-      <div>
-      <button 
-                :disabled="btnInvoices"
-                type="button"
-                class="uk-button uk-button-primary" style="padding: 7px 10px"
-                @click="downloadPDFRefundInvoice()"
-              >
-              Descargar Facturas
-              </button>
-      </div>
-            
-    </div>
+      <h4 class="uk-text-small text-returns">Procesar Devoluciones </h4>
+      <h6 class="subtitle">(de ser necesario)</h6>
+
+<div class=" table-thead uk-margin-left">
+            <h6 class="uk-text-left uk-width-1-3 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
+              <h6 class="uk-text-center uk-width-1-3 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
+              <h6 class="uk-text-left uk-width-1-4 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
+        </div>
     <div>
+      
       <div
         class="uk-card uk-card-default uk-card-body table-scroll"
-        style="padding: 0 8px"
       >
+        
         <table
           class="
             uk-table
@@ -68,41 +62,37 @@
             uk-text-left
           "
         >
-          <thead>
-            <tr class="title">
-              <th :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</th>
-              <th :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</th>
-            </tr>
-          </thead>
           <tbody>
             <tr v-for="(product, i) in order_lines" :key="product">
-              <td  :class="{'td-text': customerDetails?.order?.can_refund}" class="uk-table-small">{{ product.productName }}<br><span class="uk-text-bold">Precio:&nbsp;</span>{{ product.currencySymbol }}{{ product.price }}  <br><span class="uk-text-bold">Ordenados:&nbsp;</span> {{product.productQuantity}}</td>
+              <td v-if="!product.isRewardLine" :class="{'td-text': customerDetails?.order?.can_refund}" class="uk-table-small">{{ product.productName }}<br><span class="uk-text-bold">Precio:&nbsp;</span><span>{{ product.currencySymbol }}{{ product.price }} </span>  <br><span class="uk-text-bold">Ordenados:&nbsp;</span><del v-if="product.productQuantityToInvoice > 0 " class="quantity-adjustment"><span>{{product.productQuantity}}</span></del> <span v-if="product.productQuantityToInvoice == 0 "><span>{{product.productQuantity}}</span></span></td>
               <td
+              v-if="!product.isRewardLine"
               class="uk-text-center"
                 :class="{
-                  showActive: product.productQuantityInvoiced !== NewOrdersQuantyti[i],
+                  showActive: product.productQuantityToInvoice !== NewOrdersQuantyti[i],
                   'td-text': customerDetails?.order?.can_refund
                 }"
               >
-                {{ product.productQuantity - product.productQuantityInvoiced  }}
+               <span >{{ product.productQuantityToInvoice  }}</span>
               </td>
-              <span class="f-span uk-margin-small">
+              <span v-if="!product.isRewardLine" class="f-span uk-margin-small">
                <font-awesome-icon
               v-if="customerDetails?.order?.can_refund"
                 icon="plus"
                 :class="{
                   'plus-disabled':
-                    product.productQuantityInvoiced == 0 ||
+                    product.productQuantityToInvoice >= orderStoreQuantity[i] ||
                     !customerDetails?.order?.can_refund,
                 }"
                 class="Space font-awesome uk-margin-bottom"
                 @click="
-                  (product.productQuantityInvoiced -= 1),
-                    showproductQuantityInvoiced(
-                      'min',
-                      product.productQuantityInvoiced,
+                  (product.productQuantityToInvoice += 1),
+                    showproductQuantityToInvoice(
+                      'plus',
+                      product.productQuantityToInvoice,
                       NewOrdersQuantyti[i],
                       product,
+                      product.productQuantity,
                     )
                 "
               />
@@ -111,17 +101,19 @@
                 icon="minus"
                 :class="{
                   'plus-disabled':
-                    product.productQuantityInvoiced >= orderStoreQuantity[i] ||
+                    product.productQuantityToInvoice == 0 ||
                     !customerDetails?.order?.can_refund,
                 }"
                 class="Space font-awesome uk-flex uk-flex-wrap-bottom"
                 @click="
-                  (product.productQuantityInvoiced += 1),
-                    showproductQuantityInvoiced(
-                      'plus',
-                      product.productQuantityInvoiced,
+                  (product.productQuantityToInvoice -= 1),
+                    showproductQuantityToInvoice(
+                      'min',
+                      product.productQuantityToInvoice,
                       NewOrdersQuantyti[i],
                       product,
+                      product.productQuantity,
+
                     )
                 "
               />
@@ -131,26 +123,17 @@
         </table>
       </div>
     </div>
-<!-- This is the modal -->
-<div id="invoicesPdf" uk-modal>
-    <div class="uk-modal-dialog uk-modal-body">
-        <h5 class="uk-modal-title">Detalles</h5>
-        <p>Su factura  fue descargada en la carpeta de <strong style="font-size: 17px !important">"Documents"</strong> de su teléfono </p>
-        <p class="uk-text-right">
-            <button class="uk-button uk-button-primary uk-modal-close" type="button">Aceptar</button>
-        </p>
-    </div>
-</div>
-
     <!-- This is the modal -->
     <div id="products" uk-modal>
       <div class="uk-modal-dialog uk-modal-body">
         <div class="uk-margin">
-          <p>Esta seguro que desea guardar los cambios</p>
+          <p v-if="!isOriginalValue">Esta seguro que desea guardar los cambios</p>
+          <p v-if="isOriginalValue">Esta seguro que desea eliminar el rembolso</p>
         </div>
-        <div class="uk-flex uk-flex-between">
+
+        <div class="uk-flex uk-flex-right">
           <div>
-            <button
+               <button
               id="cancel"
               class="uk-button uk-modal-close button-cancel"
               type="button"
@@ -160,53 +143,45 @@
           </div>
           <div>
             <button
+              v-if="!isOriginalValue"
              :disabled="btnChange"
-              class="uk-button uk-button-primary uk-modal-close"
+              class="uk-button uk-button-primary uk-modal-close btn-modal"
               type="button"
               @click="changeProductQuantityRefudInvoiced()"
             >
-              Modificar
+              ok
+            </button>
+              <button
+              v-if="isOriginalValue"
+              class="uk-button uk-button-primary uk-modal-close btn-modal"
+              type="button"
+              @click="removeInvoiceRefund()"
+            >
+              ok
             </button>
           </div>
         </div>
       </div>
     </div>
     <div class="button-position uk-flex uk-flex-between">
-      <div class="uk-margin-top">
+      <div class=" btn-style">
         <button
           type="button"
           uk-toggle="target: #products"
           :disabled="btnSave"
-          class="uk-button uk-button-primary"
+          class="uk-button uk-button-primary btn-style"
         >
           Crear Devolución
         </button>
       </div>
-      <!-- <div class="uk-margin-top">
-        <button  v-if="customerDetails?.order?.can_refund"
+      <div class="btn-style">
+        <button 
           :disabled="btnInvoices"
           type="button"
-          class="uk-button uk-button-primary"
+          class="uk-button uk-button-primary btn-style" 
           @click="downloadPDFRefundInvoice()"
         >
-         Descargar Facturas
-        </button>
-          <button v-if="customerDetails?.order?.can_refund"
-          type="button"
-          class="uk-button uk-button-primary"
-          @click="downloadPDFRefundInvoice()"
-        >
-          Descargar Facturas
-        </button> --
-      </div> -->
-      <div class="uk-margin-top">
-        <button
-          :disabled="btnScan"
-          type="button"
-          class="uk-button uk-button-primary"
-          @click="ScanOrder()"
-        >
-          Entregar Orden
+        Descargar Facturas
         </button>
       </div>
     </div>
@@ -219,11 +194,7 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-import { Filesystem, Directory } from "@capacitor/filesystem";
-import UIkit from "uikit";
-import moment from "moment";
-import "moment/locale/es";
-
+import { Browser } from '@capacitor/browser';
 export default {
   alias: "Detalles",
   components: {
@@ -246,6 +217,7 @@ export default {
       btnScan: true,
       productOrder: null,
       OrderQuantity: null,
+      staticQuantity: null,
       order_lines: null,
       customerDetails: null,
       NewOrdersQuantyti: [],
@@ -253,6 +225,8 @@ export default {
       orderStoreQuantity: [],
       idInvoices: null,
       btnChange: false,
+      isOriginalValue: true,
+
     };
   },
   setup() {
@@ -273,15 +247,18 @@ export default {
     } catch (error) {
       console.log(error);
     }
-    await this.productsOfOrders();
-  },
 
+    await this.productsOfOrders();
+    this.setOpen(false);
+
+  },
   computed: {
     ...mapGetters([
       "invoicesIdStore",
       "structureToScan",
       "isChangeQuantityStore",
       "orderScan",
+      "loadStore"
     ]),
   },
 
@@ -290,20 +267,19 @@ export default {
       handler: function (newVal) {
         if (newVal.length !== 0) {
           this.btnSave = false;
-          if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
-          this.btnScan = false;
+        
+          if (this.customerDetails.invoices.length > 0 && newVal.length == 0 ) {
             this.btnInvoices = false;
           } else {
-          this.btnScan = true;
             this.btnInvoices = true;
           }
+
         } else if (newVal.length == 0) {
           this.btnInvoices = false;
+
            if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
-          this.btnScan = false;
             this.btnInvoices = false;
           } else {
-          this.btnScan = true;
             this.btnInvoices = true;
           }
 
@@ -316,73 +292,81 @@ export default {
     async productsOfOrders() {
 
       try {
+         this.setOpen(true);
+
         //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
         const result = await axios.get(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}`,{ withCredentials: true });
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
-        console.log(result.data,'result.data.result.data.order_lines')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {
               this.orderStoreQuantity.push(z.quantity);
             });
-            this.OrderQuantity = x.productQuantityInvoiced;
+            this.OrderQuantity = x.productQuantityToInvoice;
             this.productOrder = x;
-            if (this.orderStoreQuantity[i] !== x.productQuantityInvoiced) {
+            if (x.productQuantityToInvoice !== 0) {
               this.isChangeQuantity.exception = true;
-              this.isChangeQuantity.changeQuantity = x.productQuantityInvoiced
-              this.isChangeQuantity.order_num = this.customerDetails?.order?.id;
-              localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.id}`,JSON.stringify(this.isChangeQuantity));
+              this.isChangeQuantity.changeQuantity = x.productQuantityToInvoice
+              this.isChangeQuantity.order_num = this.customerDetails?.order?.name;
+              localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.name}`,JSON.stringify(this.isChangeQuantity));
               this.$store.commit("getChageQuantityToProduct",this.isChangeQuantity);
             }
-            return x.productQuantityInvoiced;
+            return x.productQuantityToInvoice;
           }
         );
-        console.log(this.NewOrdersQuantyti,'this.NewOrdersQuantyti')
         if (!this.customerDetails?.order?.can_refund || this.customerDetails?.invoices.length > 0) {
           this.btnScan = false;
           this.btnSave = true;
           this.btnInvoices = false;
         }
         
-        if (this.OrderQuantity) {
-          this.setStructureInvoices(this.OrderQuantity, this.productOrder);
-        }
+        // if (this.OrderQuantity) {
+          this.setStructureInvoices(null, this.productOrder);
+        // }
 
         if (this.isChangeQuantityStore.exception) {
           this.isChangeQuantity.changeQuantity = this.isChangeQuantityStore.changeQuantity;
-        } else if (localStorage.getItem(`isChangeQuantity${this.customerDetails?.order?.id}`)) {
-          this.isChangeQuantity = JSON.parse(localStorage.getItem(`isChangeQuantity${this.customerDetails?.order?.id}`));
+        } else if (localStorage.getItem(`isChangeQuantity${this.customerDetails?.order?.name}`)) {
+          this.isChangeQuantity = JSON.parse(localStorage.getItem(`isChangeQuantity${this.customerDetails?.order?.name}`));
         }
       } catch (error) {
         console.log(error);
       }
-      this.setOpen(false);
+      let contProductsOdoo = 0;
+        this.order_lines.forEach(x => {
+            if (!x.isRewardLine && x.productQuantityToInvoice ===0) {
+                contProductsOdoo++
+            } else if (x.isRewardLine) {
+                contProductsOdoo++
+            }
+        })
+        if (this.order_lines.length === contProductsOdoo){
+          this.isOriginalValue = true
+        } else {
+          this.isOriginalValue = false
+        } 
     },
 
     async changeProductQuantityRefudInvoiced() {
       this.btnChange = true
       this.setOpen(true);
       let quantityLocal = [];
-      const order_lines = this.order_lines.map((x) => {
-        quantityLocal.push(x.productQuantityInvoiced);
-        let qty = null
-        if (this.orderScan.find(products => products.products.find(product => product.description === x.productName)  )) {
-           qty = x.productQuantity - x.productQuantityInvoiced
-        }
-        return  {product_id: x.productId, set_qty: qty}
-        
+      const order_lines = this.order_lines.map((orderOdoo) => {
+      quantityLocal.push(orderOdoo.productQuantityToInvoice);
+      if (this.orderScan.find(products => products.products.find(product => product.description === orderOdoo.productName && orderOdoo.productQuantityToInvoice != 0)  )) {
+        // qty = orderOdoo.productQuantity - orderOdoo.productQuantityToInvoice
+        return  {product_id: orderOdoo.productId, set_qty: orderOdoo.productQuantityToInvoice}
+      }
       });
       this.isChangeQuantity.changeQuantity = quantityLocal;
       this.isChangeQuantity.exception = true;
       this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity);
-      localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.id}`,JSON.stringify(this.isChangeQuantity));
+      localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.name}`,JSON.stringify(this.isChangeQuantity));
 
       this.showUpdating = [];
-      await this.createRefudInvoices(order_lines);
-      this.btnSave = true;
-      this.btnChange = false
-      this.btnInvoices = false;
+      await this.createRefudInvoices(order_lines.filter( x => x != undefined));
+ 
     },
 
 
@@ -402,106 +386,90 @@ export default {
             },
             { withCredentials: true }
            );
+          this.btnSave = true;
+          this.btnChange = false
+          this.btnInvoices = false;
+          await this.productsOfOrders();
+          await this.downloadPDFRefundInvoice();
+      } catch (error) {
+        console.log(error)
+        this.btnChange = false
+        await this.productsOfOrders();
+        this.setOpen(false);
+      }
+     
+
+    },
+
+    async removeInvoiceRefund () {
+        this.setOpen(true);
+     let refundId = null
+      this.customerDetails.invoices.forEach(x => { if (x.move_type == "out_refund")  refundId = x.id } )
+        try {
+        await axios.delete(`https://jabiyaerp.flai.com.do/api/invoice/refund/${refundId}`, { withCredentials: true });
+        this.showUpdating = []
+        this.isChangeQuantity.exception = false;
+        this.isChangeQuantity.changeQuantity = null
+        this.isChangeQuantity.order_num = null
+        this.$store.commit("getChageQuantityToProduct",this.isChangeQuantity);
+        localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
+        await this.productsOfOrders()
       } catch (error) {
         console.log(error)
       }
-      await this.productsOfOrders();
-      await this.downloadPDFRefundInvoice();
-
+        this.setOpen(false);
     },
-    // async c () {
-    //   // este es la confirmacion debo ponerlo cuando escane todo
-    //     try {
-    //      await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/post`,{ withCredentials: true });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-
-    //   this.btnScan = false;
-    //   this.btnInvoices = true;
-    // },
-
+    
     async downloadPDFRefundInvoice() {
+    this.setOpen(true);
+
       let selectedInvoicesId = []
       this.customerDetails.invoices.forEach(x => {
       selectedInvoicesId.push( x.id.toString())
       })
       let downloadInvoicesId = selectedInvoicesId.join();
-      console.log(downloadInvoicesId,'downloadInvoicesId')
-      let date = moment(new Date()).format("DD-MM-YYYY,h:mm:ss");
-      let invoices = `Inv${date}.pdf`
-      var urlFile =`https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}/download?report_type=pdf&download=true`;
+      try {
+      var urlFile =`https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}`;
       var request = new XMLHttpRequest();
+      request.withCredentials= true
       request.open("GET", urlFile, true);
       request.responseType = "blob";
-      // console.log(request,'resffff')
-      // console.log(request.responseURL,'resffff')
-      request.onload = function () {
-        var reader = new FileReader();
-        reader.readAsDataURL(request.response);
-        reader.onload = function (e) {
-          // console.log(e, 'fddddddddddddd')
-          Filesystem.writeFile({
-            path: invoices,
-            data: e.target.result,
-            directory: Directory.Documents,
-            recursive: true,
-          })
-            .then((result) => {
-              const path = result.uri;
-              console.log(path);
-              UIkit.modal('#invoicesPdf').show();
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-
-            const contents =  Filesystem.getUri({
-            path: invoices,
-            directory: Directory.Documents,
-            recursive: true,
-          }).then((result) => {
-              const path = result.uri;
-              console.log(path);
-              // UIkit.modal('#invoicesPdf').show();
-            })
-            .catch((error) => {
-              console.log(error);
-            });            
-            console.log('data:', contents);
-
-
-        };
-      };
-      request.send();
+      Browser.open({ url:`https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}`})
+     } catch (error) {
+        console.log(error)
+      }
       this.btnScan = false;
       this.btnInvoices = false;
-  //         var link = document.createElement("a");
-  //         // https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}/download?report_type=pdf&download=true
-  // link.href = `https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}/download?report_type=pdf&download=true`;
-  //     link.download = "file.pdf";
-  //     // link.target = "_self"
-  //     // link.dispatchEvent(new TouchEvent("click"));
-  //     link.dispatchEvent(new MouseEvent("click"));
-      
+      if (!this.loadStore.scanningRequired) {
+        this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});
+      } else {
+        this.$router.push({ name: "deliveryActions" }).catch(() => {});
+      }
+      let dwlStatus = {
+        status: true,
+        order: this.customerDetails?.order?.name
+      }
+      this.$store.commit("getInvoiceDownload",dwlStatus);
+      this.setOpen(false);
+
     },
 
-    showproductQuantityInvoiced(signo, value, amountCompare, product) {
+    showproductQuantityToInvoice(signo, value, amountCompare, product, staticQty) {
       if (signo === "plus" && value == amountCompare) {
         if (
           this.order_lines.every(
-            (x,i) => x.productQuantityInvoiced === this.orderStoreQuantity[i]
+            (x,i) => x.productQuantityToInvoice === this.orderStoreQuantity[i]
           ) ||
           this.order_lines.every(
-            (x) =>
-              x.productQuantityInvoiced === this.isChangeQuantity.changeQuantity
+            (x,i) =>
+              x.productQuantityToInvoice === this.NewOrdersQuantyti[i]
           )
         ) {
           this.btnSave = true;
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
+          this.btnSave = true;
         }
       } else if (signo === "plus" && !this.isChangeQuantity.changeQuantity) {
         this.btnSave = true;
@@ -512,35 +480,45 @@ export default {
       } else if (signo === "min" && value == amountCompare) {
         if (
           this.order_lines.every(
-            (x, i) => x.productQuantityInvoiced === this.orderStoreQuantity[i]
+            (x, i) => x.productQuantityToInvoice === this.orderStoreQuantity[i]
           ) ||
           this.order_lines.every(
-            (x) =>
-              x.productQuantityInvoiced === this.isChangeQuantity.changeQuantity
+            (x,i) =>
+              x.productQuantityToInvoice === this.NewOrdersQuantyti[i]
           )
         ) {
           this.btnSave = true;
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
-
         }
       } else {
         this.btnSave = false;
         this.showUpdating.push(value);
-
       }
 
       this.OrderQuantity = value;
+      this.staticQuantity = staticQty;
       this.productOrder = product;
+       let contProductsOdoo = 0;
+        this.order_lines.forEach(x => {
+            if (!x.isRewardLine && x.productQuantityToInvoice ===0) {
+                contProductsOdoo++
+            } else if (x.isRewardLine) {
+                contProductsOdoo++
+                
+            }
+        })
+        if (this.order_lines.length === contProductsOdoo){
+          this.isOriginalValue = true
+        } else {
+          this.isOriginalValue = false
+        }
       this.setStructureInvoices(this.OrderQuantity, this.productOrder);
     },
 
-    ScanOrder() {
-      this.btnScan = true
-      this.$router.push({ name: "deliveryActions" }).catch(() => {});
-    },
     async setStructureInvoices(quantity, product) {
+
       let structure = await this.setStructure(
         this.orderScan[0],[], [],quantity,product, this.order_lines);
       this.listOfOrders = structure.firstStructure;
@@ -550,6 +528,10 @@ export default {
         secondStructure: this.listOfOrderTotal,
       };
       this.$store.commit("setStructureToScan", structureInvoices);
+    },
+
+      setRound (val) {
+        return val.toFixed(2)
     },
   },
 };
@@ -563,12 +545,14 @@ p {
 .Space {
   margin-right: 20px;
 }
-.title {
-  background: white;
+td {
+  width: 43%;
 }
-
 .td-text {
   padding: 10px 12px !important;
+}
+.text-size{
+  font-size: 17px !important
 }
 .th-text {
   text-align: center;
@@ -588,6 +572,7 @@ th {
   bottom: 10px;
   right: 11px;
   width: 92%;
+  background-color: #fff;
 }
 .button-position-save {
   background-color: #2a307c;
@@ -603,12 +588,17 @@ th {
 .button-cancel {
   background: #930404;
   color: #fff;
+  margin-right: 15px;
+  padding: 11px;
+  font-size: 11px;
 }
+
 .recalculating {
   background-color: yellow;
 }
 .table-scroll {
-  height: 290px;
+  height: 230px;
+  padding: 0 8px 45px;
   overflow-x: none;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -622,5 +612,33 @@ th {
 .f-span {
   display: flex;
   flex-direction: column;
+}
+.text-returns {
+  margin-bottom: 0px;
+}
+.subtitle {
+  font-size: 12px; 
+  margin-top: 0px;
+  color: #6d6f7f;
+}
+.btn-style{
+  padding: 10px;
+  font-size: 10px;
+}
+.btn-modal {
+  padding: 10px;
+  font-size: 10px;
+}
+.details-order{
+ padding: 0px 8px 8px;
+
+}
+.table-thead{
+  display: flex;
+  justify-content: space-around;
+}
+.quantity-adjustment{
+  background-color: #efb5b5;;
+  padding: 5px;
 }
 </style>

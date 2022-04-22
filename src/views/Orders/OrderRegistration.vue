@@ -568,7 +568,6 @@ export default {
         }
     },
     onChange() {
-        console.log(1)
       this.filterResults();
       this.isOpen = true;
     },

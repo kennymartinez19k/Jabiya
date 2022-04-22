@@ -139,6 +139,7 @@ export default {
     async selectDriverAndVehicle () {
       this.disabledButton = true
       this.setOpen(true)
+        localStorage.setItem('loadInProgress', JSON.stringify(this.detailsLoads.loadMapId));
       if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
         localStorage.removeItem('dateCheck');
         localStorage.setItem('dateCheck', JSON.stringify(this.detailsLoads?.dateTime?.date));
