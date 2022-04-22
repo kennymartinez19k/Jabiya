@@ -788,7 +788,7 @@ p {
 }
 .stiky {
   color: rgb(255, 255, 255) !important;
-  z-index: 2;
+  z-index: 0;
   border-top: 1px solid #313575;
   font-size: 12px !important;
   padding: 0px 10px 5px !important;
