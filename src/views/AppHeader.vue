@@ -55,7 +55,7 @@
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li>
+            <!-- <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
             <li @click="setCurrentPage('settings')">Configuración</li>
             <li @click="setCurrentPage('version')">Version app</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
