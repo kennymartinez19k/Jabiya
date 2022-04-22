@@ -243,12 +243,14 @@ export default {
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
 
-
+    // if (!this.loadStore.allowOrderChangesAtDelivery) {
+      
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.verifiedLoad()
     }else{
       this.scanOrder()
     }
+    // }
 
     
   },

@@ -9,7 +9,7 @@
         <font-awesome-icon
             v-if="iconType"
             :icon="iconType"
-            @click="setCurrentPage(action)"
+            @click="setDistributePage(action)"
             style="font-size: 20px; margin: 0px 15px"
           />
       </div>
@@ -55,7 +55,7 @@
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <!-- <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
+            <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li>
             <li @click="setCurrentPage('settings')">Configuración</li>
             <li @click="setCurrentPage('version')">Version app</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
@@ -130,6 +130,19 @@ export default {
       Uikit.offcanvas("#offcanvas-overlay").hide();
     },
     setCurrentPage(val) {
+      this.hideMenu()
+      if(val == 'sign-in'){
+        this.$store.commit('resetData')
+        this.$router.push({ name: val }).catch(() => {});
+      }
+      if(val){
+        this.$router.push({ name: val }).catch(() => {});
+      }else{
+          this.$router.push({ name: val }).catch(() => {});
+          this.hideMenu();
+      }
+    },
+     setDistributePage(val) {
       if(val == 'sign-in'){
         this.$store.commit('resetData')
         this.$router.push({ name: val }).catch(() => {});
@@ -142,6 +155,9 @@ export default {
       }
       else if(this.$route.name == 'manage-orders'){
         this.$router.push({name: 'home'})
+      }
+      else if(this.$route.name == 'delivery-actions-auto' || this.$route.name == 'deliveryActions'){
+        this.$router.push({name: 'delivery-routes'})
       }
       else{
         if (val == "back") this.$router.go(-1);

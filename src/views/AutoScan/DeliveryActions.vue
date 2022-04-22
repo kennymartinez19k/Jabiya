@@ -84,24 +84,35 @@
             </div>
           </div>
         </div>
-
+        <div
+          v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
+        >
+          <div class="uk-flex uk-flex-wrap img-scroll">
+            <span
+              class="position-imagin"
+            >
+              <img class="img-result" src="../../assets/invoice.png" alt="Red dot" />
+              <img
+                src="../../assets/rejected.png"
+                class="icon-close"
+                @click="deleteInvoices()"
+                alt=""
+              />
+            </span>
+          </div>
+        </div>
         <div
           v-if="imagiElement.length > 0"
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
-          style="padding: 5px 0px 10px !important"
         >
           <div class="uk-flex uk-flex-wrap img-scroll">
             <span
               v-for="(src, index) in imagiElement"
               :key="src"
-              style="
-                position: relative;
-                width: 85px;
-                display: flex;
-                margin: 0px 10px;
-              "
+              class="position-imagin"
             >
-              <img class="img-result" :src="src" alt="Red dot" />
+              <img class="img-result"  :src="src" alt="Red dot" />
               <img
                 src="../../assets/rejected.png"
                 class="icon-close"
@@ -199,9 +210,11 @@
                 type="checkbox"
                 v-model="exception"
                 name="onoffswitch"
+                :class="{'checkbox-default':isChangeQuantityStore.exception}"
                 class="onoffswitch-checkbox"
                 id="myonoffswitch"
                 tabindex="0"
+                :disabled="isChangeQuantityStore.exception === true"
               />
               <label class="onoffswitch-label" for="myonoffswitch"></label>
             </div>
@@ -230,6 +243,7 @@ import { IonLoading } from "@ionic/vue";
 import { Mixins } from "../../mixins/mixins";
 import { profile } from "../../types";
 import Camera from "simple-vue-camera";
+import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 
 export default {
   name: "DeliveryActions",
@@ -272,6 +286,7 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
+      orderInformation:null
     };
   },
   computed: {
@@ -282,6 +297,12 @@ export default {
       "digitalFirmStore",
       "settings",
       "allLoadsStore",
+      "isChangeQuantityStore",
+      "invoicesIdStore",
+      "invoiceDownloadStore",
+      "causeExceptionsStore",
+      "structureToScan",
+
     ]),
  
   },
@@ -312,13 +333,18 @@ export default {
     }
     this.load.firstOrdenInfo = this.load?.Orders[0];
     await this.getLocation();
+    this.orderInformation = this.orders.find(x => x.order_num)
+    if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
+      this.exception = this.isChangeQuantityStore.exception
+    } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
+       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+    }
   },
   watch: {
     digitalFirmStore: {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-
           this.uploadOrDownload(this.orders);
           this.postImages();
 
@@ -388,7 +414,12 @@ export default {
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
             this.$router.push({ name: "home" }).catch(() => {});
           }
-
+       
+           if (this.load.allowOrderChangesAtDelivery) {
+            localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+            this.confirmAndFinalizeCreationOfInvoices()
+          }
+         
           this.setOpen(false);
         }
       },
@@ -400,7 +431,6 @@ export default {
     },
      imagiElement:{
       handler: function(newVal){
-        console.log(newVal,'qqqqqqq')
         if (newVal.length == 0) {
         this.$store.commit('setImagiElement',[])
         } else {
@@ -498,10 +528,26 @@ export default {
           order._id
         );
       }
+       let resultId = []
+        this.orders.forEach(x => {
+          if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
+           resultId.push(x._id)
+          }
+        })
+
+        if (this.causeExceptionsStore && resultId.length > 0) {
+         for (let x = 0; x < resultId.length; x++) {
+            this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
+         } 
+        }
     },
 
     uploadOrDownload(val) {
-      this.setLoadTruck(val);
+      if (!this.loadStore.allowOrderChangesAtDelivery) {
+        this.setLoadTruck(val);
+      } else {
+        this.setLoadTruckInvoices(this.structureToScan.firstStructure);
+      }
     },
     setLoadTruck(val) {
       this.timeOut = 10000;
@@ -546,11 +592,58 @@ export default {
       }
       return totalOfBoxes;
     },
+    setLoadTruckInvoices(structure) {
+      this.timeOut = 10000;
+      this.setOpen(true);
+     
+        for (var i = 0; i < structure.length; i++) {
+          let prod = structure[i];
+          let order = this.orders.find(x => x.order_num === prod.order_num )
+          let dataProduct = order.products.find(p => p.qrCode === prod.qrCode &&  p.name === prod.name )
+         
+         try {
+            if (prod.scanOneByOne === "no") {
+              prod.loadScanningCounter = prod.quantity;
+              this.$services.deliverServices.deliverProduct(
+                order._id,
+                dataProduct._id,
+                prod.loadScanningCounter,
+                dataProduct.product,
+                prod.qrCode
+              );
+            } else {
+              for (let i = 0; i <= prod.quantity; i++) {
+                prod.loadScanningCounter = i;
+                this.$services.deliverServices.deliverProduct(
+                  order._id,
+                  dataProduct._id,
+                  prod.loadScanningCounter,
+                  dataProduct.product,
+                  prod.qrCode
+                );
+              }
+            }
+          } catch (error) {
+            if (error.message === "Request failed with status code 401") {
+              console.log("Error al introducir los datos");
+            } else if (error.message === "Network Error") {
+              console.log("Error de conexion, verifique que este conectado");
+            }
+          }
+        }
+    },
     deleteImage(index) {
       this.imagiElement.splice(index, 1);
       if (this.imagiElement.length === 0) {
         this.step = 1;
       }
+    },
+      deleteInvoices() {
+        let dwlStatus = {
+        status: false,
+        order: null
+      }
+      this.$store.commit("getInvoiceDownload",dwlStatus);
     },
     resetSign() {
       this.step = 2;
@@ -595,6 +688,16 @@ export default {
       this.cameraOn = false;
       this.image = img;
     },
+
+       async confirmAndFinalizeCreationOfInvoices () {
+      // este es la confirmacion debo ponerlo cuando firme todo
+        try {
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
+      } catch (error) {
+        console.log(error);
+      }
+
+    },
   },
 };
 </script>
@@ -623,6 +726,9 @@ p {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+.checkbox-default:checked + .onoffswitch-label{
+  background-color: #898989 !important;
 }
 .onoffswitch-label {
   position: relative;
@@ -723,7 +829,7 @@ li::before {
 .img-result {
   width: 98%;
   height: 80px;
-  /* margin-right: 5px; */
+  margin-top: 10px;
   border: 1px solid #000;
 }
 .img-scroll {
@@ -748,7 +854,8 @@ li::before {
   margin-left: 5px;
 }
 .uk-card-body {
-  padding: 16px 15px;
+  /* padding: 16px 15px; */
+  padding: 5px 15px 16px;
 }
 .cont {
   position: sticky;
@@ -758,8 +865,8 @@ li::before {
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  right: -10px;
-  top: -10px;
+  right: -14px;
+  top: 0px;
   width: 22px;
   border-radius: 10px;
 
@@ -772,6 +879,8 @@ li::before {
 }
 .img-card {
   width: 100%;
+  padding: 0px !important;
+  /* padding: 5px 0px 10px !important; */
 }
 
 .showCamera {
@@ -863,5 +972,16 @@ li::before {
   color: #999;
   border: 1px solid #e5e5e5;
   pointer-events: none;
+}
+.position-imagin {
+  position: relative;
+  width: 77px;
+  display: flex;
+  margin: 0px 10px;
+}
+
+.pad-car {
+  padding: 5px 0px 10px !important;
+
 }
 </style>

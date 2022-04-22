@@ -264,7 +264,7 @@ export default {
   
       try{
         loads = await this.$services.loadsServices.getLoadsbyDate(date);
-        console.log(loads)
+        // console.log(loads)
         if(val){
          this.waitingMessage = true
         }
@@ -310,7 +310,6 @@ export default {
           console.log(error)
         }
         Object.assign(load, loadDetails)
-        console.log(load)
 
         if(!((loadDetails?.loadingStatus?.text === "Driver selection in progress" && this.userInfo?.userType === this.userType?.driver)
            || ( !loadDetails?.approvers[0]?.status && loadDetails?.loadingStatus?.text === "Expecting Approval" && this.userInfo?.userType !== this.userType?.provider )
@@ -334,7 +333,6 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
 
-      console.log(this.loadsToDisplay)
       this.sortLoads()
       this.reloadEvent = false
 
@@ -347,7 +345,6 @@ export default {
            localStorage.removeItem(`sendInfo${load?.loadMapId}`);
         }
       }
-      console.log( this.loadsToDisplay,' this.loadsToDisplay')
     },
     
     reset(){
