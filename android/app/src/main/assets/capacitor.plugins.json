@@ -8,12 +8,12 @@
 		"classpath": "com.capacitorjs.plugins.app.AppPlugin"
 	},
 	{
-		"pkg": "@capacitor/camera",
-		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
+		"pkg": "@capacitor/browser",
+		"classpath": "com.capacitorjs.plugins.browser.BrowserPlugin"
 	},
 	{
-		"pkg": "@capacitor/filesystem",
-		"classpath": "com.capacitorjs.plugins.filesystem.FilesystemPlugin"
+		"pkg": "@capacitor/camera",
+		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
 	},
 	{
 		"pkg": "@capacitor/geolocation",

@@ -112,6 +112,25 @@
             </div>
           </div>
         </div>
+         <div
+          v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
+          style="padding: 5px 0px 10px !important"
+        >
+          <div class="uk-flex uk-flex-wrap img-scroll">
+            <span
+              class="position-imagin"
+            >
+              <img class="img-result" src="../assets/invoice.png" alt="Red dot" />
+              <img
+                src="../assets/rejected.png"
+                class="icon-close"
+                @click="deleteInvoices()"
+                alt=""
+              />
+            </span>
+          </div>
+        </div>
         <div
           v-if="imagiElement.length > 0"
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
@@ -120,12 +139,7 @@
             <span
               v-for="(src, index) in imagiElement"
               :key="src"
-              style="
-                position: relative;
-                width: 85px;
-                display: flex;
-                margin: 0px 10px;
-              "
+              class="position-imagin"
             >
               <img class="img-result" :src="src" alt="Red dot" />
               <img
@@ -336,6 +350,7 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
+      orderInformation: null
     };
   },
   setup() {
@@ -354,7 +369,9 @@ export default {
       "settings",
       "structureToScan",
       "isChangeQuantityStore",
-      "invoicesIdStore"
+      "invoicesIdStore",
+      "invoiceDownloadStore"
+
     ]),
 
     completedOrder: function () {
@@ -414,13 +431,12 @@ export default {
       this.allProductScanned = true;
       this.verifiedLoad();
     }
+      this.orderInformation = this.orderScan.find(x => x.order_num)
+
      if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
-    this.exception = this.isChangeQuantityStore.exception
-     } else if (localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)){
-       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)).exception
-     }
-     if (this.orderScan.some(x => x.products.some(product => product.loadScanningCounter !== 0))) {
-       this.confirmAndFinalizeCreationOfInvoices ()
+        this.exception = this.isChangeQuantityStore.exception
+     } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
+        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
      }
   },
   watch: {
@@ -494,7 +510,10 @@ export default {
             this.$router.push({ name: "home" }).catch(() => {});
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
           }
-          localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+          if (this.load.allowOrderChangesAtDelivery) {
+            localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+            this.confirmAndFinalizeCreationOfInvoices()
+          }
 
           this.setOpen(false);
         }
@@ -762,7 +781,6 @@ export default {
         if (result.hasContent) {
           BarcodeScanner.hideBackground();
           this.uploadProducts(result.content);
-          this.confirmAndFinalizeCreationOfInvoices()
         } else {
           this.statusOrders = "start";
         }
@@ -901,6 +919,16 @@ export default {
     deleteImage(i) {
       this.imagiElement.splice(i, 1);
     },
+
+    deleteInvoices() {
+      let dwlStatus = {
+        status: false,
+        order: null
+      }
+      this.$store.commit("getInvoiceDownload",dwlStatus);
+      // this.$store.commit("getInvoiceDownload",false);
+    },
+
     allProductUpload() {
       this.statusOrders = "start";
       this.resultScan = true;
@@ -1121,7 +1149,7 @@ export default {
 
 .stiky {
   color: rgb(255, 255, 255) !important;
-  z-index: 2;
+  z-index: 0;
   border-top: 1px solid #313575;
   font-size: 12px !important;
   padding: 0px 10px 5px !important;
@@ -1166,14 +1194,14 @@ li::before {
 .img-result {
   width: 98%;
   height: 80px;
-  margin-bottom: 10px;
+  margin: 10px 0px;
   border: 1px solid #000;
 }
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  right: -10px;
-  top: -10px;
+  right: -14px;
+  top: 0px;
   width: 22px;
   border-radius: 10px;
 
@@ -1211,7 +1239,7 @@ p {
 .uk-list{
   list-style: none;
   overflow: scroll;
-  height: 300px;
+  height: 385px; /* verify Height */
 }
 .status-order {
   width: 100%;
@@ -1414,5 +1442,11 @@ p {
   background: #00000094;
   z-index: 999;
   transition: opacity 0.2s ease;
+}
+.position-imagin {
+  position: relative;
+  width: 77px;
+  display: flex;
+  margin: 0px 10px;
 }
 </style>

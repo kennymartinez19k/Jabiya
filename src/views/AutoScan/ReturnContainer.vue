@@ -176,7 +176,7 @@
     <div
       v-if="!cameraOn && !image"
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 4px 0px !important"
+      style="z-index: 0; padding: 16px 0px !important"
     >
       <h6 style="margin: 0px 0px 10px; font-size: 14px">
         Click Para Tomar las Fotos y Firma

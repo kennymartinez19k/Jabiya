@@ -235,7 +235,7 @@ export default {
     this.filterByOrders(false)
     this.setOpen(false)
     if (this.load.allowOrderChangesAtDelivery) {
-     this.textButton = 'Entregar Orden'
+     this.textButton = 'Entregar Orden y Factura'
     } else {
      this.textButton = 'Escanear y Entregar Producto'
     }
@@ -265,13 +265,12 @@ export default {
   methods: {
     
     screenSelection () {
-
       this.showButton = false 
-
-      if (this.load.allowOrderChangesAtDelivery) {
+        if (this.load.allowOrderChangesAtDelivery) {
         this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
       }
         this.scan()
+
     },
     async scan() {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
@@ -491,18 +490,21 @@ li{
 }
 .uk-accordion-title{
   display: flex;
-  margin: 5px 0px;
+  margin: 5px  0px;
   font-size: 12px;
   color: #3880ff;
+  padding: 5px;
+
 }
 .uk-accordion-title::before {
     content: "";
-    margin-left: 20px;/* revision*/
+    margin-left: 7px;
     background-image: url('../assets/down.png');
     height: 17px;
-    background-size: 21px;
+    background-size: 14px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+    padding-right: 18px;
 }
 .uk-open>.uk-accordion-title::before {
   transform: rotate(180deg);
