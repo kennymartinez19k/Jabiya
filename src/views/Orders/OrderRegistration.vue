@@ -103,7 +103,7 @@
             <div class="item">
                 <label class="uk-form-label text-small" for="form-stacked-text">Nombre del Cliente: *</label>
                 <div class="uk-form-controls" style="position: relative">
-                    <input :class="{isEmpty: !client.client_name && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}" v-model="client.client_name" @keyup="onChange()" autocomplete="off" class="uk-input" id="form-stacked-text" type="text">
+                    <input :class="{isEmpty: !client.client_name && isValidate, 'disabled-item': !client?.customer?.name || isNotModificate}" v-model="client.client_name" autocomplete="off" class="uk-input" id="form-stacked-text" type="text">
                     <ul v-show="isOpen && results?.length > 0" class="autocomplete-results">
                         <li
                             v-for="(result, i) in results"
@@ -549,11 +549,11 @@ export default {
                 }
             }, deep: true
         }, 
-        // 'client.client_name': {
-        //     handler: function(){
-        //         this.onChange()
-        //     }
-        // }
+        'client.client_name': {
+            handler: function(){
+                this.onChange()
+            }
+        }
         
     },
     methods:{
@@ -675,10 +675,6 @@ export default {
 
     },
     saveProduct(){
-        let index = this.productsCreated.findIndex(prod => prod.productId == this.product.productId)
-        if(index >= 0){
-            this.productsCreated.splice(index, 1)
-        }
         this.productsCreated.push(this.product)
         this.isOpenModal = false
         this.product = {...this.productForReset}

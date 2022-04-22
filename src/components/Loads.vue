@@ -70,10 +70,25 @@
                       <span>{{ load?.loadNumber }}</span>
                     </p>
                 </div>
-                <div class="uk-flex uk-flex-middle info-Order">
-                  <p class="uk-text-bold position-text">No de Orden:&nbsp;</p>
+                <div class="uk-flex uk-flex-middle info-Order blue-text">
+                  <p class="uk-text-bold position-text ">No de Orden:&nbsp;</p>
                   <span v-for="(order, index) of load?.Orders" v-show="index < 3" :key="order">{{order?.order_num}}<span v-if="load?.Orders?.length > 1">, </span> </span>
                   <span v-if="load?.Orders?.length > 3">...</span>
+                </div>
+                <div v-if="userInfo?.userType != userType?.driver">
+                  <div class="uk-flex uk-flex-middle info-Order blue-text">
+                    <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
+                    <span v-for="info of load?.Vehicles" :key="info">
+                      {{info?.driver}}
+                      </span>
+                  </div>
+                  <div class="uk-flex uk-flex-middle info-Order blue-text">
+                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
+                      <span v-for="info of load?.Vehicles" :key="info">
+                        {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
+                        {{ info?.license_no }}
+                    </span>
+                  </div>
                 </div>
                  <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
@@ -93,21 +108,7 @@
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load?.loadingStatus?.slotEndTime)}}</span>
                 </div>
 
-                <div v-if="userInfo?.userType != userType?.driver">
-                  <div class="uk-flex uk-flex-middle info-Order">
-                    <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
-                    <span v-for="info of load?.Vehicles" :key="info">
-                      {{info?.driver}}
-                      </span>
-                  </div>
-                  <div class="uk-flex uk-flex-middle info-Order">
-                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
-                      <span v-for="info of load?.Vehicles" :key="info">
-                        {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
-                        {{ info?.license_no }}
-                    </span>
-                  </div>
-                </div>
+                
 
                 </div>
                 <div class="start-load">
@@ -228,7 +229,6 @@ export default {
         let delay = (ms) => new Promise((res) => setTimeout(res, ms));
         await delay(5000);
         this.showPopUp = false
-
       }
     }
     
@@ -264,7 +264,6 @@ export default {
   
       try{
         loads = await this.$services.loadsServices.getLoadsbyDate(date);
-        // console.log(loads)
         if(val){
          this.waitingMessage = true
         }
@@ -289,6 +288,7 @@ export default {
            else this.dateMoment = date
         }
         if(error.message == 'Request failed with status code 401'){
+          console.log('unautorizo')
           //  this.$router.push({name: 'sign-in'})
         }
         return ;
@@ -716,4 +716,7 @@ header >div {
   to {opacity:1 ;}
 }
 
+.blue-text{
+  color: #1968e4;
+}
 </style>

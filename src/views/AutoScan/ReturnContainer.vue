@@ -317,13 +317,30 @@ export default {
 
   methods: {
     async getLocation() {
-      try {
-        const geo = await Geolocation.getCurrentPosition();
-        this.location.latitude = geo.coords.latitude;
-        this.location.longitude = geo.coords.longitude;
-      } catch (e) {
-        console.log(e);
-      }
+      if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+          try {
+            const geo = await Geolocation.getCurrentPosition();
+            this.location.latitude = geo.coords.latitude;
+            this.location.longitude = geo.coords.longitude;
+          } catch (error) {
+            if(error.message == 'location disabled'){
+              this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+            }
+            if(error.message == 'Location permission was denied'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            if(error.message == 'User denied Geolocation'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            return false
+          }
+        }else{
+          // Server gps
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          this.location.latitude = result?.lat
+          this.location.longitude = result?.lng
+        }
+        
     },
     async checkPermissions() {
       return await Geolocation.checkPermissions();

@@ -370,6 +370,7 @@ export default {
       this.$store.commit("setloadStore", loadsMounted);
 
     }
+    console.log(this.load)
     this.sendingInfo = localStorage.getItem(`sendInfo${this.load.loadMapId}`)
 
 
@@ -466,7 +467,6 @@ export default {
         return true
       }
     },
-
   },
 };
 </script>

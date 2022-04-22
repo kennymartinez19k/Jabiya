@@ -11,8 +11,8 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-
     <div class="stiky">
+
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
       </p>
@@ -169,7 +169,6 @@
           @change="pickImage($event)"
           id="file-img"
           style="position: absolute; opacity: 0"
-          accept="image/*"
         />
       </label>
 
@@ -245,6 +244,7 @@ import { profile } from "../../types";
 import Camera from "simple-vue-camera";
 import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 
+
 export default {
   name: "DeliveryActions",
   alias: "Realizar Entrega",
@@ -295,6 +295,7 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
+      "causeExceptionsStore",
       "settings",
       "allLoadsStore",
       "isChangeQuantityStore",
@@ -442,17 +443,26 @@ export default {
 
   methods: {
     async getLocation() {
-      try {
-        const geo = await Geolocation.getCurrentPosition();
-        this.location.latitude = geo.coords.latitude;
-        this.location.longitude = geo.coords.longitude;
-      } catch (e) {
-        console.log(e);
+      if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          this.location.latitude = geo.coords.latitude;
+          this.location.longitude = geo.coords.longitude;
+        } catch (e) {
+          console.log(e);
+        }
+      
+      }else{
+        let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+        this.location.latitude = result?.lat
+        this.location.longitude = result?.lng
       }
     },
+
     async checkPermissions() {
       return await Geolocation.checkPermissions();
     },
+
     getShow(value) {
       this.show = value;
       if (value === "scan") {
@@ -528,17 +538,10 @@ export default {
           order._id
         );
       }
-       let resultId = []
-        this.orders.forEach(x => {
-          if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
-           resultId.push(x._id)
-          }
-        })
-
-        if (this.causeExceptionsStore && resultId.length > 0) {
-         for (let x = 0; x < resultId.length; x++) {
-            this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
-         } 
+        if (this.causeExceptionsStore) {
+          this.orders.forEach(x => {
+              this.$services.exceptionServices.putExceptions(x._id, this.causeExceptionsStore);
+          })
         }
     },
 
@@ -557,6 +560,7 @@ export default {
       for (let cont = 0; cont < orders.length; cont++) {
         let order = orders[cont];
         totalOfBoxes += order.no_of_boxes;
+        
         for (var i = 0; i < order.products.length; i++) {
           let prod = order.products[i];
           try {
@@ -650,18 +654,22 @@ export default {
     },
 
     async snapshot() {
+      let delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
       const blob = await this.camera?.snapshot({ width: 780, height: 720 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
       reader.onloadend = async function () {
         img = reader.result;
+        this.pdfViewer(reader.result)
+
       }
-      let delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await delay(1000);
       this.image = img;
       this.cameraOn = false;
     },
+    
     setImage() {
       this.imagiElement.push(this.image);
       if (this.imagiElement.length > 0) {
@@ -680,6 +688,7 @@ export default {
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
+      
       reader.onloadend = async function () {
         img = reader.result;
       };

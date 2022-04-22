@@ -305,7 +305,7 @@ export default {
     }, 
     exception: {
       handler: function (newVal) {
-
+        if(newVal) this.closeSingnature()
         if (newVal === false && this.step >= 2) {
           this.showSingnatureAndException = false;
           this.causeExceptions.note = null;

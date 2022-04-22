@@ -55,7 +55,7 @@
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
             <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li>
+            <!-- <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
             <li @click="setCurrentPage('settings')">Configuración</li>
             <li @click="setCurrentPage('version')">Version app</li>
             <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
@@ -156,7 +156,10 @@ export default {
       else if(this.$route.name == 'manage-orders'){
         this.$router.push({name: 'home'})
       }
-      else if(this.$route.name == 'delivery-actions-auto' || this.$route.name == 'deliveryActions'){
+      else if(this.$route.name == 'delivery-actions-auto'){
+        this.$router.push({name: 'load-status'})
+      }
+      else if(this.$route.name == 'deliveryActions'){
         this.$router.push({name: 'delivery-routes'})
       }
       else{

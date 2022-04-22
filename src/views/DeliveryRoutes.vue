@@ -150,7 +150,6 @@
 </template>
 
 <script>
-import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
@@ -264,16 +263,7 @@ export default {
       }
   },
   methods: {
-    async location () {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location1.latitude = geo.coords.latitude
-          this.location1.longitude = geo.coords.longitude
-        } catch (e) {
-          console.log(e)
-        
-        }
-    },
+    
     screenSelection () {
       this.showButton = false 
         if (this.load.allowOrderChangesAtDelivery) {

@@ -447,9 +447,6 @@ export default {
           this.setOpen(true);
           await this.postImages();
 
-          // let delay = (ms) => new Promise((res) => setTimeout(res, ms));
-          // await delay(5000);
-
           let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
           let orderFinished = ordersMissing?.filter(orderNum => this.firstStructureLoad.some(structure => structure.order_num == orderNum))
 
@@ -858,44 +855,30 @@ export default {
         await alert.present();
     },
     async getLocation() {
-      try {
-        const geo = await Geolocation.getCurrentPosition();
-        this.location.latitude = geo.coords.latitude;
-        this.location.longitude = geo.coords.longitude;
-      } catch (error) {
-        if(error.message == 'location disabled'){
-          this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+        if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+          try {
+            const geo = await Geolocation.getCurrentPosition();
+            this.location.latitude = geo.coords.latitude;
+            this.location.longitude = geo.coords.longitude;
+          } catch (error) {
+            if(error.message == 'location disabled'){
+              this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+            }
+            if(error.message == 'Location permission was denied'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            if(error.message == 'User denied Geolocation'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            return false
+          }
+        }else{
+          // Server gps
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          this.location.latitude = result?.lat
+          this.location.longitude = result?.lng
+
         }
-        if(error.message == 'Location permission was denied'){
-          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
-        }
-        if(error.message == 'User denied Geolocation'){
-          this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
-        }
-        return false
-      }
-    },
-    async ubication(load){
-      if(load.isGps){
-        this.$services.gpsServices.getTokenGps
-      }else{
-        try {
-         const geo = await Geolocation.getCurrentPosition();
-         this.location.latitude = geo.coords.latitude;
-         this.location.longitude = geo.coords.longitude;
-       } catch (error) {
-         if(error.message == 'location disabled'){
-           this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
-         }
-         if(error.message == 'Location permission was denied'){
-           this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
-         }
-         if(error.message == 'User denied Geolocation'){
-           this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
-         }
-         return false
-       }
-      }
     },
     async stopScan() {
       BarcodeScanner.showBackground();
@@ -1020,9 +1003,10 @@ export default {
     async snapshot() {
       this.stopScan();
       const blob = await this.camera?.snapshot({ width: 780, height: 720 });
-
+      console.log(blob)
       let reader = new FileReader();
       reader.readAsDataURL(blob);
+
       let img;
       reader.onloadend = async function () {
         img = reader.result;
@@ -1255,7 +1239,7 @@ p {
 .uk-list{
   list-style: none;
   overflow: scroll;
-  height: 385px;
+  height: 385px; /* verify Height */
 }
 .status-order {
   width: 100%;
