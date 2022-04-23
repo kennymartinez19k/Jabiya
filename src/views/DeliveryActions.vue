@@ -383,6 +383,9 @@ export default {
     },
   },
   async mounted() {
+    this.$store.commit("setExceptions", null);
+    this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
+    this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
@@ -634,15 +637,10 @@ export default {
           order._id
         );
       }
-        let resultId = []
-        this.orders.forEach(x => {
-          if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
-           resultId.push(x._id)
-          }
-        })
-        if (this.causeExceptionsStore && resultId.length > 0) {
-         for (let x = 0; x < resultId.length; x++) {
-            this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
+        if (this.causeExceptionsStore?.note) {
+         for (let x = 0; x < this.orders.length; x++) {
+            let order = this.orders[x]
+            this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
          } 
         }
     },

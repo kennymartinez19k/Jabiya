@@ -308,6 +308,9 @@ export default {
  
   },
   async mounted() {
+    this.$store.commit("setExceptions", null);
+    this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
+    this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
@@ -322,6 +325,9 @@ export default {
     } else {
       this.orders = this.orderScan;
     }
+    this.$store.commit("scanOrder", this.orders );
+
+
     this.showSignaturform = this.orders.some((x) => x.isReturn);
 
     if (this.orderScan?.length > 1) {
@@ -538,10 +544,14 @@ export default {
           order._id
         );
       }
-        if (this.causeExceptionsStore) {
-          this.orders.forEach(x => {
-              this.$services.exceptionServices.putExceptions(x._id, this.causeExceptionsStore);
-          })
+      console.log(this.causeExceptionsStore)
+      console.log(this.orders)
+        if (this.causeExceptionsStore?.note) {
+          for (let x = 0; x < this.orders.length; x++) {
+            const order = this.orders[x];
+            this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
+            
+          }
         }
     },
 
@@ -662,8 +672,6 @@ export default {
       let img;
       reader.onloadend = async function () {
         img = reader.result;
-        this.pdfViewer(reader.result)
-
       }
       await delay(1000);
       this.image = img;
