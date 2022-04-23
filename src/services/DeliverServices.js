@@ -11,8 +11,6 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
-      console.log('lat ', lat),
-      console.log('lng', lng)
          let form = {images, lat, lng}
          let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
 
