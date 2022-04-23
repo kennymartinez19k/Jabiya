@@ -141,7 +141,6 @@ export default {
             catch(error){
               if(error.message != 'Network Error'){
                 this.$store.commit('changeRequestStatus', true)
-                alert(error.message)
                 this.dequeue()
               }
               await this.localStorage.set('serverUp' , JSON.stringify(false))
