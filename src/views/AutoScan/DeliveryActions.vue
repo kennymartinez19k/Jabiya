@@ -307,7 +307,26 @@ export default {
     ]),
  
   },
+  beforeMount(){
+    let loadsMounted = this.loadStore;
+    if (this.loadStore) {
+      this.$store.commit("setloadStore", loadsMounted);
+    }
+
+    this.load = { ...this.loadStore };
+    if (this.load?.loadType == profile?.container) {
+      this.orders = this.load?.Orders;
+    } else {
+      this.orders = this.orderScan;
+    }
+    this.$store.commit("scanOrder", this.orders );
+  },
+
   async mounted() {
+    if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
+        let idOrderToInvoices = this.orders[0]?.order_num
+        this.$store.commit("getOrdersToInvoicesId", idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
+    }
     this.$store.commit("setExceptions", null);
     this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
     this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});

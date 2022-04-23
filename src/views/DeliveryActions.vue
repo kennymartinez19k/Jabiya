@@ -382,6 +382,10 @@ export default {
       }
     },
   },
+  beforeMount(){
+    this.load = { ...this.loadStore };
+    this.orders = [...this.orderScan];
+  },
   async mounted() {
     this.$store.commit("setExceptions", null);
     this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
@@ -390,8 +394,6 @@ export default {
 
     this.camera = this.$refs.Camera;
 
-    this.load = { ...this.loadStore };
-    this.orders = [...this.orderScan];
     this.firstStructureLoad = this.structureToScan.firstStructure;
     this.secondStructureLoad = this.structureToScan.secondStructure;
     this.orders.map((x) => {
