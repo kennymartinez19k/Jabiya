@@ -11,7 +11,7 @@ class ExceptionServices {
     }
   
     async putExceptions (idException, exceptions) {
-        const exception ={
+        const exception = {
             "reason": exceptions.type ,
             "note": exceptions.note
         }
@@ -21,6 +21,10 @@ class ExceptionServices {
       let json =  {'method': 'put', 'body': exception, 'url': url}
 
       add(json)
+
+      this.$store.commit("setExceptions", null);
+      this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
+      this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
     }
     async getExceptionsDetails () {
     const result = await this.http.get(`${this.settingsLocalStore.url}/exo/exceptions`)

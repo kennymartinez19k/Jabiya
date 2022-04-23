@@ -10,56 +10,7 @@
         @digitalSignature="singnature = $event"
       ></signature-action>
     </div>
-    <!-- This is the modal -->
-    <!-- <div id="exception" uk-modal>
-      <div class="uk-modal-dialog uk-modal-body">
-        <div class="uk-margin">
-          <label class="uk-text-bolder text" for="typeExp">Tipos de Excepción <span class="uk-text-danger">*</span></label>
-          <select id="typeExp" class="uk-select" v-model="causeExceptions.type">
-            <option disabled>Elija una Excepción</option>
-            <option
-              v-for="exception in detailsException"
-              :key="exception"
-              :value="exception"
-            >
-            {{exception}}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="uk-text-bolder text" for="note"
-            >Notas <span class="uk-text-danger">*</span></label
-          >
-          <textarea
-            id="note"
-            class="uk-textarea"
-            rows="3"
-            placeholder="Notas:"
-            v-model="causeExceptions.note"
-            required
-          >
-          </textarea>
-        </div>
-        <p class="uk-flex uk-flex-around">
-          <button
-            class="uk-button uk-button-default uk-modal-close cancel"
-            type="button"
-            @click="cancelResetException()"
-          >
-            Cancelar
-          </button>
-          <button
-            :disabled="showException"
-            class="uk-button uk-button-primary uk-modal-close"
-            type="button"
-            @click="setException()"
-          >
-            Guardar
-          </button>
-        </p>
-      </div>
-    </div> -->
-    <!-- This is the modal Manual -->
+
     <transition name="modal">
       <div v-if="isOpen">
         <div class="overlay" @click.self="isOpen = false;">
@@ -240,10 +191,13 @@ export default {
     activeSignature(){
       let downloadInvoices = false
       let scanRequired = this.loadStore.scanningRequired
-      if (this.invoiceDownloadStore.order === this.orderScan[0].order_num) {
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+
+      console.log(this.orderScan)
+     
+      if (allowInvoices && this.orderScan.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
        downloadInvoices = this.invoiceDownloadStore.status
       } 
-      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
       let exception = this.exception
       let exceptionInfo = ( this.causeExceptions.type && this.causeExceptions.note != null)
       let img = !this.emptyImage
@@ -255,6 +209,9 @@ export default {
         return true
 
       }else if (scanRequired && !allowInvoices && exception && this.resultScan && exceptionInfo && img && !downloadInvoices){
+        return true
+      
+      }else if (scanRequired && !allowInvoices && exception && !this.resultScan && exceptionInfo && img && !downloadInvoices){
         return true
       
       }else if (scanRequired && !allowInvoices && !exception && this.resultScan && !exceptionInfo && img && !downloadInvoices){
