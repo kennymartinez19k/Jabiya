@@ -181,7 +181,6 @@ class ManageOrders {
 
         
 
-        console.log(OrderPost)
         let cookie = localStorage.getItem('auth')
 
         const OrderEXO = JSON.stringify(OrderPost)
@@ -199,7 +198,6 @@ class ManageOrders {
         }
 
         const result = await this.http.post(`https://991d-179-52-157-140.ngrok.io/exo/ordersV2`, formData, headers )
-        console.log(result)
         return result
 
     }

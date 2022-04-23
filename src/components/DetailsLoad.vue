@@ -283,7 +283,6 @@ export default {
         this.detailsLoads = this.detailsLoadsStore;
       }
       this.orders = this.detailsLoads?.Orders
-      console.log(this.detailsLoads)
       this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
     }
     this.setOpen(false)

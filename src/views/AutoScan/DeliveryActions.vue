@@ -564,8 +564,6 @@ export default {
           order._id
         );
       }
-      console.log(this.causeExceptionsStore)
-      console.log(this.orders)
         if (this.causeExceptionsStore?.note) {
           for (let x = 0; x < this.orders.length; x++) {
             const order = this.orders[x];
