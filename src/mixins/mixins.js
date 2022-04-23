@@ -197,7 +197,7 @@ export const Mixins = {
       }
       return totalOfBoxes
     },
-    async removeInfoInStorage(val){
+    async removeInfoInStorage(val) {
       this.load = val
       localStorage.removeItem("loadInProgress");
       let statusGpsProvider = JSON.parse(localStorage.getItem(`gpsProvider ${this.load.loadMapId}`))
@@ -209,7 +209,7 @@ export const Mixins = {
 
       }
       localStorage.removeItem(`loadStatus${this.load?.loadMapId}`);
-      localStorage.removeItem('DeliveryCharges');
+      // localStorage.removeItem('DeliveryCharges');
       localStorage.removeItem(`startRoute${this.load?.loadMapId}`)
       localStorage.removeItem(`deliverLoad${this.load?.loadMapId}`)
       localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)

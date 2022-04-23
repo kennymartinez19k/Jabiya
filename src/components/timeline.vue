@@ -192,10 +192,14 @@ export default {
       let downloadInvoices = false
       let scanRequired = this.loadStore.scanningRequired
       let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
-
-      console.log(this.orderScan)
+      let loadsMounted = [];
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
      
-      if (allowInvoices && this.orderScan.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
        downloadInvoices = this.invoiceDownloadStore.status
       } 
       let exception = this.exception
