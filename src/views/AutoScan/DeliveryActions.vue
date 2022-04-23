@@ -327,9 +327,10 @@ export default {
         let idOrderToInvoices = this.orders[0]?.order_num
         this.$store.commit("getOrdersToInvoicesId", idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
     }
-    this.$store.commit("setExceptions", null);
-    this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
-    this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
+    this.$store.commit("setExceptions", {note: null, type: null});
+    if(this.$router.options.history.state.back != '/details-invoices'){
+      this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
+    }
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
@@ -563,8 +564,6 @@ export default {
           order._id
         );
       }
-      console.log(this.causeExceptionsStore)
-      console.log(this.orders)
         if (this.causeExceptionsStore?.note) {
           for (let x = 0; x < this.orders.length; x++) {
             const order = this.orders[x];

@@ -25,8 +25,7 @@ class GpsProviderServices {
           "gpsProvider": load?.Vehicles[0]?.gpsProvider
       }
       
-      axios.post(`http://flai.hopto.org/gps-provider/gps`, body, hdr).then(res => {
-          console.log(res)
+      axios.post(`http://flai.hopto.org/gps-provider/gps`, body, hdr).then(() => {
           this.startGps(body.vehicleGpsId)
       }).catch(error => {
           console.log(error.message)
@@ -44,8 +43,6 @@ class GpsProviderServices {
       }
       
       axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
-          console.log('prendi gps')
-          console.log(res.data.loadMapId)
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(true))
       }).catch(error => {
           console.log(error.message)
@@ -64,7 +61,6 @@ class GpsProviderServices {
       }
       
       axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
-          console.log('apague gps')
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(false))
 
       }).catch(error => {

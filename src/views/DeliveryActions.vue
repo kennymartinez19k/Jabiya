@@ -387,9 +387,10 @@ export default {
     this.orders = [...this.orderScan];
   },
   async mounted() {
-    this.$store.commit("setExceptions", null);
-    this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
-    this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
+    this.$store.commit("setExceptions", {note: null, type: null});
+    if(this.$router.options.history.state.back != '/details-invoices'){
+      this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
+    }
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
@@ -458,13 +459,9 @@ export default {
           let isOrdersFinished = new Set(orderFinished)
           orderFinished = [...isOrdersFinished]
           
-          console.log(ordersMissing)
-          console.log(orderFinished)
-
           orderFinished?.forEach(orderNumFinished => {
             let index = ordersMissing?.findIndex(orderNum => orderNum == orderNumFinished)
 
-            console.log(index)
             if(index >= 0){
               ordersMissing.splice(index, 1)
             }
@@ -1003,7 +1000,6 @@ export default {
     async snapshot() {
       this.stopScan();
       const blob = await this.camera?.snapshot({ width: 780, height: 720 });
-      console.log(blob)
       let reader = new FileReader();
       reader.readAsDataURL(blob);
 

@@ -187,7 +187,6 @@ export default {
     if(!load?.Vehicles[0]?.gpsProvider || load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App'){
       try{
         let result = await Geolocation.getCurrentPosition()
-        console.log(result)
         return {latitude: result.coords.latitude, longitude: result.coords.longitude}
       }catch(error){
         console.log(error)

@@ -79,10 +79,8 @@ export const Mixins = {
 
     async uploadTrip(load) {
       if(load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !load.Vehicles[0].gpsProvider){
-        console.log('flai')
         localStorage.removeItem(`gps ${load.loadMapId}`);
       }else{
-        console.log('server')
         localStorage.removeItem(`gps ${load.loadMapId}`);
         await services.gpsProviderServices.stopGps(load.Vehicles[0].gpsId)
       }
