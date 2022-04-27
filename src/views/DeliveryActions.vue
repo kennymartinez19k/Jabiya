@@ -112,6 +112,25 @@
             </div>
           </div>
         </div>
+         <div
+          v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
+          style="padding: 5px 0px 10px !important"
+        >
+          <div class="uk-flex uk-flex-wrap img-scroll">
+            <span
+              class="position-imagin"
+            >
+              <img class="img-result" src="../assets/invoice.png" alt="Red dot" />
+              <img
+                src="../assets/rejected.png"
+                class="icon-close"
+                @click="deleteInvoices()"
+                alt=""
+              />
+            </span>
+          </div>
+        </div>
         <div
           v-if="imagiElement.length > 0"
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
@@ -120,12 +139,7 @@
             <span
               v-for="(src, index) in imagiElement"
               :key="src"
-              style="
-                position: relative;
-                width: 85px;
-                display: flex;
-                margin: 0px 10px;
-              "
+              class="position-imagin"
             >
               <img class="img-result" :src="src" alt="Red dot" />
               <img
@@ -260,6 +274,7 @@
         </div>
       </div>
     </transition>
+    <ion-alert-controller></ion-alert-controller>
   </div>
 </template>
 
@@ -274,6 +289,11 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { App } from "@capacitor/app";
 import Camera from "simple-vue-camera";
+import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
+import { alertController } from '@ionic/vue';
+import { profile } from "../types";
+
+
 
 
 App.addListener("appRestoredResult", (data) => {
@@ -298,6 +318,7 @@ export default {
   mixins: [Mixins],
   data() {
     return {
+      profile,
       isOpen: false,
       show: null,
       orders: null,
@@ -329,6 +350,7 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
+      orderInformation: null
     };
   },
   setup() {
@@ -346,7 +368,10 @@ export default {
       "digitalFirmStore",
       "settings",
       "structureToScan",
-      "isChangeQuantityStore"
+      "isChangeQuantityStore",
+      "invoicesIdStore",
+      "invoiceDownloadStore"
+
     ]),
 
     completedOrder: function () {
@@ -357,13 +382,19 @@ export default {
       }
     },
   },
+  beforeMount(){
+    this.load = { ...this.loadStore };
+    this.orders = [...this.orderScan];
+  },
   async mounted() {
+    this.$store.commit("setExceptions", {note: null, type: null});
+    if(this.$router.options.history.state.back != '/details-invoices'){
+      this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
+    }
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
 
-    this.load = { ...this.loadStore };
-    this.orders = [...this.orderScan];
     this.firstStructureLoad = this.structureToScan.firstStructure;
     this.secondStructureLoad = this.structureToScan.secondStructure;
     this.orders.map((x) => {
@@ -406,10 +437,12 @@ export default {
       this.allProductScanned = true;
       this.verifiedLoad();
     }
+      this.orderInformation = this.orderScan.find(x => x.order_num)
+
      if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
-    this.exception = this.isChangeQuantityStore.exception
-     } else if (localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)){
-       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orders[0].order_num}`)).exception
+        this.exception = this.isChangeQuantityStore.exception
+     } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
+        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
      }
   },
   watch: {
@@ -420,8 +453,20 @@ export default {
           this.setOpen(true);
           await this.postImages();
 
-          // let delay = (ms) => new Promise((res) => setTimeout(res, ms));
-          // await delay(5000);
+          let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
+          let orderFinished = ordersMissing?.filter(orderNum => this.firstStructureLoad.some(structure => structure.order_num == orderNum))
+
+          let isOrdersFinished = new Set(orderFinished)
+          orderFinished = [...isOrdersFinished]
+          
+          orderFinished?.forEach(orderNumFinished => {
+            let index = ordersMissing?.findIndex(orderNum => orderNum == orderNumFinished)
+
+            if(index >= 0){
+              ordersMissing.splice(index, 1)
+            }
+          })
+          localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing))
 
           try {
             let load = await this.$services.loadsServices.getLoadDetails(
@@ -454,7 +499,8 @@ export default {
               );
             }
 
-            if (allProductScanned.every((x) => x == true)) {
+            if (ordersMissing.length == 0) {
+              localStorage.removeItem(`ordersMissing${this.load.loadMapId}`)
               localStorage.setItem(`sendInfo${this.load.loadMapId}`, true);
               localStorage.removeItem(`allProducts${this.load.loadMapId}`);
               this.$router.push({ name: "home" }).catch(() => {});
@@ -466,7 +512,10 @@ export default {
             this.$router.push({ name: "home" }).catch(() => {});
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
           }
-          localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+          if (this.load.allowOrderChangesAtDelivery) {
+            localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+            this.confirmAndFinalizeCreationOfInvoices()
+          }
 
           this.setOpen(false);
         }
@@ -587,26 +636,12 @@ export default {
           order._id
         );
       }
-        let resultId = []
-        this.orders.forEach(x => {
-          if(!x.products.every(product => product.loadScanningCounter >= product.quantity)){
-           resultId.push(x._id)
-          }
-        })
-        if (this.causeExceptionsStore && resultId.length > 0) {
-         for (let x = 0; x < resultId.length; x++) {
-            this.$services.exceptionServices.putExceptions(resultId[x], this.causeExceptionsStore);
-           
+        if (this.causeExceptionsStore?.note) {
+         for (let x = 0; x < this.orders.length; x++) {
+            let order = this.orders[x]
+            this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
          } 
         }
-      if (this.causeExceptionsStore && resultId.length > 0) {
-        for (let x = 0; x < resultId.length; x++) {
-          this.$services.exceptionServices.putExceptions(
-            resultId[x],
-            this.causeExceptionsStore
-          );
-        }
-      }
     },
 
     async uploadProducts(val) {
@@ -808,19 +843,39 @@ export default {
         
       }
     },
+     async alertUbication(header, msg){
+        const alert = await alertController.create({
+          header: header,
+          message: msg,
+          buttons: [ 'Ok'],
+        });
+        await alert.present();
+    },
     async getLocation() {
-      try {
-        const geo = await Geolocation.getCurrentPosition();
-        this.location.latitude = geo.coords.latitude;
-        this.location.longitude = geo.coords.longitude;
-      } catch (e) {
-        if (e.code === 1 || e.message === "location disabled") {
-          alert("Debe activar la localización.");
-        } else {
-          alert("Error inesperado. Favor contactese con el Administrador.");
+        if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+          try {
+            const geo = await Geolocation.getCurrentPosition();
+            this.location.latitude = geo.coords.latitude;
+            this.location.longitude = geo.coords.longitude;
+          } catch (error) {
+            if(error.message == 'location disabled'){
+              this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+            }
+            if(error.message == 'Location permission was denied'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            if(error.message == 'User denied Geolocation'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            return false
+          }
+        }else{
+          // Server gps
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          this.location.latitude = result?.lat
+          this.location.longitude = result?.lng
+
         }
-        console.log(e);
-      }
     },
     async stopScan() {
       BarcodeScanner.showBackground();
@@ -861,6 +916,16 @@ export default {
     deleteImage(i) {
       this.imagiElement.splice(i, 1);
     },
+
+    deleteInvoices() {
+      let dwlStatus = {
+        status: false,
+        order: null
+      }
+      this.$store.commit("getInvoiceDownload",dwlStatus);
+      // this.$store.commit("getInvoiceDownload",false);
+    },
+
     allProductUpload() {
       this.statusOrders = "start";
       this.resultScan = true;
@@ -934,9 +999,10 @@ export default {
 
     async snapshot() {
       this.stopScan();
-      const blob = await this.camera?.snapshot({ width: 540, height: 480 });
+      const blob = await this.camera?.snapshot({ width: 780, height: 720 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);
+
       let img;
       reader.onloadend = async function () {
         img = reader.result;
@@ -971,6 +1037,16 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
+    },
+
+    async confirmAndFinalizeCreationOfInvoices () {
+      // este es la confirmacion debo ponerlo cuando escane todo
+        try {
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
+      } catch (error) {
+        console.log(error);
+      }
+
     },
   },
 };
@@ -1069,7 +1145,7 @@ export default {
 
 .stiky {
   color: rgb(255, 255, 255) !important;
-  z-index: 2;
+  z-index: 0;
   border-top: 1px solid #313575;
   font-size: 12px !important;
   padding: 0px 10px 5px !important;
@@ -1114,14 +1190,14 @@ li::before {
 .img-result {
   width: 98%;
   height: 80px;
-  margin-bottom: 10px;
+  margin: 10px 0px;
   border: 1px solid #000;
 }
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  right: -10px;
-  top: -10px;
+  right: -14px;
+  top: 0px;
   width: 22px;
   border-radius: 10px;
 
@@ -1159,7 +1235,7 @@ p {
 .uk-list{
   list-style: none;
   overflow: scroll;
-  height: 285px;
+  height: 385px; /* verify Height */
 }
 .status-order {
   width: 100%;
@@ -1362,5 +1438,11 @@ p {
   background: #00000094;
   z-index: 999;
   transition: opacity 0.2s ease;
+}
+.position-imagin {
+  position: relative;
+  width: 77px;
+  display: flex;
+  margin: 0px 10px;
 }
 </style>

@@ -7,7 +7,12 @@ const InvoicesStore = {
         exception: false,
         order_num: null
       },
-      isSelectedInvoices:null
+      isSelectedInvoices:null,
+      invoiceDownload: {
+      status: false,
+      order: null
+    },
+      
     },
     mutations: {
         getOrdersToInvoicesId (state, value) {
@@ -18,7 +23,11 @@ const InvoicesStore = {
         },
         getSelectedInvoices (state, value) {
           state.isSelectedInvoices = value
-        }
+        },
+        getInvoiceDownload (state, value) {
+          state.invoiceDownload = value
+      },
+     
     },
     actions:{
     
@@ -28,6 +37,7 @@ const InvoicesStore = {
         invoicesIdStore : state => state.invoicesId,
         isChangeQuantityStore : state => state.isChangeQuantity,
         isSelectedInvoicesStore : state => state.isSelectedInvoices,
+        invoiceDownloadStore : state => state.invoiceDownload,
     }
   }
   

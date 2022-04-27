@@ -114,6 +114,7 @@
   </div>
 
     </div>
+
   </div>
 </template>
 
@@ -126,8 +127,8 @@
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
 import { Vibration } from "@ionic-native/vibration";
-import { Geolocation } from "@capacitor/geolocation";
 import { Mixins } from '../mixins/mixins'
+
 // import UIkit from "uikit";
 
 
@@ -242,12 +243,14 @@ export default {
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
 
-
+    // if (!this.loadStore.allowOrderChangesAtDelivery) {
+      
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.verifiedLoad()
     }else{
       this.scanOrder()
     }
+    // }
 
     
   },
@@ -444,20 +447,8 @@ export default {
 
       }
     },
-    async location() {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location1.latitude = geo.coords.latitude;
-          this.location1.longitude = geo.coords.longitude;
-        } catch (e) {
-          if (e.code === 1 || e.message === "location disabled") {
-            alert("Debe activar la localización.");
-          } else {
-            alert("Error inesperado. Favor contactese con el Administrador.");
-          }
-          console.log(e);
-        }
-      },
+   
+    
      
     async stopScan() {
       BarcodeScanner.showBackground();

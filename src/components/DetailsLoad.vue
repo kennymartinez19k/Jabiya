@@ -214,7 +214,7 @@
               <p class="uk-text-bold text-bold">Información Adicional:</p>
               <ul v-for="order in orders" :key="order" v-show="order?.addAdditionalInfo?.length > 0" class="file">
                 <li  v-for="file in order?.addAdditionalInfo" :key="file">
-                  <div>
+                  <div class="uk-margin-medium-bottom">
                     <a target="_blank" style="color: red;" :href="file">{{baseName(file)}}</a>
                     </div>
                 </li>
@@ -283,7 +283,6 @@ export default {
         this.detailsLoads = this.detailsLoadsStore;
       }
       this.orders = this.detailsLoads?.Orders
-      console.log(this.detailsLoads)
       this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
     }
     this.setOpen(false)

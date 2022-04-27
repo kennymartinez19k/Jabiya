@@ -33,7 +33,8 @@ export default {
       lastLocation: {
         latitude: 0,
         longitude: 0
-      }
+      },
+      hasUbicationServer: false
     }
   },
  
@@ -69,7 +70,6 @@ export default {
     
       this.localStorage.set('sending' , "false")
       this.localStorage.set('serverUp' , "true")
-
       let delay = ms => new Promise(res => setTimeout(res, ms));
       
       let condition = true
@@ -82,37 +82,36 @@ export default {
         this.intervalForGps += 1
 
         let load = JSON.parse(localStorage.getItem('DeliveryCharges'))
-        
-        if(this.intervalForGps > intervalLimit && await localStorage.getItem(`gps ${load?.loadMapId}`) ){
+        if(this.intervalForGps > intervalLimit && ( localStorage.getItem(`gps ${load?.loadMapId}`) || JSON.parse(localStorage.getItem('gpsProvider'))) ){
           this.intervalForGps = 0
-        Geolocation.getCurrentPosition().then((myLocation) => {
-          let location = myLocation.coords;
-        
-          if (
-            Math.abs(location.latitude - this.lastLocation.latitude) >
-              0.00003 ||
-            Math.abs(location.longitude - this.lastLocation.longitude) >
-              0.00003
-          ) {
-            this.lastLocation.latitude =  location?.latitude
-            this.lastLocation.longitude = location?.longitude
-            this.$services.gpsServices.updateLocation(
-              user.id,
-              location?.latitude,
-              location?.longitude,
-              load?.bay_id?._id
-            );
-          }
-        });
-  
+            
+            this.location(load).then((locationUpdate) => {
+              let location = locationUpdate;
+              // if (
+              //   Math.abs(location.latitude - this.lastLocation.latitude) >
+              //     0.00003 ||
+              //   Math.abs(location.longitude - this.lastLocation.longitude) >
+              //     0.00003
+              // ) {
+                this.lastLocation.latitude =  location?.latitude
+                this.lastLocation.longitude = location?.longitude
+                this.$services.gpsServices.updateLocation(
+                  user.id,
+                  location?.latitude,
+                  location?.longitude,
+                  load?.bay_id?._id
+                );
+              // }
+            });
+          
+      
         }
-        
         if(queue.length > 0){
           let enqueueItem = remove()
           await this.enqueue(enqueueItem)
         }
         this.isServerUp = await this.localStorage.get('serverUp')
-        let isConnected
+        let isConnected 
 
         try{
           isConnected = await this.$services.loadsServices.serverStatus()
@@ -126,11 +125,11 @@ export default {
           }
           else this.$store.commit('setServer', false)
         }else{
-
           this.$store.commit('setServer', true)
           this.localStorage.set('serverUp' , "true")
           let queueItem = await this.peek()
           if(queueItem){
+            this.$store.commit('changeQueueStatus', false)
             try{
               let res = await this.$services.requestServices.request(queueItem)
               if(res){
@@ -138,14 +137,17 @@ export default {
               }
               await this.localStorage.set('serverUp' , JSON.stringify(true))
               this.$store.commit('setServer', true)
-
             } 
             catch(error){
+              if(error.message != 'Network Error'){
+                this.$store.commit('changeRequestStatus', true)
+                this.dequeue()
+              }
               await this.localStorage.set('serverUp' , JSON.stringify(false))
               this.$store.commit('setServer', false)
-
-              console.log(error)
             }
+          }else{
+            this.$store.commit('changeQueueStatus', true)
           }
       }
     }
@@ -172,17 +174,28 @@ export default {
         BarcodeScanner.showBackground();
         BarcodeScanner.stopScan();
       }catch(error){
-        error
         //  console.clear()
 
       }
-      },
-      getInfo(){
-        let setting = JSON.parse(localStorage.getItem('setting'))
-        this.$store.commit("setSettings",setting);
+    },
+    getInfo(){
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      this.$store.commit("setSettings",setting);
+    },
+  
+    async location(load){
+    if(!load?.Vehicles[0]?.gpsProvider || load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App'){
+      try{
+        let result = await Geolocation.getCurrentPosition()
+        return {latitude: result.coords.latitude, longitude: result.coords.longitude}
+      }catch(error){
+        console.log(error)
       }
-    
-
+    }else{
+      let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
+      return {latitude: result.lat, longitude: result.lng}
+    }
+    }
   }
 }
 </script>

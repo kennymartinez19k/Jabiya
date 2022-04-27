@@ -20,6 +20,7 @@ export const Mixins = {
       },
       user: null,
       setting: null,
+      hasUbicationServer: false
     };
   },
   mixins: [LocalStorage],
@@ -40,50 +41,49 @@ export const Mixins = {
         if (val == "Driver Arrival") await this.driverArrival(load);
         if (val == "Approved") await this.uploadTrip(load);
         if (val == "Dispatched") await this.startLoadRoute(load);
-        if (val == "Deliver-Load")
-          router.push({ name: "delivery-actions-auto" });
-        if (val == "return-container")
-          router.push({ name: "return-container" });
+        if (val == "Deliver-Load") router.push({ name: "delivery-actions-auto" });
+        if (val == "return-container") router.push({ name: "return-container" });
         if (val == "Delivered") await this.removeInfoInStorage(load)    
-  
       } else {
-          if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
-          if (val == "Driver Arrival") await this.driverArrival(load);
-          if (val == "Approved") await this.uploadTrip(load);
-          if (val == "Dispatched") await this.startLoadRoute(load);
-          if (val == "Deliver-Load")
-            router.push({ name: "delivery-routes" });
-          if (val == "Delivered") {
-            await this.removeInfoInStorage(load)
-            localStorage.removeItem("loadInProgress");
-            localStorage.removeItem(`gps ${load.loadMapId}`);
-
-            localStorage.removeItem(`loadStatus${load?.loadMapId}`);
-          }
+        if (val == "Expecting Approval") router.push({ name: "confirm-trip" });
+        if (val == "Driver Arrival") await this.driverArrival(load);
+        if (val == "Approved") await this.uploadTrip(load);
+        if (val == "Dispatched") await this.startLoadRoute(load);
+        if (val == "Deliver-Load") router.push({ name: "delivery-routes" });
+        if (val == "Delivered") await this.removeInfoInStorage(load)
       }
     },
-    async driverArrival(val) {
-      await services.loadsScanServices.driverArrival(val.loadMapId);
-      localStorage.setItem(`gps ${val.loadMapId}`, true);
-      this.load = val;
+    async driverArrival(load) {
+      this.load = load;
+      await services.loadsScanServices.driverArrival(this.load.loadMapId);
       try{
-        let location = await JSON.parse(localStorage.getItem('ubication'))
-        services.gpsServices.updateFirstLocation(
-          this.user?.id,
-          location?.latitude,
-          location?.longitude,
-          this.load?.bay_id?._id
-        );
-        this.localStorage.set('serverUp' , "true")
+        localStorage.setItem(`gps ${this.load.loadMapId}`, true);
+        if(this.load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !this.load?.Vehicles[0]?.gpsProvider){
+          let location = await JSON.parse(localStorage.getItem('ubication'))
+          services.gpsServices.updateFirstLocation(
+            this.user?.id,
+            location?.latitude,
+            location?.longitude,
+            this.load?.bay_id?._id
+          );
+          this.localStorage.set('serverUp' , "true")
+        }
+        else{
+          // send gps services
+          await services.gpsProviderServices.createGps(this.load)
+        }
       } catch(error){
         this.localStorage.set('serverUp' , "false")
       }
     },
 
     async uploadTrip(load) {
-      localStorage.removeItem(`gps ${load.loadMapId}`);
-
-      
+      if(load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !load.Vehicles[0].gpsProvider){
+        localStorage.removeItem(`gps ${load.loadMapId}`);
+      }else{
+        localStorage.removeItem(`gps ${load.loadMapId}`);
+        await services.gpsProviderServices.stopGps(load.Vehicles[0].gpsId)
+      }
       
       if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
         await this.uploadOrDownload(load)
@@ -99,12 +99,16 @@ export const Mixins = {
         router.push({ name: 'orders' });
       }
     },
-    async startLoadRoute(val) {
-      if (this.setting.maps) await this.setMap(val);
-      localStorage.setItem(`gps ${val.loadMapId}`, true);
-
-      localStorage.setItem(`startRoute${val.loadMapId}`, JSON.stringify(true));
-      
+    async startLoadRoute(load) {
+      if (this.setting.maps) await this.setMap(load);
+      console.log(load)
+      localStorage.setItem(`gps ${load?.loadMapId}`, true);
+      if(load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App' || !load?.Vehicles[0]?.gpsProvider){
+        console.log('flai')
+      }else{
+        await services.gpsProviderServices.startGps(load?.Vehicles[0]?.gpsId)
+      }
+      localStorage.setItem(`startRoute${load.loadMapId}`, JSON.stringify(true));
     },
 
     async setMap(val) {
@@ -143,9 +147,7 @@ export const Mixins = {
       if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
       if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
       if (val?.loadingStatus?.text == "Dispatched")  return "Listo para Entregar";
-    
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
-
       if (val?.loadingStatus?.text == "Delivered") {
         localStorage.removeItem(`sendInfo${val.loadMapId}`)
         return "Viaje Entregado";
@@ -193,11 +195,19 @@ export const Mixins = {
       }
       return totalOfBoxes
     },
-    async removeInfoInStorage(val){
+    async removeInfoInStorage(val) {
       this.load = val
       localStorage.removeItem("loadInProgress");
-      localStorage.removeItem(`gps ${this.load?.loadMapId}`);
-      
+      let statusGpsProvider = JSON.parse(localStorage.getItem(`gpsProvider ${this.load.loadMapId}`))
+      if(this.load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !this.load?.Vehicles[0]?.gpsProvider){
+        localStorage.removeItem(`gps ${this.load.loadMapId}`);
+      }else if(statusGpsProvider){
+        await services.gpsProviderServices.stopGps(this.load.Vehicles[0].gpsId)
+        localStorage.removeItem(`gps ${this.load.loadMapId}`);
+
+      }
+      localStorage.removeItem(`loadStatus${this.load?.loadMapId}`);
+      // localStorage.removeItem('DeliveryCharges');
       localStorage.removeItem(`startRoute${this.load?.loadMapId}`)
       localStorage.removeItem(`deliverLoad${this.load?.loadMapId}`)
       localStorage.removeItem(`uploadStorage${this.load?.loadMapId}`)
@@ -210,14 +220,20 @@ export const Mixins = {
         const currentProductExo = order?.products[i];
 
           let {order_num, _id} = order
-          let {name, qrCode, quantity, scanOneByOne, loadScanningCounter} = currentProductExo 
+        let { name, qrCode, quantity, scanOneByOne, loadScanningCounter } = currentProductExo
+        
           if (productsOdoo !== null) {
+            if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId && quantityToInvoice !== null) {
+                let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
+                quantity = productsOdoo[productIndexOdoo]?.productQuantity - quantityToInvoice 
 
-            if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId) {
-              quantity = quantityToInvoice
             } else {
-              let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name )
-              quantity =  productsOdoo[productIndexOdoo]?.productQuantity
+              
+                if (productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name && !curretProductOdoo.isRewardLine )>= 0) {
+                  let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
+                  quantity = productsOdoo[productIndexOdoo]?.productQuantity - productsOdoo[productIndexOdoo]?.productQuantityToInvoice
+                }
+            
             }
 
           }

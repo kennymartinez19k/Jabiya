@@ -11,8 +11,8 @@
       @didDismiss="setOpen(false)"
     >
     </ion-loading>
-
     <div class="stiky">
+
       <p style="font-size: 13px !important; font-weight: 500">
         {{ load?.loadNumber }}
       </p>
@@ -84,24 +84,35 @@
             </div>
           </div>
         </div>
-
+        <div
+          v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
+        >
+          <div class="uk-flex uk-flex-wrap img-scroll">
+            <span
+              class="position-imagin"
+            >
+              <img class="img-result" src="../../assets/invoice.png" alt="Red dot" />
+              <img
+                src="../../assets/rejected.png"
+                class="icon-close"
+                @click="deleteInvoices()"
+                alt=""
+              />
+            </span>
+          </div>
+        </div>
         <div
           v-if="imagiElement.length > 0"
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
-          style="padding: 5px 0px 10px !important"
         >
           <div class="uk-flex uk-flex-wrap img-scroll">
             <span
               v-for="(src, index) in imagiElement"
               :key="src"
-              style="
-                position: relative;
-                width: 85px;
-                display: flex;
-                margin: 0px 10px;
-              "
+              class="position-imagin"
             >
-              <img class="img-result" :src="src" alt="Red dot" />
+              <img class="img-result"  :src="src" alt="Red dot" />
               <img
                 src="../../assets/rejected.png"
                 class="icon-close"
@@ -158,7 +169,6 @@
           @change="pickImage($event)"
           id="file-img"
           style="position: absolute; opacity: 0"
-          accept="image/*"
         />
       </label>
 
@@ -174,14 +184,14 @@
     </div>
     <div v-if="cameraOn"></div>
     <div
-      v-if="!cameraOn && !image"
+      v-if="!cameraOn && !image && showSignaturform"
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
       style="z-index: 0; padding: 4px 0px !important"
     >
       <h6 style="margin: 0px 0px 10px; font-size: 14px">
         Click Para Tomar las Fotos y Firma
       </h6>
-      <timeline
+      <timeline-action
         :step="step"
         :exception="exception"
         :resultScan="resultScan"
@@ -191,6 +201,33 @@
         @resetSign="resetSign()"
       />
     </div>
+        <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
+          <strong class="exception uk-padding-small">
+            Hubo Alguna Excepción? No
+            <div class="onoffswitch">
+              <input
+                type="checkbox"
+                v-model="exception"
+                name="onoffswitch"
+                :class="{'checkbox-default':isChangeQuantityStore.exception}"
+                class="onoffswitch-checkbox"
+                id="myonoffswitch"
+                tabindex="0"
+                :disabled="isChangeQuantityStore.exception === true"
+              />
+              <label class="onoffswitch-label" for="myonoffswitch"></label>
+            </div>
+            Si
+          </strong>
+          <timeline
+            :step="step"
+            :exception="exception"
+            :resultScan="resultScan"
+            :imagiElement="imagiElement"
+            @action="getShow($event)"
+            @resetSign="resetSign()"
+          />
+        </div>
   </div>
 </template>
 
@@ -199,11 +236,14 @@ import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { ref } from "vue";
 import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
-import timeline from "../../components/timeline-action.vue";
+import timeline from "../../components/timeline.vue";
+import timelineAction from "../../components/timeline-action.vue";
 import { IonLoading } from "@ionic/vue";
 import { Mixins } from "../../mixins/mixins";
 import { profile } from "../../types";
 import Camera from "simple-vue-camera";
+import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
+
 
 export default {
   name: "DeliveryActions",
@@ -211,6 +251,7 @@ export default {
 
   components: {
     timeline,
+    timelineAction,
     IonLoading,
     Camera,
   },
@@ -224,6 +265,7 @@ export default {
   },
   data() {
     return {
+      profile,
       show: null,
       orders: null,
       resultScan: null,
@@ -244,6 +286,7 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
+      orderInformation:null
     };
   },
   computed: {
@@ -252,13 +295,19 @@ export default {
       "loadStore",
       "exceptionStore",
       "digitalFirmStore",
+      "causeExceptionsStore",
       "settings",
       "allLoadsStore",
-    ]),
-  },
-  async mounted() {
-    this.camera = this.$refs.Camera;
+      "isChangeQuantityStore",
+      "invoicesIdStore",
+      "invoiceDownloadStore",
+      "causeExceptionsStore",
+      "structureToScan",
 
+    ]),
+ 
+  },
+  beforeMount(){
     let loadsMounted = this.loadStore;
     if (this.loadStore) {
       this.$store.commit("setloadStore", loadsMounted);
@@ -270,6 +319,35 @@ export default {
     } else {
       this.orders = this.orderScan;
     }
+    this.$store.commit("scanOrder", this.orders );
+  },
+
+  async mounted() {
+    if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
+        let idOrderToInvoices = this.orders[0]?.order_num
+        this.$store.commit("getOrdersToInvoicesId", idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
+    }
+    this.$store.commit("setExceptions", {note: null, type: null});
+    if(this.$router.options.history.state.back != '/details-invoices'){
+      this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
+    }
+    this.$store.commit('setImagiElement',[])
+
+    this.camera = this.$refs.Camera;
+    let loadsMounted = this.loadStore;
+    if (this.loadStore) {
+      this.$store.commit("setloadStore", loadsMounted);
+    }
+
+    this.load = { ...this.loadStore };
+    if (this.load?.loadType == profile?.container) {
+      this.orders = this.load?.Orders;
+    } else {
+      this.orders = this.orderScan;
+    }
+    this.$store.commit("scanOrder", this.orders );
+
+
     this.showSignaturform = this.orders.some((x) => x.isReturn);
 
     if (this.orderScan?.length > 1) {
@@ -282,15 +360,32 @@ export default {
     }
     this.load.firstOrdenInfo = this.load?.Orders[0];
     await this.getLocation();
+    this.orderInformation = this.orders.find(x => x.order_num)
+    if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
+      this.exception = this.isChangeQuantityStore.exception
+    } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
+       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+    }
   },
   watch: {
     digitalFirmStore: {
       handler: async function (newVal) {
         if (newVal !== null) {
           this.firm = newVal;
-
           this.uploadOrDownload(this.orders);
           this.postImages();
+
+          let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
+          let orderFinished = ordersMissing?.filter(orderNum => this.orderScan?.some(structure => structure.order_num == orderNum))
+
+          orderFinished?.forEach(orderNumFinished => {
+            let index = ordersMissing?.findIndex(orderNum => orderNum == orderNumFinished)
+            if(index >= 0){
+              ordersMissing.splice(index, 1)
+            }
+          })
+          localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing))
+
           let isReturn = this.load?.Orders?.find((x) => x.isReturn);
 
           let delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -327,38 +422,31 @@ export default {
               );
             }
 
-            if (
-              allProductScanned.every((x) => x == true) ||
-              load?.Orders?.every((order) =>
-                this.orders?.some((x) => x?.order_num == order?.order_num)
-              )
-            ) {
-              localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
-              localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
-              await this.changeRouteLoads("Delivered", this.load);
+             if ((ordersMissing?.length == 0 || load.loadType == profile.container) && !isReturn){
+               localStorage.removeItem(`ordersMissing${this.load.loadMapId}`)
+               localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
+               localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
+               await this.changeRouteLoads("Delivered", this.load);
+               this.$router.push({ name: "home" });
 
-              if (isReturn) {
+             }else if(isReturn) {
                 localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5);
-                this.$router.push({ name: "load-status" }).catch(() => {});
-              } else if (load.loadType == profile.container) {
-                this.$router.push({ name: "home" });
-              } else {
+                this.$router.push({ name: "load-status" });
+             }else{
                 this.$router.push({ name: "delivery-routes" });
-              }
-            } else {
-              if (load.loadType == profile.container) {
-                localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
-                localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
-                this.$router.push({ name: "home" });
-              } else {
-                this.$router.push({ name: "delivery-routes" });
-              }
-            }
+             }
+
+            
           } catch (error) {
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
             this.$router.push({ name: "home" }).catch(() => {});
           }
-
+       
+           if (this.load.allowOrderChangesAtDelivery) {
+            localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
+            this.confirmAndFinalizeCreationOfInvoices()
+          }
+         
           this.setOpen(false);
         }
       },
@@ -368,21 +456,39 @@ export default {
         this.stopScan();
       }
     },
+     imagiElement:{
+      handler: function(newVal){
+        if (newVal.length == 0) {
+        this.$store.commit('setImagiElement',[])
+        } else {
+        this.$store.commit('setImagiElement',newVal)
+        }
+      }, deep: true
+    },
   },
 
   methods: {
     async getLocation() {
-      try {
-        const geo = await Geolocation.getCurrentPosition();
-        this.location.latitude = geo.coords.latitude;
-        this.location.longitude = geo.coords.longitude;
-      } catch (e) {
-        console.log(e);
+      if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+        try {
+          const geo = await Geolocation.getCurrentPosition();
+          this.location.latitude = geo.coords.latitude;
+          this.location.longitude = geo.coords.longitude;
+        } catch (e) {
+          console.log(e);
+        }
+      
+      }else{
+        let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+        this.location.latitude = result?.lat
+        this.location.longitude = result?.lng
       }
     },
+
     async checkPermissions() {
       return await Geolocation.checkPermissions();
     },
+
     getShow(value) {
       this.show = value;
       if (value === "scan") {
@@ -412,7 +518,6 @@ export default {
       if (status.granted) {
         return true;
       }
-
       return false;
     },
 
@@ -459,10 +564,21 @@ export default {
           order._id
         );
       }
+        if (this.causeExceptionsStore?.note) {
+          for (let x = 0; x < this.orders.length; x++) {
+            const order = this.orders[x];
+            this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
+            
+          }
+        }
     },
 
     uploadOrDownload(val) {
-      this.setLoadTruck(val);
+      if (!this.loadStore.allowOrderChangesAtDelivery) {
+        this.setLoadTruck(val);
+      } else {
+        this.setLoadTruckInvoices(this.structureToScan.firstStructure);
+      }
     },
     setLoadTruck(val) {
       this.timeOut = 10000;
@@ -472,6 +588,7 @@ export default {
       for (let cont = 0; cont < orders.length; cont++) {
         let order = orders[cont];
         totalOfBoxes += order.no_of_boxes;
+        
         for (var i = 0; i < order.products.length; i++) {
           let prod = order.products[i];
           try {
@@ -507,29 +624,78 @@ export default {
       }
       return totalOfBoxes;
     },
+    setLoadTruckInvoices(structure) {
+      this.timeOut = 10000;
+      this.setOpen(true);
+     
+        for (var i = 0; i < structure.length; i++) {
+          let prod = structure[i];
+          let order = this.orders.find(x => x.order_num === prod.order_num )
+          let dataProduct = order.products.find(p => p.qrCode === prod.qrCode &&  p.name === prod.name )
+         
+         try {
+            if (prod.scanOneByOne === "no") {
+              prod.loadScanningCounter = prod.quantity;
+              this.$services.deliverServices.deliverProduct(
+                order._id,
+                dataProduct._id,
+                prod.loadScanningCounter,
+                dataProduct.product,
+                prod.qrCode
+              );
+            } else {
+              for (let i = 0; i <= prod.quantity; i++) {
+                prod.loadScanningCounter = i;
+                this.$services.deliverServices.deliverProduct(
+                  order._id,
+                  dataProduct._id,
+                  prod.loadScanningCounter,
+                  dataProduct.product,
+                  prod.qrCode
+                );
+              }
+            }
+          } catch (error) {
+            if (error.message === "Request failed with status code 401") {
+              console.log("Error al introducir los datos");
+            } else if (error.message === "Network Error") {
+              console.log("Error de conexion, verifique que este conectado");
+            }
+          }
+        }
+    },
     deleteImage(index) {
       this.imagiElement.splice(index, 1);
       if (this.imagiElement.length === 0) {
         this.step = 1;
       }
     },
+      deleteInvoices() {
+        let dwlStatus = {
+        status: false,
+        order: null
+      }
+      this.$store.commit("getInvoiceDownload",dwlStatus);
+    },
     resetSign() {
       this.step = 2;
     },
 
     async snapshot() {
-      const blob = await this.camera?.snapshot({ width: 540, height: 480 });
+      let delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+      const blob = await this.camera?.snapshot({ width: 780, height: 720 });
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
       reader.onloadend = async function () {
         img = reader.result;
       }
-      let delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await delay(1000);
       this.image = img;
       this.cameraOn = false;
     },
+    
     setImage() {
       this.imagiElement.push(this.image);
       if (this.imagiElement.length > 0) {
@@ -548,6 +714,7 @@ export default {
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       let img;
+      
       reader.onloadend = async function () {
         img = reader.result;
       };
@@ -555,6 +722,16 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
+    },
+
+       async confirmAndFinalizeCreationOfInvoices () {
+      // este es la confirmacion debo ponerlo cuando firme todo
+        try {
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
+      } catch (error) {
+        console.log(error);
+      }
+
     },
   },
 };
@@ -584,6 +761,9 @@ p {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+.checkbox-default:checked + .onoffswitch-label{
+  background-color: #898989 !important;
 }
 .onoffswitch-label {
   position: relative;
@@ -643,7 +823,7 @@ p {
 }
 .stiky {
   color: rgb(255, 255, 255) !important;
-  z-index: 2;
+  z-index: 0;
   border-top: 1px solid #313575;
   font-size: 12px !important;
   padding: 0px 10px 5px !important;
@@ -684,7 +864,7 @@ li::before {
 .img-result {
   width: 98%;
   height: 80px;
-  /* margin-right: 5px; */
+  margin-top: 10px;
   border: 1px solid #000;
 }
 .img-scroll {
@@ -709,7 +889,8 @@ li::before {
   margin-left: 5px;
 }
 .uk-card-body {
-  padding: 16px 15px;
+  /* padding: 16px 15px; */
+  padding: 5px 15px 16px;
 }
 .cont {
   position: sticky;
@@ -719,8 +900,8 @@ li::before {
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  right: -10px;
-  top: -10px;
+  right: -14px;
+  top: 0px;
   width: 22px;
   border-radius: 10px;
 
@@ -733,6 +914,8 @@ li::before {
 }
 .img-card {
   width: 100%;
+  padding: 0px !important;
+  /* padding: 5px 0px 10px !important; */
 }
 
 .showCamera {
@@ -824,5 +1007,16 @@ li::before {
   color: #999;
   border: 1px solid #e5e5e5;
   pointer-events: none;
+}
+.position-imagin {
+  position: relative;
+  width: 77px;
+  display: flex;
+  margin: 0px 10px;
+}
+
+.pad-car {
+  padding: 5px 0px 10px !important;
+
 }
 </style>

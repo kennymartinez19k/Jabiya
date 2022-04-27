@@ -150,7 +150,6 @@
 </template>
 
 <script>
-import { Geolocation } from "@capacitor/geolocation";
 import { mapGetters } from "vuex";
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
@@ -236,7 +235,7 @@ export default {
     this.filterByOrders(false)
     this.setOpen(false)
     if (this.load.allowOrderChangesAtDelivery) {
-     this.textButton = 'Entregar Orden'
+     this.textButton = 'Entregar Orden y Factura'
     } else {
      this.textButton = 'Escanear y Entregar Producto'
     }
@@ -264,24 +263,13 @@ export default {
       }
   },
   methods: {
-    async location () {
-        try {
-          const geo = await Geolocation.getCurrentPosition();
-          this.location1.latitude = geo.coords.latitude
-          this.location1.longitude = geo.coords.longitude
-        } catch (e) {
-          console.log(e)
-        
-        }
-    },
+    
     screenSelection () {
-      this.showButton = false
-      if (this.load.allowOrderChangesAtDelivery) {
-        this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices)
-        this.$router.push({ name: "details-invoices" }).catch(() => {});
-      } else{
-        this.scan()
+      this.showButton = false 
+        if (this.load.allowOrderChangesAtDelivery) {
+        this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
       }
+        this.scan()
 
     },
     async scan() {
@@ -290,7 +278,17 @@ export default {
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
-      if(this.load.scanningRequired){
+
+      let ordersMissing = []
+      if(!localStorage.getItem(`ordersMissing${this.load.loadMapId}`)){
+          for (let i = 0; i < this.orders.length; i++) {
+            const order = this.orders[i];
+            if(order.status != 'Delivered') ordersMissing.push(order.order_num)
+          }
+          localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing) )
+      }
+
+      if(this.load?.scanningRequired){
         this.$router.push({ name: "deliveryActions" }).catch(() => {});
       }else{
         this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});
@@ -492,18 +490,21 @@ li{
 }
 .uk-accordion-title{
   display: flex;
-  margin: 5px 0px;
+  margin: 5px  0px;
   font-size: 12px;
   color: #3880ff;
+  padding: 5px;
+
 }
 .uk-accordion-title::before {
     content: "";
-    margin-left: 20px;/* revision*/
+    margin-left: 7px;
     background-image: url('../assets/down.png');
     height: 17px;
-    background-size: 21px;
+    background-size: 14px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+    padding-right: 18px;
 }
 .uk-open>.uk-accordion-title::before {
   transform: rotate(180deg);

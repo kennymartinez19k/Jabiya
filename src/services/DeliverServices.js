@@ -21,7 +21,6 @@ class deliverServices {
           }
           
           let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
-
           add(json)
     }
 
@@ -35,7 +34,6 @@ class deliverServices {
         }
       }
       const url = `${this.settingsLocalStore.url}/exo/orders/${orderId}/products/${productId}/actions`
-      
       const json = {'method': 'post', 'url': url, 'body': body}
       add(json)
       

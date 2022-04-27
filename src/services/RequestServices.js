@@ -21,7 +21,6 @@ class RequestServices {
                 formData.append('lng',lng);
 
       }
-    try{
         
       if (infoRequest.method === "post") {
         if (infoRequest.headers){
@@ -32,30 +31,25 @@ class RequestServices {
           else{
             if(infoRequest.body) {
               let res = await this.http.post(infoRequest.url, infoRequest.body, infoRequest.headers)
-              // localStorage.setItem('posts', localStorage.getItem('posts') - 1)
               return res
             }
             else if(formData){
               let res = await this.http.post(infoRequest.url, formData, infoRequest.headers)
-              // // localStorage.setItem('posts', localStorage.getItem('posts') - 1)
               return res
             }
           }
         }else{
           if(infoRequest.body && formData){
             let res = await this.http.post(infoRequest.url, infoRequest.body, formData)
-            // // localStorage.setItem('posts', localStorage.getItem('posts') - 1)
             return res
           }
           else{
             if(infoRequest.body){
               let res = await this.http.post(infoRequest.url, infoRequest.body)
-              // // localStorage.setItem('posts', localStorage.getItem('posts') - 1)
               return res
             } 
             else if(formData){
               let res = await this.http.post(infoRequest.url, formData)
-              // // localStorage.setItem('posts', localStorage.getItem('posts') - 1)
               return res
 
             }
@@ -65,54 +59,43 @@ class RequestServices {
       }
 
       if (infoRequest.method === "patch") {
-        // // localStorage.setItem('patches', localStorage.getItem('patches') + 1)
 
         if (infoRequest.headers)  {
           let res = await this.http.patch(infoRequest.url, infoRequest.body, infoRequest.headers)
-          // // localStorage.setItem('patches', localStorage.getItem('patches') - 1)
           return res
 
         }
         else {
           let res = await this.http.patch(infoRequest.url, infoRequest.body)
-          // // localStorage.setItem('patches', localStorage.getItem('patches') - 1)
           return res
         }
       }
     
       if (infoRequest.method === "get") {
-        // // localStorage.setItem('gets', localStorage.getItem('gets') + 1)
         if (infoRequest.headers) {
           let res = await this.http.get(infoRequest.url, infoRequest.headers)
-          // // localStorage.setItem('gets', localStorage.getItem('gets') - 1)
           return res
         }
         else {
           let res = await this.http.get(infoRequest.url, infoRequest.headers)
-          // // localStorage.setItem('gets', localStorage.getItem('gets') - 1)
           return res
 
         }
       }
 
       if (infoRequest.method === "put") {
-        // // localStorage.setItem('patches', localStorage.getItem('patches') + 1)
 
         if (infoRequest.headers)  {
           let res = await this.http.put(infoRequest.url, infoRequest.body, infoRequest.headers)
-          // // localStorage.setItem('patches', localStorage.getItem('patches') - 1)
           return res
 
         }
         else {
           let res = await this.http.put(infoRequest.url, infoRequest.body)
-          // // localStorage.setItem('patches', localStorage.getItem('patches') - 1)
           return res
         }
       }
-    }catch(error){
-      return false
-    }
+    
       return undefined
     }
     

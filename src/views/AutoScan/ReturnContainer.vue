@@ -176,7 +176,7 @@
     <div
       v-if="!cameraOn && !image"
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 4px 0px !important"
+      style="z-index: 0; padding: 16px 0px !important"
     >
       <h6 style="margin: 0px 0px 10px; font-size: 14px">
         Click Para Tomar las Fotos y Firma
@@ -290,72 +290,18 @@ export default {
           this.firm = newVal;
           this.uploadOrDownload(this.orders);
           this.postImages();
-          let isReturn = this.load.Orders.find((x) => x.isReturn);
 
           let delay = (ms) => new Promise((res) => setTimeout(res, ms));
           await delay(5000);
 
           try {
-            let load = await this.$services.loadsServices.getLoadDetails(
-              this.load?.loadMapId
-            );
-            let allProductScanned = [];
 
-            load.Orders.forEach((x) => {
-              allProductScanned.push(
-                x.products.every(
-                  (prod) => prod?.loadScanningCounter >= prod?.quantity
-                )
-              );
-            });
-
-            let allOrderScanned = JSON.parse(
-              localStorage.getItem("allOrderScanned")
-            );
-
-            if (!allOrderScanned) {
-              localStorage.setItem(
-                "allOrderScanned",
-                JSON.stringify(this.orders)
-              );
-            } else {
-              allOrderScanned = [...allOrderScanned, ...this.orders];
-              localStorage.setItem(
-                "allOrderScanned",
-                JSON.stringify(allOrderScanned)
-              );
-            }
-
-            if (
-              allProductScanned.every((x) => x == true) ||
-              load?.Orders?.every((order) =>
-                this.orders?.some((x) => x?.order_num == order?.order_num)
-              )
-            ) {
-              localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
-              localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
-              await this.changeRouteLoads("Delivered", this.load);
-
-              if (isReturn) {
-                localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5);
-                this.$router.push({ name: "load-status" }).catch(() => {});
-              } else if (load.loadType == profile.container) {
-                this.$router.push({ name: "home" });
-              } else {
-                this.$router.push({ name: "delivery-routes" });
-              }
-            } else {
-              if (load.loadType == profile.container) {
-                localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
-                localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
-                this.$router.push({ name: "home" });
-              } else {
-                this.$router.push({ name: "delivery-routes" });
-              }
-            }
-          } catch (error) {
-            await this.changeRouteLoads("Delivered", this.load);
+            localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
             localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
+            await this.changeRouteLoads("Delivered", this.load);
+            this.$router.push({ name: "home" });
+            
+          } catch (error) {
             this.$router.push({ name: "home" }).catch(() => {});
           }
           this.setOpen(false);
@@ -371,13 +317,30 @@ export default {
 
   methods: {
     async getLocation() {
-      try {
-        const geo = await Geolocation.getCurrentPosition();
-        this.location.latitude = geo.coords.latitude;
-        this.location.longitude = geo.coords.longitude;
-      } catch (e) {
-        console.log(e);
-      }
+      if(!this.load?.Vehicles[0]?.gpsProvider || this.load.Vehicles[0].gpsProvider == 'Flai Mobile App'){
+          try {
+            const geo = await Geolocation.getCurrentPosition();
+            this.location.latitude = geo.coords.latitude;
+            this.location.longitude = geo.coords.longitude;
+          } catch (error) {
+            if(error.message == 'location disabled'){
+              this.alertUbication('Active la ubicacion', 'Porfavor debe encender la ubicacion, para continuar el siguiente paso' )
+            }
+            if(error.message == 'Location permission was denied'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            if(error.message == 'User denied Geolocation'){
+              this.alertUbication('Ubicacion denegada', 'Por favor permita que la aplicacion pueda acceder a permiso de ubicacion' )
+            }
+            return false
+          }
+        }else{
+          // Server gps
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          this.location.latitude = result?.lat
+          this.location.longitude = result?.lng
+        }
+        
     },
     async checkPermissions() {
       return await Geolocation.checkPermissions();

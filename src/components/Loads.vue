@@ -9,31 +9,31 @@
     >
     </ion-loading>
     <header>
-  <div uk-margin class="sub-header">
-      <ul class="uk-pagination" >
-        <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
-        <li @click="setCalendar()" ><label style="padding: 5px">
-          <Datepicker ref="calendar" showNowButton="true" nowButtonLabel="AHORA" autoApply="true" locale="es-419" id="calendar" v-model="dateSelected"></Datepicker>
-          <p class="uk-text-meta uk-margin-remove-top date ">
-              <label
-                for="date"
-                class="uk-text-bold uk-text-uppercase"
-                style="font-size: 14px"
-                >{{dateMoment}}</label
-              >
-            </p>    
-        </label>
+      <div uk-margin class="sub-header">
+        <ul class="uk-pagination" >
+          <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
+          <li @click="setCalendar()" ><label style="padding: 5px">
+            <Datepicker ref="calendar" showNowButton="true" nowButtonLabel="AHORA" autoApply="true" locale="es-419" id="calendar" v-model="dateSelected"></Datepicker>
+            <p class="uk-text-meta uk-margin-remove-top date ">
+                <label
+                  for="date"
+                  class="uk-text-bold uk-text-uppercase"
+                  style="font-size: 14px"
+                  >{{dateMoment}}</label
+                >
+              </p>    
+          </label>
+            
           
-        
-        </li>
-        <li @click="reloadNewDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
-      </ul>
-      <span @click="reloadData()" class="refresh-reload">
-        <font-awesome-icon  icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
-        <span>&nbsp;Refrescar</span>
-      </span>
-    </div>
-</header>
+          </li>
+          <li @click="reloadNewDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
+        </ul>
+        <span @click="reloadData()" class="refresh-reload">
+          <font-awesome-icon  icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
+          <span>&nbsp;Refrescar</span>
+        </span>
+      </div>
+    </header>
   
     <div class="section">
       <div v-if="assignedLoads == 0" style="height: 50px">
@@ -70,10 +70,25 @@
                       <span>{{ load?.loadNumber }}</span>
                     </p>
                 </div>
-                <div class="uk-flex uk-flex-middle info-Order">
-                  <p class="uk-text-bold position-text">No de Orden:&nbsp;</p>
+                <div class="uk-flex uk-flex-middle info-Order blue-text">
+                  <p class="uk-text-bold position-text ">No de Orden:&nbsp;</p>
                   <span v-for="(order, index) of load?.Orders" v-show="index < 3" :key="order">{{order?.order_num}}<span v-if="load?.Orders?.length > 1">, </span> </span>
                   <span v-if="load?.Orders?.length > 3">...</span>
+                </div>
+                <div v-if="userInfo?.userType != userType?.driver">
+                  <div class="uk-flex uk-flex-middle info-Order blue-text">
+                    <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
+                    <span v-for="info of load?.Vehicles" :key="info">
+                      {{info?.driver}}
+                      </span>
+                  </div>
+                  <div class="uk-flex uk-flex-middle info-Order blue-text">
+                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
+                      <span v-for="info of load?.Vehicles" :key="info">
+                        {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
+                        {{ info?.license_no }}
+                    </span>
+                  </div>
                 </div>
                  <div class="uk-flex uk-flex-middle">
                   <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
@@ -93,21 +108,7 @@
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load?.loadingStatus?.slotEndTime)}}</span>
                 </div>
 
-                <div v-if="userInfo?.userType != userType?.driver">
-                  <div class="uk-flex uk-flex-middle info-Order">
-                    <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
-                    <span v-for="info of load?.Vehicles" :key="info">
-                      {{info?.driver}}
-                      </span>
-                  </div>
-                  <div class="uk-flex uk-flex-middle info-Order">
-                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
-                      <span v-for="info of load?.Vehicles" :key="info">
-                        {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
-                        {{ info?.license_no }}
-                    </span>
-                  </div>
-                </div>
+                
 
                 </div>
                 <div class="start-load">
@@ -125,7 +126,9 @@
         </div>
       </div>
     </div>
-    
+    <div class="popup">
+  <span class="popuptext" :class="{show: showPopUp}" id="myPopup">Hubo un Error al Enviar, Reintete de Nuevo!</span> 
+</div>
   </div>
 </template>
 
@@ -139,7 +142,6 @@ import { Mixins } from "../mixins/mixins";
 import { Profile } from "../mixins/Profile"
 import { userType, userPosition } from '../types'
 import {LocalStorage} from '../mixins/LocalStorage'
-import { alertController } from '@ionic/vue';
 import Datepicker from 'vue3-date-time-picker';
 import 'vue3-date-time-picker/dist/main.css'
 
@@ -173,7 +175,8 @@ export default {
       loadsToDisplay: [],
       waitingMessage: true,
       calendar: null,
-      dateSelected: new Date()
+      dateSelected: new Date(),
+      showPopUp: false
     };
   },
 
@@ -191,8 +194,6 @@ export default {
       moment.locale('en');
       window.location.href = "#Hoy";
       await this.currentDate();
-      this.sortLoads()
-      localStorage.removeItem('DeliveryCharges');
 
       setInterval(() => {
         if(!this.reloadEvent){
@@ -201,22 +202,38 @@ export default {
         }
       }, 10000)
   },
+  computed: {
+    ...mapGetters(["allLoadsStore", "settings", "userData", "loadStore", "isQueueEmpty", "isRequestError"]),
+
+    loadInProgress: function () {
+      return JSON.parse(localStorage.getItem('loadInProgress'));
+    },
+  },
   watch:{
     dateSelected: function(newVal){
       this.currentDate({calendar: true, dateCalendar: newVal})
     },
     loadStore: function(newVal){
       this.loadsToDisplay = newVal
+    },
+    isQueueEmpty: function(newVal){
+      if(newVal){
+        this.loadsToDisplay?.forEach(load => {
+           localStorage.removeItem(`sendInfo${load.loadMapId}`);
+        })
+      }
+    },
+    isRequestError: async function(newVal){
+      if(newVal){
+        this.showPopUp = true
+        let delay = (ms) => new Promise((res) => setTimeout(res, ms));
+        await delay(5000);
+        this.showPopUp = false
+      }
     }
     
   },
-  computed: {
-    ...mapGetters(["allLoadsStore", "settings", "userData", "loadStore"]),
-
-    loadInProgress: function () {
-      return JSON.parse(localStorage.getItem('loadInProgress'));
-    },
-  },
+  
    methods: {
     setOpe(val) {
       this.loaded = val;
@@ -256,6 +273,7 @@ export default {
         else this.dateMoment = date
 
       }catch(error){
+        console.log(error, 'no actualizo')
       this.setOpen(false)
         if(error.message == 'Network Error'){
           this.reloadEvent = false
@@ -270,6 +288,7 @@ export default {
            else this.dateMoment = date
         }
         if(error.message == 'Request failed with status code 401'){
+          console.log('unautorizo')
           //  this.$router.push({name: 'sign-in'})
         }
         return ;
@@ -281,8 +300,8 @@ export default {
         const load = {...loads[i]}
         
         let productScan = localStorage.getItem(JSON.stringify(load))
-        if(productScan && (load.loadingStatus.text !== 'Approved' && load.loadingStatus.text !== 'Loading Truck')){
-          localStorage.removeItem(JSON.stringify(load.loadMapId))
+        if(productScan && (load?.loadingStatus?.text !== 'Approved' && load?.loadingStatus?.text !== 'Loading Truck')){
+          localStorage.removeItem(JSON.stringify(load?.loadMapId))
         }
         let loadDetails;
         try{
@@ -292,10 +311,10 @@ export default {
         }
         Object.assign(load, loadDetails)
 
-        if(!((loadDetails?.loadingStatus?.text === "Driver selection in progress" && this.userInfo?.userType === this.userType.driver)
-           || ( !loadDetails?.approvers[0]?.status && loadDetails.loadingStatus.text === "Expecting Approval" && this.userInfo.userType !== this.userType.provider )
-             || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[0]?.status == 'REJECTED' && this.userInfo.userType !== this.userType.provider)
-             || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[1]?.status == 'REJECTED' && this.userInfo.userType === this.userType.driver)
+        if(!((loadDetails?.loadingStatus?.text === "Driver selection in progress" && this.userInfo?.userType === this.userType?.driver)
+           || ( !loadDetails?.approvers[0]?.status && loadDetails?.loadingStatus?.text === "Expecting Approval" && this.userInfo?.userType !== this.userType?.provider )
+             || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[0]?.status == 'REJECTED' && this.userInfo?.userType !== this.userType?.provider)
+             || (loadDetails?.loadingStatus?.text === 'Denied Approval' && loadDetails?.approvers[1]?.status == 'REJECTED' && this.userInfo?.userType === this.userType?.driver)
            )
         ){
           loadsAcummulated.push(loadDetails)
@@ -305,6 +324,7 @@ export default {
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
+
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
@@ -312,6 +332,7 @@ export default {
         this.$store.commit("setAllLoadStore", this.loadsToDisplay);
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
+
       this.sortLoads()
       this.reloadEvent = false
 
@@ -319,6 +340,9 @@ export default {
         const load = this.loadsToDisplay[i];
         if(load?.loadingStatus?.text === "Delivered"){
           await this.IsDelivered(load)
+        }
+        if(this.isQueueEmpty){
+           localStorage.removeItem(`sendInfo${load?.loadMapId}`);
         }
       }
     },
@@ -331,7 +355,6 @@ export default {
       this.setProfile(val)
       this.$store.commit("setloadStore", val);
       this.$store.commit("setDetailsLoadsStore", val);
-      localStorage.setItem('DeliveryCharges', JSON.stringify(val));
       
         if(val.loadingStatus.text == 'Expecting Approval'){
           this.$router.push({ name: "load-status" }).catch(() => {});
@@ -403,14 +426,7 @@ export default {
        return a - b
       });
     },
-     async alertError(header, msg){
-        const alert = await alertController.create({
-          header: header,
-          message: msg,
-          buttons: [ 'Ok'],
-        });
-        await alert.present();
-    },
+
 
     productQuantity(val){
       let totalProduct = 0
@@ -640,4 +656,67 @@ header >div {
 }
 
 
+.popup {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: row;
+  position: absolute;
+  bottom: 72%;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 94%;
+  background-color: #b17401;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  z-index: 1;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: -15%;
+  transform: rotate(180deg);
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #b17401 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+  padding: 15px 0px;
+  box-shadow: 0px 0px 5px #b17401;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.blue-text{
+  color: #1968e4;
+}
 </style>
