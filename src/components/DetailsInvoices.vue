@@ -237,7 +237,12 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    this.idInvoices = this.invoicesIdStore
+    if (this.invoicesIdStore) {
+      this.idInvoices = this.invoicesIdStore
+    } else {
+      this.idInvoices = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
+      
+    }
     try {
       const signIn = {
         jsonrpc: "2.0",

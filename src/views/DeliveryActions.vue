@@ -383,8 +383,19 @@ export default {
     },
   },
   beforeMount(){
-    this.load = { ...this.loadStore };
-    this.orders = [...this.orderScan];
+     if (this.loadStore?.loadMapId) {
+      this.load = {...this.loadStore};
+      } else {
+        this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+        this.$store.commit("setloadStore", this.load);
+      }
+
+      if (this.orderScan?.length) {
+        this.orders = [...this.orderScan];
+      } else {
+        this.orders = JSON.parse(localStorage.getItem("scanOrder"))
+        this.$store.commit("scanOrder", this.orders );
+      }
   },
   async mounted() {
     this.$store.commit("setExceptions", null);
@@ -393,9 +404,14 @@ export default {
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
-
-    this.firstStructureLoad = this.structureToScan.firstStructure;
-    this.secondStructureLoad = this.structureToScan.secondStructure;
+    let structure = null
+    if (this.structureToScan?.firstStructure) {
+      structure = this.structureToScan
+    } else {
+     structure = JSON.parse(localStorage.getItem("setStructureToScan"))
+    }
+    this.firstStructureLoad = structure.firstStructure;
+    this.secondStructureLoad = structure.secondStructure;
     this.orders.map((x) => {
       if (x.totalOrdersScanned >= x.totalQuantity) {
         this.step = 1;
