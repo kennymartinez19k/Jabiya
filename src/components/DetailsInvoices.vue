@@ -11,7 +11,7 @@
     <div>
       <h4 class="uk-text-small">Procesar Facturas y Devoluciones</h4>
       <div
-        class="uk-card uk-card-default uk-card-body uk-width-1-2@m details-order"
+        class="uk-card uk-card-default uk-card-body item-info uk-width-1-2@m details-order"
       >
         <p>
           <strong>Orden:</strong>&nbsp;<span>{{ customerDetails?.order?.name }}</span>
@@ -43,9 +43,9 @@
       <h6 class="subtitle">(de ser necesario)</h6>
 
 <div class=" table-thead uk-margin-left">
-            <h6 class="uk-text-left uk-width-1-3 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
-              <h6 class="uk-text-center uk-width-1-3 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
-              <h6 class="uk-text-left uk-width-1-4 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
+            <h6 class="uk-text-left uk-text-small" style="width: 45%; margin-right: 10px;" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
+              <h6 class="uk-text-center uk-text-small" style="width: 45%" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
+              <h6 class="uk-text-left uk-text-small" style="width: 15%" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
         </div>
     <div>
       
@@ -635,6 +635,7 @@ th {
   font-size: 10px;
 }
 .details-order{
+
  padding: 0px 8px 8px;
 
 }
@@ -645,5 +646,11 @@ th {
 .quantity-adjustment{
   background-color: #efb5b5;;
   padding: 5px;
+}
+@media (min-width: 550px){
+  .details-order{
+    max-width: 550px;
+
+}
 }
 </style>

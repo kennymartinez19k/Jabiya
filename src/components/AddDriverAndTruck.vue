@@ -13,21 +13,21 @@
     </div>
 
     <div>
-      <h6 class="uk-text-left" style="color: #666 !important; font-size: 13px">Transportista: <span>{{transporterName}}</span></h6>
+      <h6 class="uk-text-left web-font-small" style="color: #666 !important; font-size: 13px">Transportista: <span class="web-font-small">{{transporterName}}</span></h6>
     </div>
     <form action="" class="table-border uk-margin-medium-bottom">
       <div class="table">
-        <h5 class="uk-text-left" style="padding: 0px 15px" >1. Elija un Conductor</h5>
+        <h5 class="uk-text-left web-font-small" style="padding: 0px 15px" >1. Elija un Conductor</h5>
         <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
           <thead>
             <tr class="">
-              <th scope="col" class="driverName">Nombre del Conductor</th>
+              <th scope="col" class="driverName web-font-small">Nombre del Conductor</th>
             </tr>
           </thead>
           <tbody v-for="driver in drivers" :key="driver">
             <tr>
-              <label class="list-name uk-flex uk-flex-center" :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
-                <td>{{driver.driverName}}</td>
+              <label class="list-name uk-flex uk-flex-center " :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
+                <td class="web-font-small">{{driver.driverName}}</td>
               </label>
             </tr>
           
@@ -35,33 +35,33 @@
         </table>
       </div>
       <div class="table">
-        <h5 class="uk-text-left" style="padding: 0px 15px">2. Elija un Vehículo</h5>
+        <h5 class="uk-text-left web-font-small" style="padding: 0px 15px">2. Elija un Vehículo</h5>
 
         <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
           <thead>
             <tr>
               <label class=" list uk-flex uk-flex-around">
-                <th scope="col">Marca</th>
-                <th  scope="col">Placa</th>
-                <th  scope="col">Costo</th>
-              <th scope="col">Chofer Habitual</th>
+                <th class="web-font-small" scope="col">Marca</th>
+                <th class="web-font-small" scope="col">Placa</th>
+                <th class="web-font-small" scope="col">Costo</th>
+                <th class="web-font-small" scope="col">Chofer Habitual</th>
               </label>
             </tr>
           </thead>
           <tbody  v-for="details in vehicles" :key="details">
             <tr>
-              <label class=" uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
-                <td>{{details.brand}}</td>
-                <td>{{details.vehicleNo}}</td>
-                <td>RD${{setRound(details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</td>
-                <td>{{details?.driverName}}</td>
+              <label class="web-font-small uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
+                <td class="web-font-small">{{details.brand}}</td>
+                <td class="web-font-small">{{details.vehicleNo}}</td>
+                <td class="web-font-small">RD${{setRound(details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</td>
+                <td class="web-font-small">{{details?.driverName}}</td>
                 </label>
             </tr>       
           </tbody>
         </table>
       </div>
       <div class=" button-opt">
-      <button type="button" :disabled="disabledButton" class="uk-button uk-button-primary" @click="selectDriverAndVehicle()">Seleccionar Conductor y Vehículo </button>
+      <button type="button" :disabled="disabledButton" class="uk-button uk-button-primary web-font-small" @click="selectDriverAndVehicle()">Seleccionar Conductor y Vehículo </button>
     </div>
     </form>
   </div>

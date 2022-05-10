@@ -17,7 +17,7 @@
             <p class="uk-text-meta uk-margin-remove-top date ">
                 <label
                   for="date"
-                  class="uk-text-bold uk-text-uppercase"
+                  class="uk-text-bold uk-text-uppercase web-font-small"
                   style="font-size: 14px"
                   >{{dateMoment}}</label
                 >
@@ -28,7 +28,7 @@
           </li>
           <li @click="reloadNewDate(+1)"><span href="#"><span uk-pagination-next></span><span uk-pagination-next></span></span></li>
         </ul>
-        <span @click="reloadData()" class="refresh-reload">
+        <span @click="reloadData()" class="refresh-reload web-font-small">
           <font-awesome-icon  icon="redo-alt" class="reload" :class="{'reload-event': reloadEvent}"/>
           <span>&nbsp;Refrescar</span>
         </span>
@@ -36,10 +36,11 @@
     </header>
   
     <div class="section">
-      <div v-if="assignedLoads == 0" style="height: 50px">
+      <div v-if="assignedLoads == 0" style="height: 50px; width: 100%">
         <span>No Tiene Viajes Asignados Para Este Día</span>
       </div>
       <div
+        class="item-section"
         v-show="assignedLoads > 0"
         v-for="(load, i) in loadsToDisplay"
         :key="i"
@@ -55,55 +56,55 @@
             >
             <div
             :class="{ 'load-edges': load?.loadMapId === loadInProgress }"
-              class="uk-card uk-card-body"
+              class="uk-card uk-card-body item-body"
               @click="setLoad(load)"
             >
             <span class="uk-badge">{{i + 1}}</span>
-            <p class="uk-flex status-load">
-                  <span class="uk-text-bold">{{ loadStatus(load) }}</span>
-              </p>
+            <p class="uk-flex status-load ">
+              <span class="uk-text-bold web-font-small">{{ loadStatus(load) }}</span>
+            </p>
             <div class="uk-flex uk-flex-between uk-flex-middle">
 
               <div style="margin-top: 32px !important">
                 <div>
-                    <p class="uk-flex">
+                    <p class="uk-flex web-font-small">
                       <span>{{ load?.loadNumber }}</span>
                     </p>
                 </div>
-                <div class="uk-flex uk-flex-middle info-Order blue-text">
+                <div class="uk-flex uk-flex-middle info-Order blue-text web-font-small">
                   <p class="uk-text-bold position-text ">No de Orden:&nbsp;</p>
                   <span v-for="(order, index) of load?.Orders" v-show="index < 3" :key="order">{{order?.order_num}}<span v-if="load?.Orders?.length > 1">, </span> </span>
                   <span v-if="load?.Orders?.length > 3">...</span>
                 </div>
                 <div v-if="userInfo?.userType != userType?.driver">
-                  <div class="uk-flex uk-flex-middle info-Order blue-text">
+                  <div class="uk-flex uk-flex-middle info-Order blue-text web-font-small">
                     <p class="uk-text-bold position-text">Chofer:&nbsp;</p>
                     <span v-for="info of load?.Vehicles" :key="info">
                       {{info?.driver}}
                       </span>
                   </div>
-                  <div class="uk-flex uk-flex-middle info-Order blue-text">
-                    <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
+                  <div class="uk-flex uk-flex-middle info-Order blue-text web-font-small">
+                    <p class="uk-text-bold  position-text">Vehiculo:&nbsp;</p>
                       <span v-for="info of load?.Vehicles" :key="info">
                         {{ info?.brand }} {{ info?.model }} {{ info?.color }}, Placa:
                         {{ info?.license_no }}
                     </span>
                   </div>
                 </div>
-                 <div class="uk-flex uk-flex-middle">
+                 <div class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Cantidad de Productos:&nbsp;</p>
                   <span>{{productQuantity(load)}}</span>
                 </div>
-                <div class="uk-flex uk-flex-middle">
+                <div class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Tipo:&nbsp;</p>
                   <span>{{ordenIsReturn(load)}}</span>
                 </div>
-                <div class="uk-flex uk-flex-middle">
+                <div class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load?.loadingStatus?.slotStartTime)}}</span>
                 </div>
 
-                <div v-if="load?.loadingStatus?.text !== 'Driver selection in progress'" class="uk-flex uk-flex-middle">
+                <div v-if="load?.loadingStatus?.text !== 'Driver selection in progress'" class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
                   <span>{{load?.dateTime?.date}} {{setLocaleDate(load?.loadingStatus?.slotEndTime)}}</span>
                 </div>
@@ -249,17 +250,23 @@ export default {
       let loads
       if(val?.calendar){
         contDate = val?.dateCalendar
+        val = null
+        this.date = contDate
       }
       else if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
         contDate = localStorage.getItem('dateCheck');
         this.date = new Date(contDate);
+
       }else if(val){
         contDate = this.date.setDate(this.date.getDate() + val);
-      }    
-      else contDate = this.date
-      date = moment(contDate).format("MM/DD/YYYY");
-      
+        this.date = contDate
 
+      }    
+      else {
+        contDate = this.date
+      }
+
+      date =  new Date(contDate).toLocaleDateString("en-US")
       let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
   
       try{
@@ -268,8 +275,8 @@ export default {
          this.waitingMessage = true
         }
         this.setOpen(this.waitingMessage);
-
-        if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+        // if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+        if (date === new Date().toLocaleDateString("en-US")) this.dateMoment = 'Hoy'
         else this.dateMoment = date
 
       }catch(error){
@@ -283,8 +290,9 @@ export default {
           
           let contDate = localStorage.getItem('dateCheck')
           let date = new Date(contDate);
-          date = moment(contDate).format("MM/DD/YYYY");
-           if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
+          // date = moment(contDate).format("MM/DD/YYYY");
+          date = new Date(contDate).toLocaleDateString("en-US")
+           if (date === new Date().toLocaleDateString("en-US")) this.dateMoment = 'Hoy'
            else this.dateMoment = date
         }
         if(error.message == 'Request failed with status code 401'){
@@ -323,8 +331,8 @@ export default {
       this.setOpen(false)
       
       let dateInDisplay = localStorage.getItem('dateCheck');
-      let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-
+      // let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
+     let date2 = new Date(dateInDisplay).toLocaleDateString("en-US")
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
@@ -354,6 +362,8 @@ export default {
     async setLoad(val) {
       this.setProfile(val)
       this.$store.commit("setloadStore", val);
+      val.firstOrdenInfo = val.Orders[0]
+      localStorage.setItem('currentLoad', JSON.stringify(val))
       this.$store.commit("setDetailsLoadsStore", val);
       
         if(val.loadingStatus.text == 'Expecting Approval'){
@@ -541,7 +551,7 @@ a {
   right: 10px;
 }
 .status-load span{
-    font-size: 16px !important;
+    font-size: 16px 
 
 }
 .start-load{
@@ -568,10 +578,10 @@ a {
 
 .refresh-reload{
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   position: absolute;
   top: 0px;
-  right: 5%;
+  right: 3%;
   margin-top: 10px;
   font-size: 10px;
 }
@@ -718,5 +728,27 @@ header >div {
 
 .blue-text{
   color: #1968e4;
+}
+@media (min-width: 650px){
+  .section{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .item-section{
+    width: 50%;
+  }
+  .container{
+    width: 100%;
+  }
+   .item-body{
+    min-height: 255px;
+  }
+}
+
+@media (min-width: 1200px){
+  .item-section{
+    width: 33%;
+  }
+ 
 }
 </style>

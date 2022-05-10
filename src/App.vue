@@ -86,22 +86,24 @@ export default {
           this.intervalForGps = 0
             
             this.location(load).then((locationUpdate) => {
-              let location = locationUpdate;
-              // if (
-              //   Math.abs(location.latitude - this.lastLocation.latitude) >
-              //     0.00003 ||
-              //   Math.abs(location.longitude - this.lastLocation.longitude) >
-              //     0.00003
-              // ) {
-                this.lastLocation.latitude =  location?.latitude
-                this.lastLocation.longitude = location?.longitude
-                this.$services.gpsServices.updateLocation(
-                  user.id,
-                  location?.latitude,
-                  location?.longitude,
-                  load?.bay_id?._id
-                );
-              // }
+              if(location){
+                let location = locationUpdate;
+                if (
+                  Math.abs(location.latitude - this.lastLocation.latitude) >
+                    0.00003 ||
+                  Math.abs(location.longitude - this.lastLocation.longitude) >
+                    0.00003
+                ) {
+                    this.lastLocation.latitude =  location?.latitude
+                    this.lastLocation.longitude = location?.longitude
+                    this.$services.gpsServices.updateLocation(
+                      user.id,
+                      location?.latitude,
+                      location?.longitude,
+                      load?.bay_id?._id
+                    );
+                }
+              }
             });
           
       
@@ -192,8 +194,9 @@ export default {
         console.log(error)
       }
     }else{
-      let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
-      return {latitude: result.lat, longitude: result.lng}
+      // let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
+      // return {latitude: result.lat, longitude: result.lng}
+      return false
     }
     }
   }
@@ -247,7 +250,7 @@ button{
 .view-header{
   height: 100%;
   overflow-y: scroll;
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 html body{
   height: 100vh;
@@ -310,5 +313,14 @@ strong{
 .text-bold{
   font-size: 14px;
   color: #5c5c5c ;
+}
+
+@media (min-width: 900px){
+  .web-font-small{
+    font-size: 16px !important;
+  }
+   .web-font-medium{
+    font-size: 20px !important;
+  }
 }
 </style>

@@ -483,7 +483,6 @@ export default {
             this.listCustomers = await this.$services.manageOrders.getCustomers()
             this.listservicesType = await this.$services.manageOrders.getServicesType()
             this.listWarehouse = await this.$services.manageOrders.getWarehouse()
-            console.log(this.listWarehouse)
             this.cities = await this.$services.manageOrders.getCity()
         }catch(error){
             alert(error)
@@ -611,7 +610,6 @@ export default {
         }
     },
     async editManageOrder(){
-        console.log(this.orderManageStore)
          if(this.orderManageStore.status != 'Created') this.isNotModificate = true
             this.isOrderEdit = true
             let {
@@ -668,7 +666,6 @@ export default {
             products: this.productsCreated,
             files: this.files
         }
-        console.log(this.generalData, this.client, this.productsCreated)
          await this.$services.manageOrders.createOrder(data)
         
         

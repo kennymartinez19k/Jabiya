@@ -31,24 +31,32 @@
     <div class="allScreen">
       <div
       class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve' }"
+      :class="{ statusError: statusOrders == 'reject', statusCheck: statusOrders == 'approve', webView: !isMobile }"
       style="z-index: 1; padding: 15px 0px !important"
     >
       <div v-if="statusOrders == 'start'">
+     
         <h5 style="margin: 5px 0px">
           
           <span>
             Escanee Ordenes
           </span>
-          <img src="../assets/parcel.png" style="width: 10%">
-        </h5>        
-        <p v-if="orders.length <= 1" style="font-size: 14px">Verifique orden para cargar al camion</p>
-        <div v-else style="font-size: 13px">
+          <img src="../assets/parcel.png" style="width: 10%; max-width: 40px">
+        </h5>
+                
+        <p v-if="orders.length <= 1 && isMobile" style="font-size: 14px">Escanee su QrCode para cargar al camion</p>
+        
+        <div v-else-if="isMobile" style="font-size: 13px">
         <span class="font-weight-medium">Ordenes: </span>
         <span v-for="(orden, i) of orders" v-show="i < 3" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
         <span v-if="orders.length > 3">,....</span>
         </div>
-        
+
+         <div v-if="!isMobile" class="">
+          <p style="font-size: 14px;">Introduzca su QrCode para cargar al camion</p>
+          <input type="text" v-model="webQrCode" class="uk-input uk-width-1-6" style="margin-top: 10px">
+          <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary" style="margin-left: 5px">Enviar</button>
+         </div>
       </div>
       <div v-if="statusOrders == 'approve'" style="width: 100%; font-size: 30px">
           <img src="../assets/check.png" style="width: 35px" alt="">
@@ -64,8 +72,8 @@
         :class="{checkScreen: checkOrder, banScreen: statusOrders == 'reject', finishCheck: statusOrders == 'approve'}"
       >
       <div v-if="statusOrders != 'approve' || checkOrders"></div>
-      <div v-if="checkOrder">
-        <div  :class="{animationCheck: checkOrder}" class="check-all-Screen"></div>
+      <div >
+        <div v-if="checkOrder"  :class="{animationCheck: checkOrder}" class="check-all-Screen"></div>
       </div>
       <div v-if="statusOrders == 'reject'">
           <font-awesome-icon icon="ban" class="ban" />
@@ -158,7 +166,9 @@ export default {
       messageReject: null,
       modalDiv: null,
       btnDiv: null,
-      spanDiv: null
+      spanDiv: null,
+      webQrCode: "",
+      isMobile: false
     };
   },
   computed: {
@@ -213,7 +223,27 @@ export default {
     }
   },
   async mounted() {
-    
+    try{
+      const detectMob = () =>  {
+        const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i
+        ];
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem);
+        });
+      }
+
+      this.isMobile = detectMob()
+
+    }catch(error){
+      alert(error.message)
+    }
       BarcodeScanner.prepare();
       this.load = {...this.loadStore};
       this.orders = this.orderScan
@@ -811,5 +841,22 @@ border: 1px solid #efefef;
   background: #00000094;
   z-index: 999;
   transition: opacity 0.2s ease;
+}
+.webView{
+  height: 30vh !important;
+}
+
+@media (min-width: 600px){
+  .check-all-Screen{
+    left: calc(60% - 60px);
+    top: calc(45% + 30px);
+  }
+}
+
+@media (min-width: 900px){
+  .check-all-Screen{
+    left: calc(55% - 60px);
+    top: calc(45% + 30px);
+  }
 }
 </style>
