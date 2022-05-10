@@ -371,7 +371,6 @@ export default {
       "isChangeQuantityStore",
       "invoicesIdStore",
       "invoiceDownloadStore"
-
     ]),
 
     completedOrder: function () {
@@ -387,6 +386,7 @@ export default {
     this.orders = [...this.orderScan];
   },
   async mounted() {
+    console.log(this.structureToScan)
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
       this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});

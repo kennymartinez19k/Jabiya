@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container container-medium">
     <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
       <img
         src="../assets/rejected.png"
@@ -417,6 +417,9 @@ export default {
 <style scoped>
 .container {
   width: 100%;
+  max-width: 700px;
+  margin: 0px auto;
+  position: relative;
 }
 .disabled {
   position: absolute;
@@ -434,6 +437,7 @@ img {
   width: 30%;
   position: relative;
   text-align: center;
+  max-width: 105px;
 }
 
 ul {
@@ -487,9 +491,9 @@ ul {
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  top: 60px;
+  top: -6px;
   width: 25px;
-  right: 10px;
+  right: -2px;
   border-radius: 10px;
   margin: 2px 0px 0px -23px;
 }
@@ -546,4 +550,10 @@ ul {
   font-size: 15px;
   font-weight: 300;
 }
+@media (min-width: 900px){
+  .constainer{
+    width: 100%;
+  }
+}
+
 </style>
