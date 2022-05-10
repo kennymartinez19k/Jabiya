@@ -398,6 +398,7 @@ export default {
       }
   },
   async mounted() {
+    
     this.$store.commit("setExceptions", null);
     this.$store.commit("getChageQuantityToProduct", {note: null, type: null});
     this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
