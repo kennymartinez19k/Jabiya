@@ -131,7 +131,6 @@
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span>Firma </span>
-        <!-- <div :class="{ disabled: (exception || emptyImage ) && (!causeExceptions.type || emptyImage) && (showInvoice || ) }"></div> -->
         <div :class="{ disabled:!activeSignature}"></div>
       </li>
     </ul>
@@ -140,7 +139,6 @@
 
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
-// import UIkit from "uikit";
 import { mapGetters } from 'vuex';
 export default {
   components: {

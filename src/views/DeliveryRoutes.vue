@@ -222,7 +222,12 @@ export default {
     try{
       this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore.loadMapId); 
     }catch(error){
+      if (this.loadStore?.loadMapId) {
       this.load = {...this.loadStore};
+      } else {
+        this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+        this.$store.commit("setloadStore", this.load);
+      }
     }
     this.orders = this.load?.Orders
     this.load.firstOrdenInfo = this.load?.Orders[0]
@@ -271,6 +276,7 @@ export default {
       this.showButton = false 
         if (this.load.allowOrderChangesAtDelivery) {
         this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
+        localStorage.setItem("getOrdersToInvoicesId", JSON.stringify(this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join('')))
       }
         this.scan()
 
@@ -278,7 +284,9 @@ export default {
     async scan() {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       this.$store.commit("setStructureToScan", structure)
+      localStorage.setItem("setStructureToScan", JSON.stringify(structure))
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
+      localStorage.setItem("scanOrder", JSON.stringify(this.listOrderDetails))
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
 

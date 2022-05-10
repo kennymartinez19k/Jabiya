@@ -142,7 +142,7 @@ export default {
         localStorage.setItem('loadInProgress', JSON.stringify(this.detailsLoads.loadMapId));
       if (this.carrierSelection.vehicleId !== null && this.carrierSelection.driverId !== null) {
         localStorage.removeItem('dateCheck');
-        localStorage.setItem('dateCheck', JSON.stringify(this.detailsLoads?.dateTime?.date));
+        localStorage.setItem('dateCheck', this.detailsLoads?.dateTime?.date);
         try{
           await this.$services.driverVehicleAssignment.postDriverVehicleAssignment(this.detailsLoads.loadMapId, this.carrierSelection);
         }catch(error){

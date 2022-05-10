@@ -310,16 +310,27 @@ export default {
  
   },
   beforeMount(){
+     if (this.loadStore?.loadMapId) {
+      this.load = {...this.loadStore};
+      } else {
+        this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+        this.$store.commit("setloadStore", this.load);
+      }
     let loadsMounted = this.loadStore;
     if (this.loadStore) {
       this.$store.commit("setloadStore", loadsMounted);
     }
 
-    this.load = { ...this.loadStore };
     if (this.load?.loadType == profile?.container) {
       this.orders = this.load?.Orders;
     } else {
-      this.orders = this.orderScan;
+      
+      if (this.orderScan?.length) {
+        this.orders = this.orderScan;
+      } else {
+        this.orders = JSON.parse(localStorage.getItem("scanOrder"))
+        this.$store.commit("scanOrder", this.orders );
+      }
     }
     this.$store.commit("scanOrder", this.orders );
   },

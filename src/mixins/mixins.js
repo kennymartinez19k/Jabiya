@@ -101,7 +101,6 @@ export const Mixins = {
     },
     async startLoadRoute(load) {
       if (this.setting.maps) await this.setMap(load);
-      console.log(load)
       localStorage.setItem(`gps ${load?.loadMapId}`, true);
       if(load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App' || !load?.Vehicles[0]?.gpsProvider){
         console.log('flai')
