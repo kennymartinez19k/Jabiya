@@ -1,6 +1,6 @@
 <template>
   <div
-    class="uk-container uk-flex uk-flex-column uk-flex-between"
+    class="uk-flex uk-flex-column uk-flex-between"
     :class="{ backg: resultScan }"
   >
     <ion-loading
@@ -13,7 +13,7 @@
     </ion-loading>
     <div class="stiky">
 
-      <p style="font-size: 13px !important; font-weight: 500">
+      <p style="font-size: 13px; font-weight: 500" class="web-font-small">
         {{ load?.loadNumber }}
       </p>
       <div
@@ -27,7 +27,7 @@
         "
         style="align-items: center"
       >
-        <div class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span
             ><span>&nbsp; {{ shipperName(load) }}</span>
@@ -40,194 +40,196 @@
         </div>
       </div>
     </div>
-    <div class="result-info" v-if="!cameraOn && !image">
-      <ul class="uk-list uk-list-divider" style="list-style: none">
-        <div
-          v-for="order in orders"
-          :key="order"
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-          :class="{ ordenCompleted: order.completed }"
-        >
-          <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-            <div class="btn uk-flex">
-              <div class="uk-flex uk-flex-column uk-text-left">
-                <p class="uk-width-1-1">
-                  <span class="font-weight-medium">Cliente: </span>
-                  <span>{{ order.client_name }}</span>
-                </p>
+    <div class="container-item">
+      <div class="result-info" v-if="!cameraOn && !image">
+        <ul class="uk-list uk-list-divider" style="list-style: none">
+          <div
+            v-for="order in orders"
+            :key="order"
+            class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+            :class="{ ordenCompleted: order.completed }"
+          >
+            <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+              <div class="btn uk-flex">
+                <div class="uk-flex uk-flex-column uk-text-left">
+                  <p class="uk-width-1-1 web-font-small">
+                    <span class="font-weight-medium">Cliente: </span>
+                    <span>{{ order.client_name }}</span>
+                  </p>
+                </div>
+              </div>
+              <p style="margin-right: 10px !important" class="web-font-small">
+                <span class="font-weight-medium">Orden: </span
+                ><span>{{ order.order_num }}</span>
+              </p>
+              <p class="web-font-small">
+                <span class="font-weight-medium">Cajas / Pallets: </span
+                >{{ order?.no_of_boxes }}<span></span>
+              </p>
+              <p class="uk-width-1-1 web-font-small">
+                <span class="font-weight-medium">Destino: </span>
+                <span>
+                  <font-awesome-icon icon="map-marker-alt" />
+                  {{ order.address }}</span
+                >
+              </p>
+            </div>
+            <div class="">
+              <div
+                @click="setMap(order)"
+                class="uk-flex-column web-font-small"
+                style="align-items: center; display: inline-flex"
+              >
+                <img src="../../assets/map.png" class="img-scan" alt="" />
+                <span style="white-space: nowrap">Ver Ruta</span>
               </div>
             </div>
-            <p style="margin-right: 10px !important">
-              <span class="font-weight-medium">Orden: </span
-              ><span>{{ order.order_num }}</span>
-            </p>
-            <p class="">
-              <span class="font-weight-medium">Cajas / Pallets: </span
-              >{{ order?.no_of_boxes }}<span></span>
-            </p>
-            <p class="uk-width-1-1">
-              <span class="font-weight-medium">Destino: </span>
-              <span>
-                <font-awesome-icon icon="map-marker-alt" />
-                {{ order.address }}</span
+          </div>
+          <div
+            v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+            class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
+          >
+            <div class="uk-flex uk-flex-wrap img-scroll">
+              <span
+                class="position-imagin"
               >
-            </p>
-          </div>
-          <div class="uk-width-1-2">
-            <div
-              @click="setMap(order)"
-              class="uk-flex-column"
-              style="align-items: center; display: inline-flex"
-            >
-              <img src="../../assets/map.png" class="img-scan" alt="" />
-              <span>Ver Ruta</span>
+                <img class="img-result" src="../../assets/invoice.png" alt="Red dot" />
+                <img
+                  src="../../assets/rejected.png"
+                  class="icon-close"
+                  @click="deleteInvoices()"
+                  alt=""
+                />
+              </span>
             </div>
           </div>
-        </div>
-        <div
-          v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
-          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
-        >
-          <div class="uk-flex uk-flex-wrap img-scroll">
-            <span
-              class="position-imagin"
-            >
-              <img class="img-result" src="../../assets/invoice.png" alt="Red dot" />
-              <img
-                src="../../assets/rejected.png"
-                class="icon-close"
-                @click="deleteInvoices()"
-                alt=""
-              />
-            </span>
+          <div
+            v-if="imagiElement.length > 0"
+            class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
+          >
+            <div class="uk-flex uk-flex-wrap img-scroll">
+              <span
+                v-for="(src, index) in imagiElement"
+                :key="src"
+                class="position-imagin"
+              >
+                <img class="img-result"  :src="src" alt="Red dot" />
+                <img
+                  src="../../assets/rejected.png"
+                  class="icon-close"
+                  @click="deleteImage(index)"
+                  alt=""
+                />
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          v-if="imagiElement.length > 0"
-          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
-        >
-          <div class="uk-flex uk-flex-wrap img-scroll">
-            <span
-              v-for="(src, index) in imagiElement"
-              :key="src"
-              class="position-imagin"
-            >
-              <img class="img-result"  :src="src" alt="Red dot" />
-              <img
-                src="../../assets/rejected.png"
-                class="icon-close"
-                @click="deleteImage(index)"
-                alt=""
-              />
-            </span>
-          </div>
-        </div>
-      </ul>
-    </div>
-    <div v-if="image" class="showCamera">
-      <font-awesome-icon
-        v-if="cameraOn || image"
-        icon="times"
-        class="close"
-        @click="stopCamera()"
-      />
-      <img class="result-scan" :src="image" alt="" />
-    </div>
-    <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
-      <font-awesome-icon
-        v-if="cameraOn"
-        icon="times"
-        class="close"
-        @click="stopCamera()"
-      />
-      <camera
-        class="camera"
-        :resolution="{ width: 1620, height: 1450 }"
-        ref="Camera"
-      ></camera>
-    </div>
-    <div
-      v-if="cameraOn || image"
-      class="
-        cont-camera
-        uk-flex-between
-        uk-flex-wrap
-        uk-card
-        uk-card-default
-        uk-card-hover
-        uk-card-body
-      "
-      style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
-    >
-      <label class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px"
-        >Tomar las Fotos</label
-      >
-      <label class="img-div" style="position: relative">
-        <font-awesome-icon icon="images" />
-        <input
-          type="file"
-          @change="pickImage($event)"
-          id="file-img"
-          style="position: absolute; opacity: 0"
+        </ul>
+      </div>
+      <div v-if="image" class="showCamera">
+        <font-awesome-icon
+          v-if="cameraOn || image"
+          icon="times"
+          class="close"
+          @click="stopCamera()"
         />
-      </label>
-
-      <div class="snapshot-div">
-        <div @click="snapshot()" class="take-photo"></div>
-        <!-- <input type="file" id="file-img" style="position: absolute; opacity: 0" accept="image/*" capture="filesystem"> -->
+        <img class="result-scan" :src="image" alt="" />
       </div>
-      <div class="button-div">
-        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
-          Aceptar
-        </button>
+      <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
+        <font-awesome-icon
+          v-if="cameraOn"
+          icon="times"
+          class="close"
+          @click="stopCamera()"
+        />
+        <camera
+          class="camera"
+          :resolution="{ width: 1620, height: 1450 }"
+          ref="Camera"
+        ></camera>
       </div>
-    </div>
-    <div v-if="cameraOn"></div>
-    <div
-      v-if="!cameraOn && !image && showSignaturform"
-      class="cont uk-card uk-card-default uk-card-hover uk-card-body"
-      style="z-index: 0; padding: 4px 0px !important"
-    >
-      <h6 style="margin: 0px 0px 10px; font-size: 14px">
-        Click Para Tomar las Fotos y Firma
-      </h6>
-      <timeline-action
-        :step="step"
-        :exception="exception"
-        :resultScan="resultScan"
-        :imagiElement="imagiElement"
-        :showSignaturform="showSignaturform"
-        @action="getShow($event)"
-        @resetSign="resetSign()"
-      />
-    </div>
-        <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
-          <strong class="exception uk-padding-small">
-            Hubo Alguna Excepción? No
-            <div class="onoffswitch">
-              <input
-                type="checkbox"
-                v-model="exception"
-                name="onoffswitch"
-                :class="{'checkbox-default':isChangeQuantityStore.exception}"
-                class="onoffswitch-checkbox"
-                id="myonoffswitch"
-                tabindex="0"
-                :disabled="isChangeQuantityStore.exception === true"
-              />
-              <label class="onoffswitch-label" for="myonoffswitch"></label>
-            </div>
-            Si
-          </strong>
-          <timeline
-            :step="step"
-            :exception="exception"
-            :resultScan="resultScan"
-            :imagiElement="imagiElement"
-            @action="getShow($event)"
-            @resetSign="resetSign()"
+      <div
+        v-if="cameraOn || image"
+        class="
+          cont-camera
+          uk-flex-between
+          uk-flex-wrap
+          uk-card
+          uk-card-default
+          uk-card-hover
+          uk-card-body
+        "
+        style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
+      >
+        <label class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px"
+          >Tomar las Fotos</label
+        >
+        <label class="img-div" style="position: relative">
+          <font-awesome-icon icon="images" />
+          <input
+            type="file"
+            @change="pickImage($event)"
+            id="file-img"
+            style="position: absolute; opacity: 0"
           />
+        </label>
+
+        <div class="snapshot-div">
+          <div @click="snapshot()" class="take-photo"></div>
+          <!-- <input type="file" id="file-img" style="position: absolute; opacity: 0" accept="image/*" capture="filesystem"> -->
         </div>
+        <div class="button-div">
+          <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
+            Aceptar
+          </button>
+        </div>
+      </div>
+      <div v-if="cameraOn"></div>
+      <div
+        v-if="!cameraOn && !image && showSignaturform"
+        class="cont uk-card uk-card-default uk-card-hover uk-card-body"
+        style="z-index: 0; padding: 4px 0px !important"
+      >
+        <h6 style="margin: 0px 0px 10px; font-size: 14px">
+          Click Para Tomar las Fotos y Firma
+        </h6>
+        <timeline-action
+          :step="step"
+          :exception="exception"
+          :resultScan="resultScan"
+          :imagiElement="imagiElement"
+          :showSignaturform="showSignaturform"
+          @action="getShow($event)"
+          @resetSign="resetSign()"
+        />
+      </div>
+          <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
+            <strong class="exception uk-padding-small">
+              Hubo Alguna Excepción? No
+              <div class="onoffswitch">
+                <input
+                  type="checkbox"
+                  v-model="exception"
+                  name="onoffswitch"
+                  :class="{'checkbox-default':isChangeQuantityStore.exception}"
+                  class="onoffswitch-checkbox"
+                  id="myonoffswitch"
+                  tabindex="0"
+                  :disabled="isChangeQuantityStore.exception === true"
+                />
+                <label class="onoffswitch-label" for="myonoffswitch"></label>
+              </div>
+              Si
+            </strong>
+            <timeline
+              :step="step"
+              :exception="exception"
+              :resultScan="resultScan"
+              :imagiElement="imagiElement"
+              @action="getShow($event)"
+              @resetSign="resetSign()"
+            />
+          </div>
+    </div>
   </div>
 </template>
 
@@ -575,8 +577,10 @@ export default {
 
     uploadOrDownload(val) {
       if (!this.loadStore.allowOrderChangesAtDelivery) {
+        console.log('sin factura')
         this.setLoadTruck(val);
       } else {
+        console.log('factura')
         this.setLoadTruckInvoices(this.structureToScan.firstStructure);
       }
     },
@@ -811,13 +815,13 @@ p {
   font-weight: 600;
 }
 .uk-container {
-  margin: 0px -16px;
+  margin: 0px -15px;
 }
 .backg {
   background-color: rgb(255, 255, 255);
 }
 .result-info {
-  overflow: scroll;
+  overflow: auto;
   padding: 0px 10px;
   height: 100vh;
 }
@@ -870,7 +874,7 @@ li::before {
 .img-scroll {
   width: 98%;
   padding: 10px 0px;
-  overflow-x: scroll;
+  overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
 }
@@ -890,7 +894,8 @@ li::before {
 }
 .uk-card-body {
   /* padding: 16px 15px; */
-  padding: 5px 15px 16px;
+  padding: 8px 20px 16px;
+  
 }
 .cont {
   position: sticky;
@@ -1018,5 +1023,23 @@ li::before {
 .pad-car {
   padding: 5px 0px 10px !important;
 
+}
+@media (min-width: 630px){
+  .uk-container {
+  margin: 0px -30px;
+}
+.exception {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 14px;
+  font-weight: 600;
+}
+}
+@media (min-width: 960px){
+  .container-item {
+  width: 100%;
+  margin: 0px auto;
+}
 }
 </style>

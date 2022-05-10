@@ -1,7 +1,9 @@
 <template>
   <nav class="uk-navbar uk-navbar-container">
     <div class="uk-navbar-left">
+     
       <div style="width: 50px">
+
         <div v-if="!iconType" class="status-server">
           <img v-if="server" src="../assets/online-icon.png" alt="">
           <img v-if="!server" src="../assets/offline-icon.png" alt="">
@@ -15,7 +17,7 @@
       </div>
       
       <h6
-        class="uk-margin-remove"
+        class="uk-margin-remove web-font-medium"
         style="font-size: 14px; margin: 0px 10px !important"
       >
         {{ titlePage }}
@@ -44,24 +46,25 @@
               srcset=""
             />
             <h4
-              class="uk-text-light uk-margin-remove"
+              class=" uk-margin-remove web-font-small"
               style="margin: 5px 0px !important"
             >
               {{ userData?.firstName }} {{ userData?.lastName }}
             </h4>
-            <h6 class="uk-tect-light uk-margin-remove">
+            <h6 class="uk-tecgin-remove web-font-small">
               {{ userData?.email }}
             </h6>
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <!-- <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
-            <li @click="setCurrentPage('settings')">Configuración</li>
-            <li @click="setCurrentPage('version')">Version app</li>
-            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li class="web-font-small" @click="setCurrentPage('home')">Tus Viajes</li>
+            <!-- <li class="web-font-small" v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
+            <li class="web-font-small" @click="setCurrentPage('settings')">Configuración</li>
+            <li class="web-font-small" @click="setCurrentPage('version')">Version app</li>
+            <li class="web-font-small" @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>
         </div>
       </div>
+      
     </div>
   </nav>
 </template>
@@ -218,4 +221,5 @@ li {
 .status-server img{
   width: 18px;
 }
+
 </style>
