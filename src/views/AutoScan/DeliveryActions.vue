@@ -183,6 +183,7 @@
           </button>
         </div>
       </div>
+      
       <div v-if="cameraOn"></div>
       <div
         v-if="!cameraOn && !image && showSignaturform"
@@ -204,7 +205,7 @@
       </div>
           <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
             <strong class="exception uk-padding-small">
-              Hubo Alguna Excepción? No
+              Hubo Alguna Excepción? No 
               <div class="onoffswitch">
                 <input
                   type="checkbox"
@@ -372,13 +373,14 @@ export default {
       );
     }
     this.load.firstOrdenInfo = this.load?.Orders[0];
-    await this.getLocation();
     this.orderInformation = this.orders.find(x => x.order_num)
     if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
       this.exception = this.isChangeQuantityStore.exception
     } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+      this.$store.commit("getChageQuantityToProduct", JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)));
     }
+    await this.getLocation();
   },
   watch: {
     digitalFirmStore: {
