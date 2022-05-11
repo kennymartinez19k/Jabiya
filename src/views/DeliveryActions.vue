@@ -445,7 +445,6 @@ export default {
       secondStructure.push(data);
     });
 
-    await this.getLocation();
     this.firstStructureLoad = firstStructure;
     this.secondStructureLoad = secondStructure;
 
@@ -458,8 +457,11 @@ export default {
      if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
         this.exception = this.isChangeQuantityStore.exception
      } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
-        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+      this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+       this.$store.commit("getChageQuantityToProduct", JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)));
      }
+    await this.getLocation();
+
   },
   watch: {
     digitalFirmStore: {

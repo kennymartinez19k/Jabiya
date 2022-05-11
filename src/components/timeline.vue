@@ -67,7 +67,6 @@
     <ul class="progressbar">
        <li
        v-if="loadStore.allowOrderChangesAtDelivery"
-        class="stepOne"
         :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num }"
         @click="getShow('invoices')"
       >
@@ -78,7 +77,6 @@
       </li>
       <li
        v-if="loadStore.scanningRequired"
-        class="stepOne"
         :class="{ active: resultScan !== false }"
         @click="getShow('scan')"
       >
@@ -88,7 +86,6 @@
         <span>Escanear</span>
       </li>
       <li
-        class="stepTwo"
         :class="{
           'uk-disabled': step == 0,
           active: imagiElement.length > 0,
@@ -121,7 +118,6 @@
         ></div>
       </li>
       <li
-        class="stepThree"
         :class="{
           'uk-disabled': !activeSignature,
           active: singnature !== null
@@ -553,5 +549,6 @@ ul {
     width: 100%;
   }
 }
+
 
 </style>
