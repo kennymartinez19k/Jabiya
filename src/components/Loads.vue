@@ -741,7 +741,7 @@ header >div {
     width: 100%;
   }
    .item-body{
-    min-height: 255px;
+    min-height: 305px;
   }
 }
 

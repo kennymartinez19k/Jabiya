@@ -423,8 +423,8 @@ export default {
 }
 .disabled {
   position: absolute;
-  width: 90px;
-  height: 70px;
+  width: 100%;
+  height: 100%;
   top: 40px;
   left: 10px;
   background: #ffffffc4;
@@ -556,4 +556,9 @@ ul {
   }
 }
 
+@media (min-width: 900px){
+  .progressbar li {
+    max-width: 180px !important;
+  }
+}
 </style>
