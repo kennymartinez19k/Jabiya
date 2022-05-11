@@ -163,7 +163,7 @@
         </div>
       </div>
     </div>
-    <div class="button-position uk-flex uk-flex-between">
+    <div class="button-position uk-flex uk-flex-between btn-position">
       <div class=" btn-style">
         <button
           type="button"
@@ -237,7 +237,12 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    this.idInvoices = this.invoicesIdStore
+    if (this.invoicesIdStore) {
+      this.idInvoices = this.invoicesIdStore
+    } else {
+      this.idInvoices = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
+      
+    }
     try {
       const signIn = {
         jsonrpc: "2.0",
@@ -361,6 +366,8 @@ export default {
       });
       this.isChangeQuantity.changeQuantity = quantityLocal;
       this.isChangeQuantity.exception = true;
+      this.isChangeQuantity.order_num = this.customerDetails?.order?.name;
+      // console.log(this.customerDetails?.order?.name,'this.customerDetails?.order?.name')
       this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity);
       localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.name}`,JSON.stringify(this.isChangeQuantity));
 
@@ -645,7 +652,12 @@ th {
 @media (min-width: 550px){
   .details-order{
     max-width: 550px;
-
-}
+  }
+  .btn-position {
+    justify-content: space-around !important;
+  }
+  .table-scroll {
+    height: 340px !important;
+  }
 }
 </style>

@@ -56,11 +56,10 @@
             </h6>
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
-            <li class="web-font-small" @click="setCurrentPage('home')">Tus Viajes</li>
-            <!-- <li class="web-font-small" v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
-            <li class="web-font-small" @click="setCurrentPage('settings')">Configuración</li>
-            <li class="web-font-small" @click="setCurrentPage('version')">Version app</li>
-            <li class="web-font-small" @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li @click="setCurrentPage('home')">Tus Viajes</li>
+            <li @click="setCurrentPage('settings')">Configuración</li>
+            <li @click="setCurrentPage('version')">Version app</li>
+            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>
         </div>
       </div>

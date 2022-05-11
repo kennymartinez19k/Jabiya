@@ -67,7 +67,6 @@
     <ul class="progressbar">
        <li
        v-if="loadStore.allowOrderChangesAtDelivery"
-        class="stepOne"
         :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num }"
         @click="getShow('invoices')"
       >
@@ -78,7 +77,6 @@
       </li>
       <li
        v-if="loadStore.scanningRequired"
-        class="stepOne"
         :class="{ active: resultScan !== false }"
         @click="getShow('scan')"
       >
@@ -88,7 +86,6 @@
         <span>Escanear</span>
       </li>
       <li
-        class="stepTwo"
         :class="{
           'uk-disabled': step == 0,
           active: imagiElement.length > 0,
@@ -121,7 +118,6 @@
         ></div>
       </li>
       <li
-        class="stepThree"
         :class="{
           'uk-disabled': !activeSignature,
           active: singnature !== null
@@ -131,7 +127,6 @@
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span>Firma </span>
-        <!-- <div :class="{ disabled: (exception || emptyImage ) && (!causeExceptions.type || emptyImage) && (showInvoice || ) }"></div> -->
         <div :class="{ disabled:!activeSignature}"></div>
       </li>
     </ul>
@@ -140,7 +135,6 @@
 
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
-// import UIkit from "uikit";
 import { mapGetters } from 'vuex';
 export default {
   components: {

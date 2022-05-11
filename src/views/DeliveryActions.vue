@@ -382,8 +382,19 @@ export default {
     },
   },
   beforeMount(){
-    this.load = { ...this.loadStore };
-    this.orders = [...this.orderScan];
+     if (this.loadStore?.loadMapId) {
+      this.load = {...this.loadStore};
+      } else {
+        this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+        this.$store.commit("setloadStore", this.load);
+      }
+
+      if (this.orderScan?.length) {
+        this.orders = [...this.orderScan];
+      } else {
+        this.orders = JSON.parse(localStorage.getItem("scanOrder"))
+        this.$store.commit("scanOrder", this.orders );
+      }
   },
   async mounted() {
     console.log(this.structureToScan)
@@ -394,9 +405,14 @@ export default {
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
-
-    this.firstStructureLoad = this.structureToScan.firstStructure;
-    this.secondStructureLoad = this.structureToScan.secondStructure;
+    let structure = null
+    if (this.structureToScan?.firstStructure) {
+      structure = this.structureToScan
+    } else {
+     structure = JSON.parse(localStorage.getItem("setStructureToScan"))
+    }
+    this.firstStructureLoad = structure.firstStructure;
+    this.secondStructureLoad = structure.secondStructure;
     this.orders.map((x) => {
       if (x.totalOrdersScanned >= x.totalQuantity) {
         this.step = 1;
@@ -429,7 +445,6 @@ export default {
       secondStructure.push(data);
     });
 
-    await this.getLocation();
     this.firstStructureLoad = firstStructure;
     this.secondStructureLoad = secondStructure;
 
@@ -442,8 +457,11 @@ export default {
      if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
         this.exception = this.isChangeQuantityStore.exception
      } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
-        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+      this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+       this.$store.commit("getChageQuantityToProduct", JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)));
      }
+    await this.getLocation();
+
   },
   watch: {
     digitalFirmStore: {
