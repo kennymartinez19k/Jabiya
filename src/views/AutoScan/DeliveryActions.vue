@@ -175,7 +175,6 @@
 
         <div class="snapshot-div">
           <div @click="snapshot()" class="take-photo"></div>
-          <!-- <input type="file" id="file-img" style="position: absolute; opacity: 0" accept="image/*" capture="filesystem"> -->
         </div>
         <div class="button-div">
           <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">

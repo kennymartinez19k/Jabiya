@@ -259,14 +259,13 @@ export default {
 
       }else if(val){
         contDate = this.date.setDate(this.date.getDate() + val);
-        this.date = contDate
-
+        this.date = new Date(contDate)
       }    
       else {
         contDate = this.date
       }
 
-      date =  new Date(contDate).toLocaleDateString("en-US")
+      date = moment(contDate).format("MM/DD/YYYY")
       let currentLoads = JSON.parse(localStorage.getItem('allLoads'))
   
       try{
@@ -275,8 +274,7 @@ export default {
          this.waitingMessage = true
         }
         this.setOpen(this.waitingMessage);
-        // if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
-        if (date === new Date().toLocaleDateString("en-US")) this.dateMoment = 'Hoy'
+        if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
         else this.dateMoment = date
 
       }catch(error){
@@ -290,9 +288,8 @@ export default {
           
           let contDate = localStorage.getItem('dateCheck')
           let date = new Date(contDate);
-          // date = moment(contDate).format("MM/DD/YYYY");
-          date = new Date(contDate).toLocaleDateString("en-US")
-           if (date === new Date().toLocaleDateString("en-US")) this.dateMoment = 'Hoy'
+          date = moment(contDate).format("MM/DD/YYYY");
+           if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
            else this.dateMoment = date
         }
         if(error.message == 'Request failed with status code 401'){
@@ -331,8 +328,7 @@ export default {
       this.setOpen(false)
       
       let dateInDisplay = localStorage.getItem('dateCheck');
-      // let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-     let date2 = new Date(dateInDisplay).toLocaleDateString("en-US")
+      let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
       if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]

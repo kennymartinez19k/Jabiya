@@ -151,8 +151,8 @@ export default {
 }
 .disabled {
   position: absolute;
-  width: 90px;
-  height: 70px;
+  width: 100%;
+  height: 70%;
   top: 40px;
   left: 10px;
   background: #ffffffc4;
@@ -163,6 +163,7 @@ img {
 .progressbar li {
   float: left;
   width: 30%;
+  max-width: 105px;
   position: relative;
   text-align: center;
 }
@@ -223,5 +224,12 @@ ul {
   right: 10px;
   border-radius: 10px;
   margin: 2px 0px 0px -23px;
+}
+
+@media (min-width: 900px){
+ .progressbar li {
+  max-width: 180px !important;
+
+ }
 }
 </style>
