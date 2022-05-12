@@ -160,7 +160,7 @@
         "
         style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
       >
-        <label class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px"
+        <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px"
           >Tomar las Fotos</label
         >
         <label class="img-div" style="position: relative">
@@ -178,7 +178,7 @@
           <!-- <input type="file" id="file-img" style="position: absolute; opacity: 0" accept="image/*" capture="filesystem"> -->
         </div>
         <div class="button-div">
-          <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
+          <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
             Aceptar
           </button>
         </div>
@@ -204,7 +204,7 @@
         />
       </div>
           <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
-            <strong class="exception uk-padding-small">
+            <strong class="exception uk-padding-small web-font-small">
               Hubo Alguna Excepción? No 
               <div class="onoffswitch">
                 <input
@@ -1037,7 +1037,7 @@ li::before {
   padding: 5px 0px 10px !important;
 
 }
-@media (min-width: 630px){
+@media (min-width: 600px){
   .uk-container {
   margin: 0px -30px;
 }
@@ -1048,8 +1048,11 @@ li::before {
   font-size: 14px;
   font-weight: 600;
 }
+.button-div{
+  justify-content: end;
 }
-@media (min-width: 960px){
+}
+@media (min-width: 900px){
   .container-item {
   width: 100%;
   margin: 0px auto;

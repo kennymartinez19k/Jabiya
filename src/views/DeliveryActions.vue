@@ -12,7 +12,7 @@
     :class="{ backg: resultScan }"
   >
     <div class="stiky">
-      <p style="font-size: 13px !important; font-weight: 500">
+      <p class="web-font-small title-load-number" style="font-size: 13px; font-weight: 500">
         {{ load?.loadNumber }}
       </p>
       <div
@@ -26,7 +26,7 @@
         "
         style="align-items: center"
       >
-        <div class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span
             ><span>&nbsp; {{ shipperName(load) }}</span>
@@ -52,7 +52,7 @@
           v-if="statusOrders == 'approved'"
           style="width: 100%; font-size: 30px"
         >
-          <h6 style="font-size: 14px" class="uk-margin-remove">
+          <h6 style="font-size: 14px" class="uk-margin-remove web-font-small">
             {{ completedOrder }}
           </h6>
         </div>
@@ -60,7 +60,7 @@
           v-if="statusOrders == 'reject'"
           style="width: 100%; font-size: 30px"
         >
-          <h6 class="uk-margin-remove">
+          <h6 class="uk-margin-remove web-font-small">
             {{ messageReject }}
             <font-awesome-icon icon="ban" style="color: #be1515" />
           </h6>
@@ -79,21 +79,21 @@
           <div class="uk-text-left info-user uk-flex uk-flex-wrap">
             <div class="btn uk-flex">
               <div class="uk-flex uk-flex-column uk-text-left">
-                <p class="uk-width-1-1">
+                <p class="uk-width-1-1 web-font-small">
                   <span class="font-weight-medium">Cliente: </span>
                   <span>{{ order.client_name }}</span>
                 </p>
               </div>
             </div>
-            <p style="margin-right: 10px !important">
+            <p style="margin-right: 10px !important" class="web-font-small">
               <span class="font-weight-medium">Orden: </span
               ><span>{{ order.order_num }}</span>
             </p>
-            <p class="">
+            <p class="web-font-small">
               <span class="font-weight-medium">Cajas / Pallets: </span
               >{{ order?.no_of_boxes }}<span></span>
             </p>
-            <p class="uk-width-1-1">
+            <p class="uk-width-1-1 web-font-small">
               <span class="font-weight-medium">Destino: </span>
               <span>
                 <font-awesome-icon icon="map-marker-alt" />
@@ -101,11 +101,10 @@
               >
             </p>
           </div>
-          <div class="uk-width-1-2">
+          <div >
             <div
               @click="setMap(order)"
-              class="uk-flex-column"
-              style="align-items: center; display: inline-flex"
+              class="uk-flex-column web-font-small route-view"
             >
               <img src="../assets/map.png" class="img-scan" alt="" />
               <span>Ver Ruta</span>
@@ -213,7 +212,7 @@
     </div>
     <div v-if="cameraOn"></div>
   
-    <div v-if="!cameraOn && !image" style="height: 300px">
+    <div v-if="!cameraOn && !image" class="cont uk-card uk-card-default uk-card-hover">
       <div class="action">
         <ul v-if="!showProduct" class="box-orden">
           <li
@@ -229,7 +228,12 @@
           </li>
         </ul>
         <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
-          <strong class="exception uk-padding-small">
+          <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
+            <p class="title-form-scan">Introduzca su qrCode para entregar</p>
+            <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
+            <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
+         </div>
+          <strong class="exception web-font-small">
             Hubo Alguna Excepción? No
             <div class="onoffswitch">
               <input
@@ -350,7 +354,10 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
-      orderInformation: null
+      orderInformation: null,
+      webQrCode: '',
+      isMobile: false,
+      showScanInput: false
     };
   },
   setup() {
@@ -397,6 +404,26 @@ export default {
       }
   },
   async mounted() {
+    try{
+      const detectMob = () =>  {
+        const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i
+        ];
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem)
+        });
+      }
+      this.isMobile = detectMob() && screen.width < 900
+
+    }catch(error){
+      alert(error.message)
+    }
     console.log(this.structureToScan)
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
@@ -611,7 +638,9 @@ export default {
       this.show = value;
       if (value === "scan") {
         this.resultScan = false;
-        this.scanOrder();
+        console.log(this.isMobile)
+        !this.isMobile ? this.showScanInput = true : this.scanOrder()
+        
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.getCam();
       } else if (value === "Singnature") {
@@ -924,6 +953,7 @@ export default {
         this.checkOrder = false;
         if (this.firstStructureLoad.every((x) => x.completedScanned)) {
           this.resultScan = true;
+          this.showScanInput = false
           this.step = 1;
           localStorage.removeItem("LoadScanned");
           let quantityTotal = 0;
@@ -1142,6 +1172,7 @@ export default {
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
+  padding: 10px !important;
 }
 .container {
   display: flex;
@@ -1151,7 +1182,7 @@ export default {
   background-color: rgb(255, 255, 255);
 }
 .result-info {
-  overflow: scroll;
+  overflow: auto;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1202,7 +1233,6 @@ li::before {
 }
 .statusCheck {
   background: rgb(255, 255, 255) !important;
-  box-shadow: 0px 0px 7px green !important;
   color: #fff !important;
 }
 .img-result {
@@ -1252,7 +1282,7 @@ p {
 }
 .uk-list{
   list-style: none;
-  overflow: scroll;
+  overflow: auto;
   height: 385px; /* verify Height */
 }
 .status-order {
@@ -1310,13 +1340,17 @@ p {
 .inProgressOrden {
   background: #fff500;
 }
+
 .cont {
-  z-index: 0;
-  padding: 15px 5px !important;
+  position: sticky;
+  bottom: 0px;
+  border-top: 1px solid #ccc;
+  padding: 15px 0px;
 }
 .action {
   position: absolute;
   bottom: 0px;
+  width: 100%;
 }
 
 .showCamera {
@@ -1415,9 +1449,6 @@ p {
   color: #fff
 }
 
-
-
-
 .modal {
   width: 500px;
   margin: 0px auto;
@@ -1462,5 +1493,28 @@ p {
   width: 77px;
   display: flex;
   margin: 0px 10px;
+}
+.route-view{
+  display: inline-flex;
+  align-items: center;
+  display: inline-flex;
+  white-space: nowrap;
+}
+.title-load-number{
+  font-size: 13px; 
+  font-weight: 500
+}
+.uk-input{
+  border: 1px solid #a6a6a6;
+}
+.title-form-scan{
+  width: 100%;
+  font-size: 16px;
+  margin-bottom: 5px !important;
+}
+@media (min-width: 600px){
+  .exception{
+  justify-content: end;
+}
 }
 </style>

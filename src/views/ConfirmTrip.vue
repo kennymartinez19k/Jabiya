@@ -208,7 +208,7 @@
       </div>
     </div>
     <div class="button-opt">
-      <a href="#modal-center" uk-toggle class="uk-button uk-button-red web-font-small"
+      <a href="#modal-center uk-button" uk-toggle class="uk-button uk-button-red web-font-small"
         >Rechazar Viaje&nbsp;
       </a>
       <button
@@ -543,10 +543,10 @@ p {
     width: 50%;
   }
   .button-opt{
-    justify-content: end;
+    justify-content: center;
   }
-  .button-opt button{
-    margin: 0px 15px
+  .button-opt .uk-button{
+    margin: 0px 35px
   }
 }
 @media (min-width: 900px){

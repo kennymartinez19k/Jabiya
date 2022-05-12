@@ -206,7 +206,7 @@ import Camera from "simple-vue-camera";
 
 export default {
   name: "DeliveryActions",
-  alias: "Realizar Entrega",
+  alias: "Retornar Contenedor",
 
   components: {
     timeline,
