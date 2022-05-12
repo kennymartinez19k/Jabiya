@@ -249,7 +249,7 @@ button{
 }
 .view-header{
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 html body{

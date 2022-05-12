@@ -2,7 +2,8 @@
   <div class="container">
     <div class="stiky">
       <p
-        style=" font-size: 13px !important; font-weight: 500"
+        class="web-font-small"
+        style=" font-size: 13px; font-weight: 500"
       >
         {{loadStore?.loadNumber}}
       </p>
@@ -17,7 +18,7 @@
         "
         style="align-items: center;"
       >
-        <div class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(loadStore) }}</span>      
           </p>
@@ -36,13 +37,16 @@
     >
       <div v-if="statusOrders == 'start'">
      
-        <h5 style="margin: 5px 0px">
+        <p class="title-action web-font-small" style="margin: 5px 0px">
           
-          <span>
+          <span v-if="isMobile">
             Escanee Ordenes
           </span>
+          <span v-else>
+            Introduzca su QrCode para cargar al camion
+          </span>
           <img src="../assets/parcel.png" style="width: 10%; max-width: 40px">
-        </h5>
+        </p>
                 
         <p v-if="orders.length <= 1 && isMobile" style="font-size: 14px">Escanee su QrCode para cargar al camion</p>
         
@@ -51,11 +55,9 @@
         <span v-for="(orden, i) of orders" v-show="i < 3" :key="orden" class="font-weight-medium">{{orden.order_num}}<span v-if="i < orders.length - 1">, </span></span>
         <span v-if="orders.length > 3">,....</span>
         </div>
-
-         <div v-if="!isMobile" class="">
-          <p style="font-size: 14px;">Introduzca su QrCode para cargar al camion</p>
-          <input type="text" v-model="webQrCode" class="uk-input uk-width-1-6" style="margin-top: 10px">
-          <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary" style="margin-left: 5px">Enviar</button>
+         <div v-if="!isMobile" class="uk-flex uk-flex-center" style="margin-top: 10px">
+          <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
+          <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
          </div>
       </div>
       <div v-if="statusOrders == 'approve'" style="width: 100%; font-size: 30px">
@@ -235,11 +237,10 @@ export default {
             /Windows Phone/i
         ];
         return toMatch.some((toMatchItem) => {
-            return navigator.userAgent.match(toMatchItem);
+            return navigator.userAgent.match(toMatchItem)
         });
       }
-
-      this.isMobile = detectMob()
+      this.isMobile = detectMob() && screen.width < 900
 
     }catch(error){
       alert(error.message)
@@ -845,7 +846,13 @@ border: 1px solid #efefef;
 .webView{
   height: 30vh !important;
 }
-
+.uk-input{
+  border: 0.7px solid #666;
+}
+.title-action{
+  font-size: 14px;
+  font-weight: 500;
+}
 @media (min-width: 600px){
   .check-all-Screen{
     left: calc(60% - 60px);

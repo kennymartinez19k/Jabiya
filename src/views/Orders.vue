@@ -10,7 +10,7 @@
     </ion-loading>
     <div class="stiky">
       <p
-        style="font-size: 13px !important; font-weight: 500"
+        style="font-size: 13px ; font-weight: 500"
         class="web-font-small"
       >
         {{ loadStore?.loadNumber }}
@@ -751,7 +751,9 @@ header > .sub-header {
   .item-upload {
     width: 49%;
   }
- 
+}
+
+@media (min-width: 900px){
   .container-main {
     width: 90%;
     margin: 0px auto;

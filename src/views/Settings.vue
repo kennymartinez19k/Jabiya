@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small">
+  <div class="uk-flex uk-flex-column uk-flex-between uk-padding-small container-main">
     <div class="uk-flex uk-flex-column uk-flex-between setting">
       <div>
         <label class="item" for="maps">
@@ -8,7 +8,7 @@
         </label>
         <label  for="url" class="uk-flex uk-flex-between url-section" >
            <h6>Seleccione Url</h6>
-          <div  style="width: 60%" class="uk-margin uk-widht-1">
+          <div class="select uk-margin">
               <select id="url" class="uk-select" v-model="settings.url">
                   <option :value="urlEnum.preprod" selected>Preprod Flai</option>
                   <option :value="urlEnum.production">Production Flai</option>
@@ -176,5 +176,15 @@ input {
  font-size: 16px;
  font-weight: 500;
  line-height: 1.2;
+}
+.select{
+  width: 40%
+}
+@media (min-width: 900px){
+  .container-main{
+    width: 90%;
+    margin: 0px auto;
+  }
+ 
 }
 </style>
