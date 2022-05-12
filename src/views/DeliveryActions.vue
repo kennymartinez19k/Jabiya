@@ -187,7 +187,7 @@
       "
       style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
     >
-      <label class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px"
+      <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px"
         >Tomar las Fotos</label
       >
       <label class="img-div" style="position: relative">
@@ -205,7 +205,7 @@
         <div @click="snapshot()" class="take-photo"></div>
       </div>
       <div class="button-div">
-        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
+        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
           Aceptar
         </button>
       </div>
@@ -1176,6 +1176,7 @@ export default {
 }
 .container {
   display: flex;
+  position: relative;
   flex-direction: column;
 }
 .backg {
@@ -1354,8 +1355,8 @@ p {
 }
 
 .showCamera {
-  position: fixed;
-  top: 105px;
+  position: absolute;
+  top: 51px !important;
   display: flex;
   background: #000;
   width: 100%;
@@ -1516,5 +1517,10 @@ p {
   .exception{
   justify-content: end;
 }
+}
+@media (min-width: 900px){
+  .showCamera{
+    top: 55px !important;
+  }
 }
 </style>
