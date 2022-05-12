@@ -1,6 +1,11 @@
 <template>
-  <app-header v-if="!currentPage" :nameComponent="currentName"/>
-  <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+  <div class="uk-flex app">
+    <side-bar v-if="!hideSideBar" class="sideBar"/>
+    <div class="container-app">
+      <app-header v-if="!currentPage" :nameComponent="currentName"/>
+      <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+    </div>
+  </div>
 </template>
 <script>
 import AppHeader from './views/AppHeader.vue'
@@ -10,11 +15,9 @@ import { Profile } from './mixins/Profile'
 import { Storage} from '@ionic/storage'
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { Geolocation } from "@capacitor/geolocation";
-
-
+import sideBar from './components/sideBar.vue'
 
 export default {
-
   data(){
     return{
       noHead: [
@@ -34,12 +37,14 @@ export default {
         latitude: 0,
         longitude: 0
       },
-      hasUbicationServer: false
+      hasUbicationServer: false,
+      hideSideBar: true
     }
   },
  
   watch:{
     $route: function(newVal){
+      this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
       if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
           this.stopScan()
       }
@@ -47,6 +52,7 @@ export default {
   },
   components:{
     AppHeader,
+    sideBar
   },
   mixins: [LocalStorage, Profile],
   computed:{
@@ -61,6 +67,7 @@ export default {
       }
       return ''
     },
+    
   },
   async mounted(){
     this.localStorageGps.create()
@@ -203,6 +210,13 @@ export default {
 }
 </script>
 <style>
+.app{
+  height: 100%;
+}
+.container-app{
+  width: 100%;
+}
+
 #app {
   font-size: 12px;
   font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
@@ -248,9 +262,11 @@ button{
   height: 92vh !important;
 }
 .view-header{
+  
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  width: 100%;
 }
 html body{
   height: 100vh;
@@ -314,8 +330,13 @@ strong{
   font-size: 14px;
   color: #5c5c5c ;
 }
+.sideBar{
+  width: 30%;
+  max-width: 245px;
+  border-right: 0.5px solid #CCC;
+}
 
-@media (min-width: 900px){
+@media (min-width: 1050px){
   .web-font-small{
     font-size: 16px !important;
   }
@@ -323,4 +344,11 @@ strong{
     font-size: 20px !important;
   }
 }
+@media (max-width: 900px){
+  .sideBar{
+    display: none;
+  }
+}
+
+
 </style>

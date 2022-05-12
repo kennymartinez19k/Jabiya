@@ -744,7 +744,7 @@ header >div {
   }
 }
 
-@media (min-width: 1200px){
+@media (min-width: 1300px){
   .item-section{
     width: 33%;
   }

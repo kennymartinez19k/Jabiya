@@ -29,6 +29,7 @@
         @click="openMenu"
         href="#"
       ></a>
+      <a class="hide-menu-icon" href="#"></a>
       <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
         <div class="uk-offcanvas-bar uk-padding-remove">
           <img
@@ -56,10 +57,10 @@
             </h6>
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <li @click="setCurrentPage('settings')">Configuración</li>
-            <li @click="setCurrentPage('version')">Version app</li>
-            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li class="opt web-font-small" @click="setCurrentPage('home')">Tus Viajes</li>
+            <li class="opt web-font-small" @click="setCurrentPage('settings')">Configuración</li>
+            <li class="opt web-font-small" @click="setCurrentPage('version')">Version app</li>
+            <li class="opt web-font-small" @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>
         </div>
       </div>
@@ -220,5 +221,22 @@ li {
 .status-server img{
   width: 18px;
 }
-
+.opt{
+  cursor: pointer;
+}
+.opt:hover{
+  background: #f4f4f4
+}
+.hide-menu-icon{
+    display: none;
+  }
+@media (min-width: 900px){
+  .uk-navbar-toggle{
+    display: none;  
+  }
+  .hide-menu-icon{
+    display: block;
+    width: 50px;
+  }
+}
 </style>
