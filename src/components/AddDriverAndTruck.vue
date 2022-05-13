@@ -60,11 +60,11 @@
           </tbody>
         </table>
       </div>
+    </form>
+  </div>
       <div class=" button-opt">
       <button type="button" :disabled="disabledButton" class="uk-button uk-button-primary web-font-small" @click="selectDriverAndVehicle()">Seleccionar Conductor y Vehículo </button>
     </div>
-    </form>
-  </div>
 </template>
 
 <script>
@@ -223,9 +223,9 @@ padding: 10px 0px;
   border-top: 1px solid #b1b1b1;
   display: flex;
   justify-content: space-evenly;
-  width: 91%;
+  width: 100%;
   padding: 10px;
-  position: fixed;
+  position: sticky;
   bottom: 0px;
   left: 14px;
 }

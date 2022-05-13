@@ -56,7 +56,7 @@
         <span v-if="orders.length > 3">,....</span>
         </div>
          <div v-if="!isMobile" class="uk-flex uk-flex-center" style="margin-top: 10px">
-          <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
+          <input type="text" v-model="webQrCode" ref="email"  v-on:keyup.enter="uploadProducts(webQrCode)" class="uk-input uk-width-1-4 web-font-small">
           <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
          </div>
       </div>
@@ -365,7 +365,8 @@ export default {
               }, 1000)
           }
 
-        }      
+        }    
+
     },
     async setMessageConfirmation(orderId, boxId, loadCounter, productId, qrCode, quantity, scanOneByOne, orderNum, quantityForScan){
 
@@ -711,13 +712,14 @@ p{
 
 /* Here... */
 .check-all-Screen {
-  position: fixed;
-    left: calc(70% - 30px);
-    top: calc(54% + 30px);
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
     border: solid 17px green;
     width: 109px;
     height: 59px;
-    margin: -50px 0 0 -100px;
     border-top: none;
     border-right: none;
     transform: rotate(-45deg);
@@ -848,22 +850,11 @@ border: 1px solid #efefef;
 }
 .uk-input{
   border: 0.7px solid #666;
+  min-width: 175px;
 }
 .title-action{
   font-size: 14px;
   font-weight: 500;
 }
-@media (min-width: 600px){
-  .check-all-Screen{
-    left: calc(60% - 60px);
-    top: calc(45% + 30px);
-  }
-}
 
-@media (min-width: 900px){
-  .check-all-Screen{
-    left: calc(55% - 60px);
-    top: calc(45% + 30px);
-  }
-}
 </style>
