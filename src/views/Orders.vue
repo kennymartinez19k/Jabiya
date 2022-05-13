@@ -647,11 +647,12 @@ header::after {
 /* SHADOW */
 header::before {
   top: 28px; /* shadow is at bottom of element, so at 48 + 16 = 64px */
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* COVER */
 header::after {
+  box-shadow: 0px 0px 1px rgb(0 0 0 / 50%);
   background: linear-gradient(
     white 10%,
     rgba(255, 255, 255, 0.8) 50%,

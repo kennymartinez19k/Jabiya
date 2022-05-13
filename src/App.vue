@@ -2,7 +2,7 @@
   <div class="uk-flex app">
     <side-bar v-if="!hideSideBar" class="sideBar"/>
     <div class="container-app">
-      <app-header v-if="!currentPage" :nameComponent="currentName"/>
+      <app-header class="header" v-if="!currentPage" :nameComponent="currentName"/>
       <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
     </div>
   </div>
@@ -215,6 +215,8 @@ export default {
 }
 .container-app{
   width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 #app {
@@ -263,7 +265,7 @@ button{
 }
 .view-header{
   
-  height: 100%;
+  height: 92%;
   overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
@@ -289,8 +291,7 @@ strong{
   font-weight: 500 !important;
 }
 .cnt {
-  height: 100% !important;
-  overflow: scroll;
+  height: 92% !important;
 }
 .uk-button-transparent{
   color: #1f1f1f;
@@ -331,9 +332,12 @@ strong{
   color: #5c5c5c ;
 }
 .sideBar{
-  width: 30%;
+  width: 20%;
   max-width: 245px;
   border-right: 0.5px solid #CCC;
+}
+.header{
+  height: 8%;
 }
 
 @media (min-width: 1050px){
@@ -348,6 +352,7 @@ strong{
   .sideBar{
     display: none;
   }
+ 
 }
 
 

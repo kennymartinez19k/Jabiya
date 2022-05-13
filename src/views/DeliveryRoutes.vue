@@ -62,7 +62,7 @@
           
         </div>
       </header>
-      <div class="uk-padding-small uk-width-1-1 container-item" style="margin-bottom: 96px!important;">
+      <div class="uk-padding-small uk-width-1-1 container-item">
         <div
           v-for="order in ordersToDisplay"
           :key="order"
@@ -571,7 +571,7 @@ header::after {
 /* SHADOW */
 header::before {
   top: 28px; /* shadow is at bottom of element, so at 48 + 16 = 64px */
-  box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
 }
 
 /* COVER */
@@ -669,6 +669,7 @@ header >.sub-header {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    margin-bottom: 45px!important;
   }
   .item-deliver{
     width: 100%;

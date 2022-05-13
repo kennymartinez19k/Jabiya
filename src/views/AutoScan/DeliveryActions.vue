@@ -936,8 +936,8 @@ li::before {
 }
 
 .showCamera {
-  position: fixed;
-  top: 105px;
+  position: absolute;
+  top: 99px;
   display: flex;
   background: #000;
   width: 100%;
@@ -972,10 +972,9 @@ li::before {
 .cont-camera {
   z-index: 0px;
   display: flex;
-
   padding: 4px 0px !important;
   border: 1px solid #ccc;
-  position: fixed;
+  position: sticky;
   bottom: 0px;
   width: 100%;
 }
@@ -1056,5 +1055,10 @@ li::before {
   width: 100%;
   margin: 0px auto;
 }
+}
+@media (min-width: 1050px){
+  .showCamera{
+    top: 110px;
+  }
 }
 </style>

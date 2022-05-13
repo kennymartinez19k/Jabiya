@@ -393,7 +393,7 @@ p {
   justify-content: space-evenly;
   width: 100%;
   padding: 10px;
-  position: absolute;
+  position: sticky;
   bottom: 0px;
 }
 .button-opt button {
@@ -523,6 +523,7 @@ p {
 .container-main{
   width: 100%;
   box-shadow: none;
+  overflow: auto;
 }
 .container-info{
   margin-bottom: 90px

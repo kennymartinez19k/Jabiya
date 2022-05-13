@@ -1391,10 +1391,9 @@ p {
 .cont-camera {
   z-index: 0px;
   display: flex;
-
   padding: 4px 0px !important;
   border: 1px solid #ccc;
-  position: fixed;
+  position: sticky;
   bottom: 0px;
   width: 100%;
 }
@@ -1518,9 +1517,9 @@ p {
   justify-content: end;
 }
 }
-@media (min-width: 900px){
+@media (min-width: 1050px){
   .showCamera{
-    top: 55px !important;
+    top: 62px !important;
   }
 }
 </style>
