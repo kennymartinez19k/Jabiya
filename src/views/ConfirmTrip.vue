@@ -537,6 +537,9 @@ p {
     margin: 0px auto 90px;
     padding: 20px;
   }
+  .info-user{
+    margin: 0px 5px
+  }
   .info-user-address{
     width: 50%;
   }
@@ -544,6 +547,7 @@ p {
     width: 50%;
   }
   .button-opt{
+    position: absolute;
     justify-content: center;
   }
   .button-opt .uk-button{

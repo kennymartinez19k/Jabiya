@@ -286,7 +286,6 @@ export default {
     }
       try{
         this.detailsLoads = await this.$services.loadsServices.getLoadDetails(loadId);
-        console.log(this.detailsLoads, 'soy details')
       }catch(error){
         this.detailsLoads = this.detailsLoadsStore;
       }

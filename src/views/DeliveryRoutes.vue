@@ -13,7 +13,7 @@
         class="web-font-small"
         style=" font-size: 13px; font-weight: 500"
       >
-        {{loadStore?.loadNumber}}
+        {{loadStore?.loadNumber}} 
       </p>
       <div
         class="
@@ -221,22 +221,27 @@ export default {
     this.setOpen(true)
     try{
       this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore.loadMapId); 
+      this.load.firstOrdenInfo = this.loadStore?.Orders[0]
+      
     }catch(error){
       if (this.loadStore?.loadMapId) {
       this.load = {...this.loadStore};
       } else {
         this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
-        this.$store.commit("setloadStore", this.load);
       }
     }
+    this.$store.commit("setloadStore", this.load)
     this.orders = this.load?.Orders
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
 
     let orderScanned = JSON.parse(localStorage.getItem('allOrderScanned'))
+    let queueIsEmpty =  JSON.parse(localStorage.getItem('queueIsEmpty'))
     if(orderScanned){
       this.orders.forEach(order => {
-        order.sendingInfo = orderScanned?.some(x => x.order_num == order.order_num)
+        queueIsEmpty 
+        ? order.sendingInfo = false
+        : order.sendingInfo = orderScanned?.some(x => x.order_num == order.order_num) 
       })
     }
 
@@ -656,7 +661,9 @@ header >.sub-header {
 .uk-padding-small{
   padding: 0px 15px 15px;
 }
-
+.container-item{
+    margin-bottom:40px
+}
 @media (min-width: 600px){
   .filter-checkbox{
     justify-content: start;

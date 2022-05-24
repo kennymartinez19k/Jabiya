@@ -252,7 +252,6 @@ export default {
         contDate = val?.dateCalendar
         val = null
         this.date = contDate
-        console.log(this.date)
       }
       else if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
         contDate = localStorage.getItem('dateCheck');
@@ -349,6 +348,7 @@ export default {
            localStorage.removeItem(`sendInfo${load?.loadMapId}`);
         }
       }
+      console.log(this.loadsToDisplay)
     },
     
     reset(){

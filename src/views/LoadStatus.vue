@@ -23,7 +23,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span>
-            <span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
+            <span>&nbsp; {{ loadStore?.firstOrdenInfo ? loadStore?.firstOrdenInfo?.sector : loadStore?.Orders[0]?.sector  }}</span>
           </p>
         </div>
       </div>
@@ -159,7 +159,7 @@
           </div>
           <div class="disabled-container"></div>
         </li>
-        <li 
+        <!-- <li 
           v-if="isReturnOrder"
           :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
           <div class="info web-font-small"><span>6</span></div>
@@ -175,15 +175,12 @@
             <img v-if="loadStatus.step > step.returnContainer" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
-        </li>
-
-     
+        </li> -->
       </ul>
     </div>
-        <ion-alert-controller></ion-alert-controller>
+    <ion-alert-controller></ion-alert-controller>
   </div>
 </template>
-
 <script>
 
 import { mapGetters } from "vuex";
@@ -402,6 +399,8 @@ export default {
   methods: {
     async changeRoute(val) {
       localStorage.setItem('DeliveryCharges', JSON.stringify(this.load));
+      this.$store.commit('setloadStore', this.load )
+
       try{
         if(val == "Approved" &&  this.profile?.container == this.load?.loadType){
           this.isMountProduct = true
