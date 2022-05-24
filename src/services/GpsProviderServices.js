@@ -32,7 +32,6 @@ class GpsProviderServices {
       })
     }
     async startGps(gpsId){
-      console.log('heyyyyyyyyyyyyy')
       let cookie = localStorage.getItem('auth')
       let hdr = {
         headers:{

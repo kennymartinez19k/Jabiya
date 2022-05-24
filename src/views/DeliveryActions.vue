@@ -117,17 +117,7 @@
           style="padding: 5px 0px 10px !important"
         >
           <div class="uk-flex uk-flex-wrap img-scroll">
-            <span
-              class="position-imagin"
-            >
-              <img class="img-result" src="../assets/invoice.png" alt="Red dot" />
-              <img
-                src="../assets/rejected.png"
-                class="icon-close"
-                @click="deleteInvoices()"
-                alt=""
-              />
-            </span>
+             <invoice-summary></invoice-summary>
           </div>
         </div>
         <div
@@ -296,8 +286,7 @@ import Camera from "simple-vue-camera";
 import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import { alertController } from '@ionic/vue';
 import { profile } from "../types";
-
-
+import InvoiceSummary from "../components/InvoiceSummary.vue"
 
 
 App.addListener("appRestoredResult", (data) => {
@@ -317,6 +306,7 @@ export default {
     timeline,
     IonLoading,
     Camera,
+    InvoiceSummary
 
   },
   mixins: [Mixins],
@@ -1516,6 +1506,7 @@ p {
 @media (min-width: 600px){
   .exception{
   justify-content: end;
+  margin-right: 33px;
 }
 }
 @media (min-width: 1050px){

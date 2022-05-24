@@ -274,6 +274,7 @@ export default {
       if (this.invoicesIdStore) {
        this.idOrderToInvoices = this.invoicesIdStore
       }
+      this.$store.commit("getInvoiceDownload",{ status: false, order: null});
   },
   methods: {
     

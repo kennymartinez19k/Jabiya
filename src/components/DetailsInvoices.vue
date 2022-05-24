@@ -39,13 +39,13 @@
         </p>
       </div>
     </div>
-      <h4 class="uk-text-small text-returns web-title-small">Procesar Devoluciones </h4>
-      <h6 class="subtitle">(de ser necesario)</h6>
-
-      <div class=" table-thead uk-margin-left">
-        <h6 class="uk-text-left uk-text-small web-sub-title-small" style="width: 45%; margin-right: 10px;" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
-          <h6 class="uk-text-center uk-text-small web-sub-title-small" style="width: 45%" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
-          <h6 class="uk-text-left uk-text-small " style="width: 15%" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
+    <h4 class="uk-text-small text-returns web-title-small">Procesar Devoluciones </h4>
+    <h6 class="subtitle">(de ser necesario)</h6>
+     
+    <div class=" table-thead uk-margin-left">
+      <h6 class="uk-text-left uk-text-small web-sub-title-small" style="width: 45%; margin-right: 10px;" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
+      <h6 class="uk-text-center uk-text-small web-sub-title-small" style="width: 45%" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
+      <h6 class="uk-text-left uk-text-small " style="width: 15%" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
     </div>
     <div>
       <div
@@ -71,7 +71,7 @@
                   'td-text': customerDetails?.order?.can_refund
                 }"
               >
-               <span >{{ product.productQuantityToInvoice  }}</span>
+               <span >{{ product.productQuantityToInvoice  }} <span v-if="product.productQuantityToInvoice > 0 ">/ {{product.productQuantity}}</span></span>
               </td>
               <span v-if="!product.isRewardLine" class="f-span uk-margin-small">
                <font-awesome-icon
@@ -254,7 +254,7 @@ export default {
         let orders = JSON.parse(localStorage.getItem("scanOrder"))
         this.$store.commit("scanOrder", orders );
       }
-
+    localStorage.removeItem("SummaryInvoice")
     await this.productsOfOrders();
     this.setOpen(false);
 
@@ -318,6 +318,10 @@ export default {
               this.isChangeQuantity.order_num = this.customerDetails?.order?.name;
               localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.name}`,JSON.stringify(this.isChangeQuantity));
               this.$store.commit("getChageQuantityToProduct",this.isChangeQuantity);
+            }
+            else if (this.order_lines.every(x => x.productQuantityToInvoice === 0 )) {
+              localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
+              this.$store.commit("getChageQuantityToProduct",{exception: false, changeQuantity: null, order_num: null,});
             }
             return x.productQuantityToInvoice;
           }
@@ -427,7 +431,7 @@ export default {
     
     async downloadPDFRefundInvoice() {
     this.setOpen(true);
-
+      this.summary()
       let selectedInvoicesId = []
       this.customerDetails.invoices.forEach(x => {
       selectedInvoicesId.push( x.id.toString())
@@ -538,6 +542,20 @@ export default {
       setRound (val) {
         return val.toFixed(2)
     },
+
+    summary () {
+       let selectedInvoicesId = []
+      this.customerDetails.invoices.forEach(x => {
+      selectedInvoicesId.push( x.id.toString())
+      })
+      let summaryInvoice = {
+        orderId :  this.customerDetails.order.name,
+        summarys: selectedInvoicesId
+      }
+      this.$store.commit("getSummaryInvoice",summaryInvoice);
+      localStorage.setItem(`SummaryInvoice`,JSON.stringify(summaryInvoice));
+      this.$router.push({ name: "summary" }).catch(() => {});
+    }
   },
 };
 </script>
@@ -618,8 +636,11 @@ th {
   display: flex;
   flex-direction: column;
 }
-.text-returns web-title-small {
-  margin-bottom: 0px;
+h4 {
+  margin-bottom: 0px !important;
+}
+.text-returns {
+  margin-bottom: 0px !important;
 }
 .subtitle {
   font-size: 12px; 
@@ -659,7 +680,6 @@ th {
   }
     .web-title-small {
       font-size: 20px;
-       margin-bottom: 0px;
     }
     .web-sub-title-small {
       font-size: 18px;
