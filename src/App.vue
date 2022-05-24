@@ -94,11 +94,11 @@ export default {
             
             this.location(load).then((locationUpdate) => {
               if(location){
-                let location = locationUpdate;
+                let location = {...locationUpdate};
                 if (
-                  Math.abs(location.latitude - this.lastLocation.latitude) >
+                  Math.abs(location?.latitude - this.lastLocation?.latitude) >
                     0.00003 ||
-                  Math.abs(location.longitude - this.lastLocation.longitude) >
+                  Math.abs(location?.longitude - this.lastLocation?.longitude) >
                     0.00003
                 ) {
                     this.lastLocation.latitude =  location?.latitude
@@ -117,7 +117,11 @@ export default {
         }
         if(queue.length > 0){
           let enqueueItem = remove()
+          localStorage.removeItem("queueIsEmpty")
           await this.enqueue(enqueueItem)
+        }else{
+          localStorage.removeItem('allOrderScanned')
+          localStorage.setItem("queueIsEmpty", JSON.stringify(true))
         }
         this.isServerUp = await this.localStorage.get('serverUp')
         let isConnected 

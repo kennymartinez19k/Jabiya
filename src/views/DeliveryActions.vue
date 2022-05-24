@@ -268,7 +268,7 @@
             <div class="">
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
             <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
-            <input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" >
+            <input type="text" id="quantity" v-model="quantityForScan"  class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
@@ -424,7 +424,6 @@ export default {
     }catch(error){
       alert(error.message)
     }
-    console.log(this.structureToScan)
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
       this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
@@ -638,14 +637,16 @@ export default {
       this.show = value;
       if (value === "scan") {
         this.resultScan = false;
-        console.log(this.isMobile)
         !this.isMobile ? this.showScanInput = true : this.scanOrder()
         
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
+        this.showScanInput = false
         this.getCam();
       } else if (value === "Singnature") {
+        this.showScanInput = false
         this.step++;
       } else if (value === "exception") {
+        this.showScanInput = false
         this.step = 2;
       }
     },

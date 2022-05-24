@@ -41,7 +41,11 @@ export const Mixins = {
         if (val == "Driver Arrival") await this.driverArrival(load);
         if (val == "Approved") await this.uploadTrip(load);
         if (val == "Dispatched") await this.startLoadRoute(load);
-        if (val == "Deliver-Load") router.push({ name: "delivery-actions-auto" });
+        if (val == "Deliver-Load") {
+          load.scanningRequired 
+          ? router.push({ name: "delivery-routes" }) 
+          : router.push({ name: "delivery-actions-auto" }) 
+        }
         if (val == "return-container") router.push({ name: "return-container" });
         if (val == "Delivered") await this.removeInfoInStorage(load)    
       } else {

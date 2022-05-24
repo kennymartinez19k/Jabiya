@@ -11,17 +11,17 @@ class deliverServices {
     }
 
     async postImages (images, lat, lng ,id) {
-         let form = {images, lat, lng}
-         let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
+        let form = {images, lat, lng}
+        let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
 
-         let token = localStorage.getItem('auth')
-          let hdr = {
-                 'Content-Type': 'multipart/form-data',
-                 auth: token,
-          }
-          
-          let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
-          add(json)
+        let token = localStorage.getItem('auth')
+        let hdr = {
+                'Content-Type': 'multipart/form-data',
+                auth: token,
+        }
+        
+        let json = {'headers': hdr,'method': 'post', 'formInfo': form, 'url': url}
+        add(json)
     }
 
     async deliverProduct (orderId, boxId, loadCounter, productId, qrCode){

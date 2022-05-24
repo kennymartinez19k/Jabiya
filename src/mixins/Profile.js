@@ -31,7 +31,7 @@ export const Profile = {
             route: ''
           },
           delivered: {
-            message: "Entregar Contenedor",
+            message: "Entregar Viaje",
             pastMessage: "Contenedor Entregado",
             route: 'delivery-actions-auto'
           },

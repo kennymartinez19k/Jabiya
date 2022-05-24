@@ -34,7 +34,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ loadStore?.firstOrdenInfo.sector }}</span>
+            ><span>&nbsp; {{ loadStore?.firstOrdenInfo ? loadStore?.firstOrdenInfo?.sector : loadStore?.Orders[0]?.sector }}</span>
           </p>
         </div>
       </div>
@@ -88,7 +88,7 @@
             uk-card-default uk-card-body uk-flex uk-flex-between
           "
           :class="{
-            ordenCompleted: order.completed,
+            ordenCompleted: order?.completed,
             'order-status': order?.totalOrdersScanned === order?.totalQuantity,
           }"
         >
