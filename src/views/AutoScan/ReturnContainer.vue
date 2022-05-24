@@ -271,7 +271,7 @@ export default {
     }
 
     if (this.load?.loadType == profile?.container) {
-      this.orders = this.load?.Orders;
+      this.orders = this.load?.Orders.filter(x => x.isReturn);
     } else {
        if (this.orderScan?.length) {
         this.orders = this.orderScan;
@@ -280,7 +280,7 @@ export default {
         this.$store.commit("scanOrder", this.orders );
       }
     }
-    this.showSignaturform = this.orders.some((x) => !x.isReturn);
+    this.showSignaturform = this.orders.some((x) => x.isReturn);
 
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);

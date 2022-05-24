@@ -77,7 +77,7 @@
       </li>
       <li
        v-if="loadStore.scanningRequired"
-        :class="{ active: resultScan !== false }"
+        :class="{ active: resultScan }"
         @click="getShow('scan')"
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
@@ -126,7 +126,7 @@
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
-        <span class="web-font-small">Firma </span>
+        <span class="web-font-small">Firma</span>
         <div :class="{ disabled:!activeSignature}"></div>
       </li>
     </ul>

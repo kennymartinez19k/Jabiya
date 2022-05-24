@@ -1,7 +1,7 @@
 <template>
   <div
     class="uk-flex uk-flex-column uk-flex-between"
-    :class="{ backg: resultScan }"
+    :class="{ backg: resultScan, backgroundBlack: cameraOn ||image }"
   >
     <ion-loading
       :is-open="isOpenRef"
@@ -35,7 +35,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.firstOrdenInfo.sector }}</span>
+            ><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
@@ -47,20 +47,20 @@
             v-for="order in orders"
             :key="order"
             class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-            :class="{ ordenCompleted: order.completed }"
+            :class="{ ordenCompleted: order?.completed }"
           >
             <div class="uk-text-left info-user uk-flex uk-flex-wrap">
               <div class="btn uk-flex">
                 <div class="uk-flex uk-flex-column uk-text-left">
                   <p class="uk-width-1-1 web-font-small">
                     <span class="font-weight-medium">Cliente: </span>
-                    <span>{{ order.client_name }}</span>
+                    <span>{{ order?.client_name }}</span>
                   </p>
                 </div>
               </div>
               <p style="margin-right: 10px !important" class="web-font-small">
                 <span class="font-weight-medium">Orden: </span
-                ><span>{{ order.order_num }}</span>
+                ><span>{{ order?.order_num }}</span>
               </p>
               <p class="web-font-small">
                 <span class="font-weight-medium">Cajas / Pallets: </span
@@ -70,7 +70,7 @@
                 <span class="font-weight-medium">Destino: </span>
                 <span>
                   <font-awesome-icon icon="map-marker-alt" />
-                  {{ order.address }}</span
+                  {{ order?.address }}</span
                 >
               </p>
             </div>
@@ -133,7 +133,7 @@
         />
         <camera
           class="camera"
-          :resolution="{ width: 1620, height: 1450 }"
+          :resolution="{ width: 780, height: 720 }"
           ref="Camera"
         ></camera>
       </div>
@@ -192,7 +192,7 @@
           @resetSign="resetSign()"
         />
       </div>
-          <div v-if="!cameraOn && !image && !showSignaturform" class="cont uk-card uk-card-default uk-card-hover uk-card-body">
+          <div v-if="!cameraOn && !image && !showSignaturform" class="cont-exception uk-card uk-card-default uk-card-hover uk-card-body">
             <strong class="exception uk-padding-small web-font-small">
               Hubo Alguna Excepción? No 
               <div class="onoffswitch">
@@ -346,14 +346,13 @@ export default {
 
     this.load = { ...this.loadStore };
     if (this.load?.loadType == profile?.container) {
-      this.orders = this.load?.Orders;
+      this.orders = this.load?.Orders
     } else {
       this.orders = this.orderScan;
     }
     this.$store.commit("scanOrder", this.orders );
 
-
-    this.showSignaturform = this.orders.some((x) => x.isReturn);
+    this.showSignaturform = false
 
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -392,7 +391,7 @@ export default {
           })
           localStorage.setItem(`ordersMissing${this.load.loadMapId}`, JSON.stringify(ordersMissing))
 
-          let isReturn = this.load?.Orders?.find((x) => x.isReturn);
+          // let isReturn = this.load?.Orders?.find((x) => x.isReturn);
 
           let delay = (ms) => new Promise((res) => setTimeout(res, ms));
           await delay(5000);
@@ -428,17 +427,19 @@ export default {
               );
             }
 
-             if ((ordersMissing?.length == 0 || load.loadType == profile.container) && !isReturn){
+             if ((ordersMissing?.length == 0 || load.loadType == profile.container)){
                localStorage.removeItem(`ordersMissing${this.load.loadMapId}`)
                localStorage.setItem(`sendInfo${this.load?.loadMapId}`, true);
                localStorage.removeItem(`allProducts${this.load?.loadMapId}`);
                await this.changeRouteLoads("Delivered", this.load);
                this.$router.push({ name: "home" });
 
-             }else if(isReturn) {
-                localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5);
-                this.$router.push({ name: "load-status" });
-             }else{
+             }
+            //  else if(isReturn) {
+            //     localStorage.setItem(`loadStatus${this.load.loadMapId}`, 5);
+            //     this.$router.push({ name: "load-status" });
+            //  }
+             else{
                 this.$router.push({ name: "delivery-routes" });
              }
 
@@ -498,7 +499,7 @@ export default {
     getShow(value) {
       this.show = value;
       if (value === "scan") {
-        this.scanOrder();
+        this.uploadOrDownload();
       } else if (value === "camera" && this.imagiElement.length <= 6) {
         this.getCam();
       } else if (value === "firm") {
@@ -548,9 +549,8 @@ export default {
     },
 
     async postImages() {
-      let unreturnedOrders = this.orders.filter((x) => !x.isReturn);
-      for (var it = 0; it < unreturnedOrders.length; it++) {
-        let order = unreturnedOrders[it];
+      for (var it = 0; it < this.orders.length; it++) {
+        let order = this.orders[it];
         let images = [];
         images.push(...this.imagiElement);
         let numberOfImages = 3;
@@ -581,10 +581,8 @@ export default {
 
     uploadOrDownload(val) {
       if (!this.loadStore.allowOrderChangesAtDelivery) {
-        console.log('sin factura')
         this.setLoadTruck(val);
       } else {
-        console.log('factura')
         this.setLoadTruckInvoices(this.structureToScan.firstStructure);
       }
     },
@@ -592,7 +590,7 @@ export default {
       this.timeOut = 10000;
       this.setOpen(true);
       let totalOfBoxes = 0;
-      let orders = val.filter((x) => !x.isReturn);
+      let orders = val
       for (let cont = 0; cont < orders.length; cont++) {
         let order = orders[cont];
         totalOfBoxes += order.no_of_boxes;
@@ -827,7 +825,7 @@ p {
 .result-info {
   overflow: auto;
   padding: 0px 10px;
-  height: 100vh;
+  min-height: 60vh;
 }
 .stiky {
   color: rgb(255, 255, 255) !important;
@@ -911,6 +909,11 @@ li::before {
   bottom: 0px;
   border-top: 1px solid #ccc;
 }
+.cont-exception{
+  position: sticky;
+  bottom: 0px;
+  border-top: 1px solid #ccc;
+}
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
@@ -933,7 +936,10 @@ li::before {
 
 .showCamera {
   position: absolute;
-  top: 99px;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
   display: flex;
   background: #000;
   width: 100%;
@@ -947,7 +953,7 @@ li::before {
 }
 .close {
   position: absolute;
-  top: 10px;
+  top: 5px;
   z-index: 2;
   right: 5%;
   font-size: 35px;
@@ -1031,6 +1037,9 @@ li::before {
   padding: 5px 0px 10px !important;
 
 }
+.backgroundBlack{
+  background: #000;
+}
 @media (min-width: 600px){
   .uk-container {
   margin: 0px -30px;
@@ -1052,9 +1061,5 @@ li::before {
   margin: 0px auto;
 }
 }
-@media (min-width: 1050px){
-  .showCamera{
-    top: 110px;
-  }
-}
+
 </style>

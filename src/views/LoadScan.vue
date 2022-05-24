@@ -24,7 +24,7 @@
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ loadStore?.firstOrdenInfo ? loadStore?.firstOrdenInfo?.sector : loadStore.Orders[0].sector }}</span>
           </p>
         </div>
       </div>
@@ -111,10 +111,10 @@
             <div class="">
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
             <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes - totalBoxesScanned}} <span id="total-quantity"></span>)</p>
-            <input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" >
+            <input type="text" id="quantity" v-model="quantityForScan"  class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
-                <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
+                <button :disabled="quantityForScan <= 0" class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
             </p>
         </div>
           </div>
