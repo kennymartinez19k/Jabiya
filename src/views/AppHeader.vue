@@ -1,5 +1,5 @@
 <template>
-  <nav class="uk-navbar uk-navbar-container">
+  <nav class="uk-navbar uk-navbar-container" :class="{'is-ios': isMobile}">
     <div class="uk-navbar-left">
       <div style="width: 50px">
         <div v-if="!iconType" class="status-server">
@@ -107,6 +107,19 @@ export default {
 
     if (this.nameComponent) this.titlePage = this.nameComponent;
     else "";
+
+    const isIOS = () => {
+       const toMatch = [
+         /iPhone/i,
+         /iPad/i,
+         /iPod/i
+       ];
+       return toMatch.some((toMatchItem) => {
+         return navigator.userAgent.match(toMatchItem)
+       });
+    }
+
+    this.isMobile = isIOS ();
   },
   data() {
     return {
@@ -116,8 +129,8 @@ export default {
       action: "sign-in",
       positionSticky: false,
       userData: null,
-      serverStatus: true
-
+      serverStatus: true,
+      isMobile: false
     };
   },
   methods: {
@@ -217,5 +230,8 @@ li {
 }
 .status-server img{
   width: 18px;
+}
+.is-ios {
+  padding-top: 25px;
 }
 </style>

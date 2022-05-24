@@ -387,7 +387,7 @@ export default {
     
     this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
-    localStorage.setItem('dateCheck', JSON.stringify(this.load.dateTime.date));
+    localStorage.setItem('dateCheck', this.load.dateTime.date);
 
   },
 

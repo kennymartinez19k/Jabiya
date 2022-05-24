@@ -336,7 +336,7 @@ export default {
       } 
 
       localStorage.setItem('loadInProgress', JSON.stringify(load.loadMapId));
-      localStorage.setItem('dateCheck', JSON.stringify(load?.dateTime?.date));
+      localStorage.setItem('dateCheck', load?.dateTime?.date);
       const result = await this.$services.loadsServices.acceptOrRejectLoad(
         id,
         version,

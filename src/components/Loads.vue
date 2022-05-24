@@ -249,14 +249,19 @@ export default {
       let loads
       if(val?.calendar){
         contDate = val?.dateCalendar
+        val = null
+        this.date = contDate
       }
       else if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
         contDate = localStorage.getItem('dateCheck');
         this.date = new Date(contDate);
       }else if(val){
         contDate = this.date.setDate(this.date.getDate() + val);
+        this.date = new Date(contDate)
       }    
-      else contDate = this.date
+      else {
+        contDate = this.date
+      }
       date = moment(contDate).format("MM/DD/YYYY");
       
 
