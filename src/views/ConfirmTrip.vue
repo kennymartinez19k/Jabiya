@@ -277,11 +277,13 @@ export default {
   },
  async mounted() {
     this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
-    if (this.loadStore) {
-      this.load = this.loadStore;
-      this.orders = this.loadStore.Orders
-      this.load.firstOrdenInfo = this.orders[0]
-    }
+    if (!this.loadStore) {
+      this.$store.commit('setloadStore', JSON.parse(localStorage.getItem('currentLoad')))
+    } 
+    this.load = this.loadStore;
+    this.orders = this.loadStore.Orders
+    this.load.firstOrdenInfo = this.orders[0]
+
     if (this.orderScan) {
       this.completedOrden();
     }

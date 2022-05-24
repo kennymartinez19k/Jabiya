@@ -14,7 +14,7 @@ class deliverServices {
          let form = {images, lat, lng}
          let url = this.settingsLocalStore.url+'/exo/orders/'+id+'/images'
 
-         let token = localStorage.getItem('auth')
+      let token = localStorage.getItem('auth')
           let hdr = {
                  'Content-Type': 'multipart/form-data',
                  auth: token,

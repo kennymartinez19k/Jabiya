@@ -1,5 +1,5 @@
 <template>
-  <nav class="uk-navbar uk-navbar-container">
+  <nav class="uk-navbar uk-navbar-container" :class="{'is-ios': isMobile}">
     <div class="uk-navbar-left">
      
       <div style="width: 50px">
@@ -110,6 +110,19 @@ export default {
 
     if (this.nameComponent) this.titlePage = this.nameComponent;
     else "";
+
+    const isIOS = () =>  {
+        const toMatch = [
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+        ];
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem)
+        });
+      }
+      this.isMobile  = isIOS ()
+
   },
   data() {
     return {
@@ -119,7 +132,8 @@ export default {
       action: "sign-in",
       positionSticky: false,
       userData: null,
-      serverStatus: true
+      serverStatus: true,
+      isMobile: false,
 
     };
   },
@@ -229,7 +243,11 @@ li {
 }
 .hide-menu-icon{
     display: none;
-  }
+}
+.is-ios {
+  padding-top: 25px;
+}
+
 @media (min-width: 900px){
   .uk-navbar-toggle{
     display: none;  

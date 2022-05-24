@@ -89,18 +89,8 @@
             v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
             class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
           >
-            <div class="uk-flex uk-flex-wrap img-scroll">
-              <span
-                class="position-imagin"
-              >
-                <img class="img-result" src="../../assets/invoice.png" alt="Red dot" />
-                <img
-                  src="../../assets/rejected.png"
-                  class="icon-close"
-                  @click="deleteInvoices()"
-                  alt=""
-                />
-              </span>
+            <div class="uk-flex uk-flex-wrap img-scroll-8 summary-scroll">
+               <invoice-summary></invoice-summary>
             </div>
           </div>
           <div
@@ -245,6 +235,7 @@ import { Mixins } from "../../mixins/mixins";
 import { profile } from "../../types";
 import Camera from "simple-vue-camera";
 import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
+import InvoiceSummary from "../../components/InvoiceSummary.vue"
 
 
 export default {
@@ -256,6 +247,7 @@ export default {
     timelineAction,
     IonLoading,
     Camera,
+    InvoiceSummary
   },
   mixins: [Mixins],
 
@@ -890,6 +882,13 @@ li::before {
   overflow-y: hidden;
   max-width: 100%;
 }
+.summary-scroll {
+  width: 98%;
+  padding: 0px 0px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
 .btn {
   display: flex;
   align-items: baseline;
@@ -905,9 +904,7 @@ li::before {
   margin-left: 5px;
 }
 .uk-card-body {
-  /* padding: 16px 15px; */
   padding: 8px 20px 16px;
-  
 }
 .cont {
   position: sticky;
@@ -932,7 +929,6 @@ li::before {
 .img-card {
   width: 100%;
   padding: 0px !important;
-  /* padding: 5px 0px 10px !important; */
 }
 
 .showCamera {
