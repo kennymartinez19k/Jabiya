@@ -944,9 +944,10 @@ li::before {
   background: #000;
   width: 100%;
   flex-direction: column;
-  height: 420px;
+  height: 65%;
   justify-content: center;
   align-items: center;
+  
 }
 .hideCamera {
   display: none;

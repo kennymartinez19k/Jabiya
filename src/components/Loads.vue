@@ -12,8 +12,8 @@
       <div uk-margin class="sub-header">
         <ul class="uk-pagination" >
           <li @click="reloadNewDate(-1)"><span href="#"><span uk-pagination-previous></span><span uk-pagination-previous></span></span></li>
-          <li @click="setCalendar()" ><label style="padding: 5px">
-            <Datepicker ref="calendar" showNowButton="true" nowButtonLabel="AHORA" autoApply="true" locale="es-419" id="calendar" v-model="dateSelected"></Datepicker>
+          <li @click="setCalendar()" ><label style="padding: 0px">
+            <Datepicker :clearable="false" ref="calendar" showNowButton="true" nowButtonLabel="AHORA" autoApply="true" locale="es-419" id="calendar" v-model="dateSelected"></Datepicker>
             <p class="uk-text-meta uk-margin-remove-top date ">
                 <label
                   for="date"
@@ -243,14 +243,12 @@ export default {
       }, 2000);
     },
     async currentDate(val = null) {
-
       this.loads = []
       let contDate
       let date
       let loads
       if(val?.calendar){
         contDate = val?.dateCalendar
-        val = null
         this.date = contDate
       }
       else if (localStorage.getItem('dateCheck') && typeof val !== 'number') {
@@ -283,7 +281,7 @@ export default {
           this.reloadEvent = false
           this.waitingMessage = false
           this.loadsToDisplay = JSON.parse(localStorage.getItem('allLoads'))
-          this.assignedLoads = this.loadsToDisplay.length
+          this.assignedLoads = this.loadsToDisplay?.length
           
           let contDate = localStorage.getItem('dateCheck')
           let date = new Date(contDate);
@@ -300,7 +298,7 @@ export default {
       localStorage.setItem('dateCheck', date)
 
       let loadsAcummulated = []
-      for (let i = 0; i < loads.length; i++) {
+      for (let i = 0; i < loads?.length; i++) {
         const load = {...loads[i]}
         
         let productScan = localStorage.getItem(JSON.stringify(load))
@@ -328,10 +326,10 @@ export default {
       
       let dateInDisplay = localStorage.getItem('dateCheck');
       let date2 = moment(new Date(dateInDisplay)).format("MM/DD/YYYY");
-      if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay.length === 0)){
+      if (date2 == date && (JSON.stringify(loadsAcummulated) != JSON.stringify(currentLoads) || this.loadsToDisplay?.length === 0)){
         this.waitingMessage = false
         this.loadsToDisplay = [...loadsAcummulated]
-        this.assignedLoads = this.loadsToDisplay.length
+        this.assignedLoads = this.loadsToDisplay?.length
         this.$store.commit("setAllLoadStore", this.loadsToDisplay);
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }

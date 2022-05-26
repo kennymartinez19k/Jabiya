@@ -1352,7 +1352,7 @@ p {
   background: #000;
   width: 100%;
   flex-direction: column;
-  height: 420px;
+  height: 400px;
   justify-content: center;
   align-items: center;
 }
@@ -1511,7 +1511,7 @@ p {
 }
 @media (min-width: 1050px){
   .showCamera{
-    top: 62px !important;
+    background: #02cf13;
   }
 }
 </style>
