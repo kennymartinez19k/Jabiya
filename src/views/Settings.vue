@@ -142,6 +142,7 @@ export default {
   padding: 10px 0px;
   align-items: baseline;
   cursor: pointer;
+  margin-bottom: 10px
 }
 .header {
   box-shadow: 0px 0px 2px;
@@ -202,6 +203,7 @@ input {
   .setting .item{
     width: 40%;
     border-bottom: 1px solid #ccc;
+    margin-bottom: 0px
 
   }
 

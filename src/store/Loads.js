@@ -8,6 +8,7 @@ const Loads = {
     },
     mutations: {
         setloadStore (state, load) {
+          console.log(load, 'loadStore')
             state.load = load
         },       
         setStartRoute(state, startRoute){

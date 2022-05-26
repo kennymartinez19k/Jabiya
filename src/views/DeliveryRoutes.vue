@@ -69,7 +69,7 @@
           class="uk-card item-deliver uk-card-default uk-card-body uk-flex"
           :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }"
         >
-          <div v-if="order.sendingInfo || order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
+          <div v-if="order.sendingInfo || order.status === 'Delivered'" class="order-completed">
             <font-awesome-icon icon="check"/>
           </div>
           <div v-else-if="load.allowOrderChangesAtDelivery === true" class="order-select" >
