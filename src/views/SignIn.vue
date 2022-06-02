@@ -7,7 +7,6 @@
     :width="100"
     background-color="rgba(252, 252, 252, 0.7)"
   ></Loading>
-
   <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
     <form
       class="
@@ -97,6 +96,7 @@
   </div>
 
  
+ 
 </template>
 
 <script>
@@ -106,8 +106,6 @@ import { LocalStorage } from "../mixins/LocalStorage";
 import {Mixins} from "../mixins/mixins"
 import { role, userType, urlEnum } from '../types'
 import { Browser} from '@capacitor/browser'
-
-
 
 export default {
   components: {

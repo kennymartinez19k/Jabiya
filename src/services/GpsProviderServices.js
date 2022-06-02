@@ -25,7 +25,7 @@ class GpsProviderServices {
           "gpsProvider": load?.Vehicles[0]?.gpsProvider
       }
       
-      axios.post(`http://flai.hopto.org/gps-provider/gps`, body, hdr).then(() => {
+      axios.post(`http://flai.hopto.org/gps-provider/status-vehicle`, body, hdr).then(() => {
           this.startGps(body.vehicleGpsId)
       }).catch(error => {
           console.log(error.message)
@@ -41,7 +41,7 @@ class GpsProviderServices {
       let body = {
         "action":"startGps"
       }
-      axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
+      axios.put(`http://flai.hopto.org/gps-provider/status-vehicle/${gpsId}`, body, hdr).then((res) => {
           console.log(res, 'res')
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(true))
       }).catch(error => {
@@ -60,7 +60,7 @@ class GpsProviderServices {
         "action":"stopGps"
       }
       
-      axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
+      axios.put(`http://flai.hopto.org/gps-provider/status-vehicle/${gpsId}`, body, hdr).then((res) => {
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(false))
 
       }).catch(error => {
@@ -71,7 +71,7 @@ class GpsProviderServices {
 
     async getVehicleGpsId(gpsId){
       try{
-        let res = await axios.get(`http://flai.hopto.org/gps-provider/gps`)
+        let res = await axios.get(`http://flai.hopto.org/gps-provider/status-vehicle`)
         return res.data.find(x => x.vehicleGpsId == gpsId)
       }catch(error){
         console.log(error.message)
