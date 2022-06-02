@@ -33,6 +33,7 @@
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
     "popper.js": "^1.16.1",
+    "printv": "^0.0.1",
     "simple-vue-camera": "^1.0.2",
     "uikit": "^3.9.2",
     "v-calendar": "^3.0.0-alpha.8",
