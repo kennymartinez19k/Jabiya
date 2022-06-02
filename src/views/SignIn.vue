@@ -93,6 +93,15 @@
       >
         Iniciar sesión
       </button>
+
+       <button
+        type="button"
+        class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom input-item-btn"
+        @click="testing()"
+        style="margin-top: 15px"
+      >
+        Printing
+      </button>
     </form>
   </div>
 
@@ -106,7 +115,7 @@ import { LocalStorage } from "../mixins/LocalStorage";
 import {Mixins} from "../mixins/mixins"
 import { role, userType, urlEnum } from '../types'
 import { Browser} from '@capacitor/browser'
-
+import {  PrintV } from 'printv'
 
 
 export default {
@@ -192,6 +201,9 @@ export default {
     ])
   },
   methods: {
+    testing () {
+      PrintV.blPrint("hola amigos")
+    },
     async changeRoute(path) {
       if(path == 'settings-out'){
         this.$router.push({ name: path }).catch(() => {}) 
