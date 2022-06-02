@@ -86,6 +86,14 @@
       >
         Iniciar sesión
       </button>
+      <button
+        type="button"
+        class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
+        @click="printTest()"
+        style="margin-top: 15px"
+      >
+        Print
+      </button>
     </form>
   </div>
 </template>
@@ -95,6 +103,7 @@ import Loading from "vue-loading-overlay";
 import { mapGetters } from 'vuex';
 import { LocalStorage } from "../mixins/LocalStorage";
 import { role, userType } from '../types'
+import { PrintV } from 'printv'
 
 export default {
   components: {
@@ -154,6 +163,19 @@ export default {
     ])
   },
   methods: {
+    printTest () {
+      var text = "[L]" + new Date().toDateString() + "\n" +
+                        "[C]================================\n" +
+                        "[L]<b>Emy PRINTER</b>\n" +
+                        "[C]--------------------------------\n" +
+                        "[C]<barcode type='ean13' height='10'>202105160005</barcode>\n" +
+                        "[C]--------------------------------\n" +
+                        "[C]Thanks For Shopping\n" +
+                        "[C]https://kodejava.org\n" +
+                        "[L]\n" +
+                        "[L]<qrcode>https://kodejava.org</qrcode>\n"
+      PrintV.blPrint({ value: text})
+    },
     async changeRoute(path) {
     
       if (path == "home") {

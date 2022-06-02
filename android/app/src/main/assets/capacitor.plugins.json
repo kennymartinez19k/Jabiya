@@ -10,5 +10,9 @@
 	{
 		"pkg": "@capacitor/geolocation",
 		"classpath": "com.capacitorjs.plugins.geolocation.GeolocationPlugin"
+	},
+	{
+		"pkg": "printv",
+		"classpath": "com.emysoto.plugins.printv.PrintVPlugin"
 	}
 ]
