@@ -18,5 +18,9 @@
 	{
 		"pkg": "@capacitor/geolocation",
 		"classpath": "com.capacitorjs.plugins.geolocation.GeolocationPlugin"
+	},
+	{
+		"pkg": "print-emy-bluetooth",
+		"classpath": "com.emysoto.plugins.printv.PrintVPlugin"
 	}
 ]

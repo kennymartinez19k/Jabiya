@@ -97,10 +97,19 @@
        <button
         type="button"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom input-item-btn"
-        @click="testing()"
+        @click="testingPrint()"
         style="margin-top: 15px"
       >
         Printing
+      </button>
+
+      <button
+        type="button"
+        class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom input-item-btn"
+        @click="testingMessage()"
+        style="margin-top: 15px"
+      >
+        Testing Message
       </button>
     </form>
   </div>
@@ -115,7 +124,7 @@ import { LocalStorage } from "../mixins/LocalStorage";
 import {Mixins} from "../mixins/mixins"
 import { role, userType, urlEnum } from '../types'
 import { Browser} from '@capacitor/browser'
-import {  PrintV } from 'printv'
+import {  PrintV } from 'print-emy-bluetooth'
 
 
 export default {
@@ -201,8 +210,11 @@ export default {
     ])
   },
   methods: {
-    testing () {
+    testingPrint () {
       PrintV.blPrint("hola amigos")
+    },
+    testingMessage () {
+      PrintV.testingMessage()
     },
     async changeRoute(path) {
       if(path == 'settings-out'){
