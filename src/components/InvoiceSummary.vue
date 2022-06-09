@@ -27,10 +27,52 @@
 
                         </tbody>
                     </table>
-                    <div  class="uk-text-right uk-margin-top">
-                        <h6  class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{ summary?.totalTax }}</span></h6>
-                        <h6  class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{ summary?.total - summary?.totalTax }}</span></h6>
-                        <h6  class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }} {{ summary?.total }}</span></h6>
+                    <div class="uk-text-right uk-margin-top">
+                        <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
+                                summary?.totalTax }}</span></h6>
+                        <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
+                                summary?.total - summary?.totalTax }}</span></h6>
+                        <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
+                                {{ summary?.total }}</span></h6>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <a class="uk-accordion-title web-font-small " href="#">Detalles de la Factura de la Orden&nbsp;<b> {{ invoiceDetails?.invoice_origin }}</b></a>
+                <div class="uk-accordion-content">
+                    <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.invoice_partner_display_name}} </p>
+                    <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.partner_address}} </p>
+                    <h6><b>Factura: </b> {{ invoiceDetails?.name}} </h6>
+                    <h6><b>Fecha de Factura:</b> {{ invoiceDetails?.invoice_date}} </h6>
+                    <h6><b>Fecha de Vencimiento: </b>{{ invoiceDetails?.invoice_date_due}} </h6>
+                    <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
+                        <thead>
+                            <tr>
+                                <th class="web-font-small">Descripción</th>
+                                <th class="web-font-small">Cantidad</th>
+                                <th class="web-font-small">Unitario</th>
+                                <th class="web-font-small">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody v-for="(detail, index) in invoiceDetails?.products" :key="detail">
+                            <tr :id="index" :class="{ 'refund-invoice': detail.moveType == 'out_refund' }">
+                                <td class="web-font-small">{{ detail.description }} <br><span
+                                        v-if="detail.moveType == 'out_refund'">Reembolso</span></td>
+                                <td class="web-font-small">{{ detail.qty }}</td>
+                                <td class="web-font-small">{{ detail.price_unit }}</td>
+                                <td class="web-font-small">{{ detail.price_subtotal}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    <div class="uk-text-right uk-margin-top">
+                        <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
+                                invoiceDetails?.subtotal }}</span></h6>
+                        <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
+                                invoiceDetails?.amount_tax }}</span></h6>
+                        <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
+                                {{ invoiceDetails?.amount_total }}</span></h6>
                     </div>
                 </div>
             </li>
@@ -58,7 +100,8 @@ export default {
     data() {
         return {
             summary: null,
-            generalInformation: null
+            generalInformation: null,
+            invoiceDetails: null
         }
     },
 
@@ -71,15 +114,16 @@ export default {
 
     async mounted() {
         if (this.summaryInvoiceStore) {
-           this.generalInformation = this.summaryInvoiceStore 
+            this.generalInformation = this.summaryInvoiceStore 
+            this.invoiceDetails = this.invoiceDetailsStore
         } else {
            this.generalInformation = JSON.parse( localStorage.getItem(`SummaryInvoice`))
-            
+            this.invoiceDetails = JSON.parse(localStorage.getItem(`invoiceDetails`))
         }
         await this.getSummary ()
     },
     computed: {
-        ...mapGetters["summaryInvoiceStore"]
+        ...mapGetters["summaryInvoiceStore", "invoiceDetailsStore"]
     },
     methods: {
        async getSummary () {

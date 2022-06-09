@@ -1,16 +1,9 @@
 <template>
-  <Loading
-    class="loading-position"
-    :active="loaded"
-    color="rgb(86, 76, 175)"
-    loader="spinner"
-    :width="100"
-    background-color="rgba(252, 252, 252, 0.7)"
-  ></Loading>
+  <Loading class="loading-position" :active="loaded" color="rgb(86, 76, 175)" loader="spinner" :width="100"
+    background-color="rgba(252, 252, 252, 0.7)"></Loading>
 
   <div class="uk-flex uk-flex-center uk-flex-column uk-flex-wrap cnt">
-    <form
-      class="
+    <form class="
         form-container
         uk-card
         uk-card-default
@@ -18,64 +11,39 @@
         uk-card-large
         uk-card-body
         uk-width-1-3@s
-      "
-    >
-       <div class="uk-margin uk-width-1-3 setting">
+      ">
+      <div class="uk-margin uk-width-1-3 setting">
         <div class="uk-form-controls">
-            <select v-model="settings.url" class="uk-select" id="form-stacked-select">
-                <option :value="urlEnum.preprod" selected>Preprod Flai</option>
-                <option :value="urlEnum.production">Production Flai</option>
-            </select>
+          <select v-model="settings.url" class="uk-select" id="form-stacked-select">
+            <option :value="urlEnum.preprod" selected>Preprod Flai</option>
+            <option :value="urlEnum.production">Production Flai</option>
+          </select>
         </div>
-    </div>
+      </div>
       <img class="logo" src="../assets/logo.png" alt="" />
       <h4 class="uk-text-light">Entrar a su cuenta</h4>
-      <span class="uk-text-muted" style="margin-bottom: 30px; display: block"
-        >Ingrese su número de móvil y contraseña y presione iniciar sesión para
-        ingresar a su cuenta</span
-      >
+      <span class="uk-text-muted" style="margin-bottom: 30px; display: block">Ingrese su número de móvil y contraseña y
+        presione iniciar sesión para
+        ingresar a su cuenta</span>
 
       <div class="uk-margin uk-text-left input-item">
-        <label class="uk-text-emphasis" for="email">No. de Identificación / Teléfono / Email  </label>
+        <label class="uk-text-emphasis" for="email">No. de Identificación / Teléfono / Email </label>
         <div class="uk-input uk-flex form-login" style="align-items: center">
-          <input
-            class="uk-form-width-medium formLogin"
-            v-model="login.email"
-            type="text"
-            placeholder=""
-            required
-          />
+          <input class="uk-form-width-medium formLogin" v-model="login.email" type="text" placeholder="" required />
           <font-awesome-icon icon="envelope" style="font-size: 15px" />
         </div>
       </div>
       <div class="uk-margin uk-text-left input-item">
         <label class="uk-text-emphasis" for="companyData">Contraseña</label>
         <div class="uk-input uk-flex form-login" style="align-items: center">
-          <input
-            class="uk-form-width-medium"
-            v-model="login.password"
-            :type="type"
-            style="width: 100%"
-            placeholder="Contraseña"
-            required
-          />
-          <font-awesome-icon
-            :icon="iconType"
-            @click="showPassword"
-            style="font-size: 15px"
-          />
+          <input class="uk-form-width-medium" v-model="login.password" :type="type" style="width: 100%"
+            placeholder="Contraseña" required />
+          <font-awesome-icon :icon="iconType" @click="showPassword" style="font-size: 15px" />
         </div>
       </div>
       <div class="uk-margin uk-flex uk-flex-between input-item">
-        <label class="terms uk-text-light"
-          ><input
-            v-model="rememberPassword"
-            style="margin-right: 5px"
-            class="uk-checkbox"
-            type="checkbox"
-            checked
-          />Recordar contraseña</label
-        >
+        <label class="terms uk-text-light"><input v-model="rememberPassword" style="margin-right: 5px"
+            class="uk-checkbox" type="checkbox" checked />Recordar contraseña</label>
         <!-- <router-link to="/recover" class="show-link"
           >¿Olvidaste tu contraseña?</router-link
         > -->
@@ -84,37 +52,15 @@
         <a class="uk-alert-close" @click="showError = false" uk-close></a>
         <p>{{ showErrorText }}</p>
       </div>
-      <button
-        type="button"
-        :class="{ disabled: disabled }"
+      <button type="button" :class="{ disabled: disabled }"
         class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom input-item-btn"
-        @click="changeRoute('home')"
-        style="margin-top: 15px"
-      >
+        @click="changeRoute('home')" style="margin-top: 15px">
         Iniciar sesión
-      </button>
-
-       <button
-        type="button"
-        class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom input-item-btn"
-        @click="testingPrint()"
-        style="margin-top: 15px"
-      >
-        Printing
-      </button>
-
-      <button
-        type="button"
-        class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom input-item-btn"
-        @click="testingMessage()"
-        style="margin-top: 15px"
-      >
-        Testing Message
       </button>
     </form>
   </div>
 
- 
+
 </template>
 
 <script>
@@ -124,8 +70,6 @@ import { LocalStorage } from "../mixins/LocalStorage";
 import {Mixins} from "../mixins/mixins"
 import { role, userType, urlEnum } from '../types'
 import { Browser} from '@capacitor/browser'
-import {  PrintV } from 'print-emy-bluetooth'
-
 
 export default {
   components: {
@@ -203,6 +147,8 @@ export default {
     if (detailsException) {
       localStorage.setItem("detailsException", JSON.stringify(detailsException));
     }
+
+    this.getInvoicesPrint()
   },
   computed:{
     ...mapGetters([
@@ -210,12 +156,6 @@ export default {
     ])
   },
   methods: {
-    testingPrint () {
-      PrintV.blPrint("hola amigos")
-    },
-    testingMessage () {
-      PrintV.testingMessage()
-    },
     async changeRoute(path) {
       if(path == 'settings-out'){
         this.$router.push({ name: path }).catch(() => {}) 
