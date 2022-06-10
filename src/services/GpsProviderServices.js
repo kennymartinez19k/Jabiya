@@ -12,9 +12,12 @@ class GpsProviderServices {
 
     async createGps(load){
       let cookie = localStorage.getItem('auth')
+      let setting = JSON.parse(localStorage.getItem('setting'))
+
       let hdr = {
         headers:{
-          "auth": cookie
+          "auth": cookie,
+          "hostname": setting.url
         }
       }
       let body = {
@@ -24,8 +27,10 @@ class GpsProviderServices {
           "bayId": load.bay_id._id,
           "gpsProvider": load?.Vehicles[0]?.gpsProvider
       }
+
+      console.log(hdr)
       
-      axios.post(`http://flai.hopto.org/gps-provider/gps`, body, hdr).then(() => {
+      axios.post(`http://flai.hopto.org/gps-provider/status-vehicle`, body, hdr).then(() => {
           this.startGps(body.vehicleGpsId)
       }).catch(error => {
           console.log(error.message)
@@ -41,7 +46,7 @@ class GpsProviderServices {
       let body = {
         "action":"startGps"
       }
-      axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
+      axios.put(`http://flai.hopto.org/gps-provider/status-vehicle/${gpsId}`, body, hdr).then((res) => {
           console.log(res, 'res')
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(true))
       }).catch(error => {
@@ -60,7 +65,7 @@ class GpsProviderServices {
         "action":"stopGps"
       }
       
-      axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
+      axios.put(`http://flai.hopto.org/gps-provider/status-vehicle/${gpsId}`, body, hdr).then((res) => {
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(false))
 
       }).catch(error => {
@@ -70,8 +75,10 @@ class GpsProviderServices {
 
 
     async getVehicleGpsId(gpsId){
+      console.log(gpsId)
       try{
-        let res = await axios.get(`http://flai.hopto.org/gps-provider/gps`)
+        let res = await axios.get(`http://flai.hopto.org/gps-provider/status-vehicle`)
+        console.log(res)
         return res.data.find(x => x.vehicleGpsId == gpsId)
       }catch(error){
         console.log(error.message)
