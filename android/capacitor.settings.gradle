@@ -17,5 +17,5 @@ project(':capacitor-camera').projectDir = new File('../node_modules/@capacitor/c
 include ':capacitor-geolocation'
 project(':capacitor-geolocation').projectDir = new File('../node_modules/@capacitor/geolocation/android')
 
-include ':printv'
-project(':printv').projectDir = new File('../node_modules/printv/android')
+include ':print-emy-bluetooth'
+project(':print-emy-bluetooth').projectDir = new File('../node_modules/print-emy-bluetooth/android')
