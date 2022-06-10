@@ -390,7 +390,6 @@ export default {
     this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
     this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
     
-    this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     localStorage.setItem('dateCheck', this.load.dateTime.date);
 

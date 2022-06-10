@@ -12,9 +12,12 @@ class GpsProviderServices {
 
     async createGps(load){
       let cookie = localStorage.getItem('auth')
+      let setting = JSON.parse(localStorage.getItem('setting'))
+
       let hdr = {
         headers:{
-          "auth": cookie
+          "auth": cookie,
+          "hostname": setting.url
         }
       }
       let body = {
@@ -24,6 +27,8 @@ class GpsProviderServices {
           "bayId": load.bay_id._id,
           "gpsProvider": load?.Vehicles[0]?.gpsProvider
       }
+
+      console.log(hdr)
       
       axios.post(`http://flai.hopto.org/gps-provider/status-vehicle`, body, hdr).then(() => {
           this.startGps(body.vehicleGpsId)
@@ -70,8 +75,10 @@ class GpsProviderServices {
 
 
     async getVehicleGpsId(gpsId){
+      console.log(gpsId)
       try{
         let res = await axios.get(`http://flai.hopto.org/gps-provider/status-vehicle`)
+        console.log(res)
         return res.data.find(x => x.vehicleGpsId == gpsId)
       }catch(error){
         console.log(error.message)
