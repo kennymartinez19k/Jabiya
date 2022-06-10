@@ -121,7 +121,8 @@ export default {
             return navigator.userAgent.match(toMatchItem)
         });
       }
-      this.isMobile  = isIOS ()
+    this.isMobile = isIOS()
+    console.log(this.isMobile,'this.isMobile')
 
   },
   data() {
