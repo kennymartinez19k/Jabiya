@@ -68,8 +68,8 @@
           <h6 class="uk-margin-remove">{{messageReject}} <font-awesome-icon icon="ban" style="color: #be1515;"/>
           </h6>
       </div>
-    </div>
-     <div
+      </div>
+      <div
         class="result-scan"
         :class="{checkScreen: checkOrder, banScreen: statusOrders == 'reject', finishCheck: statusOrders == 'approve'}"
       >
@@ -121,8 +121,13 @@
         </div>
       </div>
     </transition>
-  </div>
-
+      </div>
+      <div v-if="showScanner">
+        <StreamBarcodeReader
+          @decode="onDecode"
+          @loaded="onLoaded"
+        ></StreamBarcodeReader>
+      </div>
     </div>
 
   </div>
@@ -138,11 +143,15 @@ import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { mapGetters } from "vuex";
 import { Vibration } from "@ionic-native/vibration";
 import { Mixins } from '../mixins/mixins'
+import { StreamBarcodeReader } from "vue-barcode-reader";
 
 // import UIkit from "uikit";
 
 
 export default {
+  components:{
+    StreamBarcodeReader
+  },
   mixins: [Mixins],
   data() {
     return {
@@ -170,7 +179,9 @@ export default {
       btnDiv: null,
       spanDiv: null,
       webQrCode: "",
-      isMobile: false
+      isMobile: false,
+      showScanner: false,
+      loadedScanner: false
     };
   },
   computed: {
@@ -285,8 +296,6 @@ export default {
 
     
   },
-
-
   methods: {  
     async uploadProducts(val){
       this.totalBoxesScanned = 0
@@ -409,16 +418,7 @@ export default {
       this.quantityForScan = null
       this.isOpen = false
       this.statusOrders = 'start';
-      if (await this.checkPermission()) {
-        BarcodeScanner.hideBackground();
-        const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-        if (result.hasContent) {
-          BarcodeScanner.hideBackground();
-          this.uploadProducts(result.content)
-        } else {
-          this.statusOrders = 'start';
-        }
-      }
+      this.showScanner = true
     },
 
     async sendQuantityForScan(){
@@ -479,12 +479,11 @@ export default {
 
       }
     },
-   
     
-     
     async stopScan() {
-      BarcodeScanner.showBackground();
-      BarcodeScanner.stopScan();
+      this.showScanner = false
+      // BarcodeScanner.showBackground();
+      // BarcodeScanner.stopScan();
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -593,6 +592,20 @@ export default {
     },
      askQuantity(){
       return this.totalLimitOfBoxes - this.totalBoxesScanned
+    },
+
+
+    onDecode(text) {
+      if (this.loadedScanner){
+        this.showScanner = false
+        this.uploadProducts(text);
+        this.loadedScanner = false
+      }
+    },
+    async onLoaded() {
+      let delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(1000);
+      this.loadedScanner = true
     },
   },
 };
