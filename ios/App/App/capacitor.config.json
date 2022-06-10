@@ -1,0 +1,11 @@
+{
+	"appId": "com.jabiya.app",
+	"appName": "Jabiya",
+	"webDir": "dist",
+	"bundledWebRuntime": false,
+	"server": {
+		"allowNavigation": [
+			"http://preprod.flai.com.do:8756"
+		]
+	}
+}
