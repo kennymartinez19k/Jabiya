@@ -4,6 +4,14 @@
 		"classpath": "com.dutchconcepts.capacitor.barcodescanner.BarcodeScanner"
 	},
 	{
+		"pkg": "@capacitor/app",
+		"classpath": "com.capacitorjs.plugins.app.AppPlugin"
+	},
+	{
+		"pkg": "@capacitor/browser",
+		"classpath": "com.capacitorjs.plugins.browser.BrowserPlugin"
+	},
+	{
 		"pkg": "@capacitor/camera",
 		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
 	},
@@ -12,7 +20,7 @@
 		"classpath": "com.capacitorjs.plugins.geolocation.GeolocationPlugin"
 	},
 	{
-		"pkg": "printv",
+		"pkg": "print-emy-bluetooth",
 		"classpath": "com.emysoto.plugins.printv.PrintVPlugin"
 	}
 ]

@@ -1,3 +1,4 @@
+import { userType} from '../types'
 export const Profile = {
   data() {
     return {
@@ -5,89 +6,151 @@ export const Profile = {
       container: {
         LoadStatus: {
           expectingApprovalProvider: {
-            message: "Aprobar $ Viaje Flai",
+            message: "Aprobar/Rechazar $ (Flai)",
             pastMessage: "Aprobó el Viaje $ Flai",
+            route: ''
           },
           expectingApproval: {
-            message: this.approvalVerified(),
-            pastMessage: "Aprobó el Viaje (Chofer)",
-            isProvider: "Esperando aprobación (Chofer)"
+            message: 'Aceptar/Rechazar Viaje (Chofer)',
+            pastMessage: "Aceptó el Viaje (Chofer)",
+            route: 'confirm-trip'
           },
           driverArrival: {
             message: "Registrar LLegada a Recoger",
             pastMessage: "Llegó a Recoger",
+            route: ''
           },
           approved: {
             message: "Montar Viaje",
             pastMessage: "Monto el Viaje",
+            route: 'drayage-orden'
           },
           startRoute: {
-            message: "Iniciar Ruta",
+            message: "Iniciar / Continuar Ruta",
             pastMessage: "Comenzo la Ruta",
+            route: ''
           },
           delivered: {
-            message: "Entregar Contenedor",
+            message: "Entregar Viaje",
             pastMessage: "Contenedor Entregado",
+            route: 'delivery-actions-auto'
           },
           returnContainer: {
             message: "Retornar Contenedor",
             astMessage: "Contenedor Retornado",
+            route: 'return-container'
           },
         },
+        pick: 'Recoger en',
+        deliver: 'Entregar en',
       },
-      eCommerce: {
+      b2b: {
         LoadStatus: {
           expectingApprovalProvider: {
-            message: "Aprobar $ Viaje Flai 1",
-            pastMessage: "Aprobó el Viaje $ Flai 1",
+            message: "Aprobar/Rechazar $ (Flai)",
+            pastMessage: "Aprobó el Viaje $ Flai",
+            route: ''
           },
           expectingApproval: {
-            message: "Aprobar Viaje 1",
-            pastMessage: "Aprobó el Viaje 1",
+            message: 'Aceptar/Rechazar Viaje (Chofer)',
+            pastMessage: "Aceptó el Viaje (Chofer)",
+            route: 'confirm-trip'
           },
           driverArrival: {
-            message: "Registrar LLegada a Recoger 1",
-            pastMessage: "Llegó a Recoger 1",
+            message: "Registrar LLegada a Recoger",
+            pastMessage: "Llegó a Recoger",
+            route: ''
           },
           approved: {
-            message: "Montar Viaje 1",
-            pastMessage: "Monto el Viaje 1",
+            message: "Montar Viaje",
+            pastMessage: "Monto el Viaje",
+            route: 'drayage-orden'
           },
           startRoute: {
-            message: "Iniciar Ruta 1",
-            pastMessage: "Comenzo la Ruta 1",
+            message: "Iniciar / Continuar Ruta",
+            pastMessage: "Comenzo la Ruta",
+            route: ''
           },
           delivered: {
-            message: "Entregar Contenedor 1",
-            pastMessage: "Contenedor Entregado 1",
+            message: "Entregar Viaje",
+            pastMessage: "Viaje Entregado",
+            route: 'delivery-actions-auto'
           },
           returnContainer: {
-            message: "Retornar Contenedor 1",
-            astMessage: "Contenedor Retornado 1",
+            message: "Retornar Viaje",
+            astMessage: "Viaje Retornado",
+            route: 'return-container'
           },
         },
+        pick: 'Warehouse',
+        deliver: 'Entregar en'
       },
     };
   },
-  mounted() {
-    this.setProfile();
-  },
-
+  
   methods: {
-    setProfile() {
-      let setting = JSON.parse(localStorage.getItem("setting"))
-      
-      if (setting.profile == "container") {
-        this.currentProfile = { ...this.container };
+    setProfile(val) {
+      if (val.loadType == "Container Pickup/Delivery") {
+        localStorage.setItem('currentProfile', JSON.stringify(this.container))
       }
-      if (setting.profile == "eCommerce"){
-        this.currentProfile = { ...this.eCommerce };
+      if (val.loadType == "B2B Delivery"){
+        localStorage.setItem('currentProfile', JSON.stringify(this.b2b))
       }
     },
-    approvalVerified(){
-      this.user = JSON.parse(localStorage.getItem("userInfo"))
-      if(this.user?.userType != 'Driver') return 'Esperando aprobación (Chofer)'
-      else return 'Aprobar Viaje (Chofer)'
+
+    setStatus(val){
+      if(val?.loadType == 'Container Pickup/Delivery'){
+        if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
+        if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
+        if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[0]?.status == 'REJECTED') return "Rechazado por Flai Admin";
+        if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[1]?.status == 'REJECTED') return "Rechazado por Chofer";
+  
+        if (val?.loadingStatus?.text == "Loading Truck") return "Cargando Vehiculo";
+  
+        if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0]?.status) return "Esperando Aprobación $ Flai";
+        if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0]?.status) {
+          let user = JSON.parse(localStorage.getItem('userInfo'))
+          if(user.userType == userType.driver) return 'Esperando que Aceptes este Viaje'
+          return "Esperando Chofer Acepte Viaje";
+        } 
+  
+        if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
+        if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
+        if (val?.loadingStatus?.text == "Dispatched") {
+          
+          if(localStorage.getItem(`sendInfo${val.loadMapId}`)){
+            return 'Enviando Informacion'
+          }
+          else
+            return "Listo para Entregar";
+        }
+        if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
+        if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
+      }
+      else{
+        if (val?.loadingStatus?.text == "Defining Load") return "Definiendo Carga"
+        if (val?.loadingStatus?.text == "Driver selection in progress") return "Esperando Asignación del Chofer"
+        if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[0]?.status == 'REJECTED') return "Rechazado por Flai Admin";
+        if (val?.loadingStatus?.text == "Denied Approval" && val?.approvers[1]?.status == 'REJECTED') return "Rechazado por Chofer";
+
+        if (val?.loadingStatus?.text == "Loading Truck") return "Cargando Vehiculo";
+
+        if (val?.loadingStatus?.text == "Expecting Approval" && !val?.approvers[0]?.status) return "Esperando Aprobación $ Flai";
+        if (val?.loadingStatus?.text == "Expecting Approval" && val?.approvers[0]?.status) return "Esperando Chofer Acepte Viaje";
+
+        if (val?.loadingStatus?.text == "Approved") return "Viaje Aprobado";
+        if (val?.loadingStatus?.text == "Driver Arrival") return "Chofer Llegó a Recoger";
+        if (val?.loadingStatus?.text == "Dispatched"){
+          if(localStorage.getItem(`sendInfo${val.loadMapId}`)){
+            return 'Enviando Informacion'
+          }
+          else
+            return "Listo para Entregar";
+        }
+        if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
+        if (val?.loadingStatus?.text == "Delivered") return "Viaje Entregado";
+      }
     }
+
   },
 };

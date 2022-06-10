@@ -12,5 +12,14 @@
   },
   "positionSPN":{
     "transporter": "Coordinador de Transporte"
+  },
+  "profile":{
+    "container": "Container Pickup/Delivery",
+    "b2b": "B2B Delivery"
+  },
+  "url":{
+    "production": "https://production.flai.com.do/orchestrator",
+    "preprod": "https://preprod.flai.com.do/orchestrator"
   }
 }
+

@@ -5,6 +5,7 @@ import singInStore from '../store/SingInStore'
 import orders from '../store/Orders'
 import profiles from './Profiles'
 import invoicesStore from './InvoicesStore'
+import manageOrders from './manageOrders'
 
 const storeModule = {
   state: () => (
@@ -16,17 +17,35 @@ const storeModule = {
       ...orders.state,
       ...profiles.state,
       ...invoicesStore.state,
+      ...manageOrders.state,
       profile: {
-        container: true,
-        
-      }
+        container: true,   
+      },
+      isQueueEmpty: false,
+      isRequestError: false
     }
   ),
   mutations: {
    
     resetData(state){
       state.userData = null
-      localStorage.removeItem("dateCheck")
+        let email = localStorage.getItem('rememberData')
+        let password = localStorage.getItem('rememberPassword')
+        let setting = JSON.parse(localStorage.getItem('setting'))
+        localStorage.clear()
+  
+        if(email && password){
+          localStorage.setItem('rememberData', email)
+          localStorage.setItem('rememberPassword', password)
+          localStorage.setItem('setting', JSON.stringify(setting))
+        }
+  
+    },
+    changeQueueStatus(state, val){
+      state.isQueueEmpty = val
+    },
+    changeRequestStatus(state, val){
+      state.isRequestError = val
     },
     ...currentPage.mutations,
     ...loads.mutations,
@@ -35,6 +54,7 @@ const storeModule = {
     ...orders.mutations,
     ...profiles.mutations,
     ...invoicesStore.mutations,
+    ...manageOrders.mutations
     
   },
   actions: {
@@ -55,6 +75,11 @@ const storeModule = {
     ...orders.getters,
     ...profiles.getters,
     ...invoicesStore.getters,
+    ...manageOrders.getters,
+
+    isQueueEmpty: state => state.isQueueEmpty,
+    isRequestError: state => state.isRequestError
+
 
   }
 }

@@ -1,8 +1,13 @@
-import {add} from '../queue'
+// import {add} from '../queue'
 
 class LoadsScanServices {
     constructor (http) {
-      this.http = http
+      this.http = http;
+      this.settingsLocalStore
+    }
+    
+    setURL(val){
+      this.settingsLocalStore = val
     }
 
     async driverArrival (loadId) {
@@ -12,34 +17,33 @@ class LoadsScanServices {
           "statusType": "Arrival",   
         }
       }
-      let url = `http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions` 
-      let json = {'method': 'post', 'body': params, 'url': url}
-      add(json)
+      // let url = `${this.settingsLocalStore.url}/exo/loads/${loadId}/actions` 
+      // let json = {'method': 'post', 'body': params, 'url': url}
+
+      await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
 
     }
 
     async getProduct(orderId){    
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products`)
+      const result = await this.http.get(`${this.settingsLocalStore.url}/exo/orders/${orderId}/products`)
       return result.data
     }
 
     async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
-      const params = {
-        "actionName": "loadBox",
-        "params": {
-          "loadScanningCounter": loadCounter,
-          "boxId": boxId,
-          "qrCode": qrCode
+        const params = {
+          "actionName": "loadBox",
+          "params": {
+            "loadScanningCounter": loadCounter,
+            "boxId": boxId,
+            "qrCode": qrCode
+          }
         }
-      }
-      
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/orders/${orderId}/products/${productId}/actions`, params)
-      console.log(result)
-      return result
+        
+        const result = await this.http.post(`${this.settingsLocalStore.url}/exo/orders/${orderId}/products/${productId}/actions`, params)
+        return result
     }
 
     async completeLoad(loadId, loadQuantity){
-      console.log(loadId, loadQuantity)
       const params = {
         "actionName": "completeLoadProcess",
         "params": {
@@ -47,8 +51,7 @@ class LoadsScanServices {
           
         }
       }
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${loadId}/actions`, params)
-      console.log(result)
+      const result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
       return result
     }
   

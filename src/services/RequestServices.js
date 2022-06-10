@@ -6,6 +6,7 @@ class RequestServices {
 
       let formData = new FormData();
 
+
       if(infoRequest.formInfo){
         const {images, lng, lat } = infoRequest.formInfo
            let file = null
@@ -18,24 +19,39 @@ class RequestServices {
           }
                 formData.append('lat',lat);
                 formData.append('lng',lng);
-      }
 
+      }
+        
       if (infoRequest.method === "post") {
         if (infoRequest.headers){
-          if(infoRequest.body && formData) return await this.http.post(infoRequest.url, infoRequest.body, formData, infoRequest.headers)
+          if(infoRequest.body && formData){
+            let res = await this.http.post(infoRequest.url, infoRequest.body, formData, infoRequest.headers)
+            return res
+          }
           else{
-            if(infoRequest.body) return await this.http.post(infoRequest.url, infoRequest.body, infoRequest.headers)
+            if(infoRequest.body) {
+              let res = await this.http.post(infoRequest.url, infoRequest.body, infoRequest.headers)
+              return res
+            }
             else if(formData){
-
-              return await this.http.post(infoRequest.url, formData, infoRequest.headers)
+              let res = await this.http.post(infoRequest.url, formData, infoRequest.headers)
+              return res
             }
           }
         }else{
-          if(infoRequest.body && formData) return await this.http.post(infoRequest.url, infoRequest.body, formData)
+          if(infoRequest.body && formData){
+            let res = await this.http.post(infoRequest.url, infoRequest.body, formData)
+            return res
+          }
           else{
-            if(infoRequest.body) return await this.http.post(infoRequest.url, infoRequest.body)
+            if(infoRequest.body){
+              let res = await this.http.post(infoRequest.url, infoRequest.body)
+              return res
+            } 
             else if(formData){
-              return await this.http.post(infoRequest.url, formData)
+              let res = await this.http.post(infoRequest.url, formData)
+              return res
+
             }
           }
         }
@@ -43,14 +59,43 @@ class RequestServices {
       }
 
       if (infoRequest.method === "patch") {
-        if (infoRequest.headers) return await this.http.patch(infoRequest.url, infoRequest.body, infoRequest.headers)
-        else return await this.http.patch(infoRequest.url, infoRequest.body)
+
+        if (infoRequest.headers)  {
+          let res = await this.http.patch(infoRequest.url, infoRequest.body, infoRequest.headers)
+          return res
+
+        }
+        else {
+          let res = await this.http.patch(infoRequest.url, infoRequest.body)
+          return res
+        }
       }
     
       if (infoRequest.method === "get") {
-        if (infoRequest.headers) return await this.http.get(infoRequest.url, infoRequest.headers)
-        else return await this.http.get(infoRequest.url, infoRequest.headers)
+        if (infoRequest.headers) {
+          let res = await this.http.get(infoRequest.url, infoRequest.headers)
+          return res
+        }
+        else {
+          let res = await this.http.get(infoRequest.url, infoRequest.headers)
+          return res
+
+        }
       }
+
+      if (infoRequest.method === "put") {
+
+        if (infoRequest.headers)  {
+          let res = await this.http.put(infoRequest.url, infoRequest.body, infoRequest.headers)
+          return res
+
+        }
+        else {
+          let res = await this.http.put(infoRequest.url, infoRequest.body)
+          return res
+        }
+      }
+    
       return undefined
     }
     

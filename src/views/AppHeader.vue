@@ -1,17 +1,23 @@
 <template>
-  <nav class="uk-navbar uk-navbar-container">
+  <nav class="uk-navbar uk-navbar-container" :class="{'is-ios': isMobile}">
     <div class="uk-navbar-left">
+     
       <div style="width: 50px">
+
+        <div v-if="!iconType" class="status-server">
+          <img v-if="server" src="../assets/online-icon.png" alt="">
+          <img v-if="!server" src="../assets/offline-icon.png" alt="">
+        </div>
         <font-awesome-icon
             v-if="iconType"
             :icon="iconType"
-            @click="setCurrentPage(action)"
+            @click="setDistributePage(action)"
             style="font-size: 20px; margin: 0px 15px"
           />
       </div>
       
       <h6
-        class="uk-margin-remove"
+        class="uk-margin-remove web-font-medium"
         style="font-size: 14px; margin: 0px 10px !important"
       >
         {{ titlePage }}
@@ -23,6 +29,7 @@
         @click="openMenu"
         href="#"
       ></a>
+      <a class="hide-menu-icon" href="#"></a>
       <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
         <div class="uk-offcanvas-bar uk-padding-remove">
           <img
@@ -40,37 +47,41 @@
               srcset=""
             />
             <h4
-              class="uk-text-light uk-margin-remove"
+              class=" uk-margin-remove web-font-small"
               style="margin: 5px 0px !important"
             >
               {{ userData?.firstName }} {{ userData?.lastName }}
             </h4>
-            <h6 class="uk-tect-light uk-margin-remove">
+            <h6 class="uk-tecgin-remove web-font-small">
               {{ userData?.email }}
             </h6>
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <li @click="setCurrentPage('settings')">Configuracion</li>
-            <li @click="setCurrentPage('about')">Version app</li>
-            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li class="opt web-font-small" @click="setCurrentPage('home')">Tus Viajes</li>
+            <li class="opt web-font-small" @click="setCurrentPage('settings')">Configuración</li>
+            <li class="opt web-font-small" @click="setCurrentPage('version')">Version app</li>
+            <li class="opt web-font-small" @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>
         </div>
       </div>
+      
     </div>
   </nav>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import { userType} from '../types/index'
 import Uikit from "uikit";
+
 export default {
   
   props: {
     nameComponent: String,
   },
+  
   computed: {
-    ...mapGetters(["userData"]),
+    ...mapGetters(["userData", "server"]),
 
     titlePage() {
       return this.nameComponent;
@@ -82,20 +93,49 @@ export default {
         ? ((this.action = "sign-in"), (this.iconType = false))
         : newVal.name == "load-status"
         ? ((this.action = "home"), (this.iconType = "arrow-left"))
+        : newVal.name == "scan-order"
+        ? ((this.action = "orders"), (this.iconType = "arrow-left"))
+         : newVal.name == "orders"
+        ? ((this.action = "load-status"), (this.iconType = "arrow-left"))
+        
         : ((this.action = "back"), (this.iconType = "arrow-left"));
+    
     },
+    server: function(newVal){
+      this.serverStatus = newVal
+    }
   },
-  mounted() {
+  async mounted() {
     this.userData = JSON.parse(localStorage.getItem("userInfo"));
+
     if (this.nameComponent) this.titlePage = this.nameComponent;
     else "";
+
+    const isIOS = () =>  {
+        const toMatch = [
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+        ];
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem)
+        });
+      }
+    this.isMobile = isIOS()
+    console.log(this.isMobile,'this.isMobile')
+
   },
   data() {
     return {
+      userType,
+
       iconType: "arrow-left",
       action: "sign-in",
       positionSticky: false,
       userData: null,
+      serverStatus: true,
+      isMobile: false,
+
     };
   },
   methods: {
@@ -108,14 +148,44 @@ export default {
       Uikit.offcanvas("#offcanvas-overlay").hide();
     },
     setCurrentPage(val) {
+      this.hideMenu()
       if(val == 'sign-in'){
         this.$store.commit('resetData')
         this.$router.push({ name: val }).catch(() => {});
       }
-      if (val == "back") this.$router.go(-1);
-      else {
+      if(val){
         this.$router.push({ name: val }).catch(() => {});
-        this.hideMenu();
+      }else{
+          this.$router.push({ name: val }).catch(() => {});
+          this.hideMenu();
+      }
+    },
+     setDistributePage(val) {
+      if(val == 'sign-in'){
+        this.$store.commit('resetData')
+        this.$router.push({ name: val }).catch(() => {});
+      }
+      if(this.$route.name == 'delivery-routes'){
+        this.$router.push({ name: 'load-status' }).catch(() => {});
+      }
+      else if(this.$route.name == 'orders'){
+        this.$router.push({ name: 'load-status' }).catch(() => {});
+      }
+      else if(this.$route.name == 'manage-orders'){
+        this.$router.push({name: 'home'})
+      }
+      else if(this.$route.name == 'delivery-actions-auto'){
+        this.$router.push({name: 'load-status'})
+      }
+      else if(this.$route.name == 'deliveryActions'){
+        this.$router.push({name: 'delivery-routes'})
+      }
+      else{
+        if (val == "back") this.$router.go(-1);
+        else {
+          this.$router.push({ name: val }).catch(() => {});
+          this.hideMenu();
+        }
       }
     },
   },
@@ -162,5 +232,30 @@ li {
   width: 25px;
   right: 5px;
   top: 10px;
+}
+.status-server img{
+  width: 18px;
+}
+.opt{
+  cursor: pointer;
+}
+.opt:hover{
+  background: #f4f4f4
+}
+.hide-menu-icon{
+    display: none;
+}
+.is-ios {
+  padding-top: 25px;
+}
+
+@media (min-width: 900px){
+  .uk-navbar-toggle{
+    display: none;  
+  }
+  .hide-menu-icon{
+    display: block;
+    width: 50px;
+  }
 }
 </style>

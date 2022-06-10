@@ -5,14 +5,9 @@ const SingInStore = {
     mutations: {
         setUserData (state) {
             state.userData = JSON.parse(localStorage.getItem('userInfo'))
-
         },
     
     },
-  
-    actions: {
-    },
-  
     getters: {
         userData: state => state.userData,
     }

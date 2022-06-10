@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div v-if="showSingnature === 'firm'" class="uk-padding-small">
+      <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()">
       <signature-action @digitalSignature="digitalFirm= $event"></signature-action>
     </div>
 
@@ -8,7 +9,7 @@
       <textarea
         class="uk-textarea"
         rows="3"
-        placeholder="Digite la exepción"
+        placeholder="Notas:"
         v-model="textException"
       ></textarea>
       <div class="uk-margin-small-top uk-flex uk-flex-right">
@@ -22,7 +23,6 @@
       </div>
     </div>
     <ul class="progressbar">
-       <!-- 'uk-disabled': step !== 1, -->
       <li
         class="stepTwo"
         :class="{
@@ -36,25 +36,6 @@
         <span style="color: #000">Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
-      <!-- <li
-        v-if="exception"
-        :class="{
-          'uk-disabled': (imagiElement.length === 0) || (imagiElement.length !== 1),
-          active:
-            imagiElement.length >= 1 &&
-            textException !== null && showException === false,
-        }"
-        @click="getShow('exception')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
-        <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
-        <span style="color: #000">Camara</span>
-        <div
-          :class="{
-            disabled: (imagiElement.length === 0) || (imagiElement.length !== 1),
-          }"
-        ></div>
-      </li> -->
       <li
       v-if="showSignaturform === false"
         class="stepThree"
@@ -92,7 +73,6 @@ export default {
   computed:{
     ...mapGetters([
       'loadStore',
-      'settingsStore'
     ])
   },
   watch: {
@@ -104,6 +84,7 @@ export default {
 
         }
       },
+      deep: true
     },
 
     exception: {
@@ -145,7 +126,6 @@ export default {
           this.digitalFirm = true;
           this.$store.commit("setDigitalFirm", this.digitalFirm);
      }
-      console.log(value, 'value')
     },
     resetTextException() {
       UIkit.modal("#modal-sections").hide();
@@ -155,6 +135,11 @@ export default {
       this.showException = false;
       this.$store.commit("setTextException", this.textException);
     },
+    closeSingnature () {
+        this.showSingnature = null;
+        this.$emit("resetSign", false);
+        this.digitalFirm = null;
+    }
     
   },
 };
@@ -166,8 +151,8 @@ export default {
 }
 .disabled {
   position: absolute;
-  width: 90px;
-  height: 70px;
+  width: 100%;
+  height: 70%;
   top: 40px;
   left: 10px;
   background: #ffffffc4;
@@ -178,6 +163,7 @@ img {
 .progressbar li {
   float: left;
   width: 30%;
+  max-width: 105px;
   position: relative;
   text-align: center;
 }
@@ -229,5 +215,21 @@ ul {
   border-color: #3aac5d !important;
   background: #3aac5d !important;
   color: white !important;
+}
+.icon-close{
+  background-color: #f04c3b40;;
+  position: absolute;
+  top: 35px;
+  width: 25px;
+  right: 10px;
+  border-radius: 10px;
+  margin: 2px 0px 0px -23px;
+}
+
+@media (min-width: 900px){
+ .progressbar li {
+  max-width: 180px !important;
+
+ }
 }
 </style>

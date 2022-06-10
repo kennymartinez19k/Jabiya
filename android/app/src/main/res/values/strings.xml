@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Jabiya</string>
-    <string name="title_activity_main">Jabiya</string>
-    <string name="package_name">com.example.app</string>
-    <string name="custom_url_scheme">com.example.app</string>
+    <string name="app_name">Flai</string>
+    <string name="title_activity_main">Flai</string>
+    <string name="package_name">com.jabiya.app</string>
+    <string name="custom_url_scheme">com.jabiya.app</string>
 </resources>

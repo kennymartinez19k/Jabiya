@@ -31,11 +31,12 @@
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenSector.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenInfo.sector }}</span>
           </p>
         </div>
       </div>
     </div>
+    
     <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 50px!important;">
       <div
         v-for="order in orders"
@@ -88,7 +89,6 @@
     <div></div>
     <div class="button-opt ">
       <button @click="uploadOrDownload(load)" class="uk-button uk-width-1-1 uk-button-blue">{{messageStatusLoad}}
-          <!-- <img src="../../assets/container.png" style="width: 25px; margin-left: 5px "> -->
       </button>
       
     </div>
@@ -142,7 +142,6 @@ export default {
       if(this.orders.length == 0){
          this.orders = this.load.Orders.filter(x => x.isReturn)
       }
-      console.log(this.load)
     }
     if (this.orderScan) {
       this.completedOrden();
@@ -185,12 +184,9 @@ export default {
     async setLoadTruck(val){
       let totalOfBoxes = 0
       for(let cont = 0; cont < val.Orders.length; cont++){
-        let load = val.Orders[cont]
-        let orders =  await this.$services.loadsScanServices.getProduct(load._id);
-        Object.assign(val.Orders[cont], orders[0])
+        let order = val.Orders[cont]
         this.$store.commit("setloadStore", val)
-        let order = orders.find(x => x)
-        totalOfBoxes += load.no_of_boxes
+        totalOfBoxes += order.no_of_boxes
         for(var i = 0; i < order.products.length; i++){
           let prod = order.products[i]
           if(prod.scanOneByOne === "no") {

@@ -31,7 +31,12 @@ export const LocalStorage = {
       let elements =  JSON.parse(await this.localStorage.get(this.queueId))
       return elements?.length > 0 ? elements[0] : undefined;
     },
-    
-
+    async all(){
+      let elements =  JSON.parse(await this.localStorage.get(this.queueId))
+      return elements.length
+    },
+    async clear(){
+      this.localStorage.clear()
+    }
   }
 };

@@ -11,14 +11,25 @@ import OrdersAutoScan from '../views/AutoScan/Orders.vue'
 import DeliveryActionsAuto from '../views/AutoScan/DeliveryActions.vue'
 import ConfirmTrip from '../views/ConfirmTrip.vue'
 import LoadStatus from '../views/LoadStatus.vue'
-import InvoicesOrders from '../views/InvoicesOrders.vue'
 import DetailsInvoices from '../components/DetailsInvoices.vue'
 import ReconciliationWarehouse from '../components/ReconciliationWarehouse.vue'
 import ReturnContainer from '../views/AutoScan/ReturnContainer.vue'
 import DetailsLoad from "../components/DetailsLoad.vue";
-
+import Version from "../components/Version.vue";
+import Page from '../views/Page.vue'
+import OrderRegistration from '../views/Orders/OrderRegistration.vue'
+import ManageOrders from '../views/Orders/ManageOrders.vue'
+import ListOrders from '../views/Orders/ListOrders.vue'
+import InvoiceSummary from "../components/InvoiceSummary.vue";
 import about from '../views/About.vue'
+
+
 const routes = [
+  {
+    path: '/',
+    name: 'redirect',
+    component: Page 
+  },
   {
     path: '/',
     name: 'sign-in',
@@ -29,8 +40,6 @@ const routes = [
     name: 'settings',
     component: Settings 
   },
-
-
   {
     path: "/recover",
     name: "recover-password",
@@ -94,11 +103,6 @@ const routes = [
     component: LoadStatus,
   },
   {
-    path: "/invoice",
-    name: "invoices-orders",
-    component: InvoicesOrders,
-  },
-  {
     path: "/details-invoices",
     name: "details-invoices",
     component: DetailsInvoices,
@@ -113,7 +117,32 @@ const routes = [
     name: "about",
     component: about,
   },
+  {
+    path: "/version",
+    name: "version",
+    component: Version,
+  },
+  {
+    path: "/manage-orders",
+    name: "manage-orders",
+    component: ManageOrders,
+  },
   
+  {
+    path: "/order-registration",
+    name: "order-registration",
+    component: OrderRegistration,
+  },
+  {
+    path: "/list-orders",
+    name: "list-orders",
+    component: ListOrders,
+  },
+  {
+    path: "/invoice-summary",
+    name: "summary",
+    component: InvoiceSummary,
+  },
  
 ];
 

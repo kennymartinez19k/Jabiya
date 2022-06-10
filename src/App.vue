@@ -1,37 +1,61 @@
 <template>
-  <app-header v-if="!currentPage" :nameComponent="currentName"/>
-
-  <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+  <div class="uk-flex app">
+    <side-bar v-if="!hideSideBar" class="sideBar"/>
+    <div class="container-app">
+      <app-header class="header" v-if="!currentPage" :nameComponent="currentName"/>
+      <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+    </div>
+  </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
 import AppHeader from './views/AppHeader.vue'
 import {queue, remove} from './queue'
 import {LocalStorage} from './mixins/LocalStorage'
-
+import { Profile } from './mixins/Profile'
+import { Storage} from '@ionic/storage'
+import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
+import { Geolocation } from "@capacitor/geolocation";
+import sideBar from './components/sideBar.vue'
 
 export default {
   data(){
     return{
-      stopScan:  false,
       noHead: [
         'sign-in',
         'sign-up',
         'recover-password'
       ],
       nameOrder: null,
-      result: 0,
-      sendingBI: false
+      localStorage: new Storage(),
+      localStorageGps: new Storage(),
+      isServerUp: true,
+      connection: null,
+      proofQueue: [],
+      intervalForGps: 0,
+      step: 0,
+      lastLocation: {
+        latitude: 0,
+        longitude: 0
+      },
+      hasUbicationServer: false,
+      hideSideBar: true
+    }
+  },
+ 
+  watch:{
+    $route: function(newVal){
+      this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
+      if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
+          this.stopScan()
+      }
     }
   },
   components:{
-    AppHeader
+    AppHeader,
+    sideBar
   },
-  mixins: [LocalStorage],
+  mixins: [LocalStorage, Profile],
   computed:{
-    ...mapGetters([
-      'settingsStore'
-    ]),
     currentPage: function() {
       return this.noHead.some(x => x == this.$route.name)
     },
@@ -43,40 +67,162 @@ export default {
       }
       return ''
     },
-},
-  async mounted(){
     
-    setInterval( async () => {
-      if(queue.length > 0){
-        let enqueueItem = remove()
-        await this.enqueue(enqueueItem)
-      }
-      let queueItem = await this.peek()
-      if(queueItem && !this.sendingBI){
-        this.sendingBI = true
-          try{
-            let res = await this.$services.requestServices.request(queueItem)
-            if(res){
-              console.log(res)
-              this.dequeue()
-            }
-          } 
-          catch(error){
-            console.log(error)
-            this.dequeue()
-          }
-          this.sendingBI = false
-      }
-  }, 1000)
-},
-methods:{
-  setName(val){
-    this.nameOrder = val
   },
-}
+  async mounted(){
+    this.localStorageGps.create()
+
+      this.setUrl()
+      this.getInfo()
+    
+      this.localStorage.set('sending' , "false")
+      this.localStorage.set('serverUp' , "true")
+      let delay = ms => new Promise(res => setTimeout(res, ms));
+      
+      let condition = true
+      const intervalLimit = 5
+
+      while (condition) {
+        let user = JSON.parse(localStorage.getItem("userInfo"));
+        await delay(2000);
+
+        this.intervalForGps += 1
+
+        let load = JSON.parse(localStorage.getItem('DeliveryCharges'))
+        if(this.intervalForGps > intervalLimit && ( localStorage.getItem(`gps ${load?.loadMapId}`) || JSON.parse(localStorage.getItem('gpsProvider'))) ){
+          this.intervalForGps = 0
+            
+            this.location(load).then((locationUpdate) => {
+              if(location){
+                let location = {...locationUpdate};
+                if (
+                  Math.abs(location?.latitude - this.lastLocation?.latitude) >
+                    0.00003 ||
+                  Math.abs(location?.longitude - this.lastLocation?.longitude) >
+                    0.00003
+                ) {
+                    this.lastLocation.latitude =  location?.latitude
+                    this.lastLocation.longitude = location?.longitude
+                    this.$services.gpsServices.updateLocation(
+                      user.id,
+                      location?.latitude,
+                      location?.longitude,
+                      load?.bay_id?._id
+                    );
+                }
+              }
+            });
+          
+      
+        }
+        if(queue.length > 0){
+          let enqueueItem = remove()
+          localStorage.removeItem("queueIsEmpty")
+          await this.enqueue(enqueueItem)
+        }else{
+          localStorage.removeItem('allOrderScanned')
+          localStorage.setItem("queueIsEmpty", JSON.stringify(true))
+        }
+        this.isServerUp = await this.localStorage.get('serverUp')
+        let isConnected 
+
+        try{
+          isConnected = await this.$services.loadsServices.serverStatus()
+        }catch(error){
+          isConnected = false
+        }
+        if(!(JSON.parse(this.isServerUp)) || !isConnected){
+          if(isConnected) {
+            this.localStorage.set('serverUp' , "true")
+            this.$store.commit('setServer', true)
+          }
+          else this.$store.commit('setServer', false)
+        }else{
+          this.$store.commit('setServer', true)
+          this.localStorage.set('serverUp' , "true")
+          let queueItem = await this.peek()
+          if(queueItem){
+            this.$store.commit('changeQueueStatus', false)
+            try{
+              let res = await this.$services.requestServices.request(queueItem)
+              if(res){
+                this.dequeue()
+              }
+              await this.localStorage.set('serverUp' , JSON.stringify(true))
+              this.$store.commit('setServer', true)
+            } 
+            catch(error){
+              if(error.message != 'Network Error'){
+                this.$store.commit('changeRequestStatus', true)
+                this.dequeue()
+              }
+              await this.localStorage.set('serverUp' , JSON.stringify(false))
+              this.$store.commit('setServer', false)
+            }
+          }else{
+            this.$store.commit('changeQueueStatus', true)
+          }
+      }
+    }
+  },
+  methods:{
+    setName(val){
+      this.nameOrder = val
+    },
+    async setUrl(){
+      let setting = await JSON.parse(localStorage.getItem('setting'))
+      this.$services.singInServices.setURL(setting)
+      this.$services.loadsServices.setURL(setting) 
+      this.$services.loadsScanServices.setURL(setting)
+      this.$services.invoicesSevices.setURL(setting)
+      this.$services.deliverServices.setURL(setting)
+      this.$services.gpsServices.setURL(setting)
+      this.$services.driverVehicleAssignment.setURL(setting)
+      this.$services.exceptionServices.setURL(setting)
+      this.$services.manageOrders.setURL(setting)
+
+    },
+    async stopScan() {
+      try{
+        BarcodeScanner.showBackground();
+        BarcodeScanner.stopScan();
+      }catch(error){
+        //  console.clear()
+
+      }
+    },
+    getInfo(){
+      let setting = JSON.parse(localStorage.getItem('setting'))
+      this.$store.commit("setSettings",setting);
+    },
+  
+    async location(load){
+    if(!load?.Vehicles[0]?.gpsProvider || load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App'){
+      try{
+        let result = await Geolocation.getCurrentPosition()
+        return {latitude: result.coords.latitude, longitude: result.coords.longitude}
+      }catch(error){
+        console.log(error)
+      }
+    }else{
+      // let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
+      // return {latitude: result.lat, longitude: result.lng}
+      return false
+    }
+    }
+  }
 }
 </script>
 <style>
+.app{
+  height: 100%;
+}
+.container-app{
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 #app {
   font-size: 12px;
   font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
@@ -111,7 +257,7 @@ button{
   border-radius: 5px !important
 }
 .uk-button-red{
-  background: #be1515;
+  background: #930404;
   color: #fff
 }
 .uk-button-orange{
@@ -122,9 +268,11 @@ button{
   height: 92vh !important;
 }
 .view-header{
-  height: 100%;
-  overflow-y: scroll;
-    overflow-x: hidden;
+  
+  height: 92%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 html body{
   height: 100vh;
@@ -147,8 +295,7 @@ strong{
   font-weight: 500 !important;
 }
 .cnt {
-  height: 100% !important;
-  overflow: scroll;
+  height: 92% !important;
 }
 .uk-button-transparent{
   color: #1f1f1f;
@@ -175,7 +322,6 @@ strong{
  background: #2a307c;
  font-weight: 300 !important;
  text-align: center;
-  box-shadow: 1px 0px 5px #898989;
 }
 .uk-button-green{
   background: green;
@@ -185,4 +331,33 @@ strong{
   background: #0f7ae5;
   color: #fff
 }
+.text-bold{
+  font-size: 14px;
+  color: #5c5c5c ;
+}
+.sideBar{
+  width: 20%;
+  max-width: 245px;
+  border-right: 0.5px solid #CCC;
+}
+.header{
+  height: 8%;
+}
+
+@media (min-width: 1050px){
+  .web-font-small{
+    font-size: 16px !important;
+  }
+   .web-font-medium{
+    font-size: 20px !important;
+  }
+}
+@media (max-width: 900px){
+  .sideBar{
+    display: none;
+  }
+ 
+}
+
+
 </style>

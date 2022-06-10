@@ -1,37 +1,79 @@
+import router from '../router/index'
 class LoadsServices {
     constructor (http) {
-      this.http = http
+      this.http = http;
+      this.settingsLocalStore
+    }
+
+    setURL(setting){
+      this.settingsLocalStore = setting
     }
 
     async getOrdersByLoadId (id) {
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${id}?fields=Orders`)
+      let result = {}
+      try{
+        result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${id}?fields=Orders`)
+      }catch(error){
+        console.log(error.message)
+        if(error.message == 'Request failed with status code 401'){
+          router.push({name: 'sign-in'})
+        }
+      }
       return result.data.Orders
     }
+
     async getLoadDetails (id) {
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/${id}`)
-      var whId = result.data.warehouse
-      const result2 = await this.http.get(`http://preprod.flai.com.do:8756/exo/warehouses/${whId}`)
-      result.data.warehouse = result2.data
+      let result = null
+      let res = null
+      try{
+        result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/${id}`)
+        let whId = result.data.warehouse
+        res = await this.http.get(`${this.settingsLocalStore.url}/exo/warehouses/${whId}`)
+        result.data.warehouse = res.data
+      }catch(error){
+        console.log(error.message)
+        if(error.message == 'Request failed with status code 401'){
+          router.push({name: 'sign-in'})
+        }
+      }
       return result.data
     }
+
     async getLoadsbyDate (date = new Date()) {
       var loadDate = new Date(date).getTime() - (new Date(date).getTime() % 86400000)
-      const result = await this.http.get(`http://preprod.flai.com.do:8756/exo/loads/?date=${loadDate}`)
+      let result = {}
+      try{
+        result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/?date=${loadDate}`)
+      }catch(error){
+        console.log(error.message)
+        if(error.message == 'Request failed with status code 401'){
+          router.push({name: 'sign-in'})
+        }
+      }
       return result.data
     }
-    async acceptOrRejectLoad (id, version, approverId, status, type){
-      console.log(id, version, approverId, status, type)
+    
+    async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){
       const params = {
         "actionName": "confirmOrder",
         "params": {
             "version": version,
             "approverId":approverId,
             "status": status,
+            "vehicle_id": vehicleId,
             "type": type
         }
       }
-      const result = await this.http.post(`http://preprod.flai.com.do:8756/exo/loads/${id}/actions`, params)
+      let result = {}
+      try{
+        result = await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${id}/actions`, params)
+      }catch(error){
+        console.log(error.message)
+      }
       return result
+    }
+    async serverStatus(){
+     return await this.http.get(`${this.settingsLocalStore.url}/ping`)
     }
     
   
