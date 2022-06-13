@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="stiky">
-      <p style="font-size: 13px !important; font-weight: 500">
+      <p style="font-size: 13px; font-weight: 500" class="web-font-small">
         {{ loadStore?.loadNumber }}
       </p>
       <div
@@ -15,7 +15,7 @@
         "
         style="align-items: center"
       >
-        <div class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span>
             <span>&nbsp; {{ shipperName(loadStore) }}</span>
@@ -23,39 +23,40 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span>
-            <span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector }}</span>
+            <span>&nbsp; {{ loadStore?.firstOrdenInfo ? loadStore?.firstOrdenInfo?.sector : loadStore?.Orders[0]?.sector  }}</span>
           </p>
         </div>
       </div>
     </div>
     <div class="container">
-      <h6>Seleccione el Siguiente Paso</h6>
+      <h6 class="web-font-medium">Seleccione el Siguiente Paso</h6>
       <ul class="progressbar">
         <li
           v-if="userInfo?.userType == userType?.provider" 
           :class="{active: loadStatus.step == step.expectingApprovalProvider, 'completed-status': loadStatus.step > step.expectingApprovalProvider}"
         >
-          <div class="info">
-            <span>0</span>
-          </div>
+         
+            <div class="info web-font-small">
+              <span>0</span>
+            </div>
 
-          <div
-            @click="changeRoute('Expecting Approval')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6>{{messageStatus?.expectingApprovalProvider?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApprovalProvider" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.expectingApprovalProvider" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.expectingApprovalProvider" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
+            <div
+              @click="changeRoute('Expecting Approval')"
+              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item "
+            >
+              <h6 class="web-font-small">{{messageStatus?.expectingApprovalProvider?.message}}</h6>
+            </div>
+            <div class="icon-item">
+              <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApprovalProvider" icon="arrow-right"/>
+              <img v-if="loadStatus.step < step.expectingApprovalProvider" src="../assets/checklist.png" />
+              <img v-if="loadStatus.step > step.expectingApprovalProvider" src="../assets/check.png" />
+            </div>
+            <div class="disabled-container"></div>
         </li>
         <li 
           :class="{active: loadStatus.step == step.expectingApproval, 'completed-status': loadStatus.step > step.expectingApproval}"
         >
-          <div class="info">
+          <div class="info web-font-small">
             <span>1</span>
           </div>
 
@@ -63,7 +64,7 @@
             @click="changeRoute('Expecting Approval')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus?.expectingApproval?.message}}</h6>
+            <h6 class="web-font-small">{{messageStatus?.expectingApproval?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
@@ -75,7 +76,7 @@
         <li 
           :class="{active: loadStatus.step == step.driverArrival, 'completed-status': loadStatus.step > step.driverArrival}"
         >
-          <div class="info">
+          <div class="info web-font-small">
             <span>2</span>
           </div>
 
@@ -83,7 +84,7 @@
             @click="changeRoute('Driver Arrival')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus?.driverArrival?.message}}</h6>
+            <h6 class="web-font-small">{{messageStatus?.driverArrival?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Driver Arrival')" v-if="loadStatus.step == step.driverArrival" icon="arrow-right"/>
@@ -95,7 +96,7 @@
         <li
           :class="{active: loadStatus.step == step.approved, 'completed-status': loadStatus.step > step.approved}"
         >
-           <div class="info">
+           <div class="info web-font-small">
             <span>3</span>
           </div>
           <div
@@ -103,7 +104,7 @@
             :class="{'disabled-event': isMountProduct}"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus?.approved?.message}}</h6>
+            <h6 class="web-font-small">{{messageStatus?.approved?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Approved')" v-if="loadStatus.step == step.approved" icon="arrow-right"/>
@@ -115,14 +116,14 @@
         </li>
         <li
         :class="{active: loadStatus.step == step.truckLoaded && !sendingInfo, 'completed-status': loadStatus.step > step.truckLoaded}">
-          <div class="info">
+          <div class="info web-font-small">
             <span>4</span>
           </div>
           <div
             @click="changeRoute('Dispatched')"
             class="uk-card action on-way  uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus?.startRoute?.message}}</h6>
+            <h6 class="web-font-small">{{messageStatus?.startRoute?.message}}</h6>
           </div>
 
           <div class="icon-item">
@@ -144,12 +145,12 @@
           v-if="!allOrderIsReturn"
           :class="{active: loadStatus.step == step.delivered && !sendingInfo, 'completed-status': loadStatus.step > step.delivered}">
           
-          <div class="info"><span>5</span></div>
+          <div class="info web-font-small"><span>5</span></div>
           <div   
             @click="changeRoute('Deliver-Load')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus?.delivered?.message}}</h6>
+            <h6 class="web-font-small">{{messageStatus?.delivered?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('Deliver-Load')" v-if="loadStatus.step == step.delivered" icon="arrow-right"/>
@@ -158,15 +159,15 @@
           </div>
           <div class="disabled-container"></div>
         </li>
-        <li 
+        <!-- <li 
           v-if="isReturnOrder"
           :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
-          <div class="info"><span>6</span></div>
+          <div class="info web-font-small"><span>6</span></div>
           <div   
             @click="changeRoute('return-container')"
             class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
           >
-            <h6>{{messageStatus?.returnContainer?.message}}</h6>
+            <h6 class="web-font-small">{{messageStatus?.returnContainer?.message}}</h6>
           </div>
           <div class="icon-item">
             <font-awesome-icon class="icon" @click="changeRoute('return-container')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
@@ -174,15 +175,12 @@
             <img v-if="loadStatus.step > step.returnContainer" src="../assets/check.png" />
           </div>
           <div class="disabled-container"></div>
-        </li>
-
-     
+        </li> -->
       </ul>
     </div>
-        <ion-alert-controller></ion-alert-controller>
+    <ion-alert-controller></ion-alert-controller>
   </div>
 </template>
-
 <script>
 
 import { mapGetters } from "vuex";
@@ -355,8 +353,15 @@ export default {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
     this.setting = JSON.parse(localStorage.getItem('setting'))
     let loadsMounted = null
+    let loadId = null
+    if (this.loadStore) loadId = this.loadStore.loadMapId
+    else {
+      let loadStore = JSON.parse(localStorage.getItem('currentLoad'))
+      this.$store.commit('setloadStore', loadStore)
+      loadId = loadStore.loadMapId
+    }
     try{
-      this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore?.loadMapId);
+      this.load = await this.$services.loadsServices.getLoadDetails(loadId);
       this.load.firstOrdenInfo = this.loadStore?.Orders[0]
       this.$store.commit("setloadStore", this.load);
 
@@ -364,7 +369,7 @@ export default {
       if (this.loadStore) {
          loadsMounted = {...this.loadStore}
       } else {
-        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges'))
+        loadsMounted = JSON.parse(localStorage.getItem('currentLoad'))
       }
       this.load = loadsMounted
       this.$store.commit("setloadStore", loadsMounted);
@@ -394,6 +399,8 @@ export default {
   methods: {
     async changeRoute(val) {
       localStorage.setItem('DeliveryCharges', JSON.stringify(this.load));
+      this.$store.commit('setloadStore', this.load )
+
       try{
         if(val == "Approved" &&  this.profile?.container == this.load?.loadType){
           this.isMountProduct = true
@@ -499,7 +506,7 @@ export default {
 }
 .progressbar li .item {
   height: 40px;
-  width: 73%;
+  width: 90%;
   margin-right: 10px;
   padding: 10px 0px;
   box-shadow: none;
@@ -537,7 +544,9 @@ img {
   float: left;
   width: 100%;
   position: relative;
+  max-width: 800px;
   text-align: center;
+  margin: 0px auto;
 }
 
 ul {
@@ -551,7 +560,7 @@ ul {
 .progressbar li .info {
   content: "";
   width: 30px;
-  height: 30px;
+  height: 28px;
   border: 2px solid #a1a1a1;;
   display: block;
   margin: 0 5px;
@@ -566,11 +575,11 @@ ul {
 .progressbar li:after {
   content: "";
   position: absolute;
-  width: 1%;
+  width: 3px;
   height: 55px;
   background: #979797;
   top: -53px;
-  left: 5%;
+  left: 17px;
   z-index: -1;
 }
 .progressbar li:first-child:after {
@@ -639,5 +648,17 @@ ul {
 .disabled-event{
   pointer-events: none;
 }
+ li{
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+  }
+.item-status{
+  width: 100%;
+  display: flex;
+}
 
+@media (min-width: 600px){
+ 
+}
 </style>

@@ -41,8 +41,8 @@ class GpsProviderServices {
       let body = {
         "action":"startGps"
       }
-      
       axios.put(`http://flai.hopto.org/gps-provider/gps/${gpsId}`, body, hdr).then((res) => {
+          console.log(res, 'res')
           localStorage.setItem(`gpsProvider ${res?.data?.loadMapId}`, JSON.stringify(true))
       }).catch(error => {
           console.log(error.message)

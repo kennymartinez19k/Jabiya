@@ -1,7 +1,9 @@
 <template>
   <nav class="uk-navbar uk-navbar-container" :class="{'is-ios': isMobile}">
     <div class="uk-navbar-left">
+     
       <div style="width: 50px">
+
         <div v-if="!iconType" class="status-server">
           <img v-if="server" src="../assets/online-icon.png" alt="">
           <img v-if="!server" src="../assets/offline-icon.png" alt="">
@@ -15,7 +17,7 @@
       </div>
       
       <h6
-        class="uk-margin-remove"
+        class="uk-margin-remove web-font-medium"
         style="font-size: 14px; margin: 0px 10px !important"
       >
         {{ titlePage }}
@@ -27,6 +29,7 @@
         @click="openMenu"
         href="#"
       ></a>
+      <a class="hide-menu-icon" href="#"></a>
       <div id="offcanvas-overlay" uk-offcanvas="overlay: true">
         <div class="uk-offcanvas-bar uk-padding-remove">
           <img
@@ -44,24 +47,24 @@
               srcset=""
             />
             <h4
-              class="uk-text-light uk-margin-remove"
+              class=" uk-margin-remove web-font-small"
               style="margin: 5px 0px !important"
             >
               {{ userData?.firstName }} {{ userData?.lastName }}
             </h4>
-            <h6 class="uk-tect-light uk-margin-remove">
+            <h6 class="uk-tecgin-remove web-font-small">
               {{ userData?.email }}
             </h6>
           </div>
           <ul class="uk-list nav-opt uk-list-divider">
-            <li @click="setCurrentPage('home')">Tus Viajes</li>
-            <!-- <li v-if="userData?.userType == userType?.provider" @click="setCurrentPage('manage-orders')">Manejo de Orden</li> -->
-            <li @click="setCurrentPage('settings')">Configuración</li>
-            <li @click="setCurrentPage('version')">Version app</li>
-            <li @click="setCurrentPage('sign-in')">Cerrar sesión</li>
+            <li class="opt web-font-small" @click="setCurrentPage('home')">Tus Viajes</li>
+            <li class="opt web-font-small" @click="setCurrentPage('settings')">Configuración</li>
+            <li class="opt web-font-small" @click="setCurrentPage('version')">Version app</li>
+            <li class="opt web-font-small" @click="setCurrentPage('sign-in')">Cerrar sesión</li>
           </ul>
         </div>
       </div>
+      
     </div>
   </nav>
 </template>
@@ -108,18 +111,18 @@ export default {
     if (this.nameComponent) this.titlePage = this.nameComponent;
     else "";
 
-    const isIOS = () => {
-       const toMatch = [
-         /iPhone/i,
-         /iPad/i,
-         /iPod/i
-       ];
-       return toMatch.some((toMatchItem) => {
-         return navigator.userAgent.match(toMatchItem)
-       });
-    }
+    const isIOS = () =>  {
+        const toMatch = [
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+        ];
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem)
+        });
+      }
+      this.isMobile  = isIOS ()
 
-    this.isMobile = isIOS ();
   },
   data() {
     return {
@@ -130,7 +133,8 @@ export default {
       positionSticky: false,
       userData: null,
       serverStatus: true,
-      isMobile: false
+      isMobile: false,
+
     };
   },
   methods: {
@@ -231,7 +235,26 @@ li {
 .status-server img{
   width: 18px;
 }
+.opt{
+  cursor: pointer;
+}
+.opt:hover{
+  background: #f4f4f4
+}
+.hide-menu-icon{
+    display: none;
+}
 .is-ios {
-  padding-top: 25px;
+  padding-top: 15px;
+}
+
+@media (min-width: 900px){
+  .uk-navbar-toggle{
+    display: none;  
+  }
+  .hide-menu-icon{
+    display: block;
+    width: 50px;
+  }
 }
 </style>

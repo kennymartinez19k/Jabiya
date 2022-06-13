@@ -9,11 +9,11 @@
     >
     </ion-loading>
     <div>
-      <h4 class="uk-text-small">Procesar Facturas y Devoluciones</h4>
+      <h4 class="uk-text-small web-title-small">Procesar Facturas y Devoluciones</h4>
       <div
-        class="uk-card uk-card-default uk-card-body uk-width-1-2@m details-order"
+        class="uk-card uk-card-default uk-card-body item-info uk-width-1-2@m details-order"
       >
-        <p>
+        <p class="web-sub-title-small">
           <strong>Orden:</strong>&nbsp;<span>{{ customerDetails?.order?.name }}</span>
         </p>
         <p>
@@ -39,20 +39,18 @@
         </p>
       </div>
     </div>
-      <h4 class="uk-text-small text-returns">Procesar Devoluciones </h4>
-      <h6 class="subtitle">(de ser necesario)</h6>
-
-<div class=" table-thead uk-margin-left">
-            <h6 class="uk-text-left uk-width-1-3 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
-              <h6 class="uk-text-center uk-width-1-3 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
-              <h6 class="uk-text-left uk-width-1-4 uk-text-small" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
-        </div>
+    <h4 class="uk-text-small text-returns web-title-small">Procesar Devoluciones </h4>
+    <h6 class="subtitle">(de ser necesario)</h6>
+     
+    <div class=" table-thead uk-margin-left">
+      <h6 class="uk-text-left uk-text-small web-sub-title-small" style="width: 45%; margin-right: 10px;" :class="{'th-text': customerDetails?.order?.can_refund}">Productos Ordenados</h6>
+      <h6 class="uk-text-center uk-text-small web-sub-title-small" style="width: 45%" :class="{'th-text': customerDetails?.order?.can_refund}">Cantidad a Devolver</h6>
+      <h6 class="uk-text-left uk-text-small " style="width: 15%" :class="{'th-text': customerDetails?.order?.can_refund}"></h6>
+    </div>
     <div>
-      
       <div
         class="uk-card uk-card-default uk-card-body table-scroll"
       >
-        
         <table
           class="
             uk-table
@@ -65,15 +63,15 @@
           <tbody>
             <tr v-for="(product, i) in order_lines" :key="product">
               <td v-if="!product.isRewardLine" :class="{'td-text': customerDetails?.order?.can_refund}" class="uk-table-small">{{ product.productName }}<br><span class="uk-text-bold">Precio:&nbsp;</span><span>{{ product.currencySymbol }}{{ product.price }} </span>  <br><span class="uk-text-bold">Ordenados:&nbsp;</span><del v-if="product.productQuantityToInvoice > 0 " class="quantity-adjustment"><span>{{product.productQuantity}}</span></del> <span v-if="product.productQuantityToInvoice == 0 "><span>{{product.productQuantity}}</span></span></td>
-              <td
+             <td
               v-if="!product.isRewardLine"
               class="uk-text-center"
                 :class="{
-                  showActive: product.productQuantityToInvoice !== NewOrdersQuantyti[i],
+                  'show-active': product.productQuantityToInvoice !== NewOrdersQuantyti[i],
                   'td-text': customerDetails?.order?.can_refund
                 }"
               >
-               <span >{{ product.productQuantityToInvoice  }}</span>
+               <span >{{ product.productQuantityToInvoice  }} <span v-if="product.productQuantityToInvoice > 0 ">/ {{product.productQuantity}}</span></span>
               </td>
               <span v-if="!product.isRewardLine" class="f-span uk-margin-small">
                <font-awesome-icon
@@ -163,7 +161,7 @@
         </div>
       </div>
     </div>
-    <div class="button-position uk-flex uk-flex-between">
+    <div class="button-position uk-flex uk-flex-between btn-position">
       <div class=" btn-style">
         <button
           type="button"
@@ -237,7 +235,12 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    this.idInvoices = this.invoicesIdStore
+    if (this.invoicesIdStore) {
+      this.idInvoices = this.invoicesIdStore
+    } else {
+      this.idInvoices = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
+      
+    }
     try {
       const signIn = {
         jsonrpc: "2.0",
@@ -247,7 +250,11 @@ export default {
     } catch (error) {
       console.log(error);
     }
-
+     if (!this.orderScan?.length)  {
+        let orders = JSON.parse(localStorage.getItem("scanOrder"))
+        this.$store.commit("scanOrder", orders );
+      }
+    localStorage.removeItem("SummaryInvoice")
     await this.productsOfOrders();
     this.setOpen(false);
 
@@ -312,6 +319,10 @@ export default {
               localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.name}`,JSON.stringify(this.isChangeQuantity));
               this.$store.commit("getChageQuantityToProduct",this.isChangeQuantity);
             }
+            else if (this.order_lines.every(x => x.productQuantityToInvoice === 0 )) {
+              localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
+              this.$store.commit("getChageQuantityToProduct",{exception: false, changeQuantity: null, order_num: null,});
+            }
             return x.productQuantityToInvoice;
           }
         );
@@ -321,9 +332,7 @@ export default {
           this.btnInvoices = false;
         }
         
-        // if (this.OrderQuantity) {
           this.setStructureInvoices(null, this.productOrder);
-        // }
 
         if (this.isChangeQuantityStore.exception) {
           this.isChangeQuantity.changeQuantity = this.isChangeQuantityStore.changeQuantity;
@@ -355,12 +364,12 @@ export default {
       const order_lines = this.order_lines.map((orderOdoo) => {
       quantityLocal.push(orderOdoo.productQuantityToInvoice);
       if (this.orderScan.find(products => products.products.find(product => product.description === orderOdoo.productName && orderOdoo.productQuantityToInvoice != 0)  )) {
-        // qty = orderOdoo.productQuantity - orderOdoo.productQuantityToInvoice
         return  {product_id: orderOdoo.productId, set_qty: orderOdoo.productQuantityToInvoice}
       }
       });
       this.isChangeQuantity.changeQuantity = quantityLocal;
       this.isChangeQuantity.exception = true;
+      this.isChangeQuantity.order_num = this.customerDetails?.order?.name;
       this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity);
       localStorage.setItem(`isChangeQuantity${this.customerDetails?.order?.name}`,JSON.stringify(this.isChangeQuantity));
 
@@ -422,7 +431,7 @@ export default {
     
     async downloadPDFRefundInvoice() {
     this.setOpen(true);
-
+      this.summary()
       let selectedInvoicesId = []
       this.customerDetails.invoices.forEach(x => {
       selectedInvoicesId.push( x.id.toString())
@@ -533,6 +542,20 @@ export default {
       setRound (val) {
         return val.toFixed(2)
     },
+
+    summary () {
+       let selectedInvoicesId = []
+      this.customerDetails.invoices.forEach(x => {
+      selectedInvoicesId.push( x.id.toString())
+      })
+      let summaryInvoice = {
+        orderId :  this.customerDetails.order.name,
+        summarys: selectedInvoicesId
+      }
+      this.$store.commit("getSummaryInvoice",summaryInvoice);
+      localStorage.setItem(`SummaryInvoice`,JSON.stringify(summaryInvoice));
+      this.$router.push({ name: "summary" }).catch(() => {});
+    }
   },
 };
 </script>
@@ -581,7 +604,7 @@ th {
 .show-save {
   margin: 20px 0px 5px;
 }
-.showActive {
+.show-active {
   background-color: rgb(208 241 217);
 }
 
@@ -613,8 +636,11 @@ th {
   display: flex;
   flex-direction: column;
 }
+h4 {
+  margin-bottom: 0px !important;
+}
 .text-returns {
-  margin-bottom: 0px;
+  margin-bottom: 0px !important;
 }
 .subtitle {
   font-size: 12px; 
@@ -630,6 +656,7 @@ th {
   font-size: 10px;
 }
 .details-order{
+
  padding: 0px 8px 8px;
 
 }
@@ -640,5 +667,36 @@ th {
 .quantity-adjustment{
   background-color: #efb5b5;;
   padding: 5px;
+}
+@media (min-width: 550px){
+  .details-order{
+    max-width: 550px;
+  }
+  .btn-position {
+    justify-content: center !important;
+  }
+  .table-scroll {
+    height: 320px !important;
+  }
+    .web-title-small {
+      font-size: 20px;
+    }
+    .web-sub-title-small {
+      font-size: 18px;
+    }
+   
+  p strong {
+      font-size: 16px !important;
+  }
+  span {
+      font-size: 16px !important;
+  }
+  td {
+      font-size: 16px !important;
+  }
+  .btn-style{
+    font-size: 13px;
+    margin: 0px 35px;
+  }
 }
 </style>

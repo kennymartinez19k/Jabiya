@@ -12,7 +12,7 @@
     :class="{ backg: resultScan }"
   >
     <div class="stiky">
-      <p style="font-size: 13px !important; font-weight: 500">
+      <p class="web-font-small title-load-number" style="font-size: 13px; font-weight: 500">
         {{ load?.loadNumber }}
       </p>
       <div
@@ -26,7 +26,7 @@
         "
         style="align-items: center"
       >
-        <div class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span
             ><span>&nbsp; {{ shipperName(load) }}</span>
@@ -52,7 +52,7 @@
           v-if="statusOrders == 'approved'"
           style="width: 100%; font-size: 30px"
         >
-          <h6 style="font-size: 14px" class="uk-margin-remove">
+          <h6 style="font-size: 14px" class="uk-margin-remove web-font-small">
             {{ completedOrder }}
           </h6>
         </div>
@@ -60,7 +60,7 @@
           v-if="statusOrders == 'reject'"
           style="width: 100%; font-size: 30px"
         >
-          <h6 class="uk-margin-remove">
+          <h6 class="uk-margin-remove web-font-small">
             {{ messageReject }}
             <font-awesome-icon icon="ban" style="color: #be1515" />
           </h6>
@@ -79,21 +79,21 @@
           <div class="uk-text-left info-user uk-flex uk-flex-wrap">
             <div class="btn uk-flex">
               <div class="uk-flex uk-flex-column uk-text-left">
-                <p class="uk-width-1-1">
+                <p class="uk-width-1-1 web-font-small">
                   <span class="font-weight-medium">Cliente: </span>
                   <span>{{ order.client_name }}</span>
                 </p>
               </div>
             </div>
-            <p style="margin-right: 10px !important">
+            <p style="margin-right: 10px !important" class="web-font-small">
               <span class="font-weight-medium">Orden: </span
               ><span>{{ order.order_num }}</span>
             </p>
-            <p class="">
+            <p class="web-font-small">
               <span class="font-weight-medium">Cajas / Pallets: </span
               >{{ order?.no_of_boxes }}<span></span>
             </p>
-            <p class="uk-width-1-1">
+            <p class="uk-width-1-1 web-font-small">
               <span class="font-weight-medium">Destino: </span>
               <span>
                 <font-awesome-icon icon="map-marker-alt" />
@@ -101,11 +101,10 @@
               >
             </p>
           </div>
-          <div class="uk-width-1-2">
+          <div >
             <div
               @click="setMap(order)"
-              class="uk-flex-column"
-              style="align-items: center; display: inline-flex"
+              class="uk-flex-column web-font-small route-view"
             >
               <img src="../assets/map.png" class="img-scan" alt="" />
               <span>Ver Ruta</span>
@@ -118,17 +117,7 @@
           style="padding: 5px 0px 10px !important"
         >
           <div class="uk-flex uk-flex-wrap img-scroll">
-            <span
-              class="position-imagin"
-            >
-              <img class="img-result" src="../assets/invoice.png" alt="Red dot" />
-              <img
-                src="../assets/rejected.png"
-                class="icon-close"
-                @click="deleteInvoices()"
-                alt=""
-              />
-            </span>
+             <invoice-summary></invoice-summary>
           </div>
         </div>
         <div
@@ -188,7 +177,7 @@
       "
       style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
     >
-      <label class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px"
+      <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px"
         >Tomar las Fotos</label
       >
       <label class="img-div" style="position: relative">
@@ -206,14 +195,14 @@
         <div @click="snapshot()" class="take-photo"></div>
       </div>
       <div class="button-div">
-        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
+        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
           Aceptar
         </button>
       </div>
     </div>
     <div v-if="cameraOn"></div>
   
-    <div v-if="!cameraOn && !image" style="height: 300px">
+    <div v-if="!cameraOn && !image" class="cont uk-card uk-card-default uk-card-hover">
       <div class="action">
         <ul v-if="!showProduct" class="box-orden">
           <li
@@ -229,7 +218,12 @@
           </li>
         </ul>
         <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
-          <strong class="exception uk-padding-small">
+          <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
+            <p class="title-form-scan">Introduzca su qrCode para entregar</p>
+            <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
+            <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
+         </div>
+          <strong class="exception web-font-small">
             Hubo Alguna Excepción? No
             <div class="onoffswitch">
               <input
@@ -264,7 +258,7 @@
             <div class="">
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
             <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
-            <input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" >
+            <input type="text" id="quantity" v-model="quantityForScan"  class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
@@ -292,8 +286,7 @@ import Camera from "simple-vue-camera";
 import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import { alertController } from '@ionic/vue';
 import { profile } from "../types";
-
-
+import InvoiceSummary from "../components/InvoiceSummary.vue"
 
 
 App.addListener("appRestoredResult", (data) => {
@@ -313,6 +306,7 @@ export default {
     timeline,
     IonLoading,
     Camera,
+    InvoiceSummary
 
   },
   mixins: [Mixins],
@@ -350,7 +344,10 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
-      orderInformation: null
+      orderInformation: null,
+      webQrCode: '',
+      isMobile: false,
+      showScanInput: false
     };
   },
   setup() {
@@ -371,7 +368,6 @@ export default {
       "isChangeQuantityStore",
       "invoicesIdStore",
       "invoiceDownloadStore"
-
     ]),
 
     completedOrder: function () {
@@ -383,10 +379,41 @@ export default {
     },
   },
   beforeMount(){
-    this.load = { ...this.loadStore };
-    this.orders = [...this.orderScan];
+     if (this.loadStore?.loadMapId) {
+      this.load = {...this.loadStore};
+      } else {
+        this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+        this.$store.commit("setloadStore", this.load);
+      }
+
+      if (this.orderScan?.length) {
+        this.orders = [...this.orderScan];
+      } else {
+        this.orders = JSON.parse(localStorage.getItem("scanOrder"))
+        this.$store.commit("scanOrder", this.orders );
+      }
   },
   async mounted() {
+    try{
+      const detectMob = () =>  {
+        const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i
+        ];
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem)
+        });
+      }
+      this.isMobile = detectMob() && screen.width < 900
+
+    }catch(error){
+      alert(error.message)
+    }
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
       this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
@@ -394,9 +421,14 @@ export default {
     this.$store.commit('setImagiElement',[])
 
     this.camera = this.$refs.Camera;
-
-    this.firstStructureLoad = this.structureToScan.firstStructure;
-    this.secondStructureLoad = this.structureToScan.secondStructure;
+    let structure = null
+    if (this.structureToScan?.firstStructure) {
+      structure = this.structureToScan
+    } else {
+     structure = JSON.parse(localStorage.getItem("setStructureToScan"))
+    }
+    this.firstStructureLoad = structure.firstStructure;
+    this.secondStructureLoad = structure.secondStructure;
     this.orders.map((x) => {
       if (x.totalOrdersScanned >= x.totalQuantity) {
         this.step = 1;
@@ -429,7 +461,6 @@ export default {
       secondStructure.push(data);
     });
 
-    await this.getLocation();
     this.firstStructureLoad = firstStructure;
     this.secondStructureLoad = secondStructure;
 
@@ -442,8 +473,11 @@ export default {
      if (this.isChangeQuantityStore.exception && this.isChangeQuantityStore.order_num == this.orders[0].order_num) {
         this.exception = this.isChangeQuantityStore.exception
      } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
-        this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+      this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
+       this.$store.commit("getChageQuantityToProduct", JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)));
      }
+    await this.getLocation();
+
   },
   watch: {
     digitalFirmStore: {
@@ -593,12 +627,16 @@ export default {
       this.show = value;
       if (value === "scan") {
         this.resultScan = false;
-        this.scanOrder();
+        !this.isMobile ? this.showScanInput = true : this.scanOrder()
+        
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
+        this.showScanInput = false
         this.getCam();
       } else if (value === "Singnature") {
+        this.showScanInput = false
         this.step++;
       } else if (value === "exception") {
+        this.showScanInput = false
         this.step = 2;
       }
     },
@@ -906,6 +944,7 @@ export default {
         this.checkOrder = false;
         if (this.firstStructureLoad.every((x) => x.completedScanned)) {
           this.resultScan = true;
+          this.showScanInput = false
           this.step = 1;
           localStorage.removeItem("LoadScanned");
           let quantityTotal = 0;
@@ -1124,16 +1163,18 @@ export default {
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
+  padding: 10px !important;
 }
 .container {
   display: flex;
+  position: relative;
   flex-direction: column;
 }
 .backg {
   background-color: rgb(255, 255, 255);
 }
 .result-info {
-  overflow: scroll;
+  overflow: auto;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1184,7 +1225,6 @@ li::before {
 }
 .statusCheck {
   background: rgb(255, 255, 255) !important;
-  box-shadow: 0px 0px 7px green !important;
   color: #fff !important;
 }
 .img-result {
@@ -1234,7 +1274,7 @@ p {
 }
 .uk-list{
   list-style: none;
-  overflow: scroll;
+  overflow: auto;
   height: 385px; /* verify Height */
 }
 .status-order {
@@ -1292,18 +1332,22 @@ p {
 .inProgressOrden {
   background: #fff500;
 }
+
 .cont {
-  z-index: 0;
-  padding: 15px 5px !important;
+  position: sticky;
+  bottom: 0px;
+  border-top: 1px solid #ccc;
+  padding: 15px 0px;
 }
 .action {
   position: absolute;
   bottom: 0px;
+  width: 100%;
 }
 
 .showCamera {
-  position: fixed;
-  top: 105px;
+  position: absolute;
+  top: 51px !important;
   display: flex;
   background: #000;
   width: 100%;
@@ -1338,10 +1382,9 @@ p {
 .cont-camera {
   z-index: 0px;
   display: flex;
-
   padding: 4px 0px !important;
   border: 1px solid #ccc;
-  position: fixed;
+  position: sticky;
   bottom: 0px;
   width: 100%;
 }
@@ -1397,9 +1440,6 @@ p {
   color: #fff
 }
 
-
-
-
 .modal {
   width: 500px;
   margin: 0px auto;
@@ -1444,5 +1484,34 @@ p {
   width: 77px;
   display: flex;
   margin: 0px 10px;
+}
+.route-view{
+  display: inline-flex;
+  align-items: center;
+  display: inline-flex;
+  white-space: nowrap;
+}
+.title-load-number{
+  font-size: 13px; 
+  font-weight: 500
+}
+.uk-input{
+  border: 1px solid #a6a6a6;
+}
+.title-form-scan{
+  width: 100%;
+  font-size: 16px;
+  margin-bottom: 5px !important;
+}
+@media (min-width: 600px){
+  .exception{
+  justify-content: end;
+  margin-right: 33px;
+}
+}
+@media (min-width: 1050px){
+  .showCamera{
+    top: 62px !important;
+  }
 }
 </style>

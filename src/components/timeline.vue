@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container container-medium">
     <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
       <img
         src="../assets/rejected.png"
@@ -16,8 +16,8 @@
         <div class="overlay" @click.self="isOpen = false;">
           <div class="modal">
              <div class="uk-margin ">
-                <label class="uk-text-bolder text" for="typeExp">Tipos de Excepción <span class="uk-text-danger">*</span></label>
-                <select id="typeExp" class="uk-select sub-text" v-model="causeExceptions.type">
+                <label class="uk-text-bolder text web-font-small" for="typeExp">Tipos de Excepción <span class="uk-text-danger">*</span></label>
+                <select id="typeExp" class="uk-select sub-text web-font-small" v-model="causeExceptions.type">
                   <option disabled>Elija una Excepción</option>
                   <option
                     v-for="exception in detailsException"
@@ -29,7 +29,7 @@
                 </select>
               </div>
               <div>
-                <label class="uk-text-bolder text" for="note"
+                <label class="uk-text-bolder text web-font-small" for="note"
                   >Notas <span class="uk-text-danger">*</span></label
                 >
                 <textarea
@@ -44,7 +44,7 @@
               </div>
               <p class="uk-flex uk-flex-around">
                 <button
-                  class="uk-button uk-button-default uk-modal-close cancel"
+                  class="uk-button uk-button-default uk-modal-close cancel web-font-small"
                   type="button"
                   @click="cancelResetException()"
                 >
@@ -52,7 +52,7 @@
                 </button>
                 <button
                   :disabled="showException"
-                  class="uk-button uk-button-primary uk-modal-close"
+                  class="uk-button uk-button-primary uk-modal-close web-font-small"
                   type="button"
                   @click="setException()"
                 >
@@ -67,28 +67,25 @@
     <ul class="progressbar">
        <li
        v-if="loadStore.allowOrderChangesAtDelivery"
-        class="stepOne"
         :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num }"
         @click="getShow('invoices')"
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/invoice.png" alt="" srcset="" /></div>
 
-        <span>Facturas</span>
+        <span class="web-font-small">Facturas</span>
       </li>
       <li
        v-if="loadStore.scanningRequired"
-        class="stepOne"
-        :class="{ active: resultScan !== false }"
+        :class="{ active: resultScan }"
         @click="getShow('scan')"
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
 
-        <span>Escanear</span>
+        <span class="web-font-small">Escanear</span>
       </li>
       <li
-        class="stepTwo"
         :class="{
           'uk-disabled': step == 0,
           active: imagiElement.length > 0,
@@ -97,7 +94,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/cam.png" alt="" srcset="" /></div>
-        <span>Camara</span>
+        <span class="web-font-small">Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
       <li
@@ -113,7 +110,7 @@
       >
         <div class="info active"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
-        <span>Excepción</span>
+        <span class="web-font-small">Excepción</span>
         <div
           :class="{
             disabled: step == 0,
@@ -121,7 +118,6 @@
         ></div>
       </li>
       <li
-        class="stepThree"
         :class="{
           'uk-disabled': !activeSignature,
           active: singnature !== null
@@ -130,8 +126,7 @@
       >
         <div class="info"><font-awesome-icon icon="check" /></div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
-        <span>Firma </span>
-        <!-- <div :class="{ disabled: (exception || emptyImage ) && (!causeExceptions.type || emptyImage) && (showInvoice || ) }"></div> -->
+        <span class="web-font-small">Firma</span>
         <div :class="{ disabled:!activeSignature}"></div>
       </li>
     </ul>
@@ -140,7 +135,6 @@
 
 <script>
 import SignatureAction from "../components/actions/SignatureAction.vue";
-// import UIkit from "uikit";
 import { mapGetters } from 'vuex';
 export default {
   components: {
@@ -417,11 +411,14 @@ export default {
 <style scoped>
 .container {
   width: 100%;
+  max-width: 700px;
+  margin: 0px auto;
+  position: relative;
 }
 .disabled {
   position: absolute;
-  width: 90px;
-  height: 70px;
+  width: 100%;
+  height: 70%;
   top: 40px;
   left: 10px;
   background: #ffffffc4;
@@ -434,6 +431,7 @@ img {
   width: 30%;
   position: relative;
   text-align: center;
+  max-width: 105px;
 }
 
 ul {
@@ -487,9 +485,9 @@ ul {
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  top: 60px;
+  top: -6px;
   width: 25px;
-  right: 10px;
+  right: -2px;
   border-radius: 10px;
   margin: 2px 0px 0px -23px;
 }
@@ -545,5 +543,16 @@ ul {
 .sub-text {
   font-size: 15px;
   font-weight: 300;
+}
+@media (min-width: 900px){
+  .constainer{
+    width: 100%;
+  }
+}
+
+@media (min-width: 900px){
+  .progressbar li {
+    max-width: 140px !important;
+  }
 }
 </style>

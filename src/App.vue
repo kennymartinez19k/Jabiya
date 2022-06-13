@@ -1,6 +1,11 @@
 <template>
-  <app-header v-if="!currentPage" :nameComponent="currentName"/>
-  <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+  <div class="uk-flex app">
+    <side-bar v-if="!hideSideBar" class="sideBar"/>
+    <div class="container-app">
+      <app-header class="header" v-if="!currentPage" :nameComponent="currentName"/>
+      <router-view class="view-header" @setNameHeader="setName($event)" :class="{view: !currentPage}"/>
+    </div>
+  </div>
 </template>
 <script>
 import AppHeader from './views/AppHeader.vue'
@@ -10,11 +15,9 @@ import { Profile } from './mixins/Profile'
 import { Storage} from '@ionic/storage'
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { Geolocation } from "@capacitor/geolocation";
-
-
+import sideBar from './components/sideBar.vue'
 
 export default {
-
   data(){
     return{
       noHead: [
@@ -34,12 +37,14 @@ export default {
         latitude: 0,
         longitude: 0
       },
-      hasUbicationServer: false
+      hasUbicationServer: false,
+      hideSideBar: true
     }
   },
  
   watch:{
     $route: function(newVal){
+      this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
       if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
           this.stopScan()
       }
@@ -47,6 +52,7 @@ export default {
   },
   components:{
     AppHeader,
+    sideBar
   },
   mixins: [LocalStorage, Profile],
   computed:{
@@ -61,6 +67,7 @@ export default {
       }
       return ''
     },
+    
   },
   async mounted(){
     this.localStorageGps.create()
@@ -86,29 +93,35 @@ export default {
           this.intervalForGps = 0
             
             this.location(load).then((locationUpdate) => {
-              let location = locationUpdate;
-              // if (
-              //   Math.abs(location.latitude - this.lastLocation.latitude) >
-              //     0.00003 ||
-              //   Math.abs(location.longitude - this.lastLocation.longitude) >
-              //     0.00003
-              // ) {
-                this.lastLocation.latitude =  location?.latitude
-                this.lastLocation.longitude = location?.longitude
-                this.$services.gpsServices.updateLocation(
-                  user.id,
-                  location?.latitude,
-                  location?.longitude,
-                  load?.bay_id?._id
-                );
-              // }
+              if(location){
+                let location = {...locationUpdate};
+                if (
+                  Math.abs(location?.latitude - this.lastLocation?.latitude) >
+                    0.00003 ||
+                  Math.abs(location?.longitude - this.lastLocation?.longitude) >
+                    0.00003
+                ) {
+                    this.lastLocation.latitude =  location?.latitude
+                    this.lastLocation.longitude = location?.longitude
+                    this.$services.gpsServices.updateLocation(
+                      user.id,
+                      location?.latitude,
+                      location?.longitude,
+                      load?.bay_id?._id
+                    );
+                }
+              }
             });
           
       
         }
         if(queue.length > 0){
           let enqueueItem = remove()
+          localStorage.removeItem("queueIsEmpty")
           await this.enqueue(enqueueItem)
+        }else{
+          localStorage.removeItem('allOrderScanned')
+          localStorage.setItem("queueIsEmpty", JSON.stringify(true))
         }
         this.isServerUp = await this.localStorage.get('serverUp')
         let isConnected 
@@ -192,14 +205,24 @@ export default {
         console.log(error)
       }
     }else{
-      let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
-      return {latitude: result.lat, longitude: result.lng}
+      // let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
+      // return {latitude: result.lat, longitude: result.lng}
+      return false
     }
     }
   }
 }
 </script>
 <style>
+.app{
+  height: 100%;
+}
+.container-app{
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 #app {
   font-size: 12px;
   font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
@@ -245,9 +268,11 @@ button{
   height: 92vh !important;
 }
 .view-header{
-  height: 100%;
-  overflow-y: scroll;
-    overflow-x: hidden;
+  
+  height: 92%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 html body{
   height: 100vh;
@@ -270,8 +295,7 @@ strong{
   font-weight: 500 !important;
 }
 .cnt {
-  height: 100% !important;
-  overflow: scroll;
+  height: 92% !important;
 }
 .uk-button-transparent{
   color: #1f1f1f;
@@ -311,4 +335,29 @@ strong{
   font-size: 14px;
   color: #5c5c5c ;
 }
+.sideBar{
+  width: 20%;
+  max-width: 245px;
+  border-right: 0.5px solid #CCC;
+}
+.header{
+  height: 8%;
+}
+
+@media (min-width: 1050px){
+  .web-font-small{
+    font-size: 16px !important;
+  }
+   .web-font-medium{
+    font-size: 20px !important;
+  }
+}
+@media (max-width: 900px){
+  .sideBar{
+    display: none;
+  }
+ 
+}
+
+
 </style>

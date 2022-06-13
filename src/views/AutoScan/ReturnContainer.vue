@@ -1,6 +1,6 @@
 <template>
   <div
-    class="uk-container uk-flex uk-flex-column uk-flex-between"
+    class=" uk-flex uk-flex-column uk-flex-between"
     :class="{ backg: resultScan }"
   >
     <ion-loading
@@ -52,35 +52,35 @@
             <div class="btn uk-flex">
               <div class="uk-flex uk-flex-column uk-text-left">
                 <p class="uk-width-1-1">
-                  <span class="font-weight-medium">Cliente: </span>
+                  <span class="font-weight-medium web-font-small">Cliente: </span>
                   <span>{{ order.client_name }}</span>
                 </p>
               </div>
             </div>
             <p style="margin-right: 10px !important">
-              <span class="font-weight-medium">Orden: </span
+              <span class="font-weight-medium web-font-small">Orden: </span
               ><span>{{ order.order_num }}</span>
             </p>
             <p class="">
-              <span class="font-weight-medium">Cajas / Pallets: </span
+              <span class="font-weight-medium web-font-small">Cajas / Pallets: </span
               >{{ order?.no_of_boxes }}<span></span>
             </p>
             <p class="uk-width-1-1">
-              <span class="font-weight-medium">Destino: </span>
+              <span class="font-weight-medium web-font-small">Destino: </span>
               <span>
                 <font-awesome-icon icon="map-marker-alt" />
                 {{ order.address }}</span
               >
             </p>
           </div>
-          <div class="uk-width-1-2">
+          <div>
             <div
               @click="setMap(order)"
               class="uk-flex-column"
               style="align-items: center; display: inline-flex"
             >
               <img src="../../assets/map.png" class="img-scan" alt="" />
-              <span>Ver Ruta</span>
+              <span class="web-font-small">Ver Ruta</span>
             </div>
           </div>
         </div>
@@ -148,7 +148,7 @@
       "
       style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
     >
-      <label class="uk-width-1-1" style="margin: 0px 0px 10px; font-size: 14px"
+      <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px"
         >Tomar las Fotos</label
       >
       <label class="img-div" style="position: relative">
@@ -164,10 +164,9 @@
 
       <div class="snapshot-div">
         <div @click="snapshot()" class="take-photo"></div>
-        <!-- <input type="file" id="file-img" style="position: absolute; opacity: 0" accept="image/*" capture="filesystem"> -->
       </div>
       <div class="button-div">
-        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue">
+        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
           Aceptar
         </button>
       </div>
@@ -207,7 +206,7 @@ import Camera from "simple-vue-camera";
 
 export default {
   name: "DeliveryActions",
-  alias: "Realizar Entrega",
+  alias: "Retornar Contenedor",
 
   components: {
     timeline,
@@ -256,21 +255,32 @@ export default {
       "allLoadsStore",
     ]),
   },
+
   async mounted() {
     this.camera = this.$refs.Camera;
+    if (this.loadStore?.loadMapId) {
+     this.load = {...this.loadStore};
+    } else {
+      this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+      this.$store.commit("setloadStore", this.load);
+    }
 
     let loadsMounted = this.loadStore;
     if (this.loadStore) {
       this.$store.commit("setloadStore", loadsMounted);
     }
 
-    this.load = { ...this.loadStore };
     if (this.load?.loadType == profile?.container) {
-      this.orders = this.load?.Orders;
+      this.orders = this.load?.Orders.filter(x => x.isReturn);
     } else {
-      this.orders = this.orderScan;
+       if (this.orderScan?.length) {
+        this.orders = this.orderScan;
+      } else {
+        this.orders = JSON.parse(localStorage.getItem("scanOrder"))
+        this.$store.commit("scanOrder", this.orders );
+      }
     }
-    this.showSignaturform = this.orders.some((x) => !x.isReturn);
+    this.showSignaturform = this.orders.some((x) => x.isReturn);
 
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
@@ -521,7 +531,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .qr {
   width: 60%;
@@ -546,6 +555,9 @@ p {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+.checkbox-default:checked + .onoffswitch-label{
+  background-color: #898989 !important;
 }
 .onoffswitch-label {
   position: relative;
@@ -593,19 +605,19 @@ p {
   font-weight: 600;
 }
 .uk-container {
-  margin: 0px -16px;
+  margin: 0px -15px;
 }
 .backg {
   background-color: rgb(255, 255, 255);
 }
 .result-info {
-  overflow: scroll;
+  overflow: auto;
   padding: 0px 10px;
   height: 100vh;
 }
 .stiky {
   color: rgb(255, 255, 255) !important;
-  z-index: 2;
+  z-index: 0;
   border-top: 1px solid #313575;
   font-size: 12px !important;
   padding: 0px 10px 5px !important;
@@ -642,17 +654,16 @@ p {
 li::before {
   content: none;
 }
-
 .img-result {
   width: 98%;
   height: 80px;
-  /* margin-right: 5px; */
+  margin-top: 10px;
   border: 1px solid #000;
 }
 .img-scroll {
   width: 98%;
   padding: 10px 0px;
-  overflow-x: scroll;
+  overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
 }
@@ -671,7 +682,7 @@ li::before {
   margin-left: 5px;
 }
 .uk-card-body {
-  padding: 16px 15px;
+  padding: 8px 20px 16px;
 }
 .cont {
   position: sticky;
@@ -681,8 +692,8 @@ li::before {
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
-  right: -10px;
-  top: -10px;
+  right: -14px;
+  top: 0px;
   width: 22px;
   border-radius: 10px;
 
@@ -695,6 +706,7 @@ li::before {
 }
 .img-card {
   width: 100%;
+  padding: 0px !important;
 }
 
 .showCamera {
@@ -786,5 +798,37 @@ li::before {
   color: #999;
   border: 1px solid #e5e5e5;
   pointer-events: none;
+}
+.position-imagin {
+  position: relative;
+  width: 77px;
+  display: flex;
+  margin: 0px 10px;
+}
+
+.pad-car {
+  padding: 5px 0px 10px !important;
+
+}
+@media (min-width: 630px){
+  .uk-container {
+  margin: 0px -30px;
+}
+.exception {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 14px;
+  font-weight: 600;
+}
+}
+@media (min-width: 960px){
+  .container-item {
+  width: 100%;
+  margin: 0px auto;
+}
+ span {
+   font-size: 16px;
+ }
 }
 </style>

@@ -10,9 +10,10 @@
     </ion-loading>
     <div class="stiky">
       <p
-        style=" font-size: 13px !important; font-weight: 500"
+        class="web-font-small"
+        style=" font-size: 13px; font-weight: 500"
       >
-        {{loadStore?.loadNumber}}
+        {{loadStore?.loadNumber}} 
       </p>
       <div
         class="
@@ -25,9 +26,9 @@
         "
         style="align-items: center;"
       >
-        <div class="uk-flex uk-flex-wrap">
+        <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(loadStore) }}</span>      
+            <span class="font-weight-medium ">Shipper: </span><span>&nbsp; {{ shipperName(loadStore) }}</span>      
           </p>
           <div></div>
           <p>
@@ -36,10 +37,11 @@
         </div>
       </div>
     </div>
+    <div class="container-deliver">
        <header>
         <div uk-margin class="sub-header">
-          <div class="filter-checkbox">
-            <span class="filter-message">
+          <div class="filter-checkbox ">
+            <span class="filter-message web-font-small">
           Ver Ordenes: &nbsp; Pendientes
         </span>
         <div class="onoffswitch">
@@ -53,98 +55,99 @@
             />
             <label class="onoffswitch-label" for="myonoffswitch"></label>
         </div>
-        <span class="filter-message">
+        <span class="filter-message web-font-small">
           Todas
         </span>
       </div>
           
         </div>
       </header>
-    <div class="uk-padding-small uk-width-1-2@m" style="margin-bottom: 96px!important;">
-      <div
-        v-for="order in ordersToDisplay"
-        :key="order"
-        class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-        :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }"
-      >
-        <div v-if="order.sendingInfo || order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
-          <font-awesome-icon icon="check"/>
-        </div>
-        <div v-else-if="load.allowOrderChangesAtDelivery === true" class="order-select" >
-          <input @click="orderForScanInvoices(order)" name="radio2" type="checkbox" class="uk-checkbox" v-model="order.isSelectedDeliver" >
-        </div>
-         <div v-else class="order-select" >
-          <input @click="orderForScan(order)" v-model="order.isSelectedDeliver" type="checkbox" class="uk-checkbox" >
-        </div>
-        <div class="uk-text-left info-user ">
-          <div class="btn uk-flex">
-            <div class="uk-flex uk-flex-column uk-text-left">
-              <p
-                v-if="order.sendingInfo && order.status !== 'Delivered'"
-                class="uk-width-1-1"
-              >
-              <strong class="font-weight-medium">Enviando Informacion</strong>
-              </p>
-              <p
-                class="uk-width-1-1"
-              >
-              <span class="font-weight-medium">Cliente: </span>
-                <span>{{ order.client_name }}</span>
-              </p>
+      <div class="uk-padding-small uk-width-1-1 container-item">
+        <div
+          v-for="order in ordersToDisplay"
+          :key="order"
+          class="uk-card item-deliver uk-card-default uk-card-body uk-flex"
+          :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }"
+        >
+          <div v-if="order.sendingInfo || order.status === 'Delivered' && order.products.every(x => x.loadScanningCounter >= x.quantity)" class="order-completed">
+            <font-awesome-icon icon="check"/>
+          </div>
+          <div v-else-if="load.allowOrderChangesAtDelivery === true" class="order-select" >
+            <input @click="orderForScanInvoices(order)" name="radio2" type="checkbox" class="uk-checkbox" v-model="order.isSelectedDeliver" >
+          </div>
+          <div v-else class="order-select" >
+            <input @click="orderForScan(order)" v-model="order.isSelectedDeliver" type="checkbox" class="uk-checkbox" >
+          </div>
+          <div class="uk-text-left info-user ">
+            <div class="btn uk-flex">
+              <div class="uk-flex uk-flex-column uk-text-left">
+                <p
+                  v-if="order.sendingInfo && order.status !== 'Delivered'"
+                  class="uk-width-1-1"
+                >
+                <strong class="font-weight-medium web-font-small">Enviando Informacion</strong>
+                </p>
+                <p
+                  class="uk-width-1-1 web-font-small"
+                >
+                <span class="font-weight-medium ">Cliente: </span>
+                  <span>{{ order.client_name }}</span>
+                </p>
+              </div>
             </div>
+            <p style="margin-right: 10px !important" class="web-font-small">
+              <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
+            </p>
+            <div class="uk-flex uk-flex-wrap web-font-small">
+            <p>
+              <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
+            </p>
+            <p class="web-font-small">
+              <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span :class="{'order-delivered': order?.status === 'Delivered'}">{{order.totalOrdersScanned}}/{{order.totalQuantity}} </span>
+            </p>
+            </div>
+            <p class="uk-width-1-1 web-font-small">
+              <span class="font-weight-medium">Destino: </span> 
+              <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.address}}</span>
+            </p>
+            
           </div>
-          <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
-          </p>
-          <div class="uk-flex uk-flex-wrap">
-          <p>
-            <span class="font-weight-medium">Cajas / Pallets: </span><span>{{order?.no_of_boxes}}</span>
-          </p>
-          <p>
-            <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span :class="{'order-delivered': order?.status === 'Delivered'}">{{order.totalOrdersScanned}}/{{order.totalQuantity}} </span>
-          </p>
-          </div>
-          <p class="uk-width-1-1">
-            <span class="font-weight-medium">Destino: </span> 
-            <span> <font-awesome-icon icon="map-marker-alt" /> {{ order.address}}</span>
-          </p>
-           
-        </div>
 
-         <div style="width: 100%">
-            <ul uk-accordion class="uk-margin-remove uk-padding-remove">
-               <!-- uk-open -->
-                <li class="uk-margin-remove">
-                   <a class="uk-accordion-title " href="#"> Mostrar/Ocultar Productos</a>
-                    <div 
-                     class="uk-accordion-content uk-margin-remove uk-padding-remove">
-                     <div class="details-product">
-                      <p class="item">
-                        <span class="font-weight-medium">Producto: </span>
-                      </p>
-                      <p class="item">
-                        <span class="font-weight-medium">Codigo QR: </span>
-                      </p>
-                      <p class="item">
-                        <span class="font-weight-medium">Escaneadas: </span>
-                      </p>
-                     </div>
-                      <div v-for="item in order.products" :key="item.id" class="details-product">
-                        <p class="item">{{item?.name}}</p>
-                        <p class="item">{{item.qrCode}}</p>
-                        <p class="item">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+          <div style="width: 100%">
+              <ul uk-accordion class="uk-margin-remove uk-padding-remove">
+                <!-- uk-open -->
+                  <li class="uk-margin-remove">
+                    <a class="uk-accordion-title web-font-small" href="#"> Mostrar/Ocultar Productos</a>
+                      <div 
+                      class="uk-accordion-content uk-margin-remove uk-padding-remove">
+                      <div class="details-product">
+                        <p class="item web-font-small">
+                          <span class="font-weight-medium">Producto: </span>
+                        </p>
+                        <p class="item web-font-small">
+                          <span class="font-weight-medium">Codigo QR: </span>
+                        </p>
+                        <p class="item web-font-small">
+                          <span class="font-weight-medium">Escaneadas: </span>
+                        </p>
                       </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                        <div v-for="item in order.products" :key="item.id" class="details-product">
+                          <p class="item web-font-small">{{item?.name}}</p>
+                          <p class="item web-font-small">{{item.qrCode}}</p>
+                          <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+                        </div>
+                      </div>
+                  </li>
+              </ul>
+          </div>
 
+          
+        </div>
         
       </div>
-      
     </div>
       <div class="button-opt">
-      <button @click="screenSelection()" :disabled="!showButton" class="uk-button uk-button-primary">{{textButton}}</button>
+      <button @click="screenSelection()" :disabled="!showButton" class="uk-button uk-button-primary web-font-small">{{textButton}}</button>
     </div>
   </div>
 </template>
@@ -218,17 +221,27 @@ export default {
     this.setOpen(true)
     try{
       this.load = await this.$services.loadsServices.getLoadDetails(this.loadStore.loadMapId); 
+      this.load.firstOrdenInfo = this.loadStore?.Orders[0]
+      
     }catch(error){
+      if (this.loadStore?.loadMapId) {
       this.load = {...this.loadStore};
+      } else {
+        this.load = JSON.parse(localStorage.getItem('DeliveryCharges'));
+      }
     }
+    this.$store.commit("setloadStore", this.load)
     this.orders = this.load?.Orders
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
 
     let orderScanned = JSON.parse(localStorage.getItem('allOrderScanned'))
+    let queueIsEmpty =  JSON.parse(localStorage.getItem('queueIsEmpty'))
     if(orderScanned){
       this.orders.forEach(order => {
-        order.sendingInfo = orderScanned?.some(x => x.order_num == order.order_num)
+        queueIsEmpty 
+        ? order.sendingInfo = false
+        : order.sendingInfo = orderScanned?.some(x => x.order_num == order.order_num) 
       })
     }
 
@@ -261,6 +274,7 @@ export default {
       if (this.invoicesIdStore) {
        this.idOrderToInvoices = this.invoicesIdStore
       }
+      this.$store.commit("getInvoiceDownload",{ status: false, order: null});
   },
   methods: {
     
@@ -268,6 +282,7 @@ export default {
       this.showButton = false 
         if (this.load.allowOrderChangesAtDelivery) {
         this.$store.commit("getOrdersToInvoicesId",this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
+        localStorage.setItem("getOrdersToInvoicesId", JSON.stringify(this.idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join('')))
       }
         this.scan()
 
@@ -275,7 +290,9 @@ export default {
     async scan() {
       let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
       this.$store.commit("setStructureToScan", structure)
+      localStorage.setItem("setStructureToScan", JSON.stringify(structure))
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
+      localStorage.setItem("scanOrder", JSON.stringify(this.listOrderDetails))
       this.$store.commit("scanOrder", this.listOrderDetails );
       this.$store.commit("setOrderDetails", this.listOrderDetails );
 
@@ -510,9 +527,13 @@ li{
   transform: rotate(180deg);
 }
 .order-select{
-  width: 10%;
+  width: 5%;
   display: flex;
   padding: 8px 0px;
+  max-width: 25px;
+  min-width: 16px;
+
+  margin-right: 5px;
 }
 .details-product{
   display: flex;
@@ -527,6 +548,7 @@ li{
 .order-completed{
   color: green;
   font-size: 16px;
+  margin-right: 5px
 }
 .order-delivered{
   font-weight: 700;
@@ -555,7 +577,7 @@ header::after {
 /* SHADOW */
 header::before {
   top: 28px; /* shadow is at bottom of element, so at 48 + 16 = 64px */
-  box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 2px rgba(0,0,0,0.5);
 }
 
 /* COVER */
@@ -640,5 +662,30 @@ header >.sub-header {
 .uk-padding-small{
   padding: 0px 15px 15px;
 }
-
+.container-item{
+    margin-bottom:40px
+}
+@media (min-width: 600px){
+  .filter-checkbox{
+    justify-content: start;
+  }
+  .container-deliver{
+    width: 90%;
+    margin: 10px auto
+  }
+  .container-item{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 45px!important;
+  }
+  .item-deliver{
+    width: 100%;
+  }
+}
+@media (min-width: 900px){
+  .item-deliver{
+    width: 49%;
+  }
+}
 </style>
