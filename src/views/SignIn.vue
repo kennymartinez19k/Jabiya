@@ -57,14 +57,6 @@
         @click="changeRoute('home')" style="margin-top: 15px">
         Iniciar sesión
       </button>
-      <button
-        type="button"
-        class="uk-button uk-button-purple uk-width-1-1 uk-margin-small-bottom"
-        @click="printTest()"
-        style="margin-top: 15px"
-      >
-        Print
-      </button>
     </form>
   </div>
 
