@@ -15,7 +15,8 @@ const InvoicesStore = {
     summaryInvoice: {
       orderId :  null,
       summarys: []
-    }
+    },
+    invoiceDetails:{}
       
     },
     mutations: {
@@ -34,6 +35,10 @@ const InvoicesStore = {
       getSummaryInvoice (state, value) {
         state.summaryInvoice = value
       },
+      getInvoiceDetails (state, value) {
+        state.invoiceDetails = value
+      },
+      
         
      
     },
@@ -47,6 +52,7 @@ const InvoicesStore = {
         isSelectedInvoicesStore : state => state.isSelectedInvoices,
         invoiceDownloadStore : state => state.invoiceDownload,
         summaryInvoiceStore : state => state.summaryInvoice,
+        invoiceDetailsStore : state => state.invoiceDetails,
     }
   }
   

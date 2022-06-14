@@ -23,7 +23,7 @@
           <div></div>
           <p>
             <span style="font-weight: 500">Destino:</span>
-            <span>&nbsp; {{ loadStore?.firstOrdenInfo ? loadStore?.firstOrdenInfo?.sector : loadStore?.Orders[0]?.sector  }}</span>
+            <span>&nbsp;{{loadStore?.Orders[0]?.sector}}</span>
           </p>
         </div>
       </div>
@@ -357,13 +357,12 @@ export default {
     if (this.loadStore) loadId = this.loadStore.loadMapId
     else {
       let loadStore = JSON.parse(localStorage.getItem('currentLoad'))
-      this.$store.commit('setloadStore', loadStore)
       loadId = loadStore.loadMapId
     }
+
     try{
       this.load = await this.$services.loadsServices.getLoadDetails(loadId);
       this.load.firstOrdenInfo = this.loadStore?.Orders[0]
-      this.$store.commit("setloadStore", this.load);
 
     } catch(error){
       if (this.loadStore) {
@@ -372,16 +371,17 @@ export default {
         loadsMounted = JSON.parse(localStorage.getItem('currentLoad'))
       }
       this.load = loadsMounted
-      this.$store.commit("setloadStore", loadsMounted);
-
     }
+    this.$store.commit("setloadStore", this.load);
+    console.log(this.loadStore)
+
     this.sendingInfo = localStorage.getItem(`sendInfo${this.load.loadMapId}`)
 
-
     let allLoads = JSON.parse(localStorage.getItem('allLoads'))
+    let load = {...this.load}
     allLoads.forEach(x => {
       if(x?.loadMapId == this.load?.loadMapId){
-        Object.assign(x , this.load)
+        Object.assign(x , load)
       }
     })
     localStorage.setItem('allLoads', JSON.stringify(allLoads))
@@ -390,16 +390,16 @@ export default {
     this.deliverStorage = localStorage.getItem(`deliverLoad${this.load.loadMapId}`)
     this.uploadStorage = localStorage.getItem(`uploadStorage${this.load.loadMapId}`)
     
-    this.isReturnOrder = this.load.Orders.some(x => x.isReturn)
     this.allOrderIsReturn = this.load.Orders.every(x => x.isReturn)
     localStorage.setItem('dateCheck', this.load.dateTime.date);
 
   },
-
-  methods: {
+  
+methods: {
     async changeRoute(val) {
       localStorage.setItem('DeliveryCharges', JSON.stringify(this.load));
       this.$store.commit('setloadStore', this.load )
+      console.log(this.load)
 
       try{
         if(val == "Approved" &&  this.profile?.container == this.load?.loadType){
@@ -420,9 +420,10 @@ export default {
             
             this.load = await this.$services.loadsServices.getLoadDetails(this.load?.loadMapId);
             let allLoads = JSON.parse(localStorage.getItem('allLoads'))
+            let load = {...this.load}
             allLoads.forEach(x => {
               if(x?.loadMapId == this.load?.loadMapId){
-                Object.assign(x , this.load)
+                Object.assign(x , load)
               }
             })
             localStorage.setItem('allLoads', JSON.stringify(allLoads))

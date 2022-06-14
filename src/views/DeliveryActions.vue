@@ -40,6 +40,12 @@
       </div>
     </div>
     <div class="result-info">
+      <div v-if="showScanner">
+      <StreamBarcodeReader
+        @decode="onDecode"
+        @loaded="onLoaded"
+      ></StreamBarcodeReader>
+    </div>
       <div
         v-if="!showProduct"
         class="status-order"
@@ -151,6 +157,7 @@
       />
       <img class="result-scan" :src="image" alt="" />
     </div>
+    
     <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
       <font-awesome-icon
         v-if="cameraOn"
@@ -287,6 +294,7 @@ import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe c
 import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
+import { StreamBarcodeReader } from "vue-barcode-reader";
 
 
 App.addListener("appRestoredResult", (data) => {
@@ -306,7 +314,8 @@ export default {
     timeline,
     IonLoading,
     Camera,
-    InvoiceSummary
+    InvoiceSummary,
+    StreamBarcodeReader
 
   },
   mixins: [Mixins],
@@ -347,7 +356,9 @@ export default {
       orderInformation: null,
       webQrCode: '',
       isMobile: false,
-      showScanInput: false
+      showScanInput: false,
+      showScanner: false,
+      loadedScanner: false
     };
   },
   setup() {
@@ -809,17 +820,8 @@ export default {
       this.isOpen = false
       this.quantityForScan = null;
       this.statusOrders = "start";
-      if (await this.checkPermission()) {
-        this.showProduct = false;
-        BarcodeScanner.hideBackground();
-        const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
-        if (result.hasContent) {
-          BarcodeScanner.hideBackground();
-          this.uploadProducts(result.content);
-        } else {
-          this.statusOrders = "start";
-        }
-      }
+      this.showProduct = false;
+      this.showScanner = true
     },
 
     async sendQuantityForScan(){
@@ -1060,9 +1062,10 @@ export default {
     },
 
     async stopCamera() {
+      this.showScanner = false
       this.cameraOn = false;
       this.image = null;
-      await this.camera?.stop();
+      // await this.camera?.stop();
     },
     async pickImage(event) {
       let blob = event.target.files[0];
@@ -1086,6 +1089,19 @@ export default {
         console.log(error);
       }
 
+    },
+
+   onDecode(text) {
+      if (this.loadedScanner){
+        this.showScanner = false
+        this.uploadProducts(text);
+        this.loadedScanner = false
+      }
+    },
+    async onLoaded() {
+      let delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(1000);
+      this.loadedScanner = true
     },
   },
 };
@@ -1352,7 +1368,7 @@ p {
   background: #000;
   width: 100%;
   flex-direction: column;
-  height: 420px;
+  height: 400px;
   justify-content: center;
   align-items: center;
 }
@@ -1511,7 +1527,7 @@ p {
 }
 @media (min-width: 1050px){
   .showCamera{
-    top: 62px !important;
+    background: #02cf13;
   }
 }
 </style>
