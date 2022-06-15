@@ -1,0 +1,58 @@
+PODS:
+  - Capacitor (3.3.1):
+    - CapacitorCordova
+  - CapacitorApp (1.1.0):
+    - Capacitor
+  - CapacitorBrowser (1.0.7):
+    - Capacitor
+  - CapacitorCamera (1.2.1):
+    - Capacitor
+  - CapacitorCommunityBarcodeScanner (2.0.1):
+    - Capacitor
+  - CapacitorCordova (3.3.1)
+  - CapacitorGeolocation (1.1.3):
+    - Capacitor
+  - CordovaPlugins (3.3.1):
+    - CapacitorCordova
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
+  - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
+  - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
+  - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
+  - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
+  CapacitorBrowser:
+    :path: "../../node_modules/@capacitor/browser"
+  CapacitorCamera:
+    :path: "../../node_modules/@capacitor/camera"
+  CapacitorCommunityBarcodeScanner:
+    :path: "../../node_modules/@capacitor-community/barcode-scanner"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorGeolocation:
+    :path: "../../node_modules/@capacitor/geolocation"
+  CordovaPlugins:
+    :path: "../capacitor-cordova-ios-plugins"
+
+SPEC CHECKSUMS:
+  Capacitor: 03a45821c64411719140ba9fb39a895d026e597c
+  CapacitorApp: 051d026b29c31e31af1206b777907ebe03710412
+  CapacitorBrowser: b197fc864168e6e0d82e51431185eae6e891a8b9
+  CapacitorCamera: a3ed4d644bee206eeedc5a7038dd6670c0e83545
+  CapacitorCommunityBarcodeScanner: ffcdb785f636992602dbaf731aba927b730a89e4
+  CapacitorCordova: 6c6127c6ee31a7a808705bf4ac17fb5f80ed63f6
+  CapacitorGeolocation: 5b9aeb31c777380e0c010a987523e08fb1c7ca48
+  CordovaPlugins: ed70e13008bfa233195a059cc04eb9b56c66f97d
+
+PODFILE CHECKSUM: a7fd71635553f79c8d1abdcb3458be92dcf76d91
+
+COCOAPODS: 1.11.3

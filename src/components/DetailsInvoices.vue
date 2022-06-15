@@ -310,11 +310,10 @@ export default {
   async beforeMount() {
     this.setOpen(true);
     if (this.invoicesIdStore) {
-      this.idInvoices = this.invoicesIdStore;
+      this.idInvoices = this.invoicesIdStore
     } else {
-      this.idInvoices = JSON.parse(
-        localStorage.getItem("getOrdersToInvoicesId")
-      );
+      this.idInvoices = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
+      
     }
     try {
       const signIn = {
@@ -414,6 +413,10 @@ export default {
                 changeQuantity: null,
                 order_num: null,
               });
+            }
+            else if (this.order_lines.every(x => x.productQuantityToInvoice === 0 )) {
+              localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
+              this.$store.commit("getChageQuantityToProduct",{exception: false, changeQuantity: null, order_num: null,});
             }
             return x.productQuantityToInvoice;
           }
@@ -795,6 +798,20 @@ export default {
     testingPrint() {
       PrintV.blPrint({ value: this.dataPrinter });
     },
+
+    summary () {
+       let selectedInvoicesId = []
+      this.customerDetails.invoices.forEach(x => {
+      selectedInvoicesId.push( x.id.toString())
+      })
+      let summaryInvoice = {
+        orderId :  this.customerDetails.order.name,
+        summarys: selectedInvoicesId
+      }
+      this.$store.commit("getSummaryInvoice",summaryInvoice);
+      localStorage.setItem(`SummaryInvoice`,JSON.stringify(summaryInvoice));
+      this.$router.push({ name: "summary" }).catch(() => {});
+    }
   },
 };
 </script>
