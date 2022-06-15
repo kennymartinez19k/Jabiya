@@ -1,7 +1,7 @@
 PODS:
-  - Capacitor (3.3.1):
+  - Capacitor (3.5.1):
     - CapacitorCordova
-  - CapacitorApp (1.1.0):
+  - CapacitorApp (1.1.1):
     - Capacitor
   - CapacitorBrowser (1.0.7):
     - Capacitor
@@ -9,11 +9,13 @@ PODS:
     - Capacitor
   - CapacitorCommunityBarcodeScanner (2.0.1):
     - Capacitor
-  - CapacitorCordova (3.3.1)
+  - CapacitorCordova (3.5.1)
   - CapacitorGeolocation (1.1.3):
     - Capacitor
   - CordovaPlugins (3.3.1):
     - CapacitorCordova
+  - Printv (0.0.12):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -24,6 +26,7 @@ DEPENDENCIES:
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+  - Printv (from `../../node_modules/printv`)
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -42,17 +45,20 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/geolocation"
   CordovaPlugins:
     :path: "../capacitor-cordova-ios-plugins"
+  Printv:
+    :path: "../../node_modules/printv"
 
 SPEC CHECKSUMS:
-  Capacitor: 03a45821c64411719140ba9fb39a895d026e597c
-  CapacitorApp: 051d026b29c31e31af1206b777907ebe03710412
+  Capacitor: a13a4a985bf4e3eac033c74848c77ff29dfa13ca
+  CapacitorApp: 62db023a834f87bd8e1a1520ef58ab3bb9737fd9
   CapacitorBrowser: b197fc864168e6e0d82e51431185eae6e891a8b9
   CapacitorCamera: a3ed4d644bee206eeedc5a7038dd6670c0e83545
   CapacitorCommunityBarcodeScanner: ffcdb785f636992602dbaf731aba927b730a89e4
-  CapacitorCordova: 6c6127c6ee31a7a808705bf4ac17fb5f80ed63f6
+  CapacitorCordova: 9305ba1d3c73fa7271f5b2c3ca8a92ea76b56c74
   CapacitorGeolocation: 5b9aeb31c777380e0c010a987523e08fb1c7ca48
   CordovaPlugins: ed70e13008bfa233195a059cc04eb9b56c66f97d
+  Printv: f329045fb28cb9e733cbb7f72ab3a7a9bb2a945d
 
-PODFILE CHECKSUM: a7fd71635553f79c8d1abdcb3458be92dcf76d91
+PODFILE CHECKSUM: a57d16d9d455b186ac01daaa64886ed2872cd2f8
 
 COCOAPODS: 1.11.3

@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d237942"],{fc5d:function(e,n,o){"use strict";o.r(n),o.d(n,"PrintVWeb",(function(){return c}));var s=o("1547");class c extends s["a"]{testingMessage(){return console.log("Imprimiendo desde la web"),!0}blPrint(e){return console.log(e),console.log(e.value),!0}async echo(e){return console.log("ECHO",e),e}}}}]);
-//# sourceMappingURL=chunk-2d237942.a670aab4.js.map

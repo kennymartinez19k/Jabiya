@@ -241,7 +241,7 @@ import { IonLoading } from "@ionic/vue";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
 import { Browser } from "@capacitor/browser";
-import { PrintV } from "print-emy-bluetooth";
+import { PrintV } from "printv";
 export default {
   alias: "Detalles",
   components: {
