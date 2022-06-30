@@ -18,7 +18,7 @@ export default {
     alias: 'Version',
     data() {
         return {
-            version: '1.0.8',
+            version: '1.0.9',
             date: 'Feb 20, 2022',
             authors: 'Wilson Soto, Kenny Martinez, Miguel Gonzalez',
             copyright: `Flai Logistics, 2022 `

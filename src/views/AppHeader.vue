@@ -1,5 +1,5 @@
 <template>
-  <nav class="uk-navbar uk-navbar-container" :class="{'is-ios': isMobile}">
+  <nav class="uk-navbar uk-navbar-container" :class="{'is-ios': !isMobile}">
     <div class="uk-navbar-left">
      
       <div style="width: 50px">
@@ -113,9 +113,10 @@ export default {
 
     const isIOS = () =>  {
         const toMatch = [
-            /iPhone/i,
-            /iPad/i,
-            /iPod/i,
+            /Android/i,
+            /webOS/i,
+            /BlackBerry/i,
+            /Windows Phone/i,
         ];
         return toMatch.some((toMatchItem) => {
             return navigator.userAgent.match(toMatchItem)
@@ -245,7 +246,7 @@ li {
     display: none;
 }
 .is-ios {
-  padding-top: 25px;
+  padding-top: 15px;
 }
 
 @media (min-width: 900px){
