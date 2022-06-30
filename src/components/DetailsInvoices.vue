@@ -46,7 +46,7 @@
         :class="{ 'th-text': customerDetails?.order?.can_refund }">
         Productos Ordenados
       </h6>
-      <h6 class="uk-text-left uk-text-small web-sub-title-small"
+      <h6 class="uk-text-left uk-text-small web-sub-title-small order"
         :class="{ 'th-text': customerDetails?.order?.can_refund }">
         Ordenados
       </h6>
@@ -770,12 +770,6 @@ export default {
 
 <style scoped>
 
-
-
-
-
-
-
 p {
   margin: 5px 0;
 }
@@ -884,6 +878,10 @@ h4 {
   background-color: #efb5b5;
   padding: 5px;
 }
+.order {
+  display: flex;
+  align-items: center;
+}
 @media (min-width: 550px) {
   .details-order {
     max-width: 550px;
@@ -913,6 +911,19 @@ h4 {
   .btn-style {
     font-size: 13px;
     margin: 0px 35px;
+  }
+}
+@media (min-width: 767px) {
+  .order {
+    margin-left: 42px;
+  }
+  .f-span {
+    align-items: center;
+  }
+}
+@media (min-width: 1439px) {
+  .order {
+    padding-left: 52px;
   }
 }
 </style>

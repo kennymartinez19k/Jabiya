@@ -162,7 +162,7 @@
           </div>
 
           <div v-if="detailsLoads.allowOrderChangesAtDelivery && detailsLoads.loadingStatus.text == 'Delivered'">
-            <button type="button" class="uk-button uk-button-primary" @click="changeRoute('report')">Reporte de Conciliación</button>
+            <button type="button" class="uk-button uk-button-primary" @click="changeRoute('reconciliation')">Reporte de Conciliación</button>
           </div>
 
           <div v-if="detailsLoads?.loadType == profile?.b2b" class="item-order-deliver">
