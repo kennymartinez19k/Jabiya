@@ -346,7 +346,7 @@ export default {
           }
         }else{
           // Server gps
-          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load)
           this.location.latitude = result?.lat
           this.location.longitude = result?.lng
         }

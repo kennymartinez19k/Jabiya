@@ -265,7 +265,7 @@
             <div class="">
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
             <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
-            <input type="text" id="quantity" v-model="quantityForScan"  class="uk-input" >
+            <input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" >
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
@@ -635,6 +635,7 @@ export default {
 
   methods: {
     getShow(value) {
+      this.showScanner = false
       this.show = value;
       if (value === "scan") {
         this.resultScan = false;
@@ -911,7 +912,7 @@ export default {
           }
         }else{
           // Server gps
-          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load)
           this.location.latitude = result?.lat
           this.location.longitude = result?.lng
 
@@ -942,7 +943,7 @@ export default {
       setTimeout(async () => {
         this.statusOrders = "start";
         this.showProduct = true;
-
+        this.showScanner = false
         this.checkOrder = false;
         if (this.firstStructureLoad.every((x) => x.completedScanned)) {
           this.resultScan = true;
