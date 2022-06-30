@@ -146,6 +146,8 @@ export default {
             try{
               let res = await this.$services.requestServices.request(queueItem)
               if(res){
+
+
                 this.dequeue()
               }
               await this.localStorage.set('serverUp' , JSON.stringify(true))
@@ -155,6 +157,10 @@ export default {
               if(error.message != 'Network Error'){
                 this.$store.commit('changeRequestStatus', true)
                 this.dequeue()
+                if(queue.length == 0){
+                  localStorage.setItem('failSendInfo', JSON.stringify(true))
+                }
+
               }
               await this.localStorage.set('serverUp' , JSON.stringify(false))
               this.$store.commit('setServer', false)
