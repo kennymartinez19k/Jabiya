@@ -235,13 +235,43 @@ export default {
     this.load.firstOrdenInfo = this.load?.Orders[0]
     this.orders = this.load?.Orders
 
-    let orderScanned = JSON.parse(localStorage.getItem('allOrderScanned'))
-    let queueIsEmpty =  JSON.parse(localStorage.getItem('queueIsEmpty'))
-    if(orderScanned){
-      this.orders.forEach(order => {
-        queueIsEmpty 
-        ? order.sendingInfo = false
-        : order.sendingInfo = orderScanned?.some(x => x.order_num == order.order_num) 
+
+    if(localStorage.getItem('sendInfoOrders')){
+
+      let sendingInfoOrders = JSON.parse(localStorage.getItem('sendInfoOrders'))
+
+      let failSendInfo
+      
+      JSON.parse(localStorage.getItem('failSendInfo')) ?
+      failSendInfo = JSON.parse(localStorage.getItem('failSendInfo'))
+      : false
+
+      console.log(sendingInfoOrders, 'sendin')
+
+      this.orders?.forEach(order => {
+          order.sendingInfo = sendingInfoOrders?.some(x => x == order.order_num) 
+          
+          if((order?.status == 'Delivered' && order?.sendingInfo) || failSendInfo){
+              order.sendingInfo = false
+
+              let orders = []
+              if(localStorage.getItem('sendInfoOrders')){
+                orders = JSON.parse(localStorage.getItem('sendInfoOrders'))
+              }
+
+              let orderForDelete = orders?.findIndex(x => x == order?.order_num)
+
+              if(orderForDelete > -1){
+                orders.splice(orderForDelete, 1)
+              }
+
+              localStorage.setItem('sendInfoOrders', JSON.stringify(orders))
+
+              localStorage.removeItem('failSendInfo')
+
+          }
+
+          
       })
     }
 

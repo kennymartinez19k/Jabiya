@@ -497,6 +497,24 @@ export default {
           this.firm = newVal;
           this.setOpen(true);
           await this.postImages();
+          console.log(this.orders)
+          if (this.orders?.length) {
+            let data = []
+              if(localStorage.getItem('sendInfoOrders')){
+                data = JSON.parse(localStorage.getItem('sendInfoOrders'))
+              }
+
+            for (let i = 0; i < this.orders.length; i++) {
+              const order = this.orders[i];
+              console.log('hey', order.order_num)
+
+              let isInSending = data.some(x => x == order.order_num)
+              if(!isInSending) data.push(order.order_num)
+            }
+
+            localStorage.setItem('sendInfoOrders', JSON.stringify(data))
+          }
+
 
           let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
           let orderFinished = ordersMissing?.filter(orderNum => this.firstStructureLoad.some(structure => structure.order_num == orderNum))
@@ -527,21 +545,13 @@ export default {
               );
             });
 
-            let allOrderScanned = JSON.parse(
-              localStorage.getItem("allOrderScanned")
-            );
+            let allOrderScanned = JSON.parse(localStorage.getItem("allOrderScanned"));
 
             if (!allOrderScanned) {
-              localStorage.setItem(
-                "allOrderScanned",
-                JSON.stringify(this.orders)
-              );
+              localStorage.setItem("allOrderScanned",JSON.stringify(this.orders));
             } else {
               allOrderScanned = [...allOrderScanned, ...this.orders];
-              localStorage.setItem(
-                "allOrderScanned",
-                JSON.stringify(allOrderScanned)
-              );
+              localStorage.setItem("allOrderScanned",JSON.stringify(allOrderScanned));
             }
 
             if (ordersMissing.length == 0) {
@@ -807,6 +817,7 @@ export default {
           else{
               this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
               this.secondStructureLoad[index_second].loadScanningCounter += quantityForScan
+              console.log(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode, 'desde actions')
               await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
   
               }     
