@@ -29,7 +29,7 @@ class LoadsScanServices {
       return result.data
     }
 
-    async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
+  async scanProduct(orderId, boxId, loadCounter, productId, qrCode) {
         const params = {
           "actionName": "loadBox",
           "params": {

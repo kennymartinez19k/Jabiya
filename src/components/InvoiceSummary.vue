@@ -4,7 +4,7 @@
             @didDismiss="setOpen(false)">
         </ion-loading>
         <ul uk-accordion>
-            <li>
+            <!-- <li>
                 <a class="uk-accordion-title web-font-small " href="#">Resumen De Factura</a>
                 <div class="uk-accordion-content">
                     <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
@@ -36,7 +36,7 @@
                                 {{ summary?.total }}</span></h6>
                     </div>
                 </div>
-            </li>
+            </li> -->
 
             <li>
                 <a class="uk-accordion-title web-font-small " href="#">Detalles de la Factura de la Orden&nbsp;<b> {{ invoiceDetails?.invoice_origin }}</b></a>

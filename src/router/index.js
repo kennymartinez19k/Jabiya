@@ -22,7 +22,7 @@ import ManageOrders from '../views/Orders/ManageOrders.vue'
 import ListOrders from '../views/Orders/ListOrders.vue'
 import InvoiceSummary from "../components/InvoiceSummary.vue";
 import about from '../views/About.vue'
-
+import CargoReport from '../components/CargoReport.vue'
 
 const routes = [
   {
@@ -142,6 +142,11 @@ const routes = [
     path: "/invoice-summary",
     name: "summary",
     component: InvoiceSummary,
+  },
+  {
+    path: "/cargo-report",
+    name: "report",
+    component: CargoReport,
   },
  
 ];

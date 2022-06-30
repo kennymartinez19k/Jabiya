@@ -193,7 +193,7 @@
         />
       </div>
           <div v-if="!cameraOn && !image && !showSignaturform" class="cont-exception uk-card uk-card-default uk-card-hover uk-card-body">
-            <strong class="exception uk-padding-small web-font-small">
+            <strong class="exception uk-padding-small web-font-small" :class="{ 'exception-position': singnaturePosition }">
               Hubo Alguna Excepción? No 
               <div class="onoffswitch">
                 <input
@@ -329,8 +329,13 @@ export default {
 
   async mounted() {
     if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
-        let idOrderToInvoices = this.orders[0]?.order_num
-        this.$store.commit("getOrdersToInvoicesId", idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
+      let idOrderToInvoices = this.orders[0]?.order_num
+
+     let odooIds = {
+        orderId: idOrderToInvoices.split('').filter((x, i) => x > 0 || i > 2).join(''),
+        loadsId: this.load.loadMapId
+      }
+      this.$store.commit("getOrdersToInvoicesId", odooIds)
     }
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
@@ -733,7 +738,7 @@ export default {
        async confirmAndFinalizeCreationOfInvoices () {
       // este es la confirmacion debo ponerlo cuando firme todo
         try {
-         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
+         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore.orderId}/post`,{ withCredentials: true });
       } catch (error) {
         console.log(error);
       }
@@ -744,6 +749,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .qr {
   width: 60%;
 }
@@ -1041,9 +1048,19 @@ li::before {
 .backgroundBlack{
   background: #000;
 }
+.exception-position {
+  position: absolute;
+  top: 235px;
+  left: 68.4px;
+}
 @media (min-width: 600px){
   .uk-container {
   margin: 0px -30px;
+}
+.exception-position {
+  position: absolute;
+  top: 233px;
+  right: 0px;
 }
 .exception {
   display: flex;

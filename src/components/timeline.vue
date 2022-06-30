@@ -1,130 +1,99 @@
 <template>
   <div class="container container-medium">
-    <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
-      <img
-        src="../assets/rejected.png"
-        class="icon-close"
-        @click="closeSingnature()"
-      />
-      <signature-action
-        @digitalSignature="singnature = $event"
-      ></signature-action>
+    <div v-if="showSingnature === 'Singnature'" class="uk-padding-small" :class="{ 'singnature-position': exception }">
+      <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()" />
+      <signature-action @digitalSignature="singnature = $event"></signature-action>
     </div>
 
     <transition name="modal">
       <div v-if="isOpen">
         <div class="overlay" @click.self="isOpen = false;">
           <div class="modal">
-             <div class="uk-margin ">
-                <label class="uk-text-bolder text web-font-small" for="typeExp">Tipos de Excepción <span class="uk-text-danger">*</span></label>
-                <select id="typeExp" class="uk-select sub-text web-font-small" v-model="causeExceptions.type">
-                  <option disabled>Elija una Excepción</option>
-                  <option
-                    v-for="exception in detailsException"
-                    :key="exception"
-                    :value="exception"
-                  >
+            <div class="uk-margin ">
+              <label class="uk-text-bolder text web-font-small" for="typeExp">Tipos de Excepción <span
+                  class="uk-text-danger">*</span></label>
+              <select id="typeExp" class="uk-select sub-text web-font-small" v-model="causeExceptions.type">
+                <option disabled>Elija una Excepción</option>
+                <option v-for="exception in detailsException" :key="exception" :value="exception">
                   {{exception}}
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label class="uk-text-bolder text web-font-small" for="note"
-                  >Notas <span class="uk-text-danger">*</span></label
-                >
-                <textarea
-                  id="note"
-                  class="uk-textarea sub-text"
-                  rows="3"
-                  placeholder="Notas:"
-                  v-model="causeExceptions.note"
-                  required
-                >
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="uk-text-bolder text web-font-small" for="note">Notas <span
+                  class="uk-text-danger">*</span></label>
+              <textarea id="note" class="uk-textarea sub-text" rows="3" placeholder="Notas:"
+                v-model="causeExceptions.note" required>
                 </textarea>
-              </div>
-              <p class="uk-flex uk-flex-around">
-                <button
-                  class="uk-button uk-button-default uk-modal-close cancel web-font-small"
-                  type="button"
-                  @click="cancelResetException()"
-                >
-                  Cancelar
-                </button>
-                <button
-                  :disabled="showException"
-                  class="uk-button uk-button-primary uk-modal-close web-font-small"
-                  type="button"
-                  @click="setException()"
-                >
-                  Guardar
-                </button>
-              </p>
+            </div>
+            <p class="uk-flex uk-flex-around">
+              <button class="uk-button uk-button-default uk-modal-close cancel web-font-small" type="button"
+                @click="cancelResetException()">
+                Cancelar
+              </button>
+              <button :disabled="showException" class="uk-button uk-button-primary uk-modal-close web-font-small"
+                type="button" @click="setException()">
+                Guardar
+              </button>
+            </p>
 
           </div>
         </div>
       </div>
     </transition>
     <ul class="progressbar">
-       <li
-       v-if="loadStore.allowOrderChangesAtDelivery"
+      <li v-if="loadStore.allowOrderChangesAtDelivery"
         :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num }"
-        @click="getShow('invoices')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+        @click="getShow('invoices')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/invoice.png" alt="" srcset="" /></div>
 
         <span class="web-font-small">Facturas</span>
       </li>
-      <li
-       v-if="loadStore.scanningRequired"
-        :class="{ active: resultScan }"
-        @click="getShow('scan')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li v-if="loadStore.scanningRequired" :class="{ active: resultScan }" @click="getShow('scan')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
 
         <span class="web-font-small">Escanear</span>
       </li>
-      <li
-        :class="{
-          'uk-disabled': step == 0,
-          active: imagiElement.length > 0,
-        }"
-        @click="getShow('camera')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li :class="{
+        'uk-disabled': step == 0,
+        active: imagiElement.length > 0,
+      }" @click="getShow('camera')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/cam.png" alt="" srcset="" /></div>
         <span class="web-font-small">Camara</span>
         <div :class="{ disabled: step < 1 }"></div>
       </li>
-      <li
-        v-if="exception"
-        :class="{
-          'uk-disabled': step == 0,
-          active:
-            causeExceptions.note !== null &&
-            causeExceptions.type !== null &&
-            showException === false,
-        }"
-        @click="getShow('exception')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li v-if="exception" :class="{
+        'uk-disabled': step == 0,
+        active:
+          causeExceptions.note !== null &&
+          causeExceptions.type !== null &&
+          showException === false,
+      }" @click="getShow('exception')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
         <span class="web-font-small">Excepción</span>
-        <div
-          :class="{
-            disabled: step == 0,
-          }"
-        ></div>
+        <div :class="{
+          disabled: step == 0,
+        }"></div>
       </li>
-      <li
-        :class="{
-          'uk-disabled': !activeSignature,
-          active: singnature !== null
-        }"
-        @click="getShow('Singnature')"
-      >
-        <div class="info"><font-awesome-icon icon="check" /></div>
+      <li :class="{
+        'uk-disabled': !activeSignature,
+        active: singnature !== null
+      }" @click="getShow('Singnature')">
+        <div class="info">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span class="web-font-small">Firma</span>
         <div :class="{ disabled:!activeSignature}"></div>
@@ -283,18 +252,6 @@ export default {
       },
       deep: true,
     },
-    // causeExceptions: {
-    //   handler: function (newVal) {
-    //     if (
-    //       newVal.note !== null &&
-    //       newVal.note.length > 10 &&
-    //       newVal.type !== null
-    //     ) {
-    //       this.showException = false;
-    //     }
-    //   },
-    //   deep: true,
-    // },
      'causeExceptions.type': function (newVal, oldVal) {
         if (
           newVal !== oldVal && this.causeExceptions?.note?.length > 10
@@ -409,6 +366,7 @@ export default {
 </script>
 
 <style scoped>
+
 .container {
   width: 100%;
   max-width: 700px;
@@ -487,7 +445,7 @@ ul {
   position: absolute;
   top: -6px;
   width: 25px;
-  right: -2px;
+  right: 5px;
   border-radius: 10px;
   margin: 2px 0px 0px -23px;
 }
@@ -543,6 +501,10 @@ ul {
 .sub-text {
   font-size: 15px;
   font-weight: 300;
+}
+.singnature-position {
+  padding: 15px 15px 60px;
+  
 }
 @media (min-width: 900px){
   .constainer{
