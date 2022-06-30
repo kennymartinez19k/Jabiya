@@ -350,6 +350,7 @@ export default {
                 scanOneByOne: false,
                 orderNum: order?.order_num,
               }
+              console.log(this.infoForScan)
             }
             else {
               await this.setMessageConfirmation(order?._id, productInfo?._id,  productInfo?.loadScanningCounter, productInfo?.product, productInfo?.qrCode, productInfo?.quantity, true, order?.order_num)
@@ -395,11 +396,12 @@ export default {
             this.secondStructureLoad[index_second].loadScanningCounter += productMissing
             this.firstStructureLoad[index_first].loadScanningCounter += productMissing
 
+
             await this.$services.loadsScanServices.scanProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
             await this.distributeProductScan(LoadDistribute, qrCode , orderNum)
           }
           else{
-              this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
+            this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
               this.secondStructureLoad[index_second].loadScanningCounter += quantityForScan
               await this.$services.loadsScanServices.scanProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
 

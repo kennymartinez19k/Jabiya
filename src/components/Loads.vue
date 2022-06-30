@@ -219,6 +219,7 @@ export default {
     },
     isQueueEmpty: function(newVal){
       if(newVal){
+        console.log('load')
         this.loadsToDisplay?.forEach(load => {
            localStorage.removeItem(`sendInfo${load.loadMapId}`);
         })
@@ -341,9 +342,9 @@ export default {
         const load = this.loadsToDisplay[i];
         if(load?.loadingStatus?.text === "Delivered"){
           await this.IsDelivered(load)
-        }
-        if(this.isQueueEmpty){
-           localStorage.removeItem(`sendInfo${load?.loadMapId}`);
+          if(this.isQueueEmpty){
+            localStorage.removeItem(`sendInfo${load?.loadMapId}`);
+          }
         }
       }
       console.log(this.loadsToDisplay)

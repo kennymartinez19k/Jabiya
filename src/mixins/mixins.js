@@ -86,7 +86,7 @@ export const Mixins = {
         localStorage.removeItem(`gps ${load.loadMapId}`);
       }else{
         localStorage.removeItem(`gps ${load.loadMapId}`);
-        await services.gpsProviderServices.stopGps(load.Vehicles[0].gpsId)
+        await services.gpsProviderServices.stopGps(load)
       }
       
       if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
@@ -109,7 +109,7 @@ export const Mixins = {
       if(load?.Vehicles[0]?.gpsProvider == 'Flai Mobile App' || !load?.Vehicles[0]?.gpsProvider){
         console.log('flai')
       }else{
-        await services.gpsProviderServices.startGps(load?.Vehicles[0]?.gpsId)
+        await services.gpsProviderServices.startGps(load)
       }
       localStorage.setItem(`startRoute${load.loadMapId}`, JSON.stringify(true));
     },
@@ -152,6 +152,7 @@ export const Mixins = {
       if (val?.loadingStatus?.text == "Dispatched")  return "Listo para Entregar";
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") {
+        console.log('mixin 1')
         localStorage.removeItem(`sendInfo${val.loadMapId}`)
         return "Viaje Entregado";
       } 
@@ -204,7 +205,7 @@ export const Mixins = {
       if(this.load.Vehicles[0].gpsProvider == 'Flai Mobile App' || !this.load?.Vehicles[0]?.gpsProvider){
         localStorage.removeItem(`gps ${this.load.loadMapId}`);
       }else if(statusGpsProvider){
-        await services.gpsProviderServices.stopGps(this.load.Vehicles[0].gpsId)
+        await services.gpsProviderServices.stopGps(this.load)
         localStorage.removeItem(`gps ${this.load.loadMapId}`);
 
       }

@@ -544,6 +544,7 @@ export default {
 
   methods: {
     getShow(value) {
+      this.showScanner = false
       this.show = value;
       if (value === "scan") {
         this.resultScan = false;
@@ -823,7 +824,7 @@ export default {
           }
         }else{
           // Server gps
-          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load)
           this.location.latitude = result?.lat
           this.location.longitude = result?.lng
 
@@ -854,7 +855,7 @@ export default {
       setTimeout(async () => {
         this.statusOrders = "start";
         this.showProduct = true;
-
+        this.showScanner = false
         this.checkOrder = false;
         if (this.firstStructureLoad.every((x) => x.completedScanned)) {
           this.resultScan = true;
