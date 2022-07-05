@@ -20,6 +20,9 @@
   "url":{
     "production": "https://production.flai.com.do/orchestrator",
     "preprod": "https://preprod.flai.com.do/orchestrator"
+  },
+  "host":{
+    "odoo":"https://jabiyaerp.flai.com.do"
   }
 }
 

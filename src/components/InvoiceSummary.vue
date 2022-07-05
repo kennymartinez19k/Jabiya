@@ -39,7 +39,8 @@
             </li> -->
 
             <li>
-                <a class="uk-accordion-title web-font-small " href="#">Detalles de la Factura de la Orden&nbsp;<b> {{ invoiceDetails?.invoice_origin }}</b></a>
+                <a class="uk-accordion-title web-font-small " href="#">Detalles de la Entrega de la Orden&nbsp;<b> {{
+                invoiceDetails?.invoice_origin }}</b></a>
                 <div class="uk-accordion-content">
                     <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.invoice_partner_display_name}} </p>
                     <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.partner_address}} </p>
@@ -49,30 +50,32 @@
                     <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
                         <thead>
                             <tr>
-                                <th class="web-font-small">Descripción</th>
-                                <th class="web-font-small">Cantidad</th>
-                                <th class="web-font-small">Unitario</th>
-                                <th class="web-font-small">Importe</th>
+                                <th class="web-font-small">Productos</th>
+                                <th class="web-font-small">Ordenados</th>
+                                <th class="web-font-small">Entregados</th>
+                                <th class="web-font-small">A Devolver</th>
                             </tr>
                         </thead>
                         <tbody v-for="(detail, index) in invoiceDetails?.products" :key="detail">
-                            <tr :id="index" :class="{ 'refund-invoice': detail.moveType == 'out_refund' }">
-                                <td class="web-font-small">{{ detail.description }} <br><span
-                                        v-if="detail.moveType == 'out_refund'">Reembolso</span></td>
-                                <td class="web-font-small">{{ detail.qty }}</td>
-                                <td class="web-font-small">{{ detail.price_unit }}</td>
-                                <td class="web-font-small">{{ detail.price_subtotal}}</td>
+                            <tr :id="index" :class="{ 'refund-invoice': detail?.moveType == 'out_refund' }">
+                                <td class="web-font-small">{{ detail?.description }}<br /> <span>{{ summary?.currency }}
+                                        {{ detail?.price_subtotal.toFixed(2) }} </span>
+                                    <br><span v-if="detail?.moveType == 'out_refund'">Reembolso</span>
+                                </td>
+                                <td class="web-font-small">{{ products[index]?.quantity }}</td>
+                                <td class="web-font-small">{{ detail?.qty }}</td>
+                                <td class="web-font-small">{{ products[index]?.quantity - detail?.qty }}</td>
                             </tr>
 
                         </tbody>
                     </table>
                     <div class="uk-text-right uk-margin-top">
                         <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
-                                invoiceDetails?.subtotal }}</span></h6>
+                        ConstructorNumber(invoiceDetails,'subtotal') }}</span></h6>
                         <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
-                                invoiceDetails?.amount_tax }}</span></h6>
+                        invoiceDetails?.amount_tax.toFixed(2) }}</span></h6>
                         <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
-                                {{ invoiceDetails?.amount_total }}</span></h6>
+                                {{ ConstructorNumber(invoiceDetails,'amount_total') }}</span></h6>
                     </div>
                 </div>
             </li>
@@ -87,13 +90,14 @@ import axios from "axios";
 import { mapGetters } from 'vuex';
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
-
+import { hostEnum } from '../types'
 export default {
     alias: "Resumen de Facturas",
     name: 'Summary',
     components: {
         IonLoading,
     },
+
     props: {
     timeout: { type: Number, default: 15000 },
   },
@@ -101,7 +105,8 @@ export default {
         return {
             summary: null,
             generalInformation: null,
-            invoiceDetails: null
+            invoiceDetails: {},
+            products: null
         }
     },
 
@@ -112,38 +117,80 @@ export default {
       return { isOpenRef, setOpen };
     },
 
-    async mounted() {
+    async beforeMount() {
+        
+        let idInvoices = null
         if (this.summaryInvoiceStore) {
             this.generalInformation = this.summaryInvoiceStore 
-            this.invoiceDetails = this.invoiceDetailsStore
-        } else {
+            idInvoices = this.invoiceDetailsStore
+        } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`)).orderId) {
            this.generalInformation = JSON.parse( localStorage.getItem(`SummaryInvoice`))
-            this.invoiceDetails = JSON.parse(localStorage.getItem(`invoiceDetails`))
+            idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
         }
-        await this.getSummary ()
+        
+        let orders = null
+        if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
+            orders = JSON.parse(localStorage.getItem("scanOrder"));
+            this.$store.commit("scanOrder", orders);
+        } else {
+            orders = this.orderScan
+        }
+        orders.forEach(order => {
+            this.products = order.products.map(x => x)
+        })
+        await this.getSummary()
+        await this.odooOrderDetails(idInvoices)
+       
     },
     computed: {
-        ...mapGetters["summaryInvoiceStore", "invoiceDetailsStore"]
+        ...mapGetters["summaryInvoiceStore", "invoiceDetailsStore", "orderScan"]
     },
     methods: {
        async getSummary () {
             this.setOpen(true);
             let result = null 
             try {
-                 result =  await axios.post(`https://jabiyaerp.flai.com.do/api/invoice/resume/report/`, {
+                 result =  await axios.post(`${hostEnum.odoo}/api/invoice/resume/report/`, {
                     params: {
                         invoice_ids: this.generalInformation.summarys
                     },
                     },
                     { withCredentials: true }
                 );
+                this.summary = result.data.result.data
             } catch (error) {
                 console.log(error)
             }
-           this.summary = result.data.result.data
            this.setOpen(false);
 
         },
+        async odooOrderDetails(id) {
+            try {
+                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/report`, { withCredentials: true });
+                this.invoiceDetails = result.data.result.data;
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        ConstructorNumber(value, type) {
+            let number = null
+            console.log(value, 'wwqqqqqqqqqqqqqqqqqqqwww')
+            console.log(type, 'ssssssssssss')
+            if (type === 'amount_total' && value?.amount_total && value !== {}) {
+                // alert(1)
+                number = value?.amount_total
+                // return number ? separatorNumber(number) : null
+            } else if (type === 'subtotal' && value?.subtotal) {
+                number = value?.subtotal
+                // alert(2)
+                // return number ? separatorNumber(number) : null
+            }
+        },
+        separatorNumber(numb) {
+            let str = numb.toFixed(2).toString().split(".");
+            str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return str.join(".");
+        }
       
     },
 }
@@ -155,18 +202,17 @@ export default {
 }
 
 th {
-    font-size: 12px;
-    padding: 16px 4px;
-    text-align: center;
-    font-weight: 500;
+    font-size: 10.5px;
+    padding: 16px 3px;
+    /* text-align: center; */
+    font-weight: 600;
     color: black;
 }
 
 td {
-    font-size: 12px;
-    padding: 16px 4px;
-    text-align: center;
-    font-weight: 500;
+    font-size: 11px;
+    padding: 16px 3px;
+    width: 25%
 }
 
 h6 {
@@ -209,5 +255,8 @@ a {
 }
 .opertion {
     border-top: 2px solid #ccc;
+}
+.uk-table-hover tbody tr:hover {
+    background-color: #efefef;
 }
 </style>>

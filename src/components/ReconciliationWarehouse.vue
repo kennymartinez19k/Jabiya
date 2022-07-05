@@ -5,7 +5,7 @@
         </ion-loading> -->
     <ul>
       <li>
-        <h6 class="uk-text-left uk-margin-left">Totales Para Conciliación:</h6>
+        <h2 class="uk-text-left uk-text-center">Totales Para Conciliación</h2>
         <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
           <thead>
             <tr>
@@ -18,62 +18,61 @@
           <tbody>
             <tr v-for="(details) in totalGeneral" :key="details">
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small ">{{
-              details?.product_name}}</td>
+                details?.product_name}}</td>
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small">{{
-              details?.quantity }}</td>
+                details?.quantity }}</td>
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small">{{
-              details?.delivered }}</td>
+                details?.delivered }}</td>
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small uk-text-bold">{{
-              details?.quantity - details?.delivered }}</td>
+                details?.quantity - details?.delivered }}</td>
             </tr>
           </tbody>
         </table>
         <div v-for=" (data, i) in reconciliation" :key="data" v-show="i < 1">
-          <h6 class="uk-margin-remove uk-flex uk-flex-around"><span>Total $ a Entregar:</span> <span>{{
-          data.total }}</span></h6>
+          <h6 class="uk-margin-remove uk-flex uk-flex-around"><span>Total $ a Entregar en Almacén:</span> <span>RD$ {{
+              data.total.toFixed(2) }}</span></h6>
         </div>
         <!-- </div> -->
       </li>
-      <li>
-        <!-- <a class="uk-accordion-title web-font-small " href="#">blabla</a> -->
-        <!-- <div class="uk-accordion-content"> -->
-        <table class="uk-table uk-table-striped uk-table-divider uk-table-hover uk-margin-top">
-          <thead>
-            <tr>
-              <th class="web-font-small">Orden</th>
-              <th class="web-font-small">Productos</th>
-              <th class="web-font-small">Ordenados</th>
-              <th class="web-font-small">Entregados</th>
-            </tr>
-          </thead>
-          <tbody v-for="(info, index) in reconciliation" :key="info">
-            <tr v-for="prod in info?.products" :key="prod">
-              <td class="web-font-small">{{ info?.order_name }}</td>
-              <td class="web-font-small ">{{ prod?.product_name }}</td>
-              <td class="web-font-small">{{ prod?.quantity }}</td>
-              <td class="web-font-small">{{ prod?.delivered }}</td>
-            </tr>
-            <tr v-if="index < reconciliation.length -1">
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- </div> -->
-      </li>
-
-
     </ul>
+    <!-- <hr> -->
+    <ul uk-accordion class="uk-margin-large-top">
+      <li>
+        <a class="uk-accordion-title" href="#" @click="changeText()">{{ textAccordion }}</a>
+        <div class="uk-accordion-content">
+          <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
+            <thead>
+              <tr>
+                <th class="web-font-small">Orden</th>
+                <th class="web-font-small">Productos</th>
+                <th class="web-font-small">Ordenados</th>
+                <th class="web-font-small">Entregados</th>
+              </tr>
+            </thead>
+            <tbody v-for="(info, index) in reconciliation" :key="info">
+              <tr v-for="prod in info?.products" :key="prod">
+                <td class="web-font-small">{{ info?.order_name }}</td>
+                <td class="web-font-small ">{{ prod?.product_name }}</td>
+                <td class="web-font-small">{{ prod?.quantity }}</td>
+                <td class="web-font-small">{{ prod?.delivered }}</td>
+              </tr>
+              <tr v-if="index < reconciliation.length -1">
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
 
-
-  </div>
+        </div>
+      </li>
+    </ul>
+      </div>
 </template>  
 
 <script>
 import { mapGetters } from "vuex";
 import axios from "axios";
 import { Profile } from "../mixins/Profile";
-
+import { hostEnum } from '../types'
 
 export default {
   alias: "Reporte de Conciliación",
@@ -83,31 +82,7 @@ export default {
       loads: null,
       status: null,
       totalGeneral: [],
-      reconciliation17: [
-        {
-          order_name: 'SO98568',
-          products: [
-            { product_name: 'arroz', quantity: 5, delivered: 4 },
-            { product_name: 'vinagre', quantity: 4, delivered: 4 },
-            { product_name: 'compota', quantity: 3, delivered: 3 },
-            { product_name: 'Aceite', quantity: 6, delivered: 6 }
-          ],
-
-          total: 'RD$ 2,560.23'
-        },
-        {
-          order_name: 'SO97452',
-          products: [
-            { product_name: 'arroz', quantity: 7, delivered: 4 },
-            { product_name: 'vinagre', quantity: 3, delivered: 1 },
-            { product_name: 'compota', quantity: 3, delivered: 3 },
-            { product_name: 'Aceite', quantity: 6, delivered: 3 }
-          ],
-
-          total: 'RD$ 2,760.23'
-        }
-
-      ]
+      textAccordion: 'Ver Detalles por Orden'
     }
   },
   mixins: [Profile],
@@ -131,7 +106,7 @@ export default {
         params: { login: "jabillaodoo@gmail.com", password: "admin" },
       };
       await axios.post(
-        "https://jabiyaerp.flai.com.do/api/exo/auth/sign_in",
+        `${hostEnum.odoo}/api/exo/auth/sign_in`,
         signIn,
         { withCredentials: true }
       );
@@ -146,7 +121,7 @@ export default {
   methods: {
     async getReconciliation(id) {
       try {
-        const result = await axios.get(`https://jabiyaerp.flai.com.do/api/order/${id}/reconciliation`, { withCredentials: true });
+        const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation`, { withCredentials: true });
         console.log(result.data.result.data, 'wwwwwwwwwwwwwwwwwwwwwwww')
         this.reconciliation = result.data.result.data
       } catch (error) {
@@ -170,8 +145,13 @@ export default {
         }
       })
       console.log(this.totalGeneral, 'totalGeneral')
-
-
+    },
+    changeText() {
+      if (this.textAccordion !== 'Ver Detalles por Orden') {
+        this.textAccordion = 'Ver Detalles por Orden'
+      } else {
+        this.textAccordion = 'Ocultar Detalles por Orden'
+      }
     }
   }
 }
@@ -203,4 +183,33 @@ ul {
   list-style-type: none;
   padding: 0px !important;
 }
+.uk-table-hover tbody tr:hover {
+  background-color: #efefef;
+}
+.uk-accordion-title {
+  display: flex;
+  font-size: 12px;
+  color: #3880ff;
+}
+.uk-accordion-title::before {
+  content: "";
+  background-image: url('../assets/down.png');
+  background-size: 14px;
+  background-repeat: no-repeat;
+  margin-right: 7px;
+  background-position: 50% 50%;
+  --main-bg-color: true
+}
+
+.uk-open>.uk-accordion-title::before {
+  transform: rotate(180deg);
+  --main-bg-color: false
+}
+/* hr {
+  height: 2px;
+  background-color: black;
+  box-shadow: 2px 4px 4px black;
+  width: 96%;
+  margin: 6px;
+} */
 </style>

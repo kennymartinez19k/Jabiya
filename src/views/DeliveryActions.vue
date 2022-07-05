@@ -48,18 +48,18 @@
       </div>
       <ul v-if="showProduct" class="uk-list uk-list-divider">
         <div v-for="order in orders" :key="order" class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-          :class="{ ordenCompleted: order.completed }">
+          :class="{ ordenCompleted: order?.completed }">
           <div class="uk-text-left info-user uk-flex uk-flex-wrap">
             <div class="btn uk-flex">
               <div class="uk-flex uk-flex-column uk-text-left">
                 <p class="uk-width-1-1 web-font-small">
                   <span class="font-weight-medium">Cliente: </span>
-                  <span>{{ order.client_name }}</span>
+                  <span>{{ order?.client_name }}</span>
                 </p>
               </div>
             </div>
             <p style="margin-right: 10px !important" class="web-font-small">
-              <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
+              <span class="font-weight-medium">Orden: </span><span>{{ order?.order_num }}</span>
             </p>
             <p class="web-font-small">
               <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.no_of_boxes }}<span></span>
@@ -68,7 +68,7 @@
               <span class="font-weight-medium">Destino: </span>
               <span>
                 <font-awesome-icon icon="map-marker-alt" />
-                {{ order.address }}
+                {{ order?.address }}
               </span>
             </p>
           </div>
@@ -79,7 +79,7 @@
             </div>
           </div>
         </div>
-        <div v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+        <div v-if="invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num"
           class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 0px 10px !important">
           <div class="uk-flex uk-flex-wrap img-scroll">
             <invoice-summary></invoice-summary>
@@ -135,8 +135,8 @@
       <div class="action">
         <ul v-if="!showProduct" class="box-orden">
           <li v-for="product in firstStructureLoad" :key="product" :class="{
-            completedOrden: product.completedScanned,
-            inProgressOrden: product.scanProgress,
+            completedOrden: product?.completedScanned,
+            inProgressOrden: product?.scanProgress,
           }" style="">
             &nbsp;
           </li>
@@ -152,8 +152,8 @@
             Hubo Alguna Excepción? No
             <div class="onoffswitch">
               <input type="checkbox" v-model="exception" name="onoffswitch"
-                :class="{'checkbox-default':isChangeQuantityStore.exception}" class="onoffswitch-checkbox"
-                id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore.exception === true" />
+                :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
+                id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
               <label class="onoffswitch-label" for="myonoffswitch"></label>
             </div>
             Si
@@ -169,7 +169,7 @@
           <div class="modal">
             <div class="">
               <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
-              <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes.totalOfOrders -
+              <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes?.totalOfOrders -
                 totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
               <form action="" autocomplete="off"> <input type="number" id="quantity" v-model="quantityForScan" class="uk-input"></form>
                 <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
@@ -198,7 +198,6 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { App } from "@capacitor/app";
 import Camera from "simple-vue-camera";
-import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
@@ -478,7 +477,6 @@ export default {
           }
           if (this.load.allowOrderChangesAtDelivery) {
             localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
-            this.confirmAndFinalizeCreationOfInvoices()
           }
 
           this.setOpen(false);
@@ -1005,16 +1003,6 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
-    },
-
-    async confirmAndFinalizeCreationOfInvoices () {
-      // este es la confirmacion debo ponerlo cuando escane todo
-        try {
-          await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore.orderId}/post`,{ withCredentials: true });
-      } catch (error) {
-        console.log(error);
-      }
-
     },
 
    onDecode(text) {

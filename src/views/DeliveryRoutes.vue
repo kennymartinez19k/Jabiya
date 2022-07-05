@@ -117,7 +117,7 @@
               <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                 <!-- uk-open -->
                   <li class="uk-margin-remove">
-                    <a class="uk-accordion-title web-font-small" href="#"> Mostrar/Ocultar Productos</a>
+                    <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{ textAccordionProduct }}</a>
                       <div 
                       class="uk-accordion-content uk-margin-remove uk-padding-remove">
                       <div class="details-product">
@@ -185,7 +185,8 @@ export default {
       timeout: 10000,
       idOrderToInvoices: null,
       ordersToDisplay: [],
-      filterOrders: false
+      filterOrders: false,
+      textAccordionProduct: 'Mostrar Productos'
 
     };
   },
@@ -400,6 +401,14 @@ export default {
       }
       console.log(this.ordersToDisplay,'22222222222222222')
 
+    },
+
+    changeText() {
+      if (this.textAccordionProduct !== 'Mostrar Productos') {
+        this.textAccordionProduct = 'Mostrar Productos'
+      } else {
+        this.textAccordionProduct = 'Ocultar Productos'
+      }
     }
 
   },

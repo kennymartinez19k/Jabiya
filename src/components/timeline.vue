@@ -203,8 +203,20 @@ export default {
   },
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
-    this.order = this.orderScan
+
+    if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
+      this.order = JSON.parse(localStorage.getItem("scanOrder"));
+      this.$store.commit("scanOrder", this.order);
+    } else {
+      this.order = this.orderScan
+    }
+
     this.orderInformation = await this.loadStore.Orders.find(x => x.order_num)
+
+    if (!this.invoiceDownloadStore?.status && this.loadStore.allowOrderChangesAtDelivery) {
+      let invoicesDwl = JSON.parse(localStorage.getItem(`getInvoiceDownload${this.orderInformation.order_num}`))
+      this.$store.commit("getInvoiceDownload", invoicesDwl);
+    }
   },
 
   watch: {

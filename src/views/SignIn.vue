@@ -219,11 +219,6 @@ export default {
       // this.$store.commit('resetData')
     },
 
-    OpenPdf(){
-        Browser.open({ url: 'https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=270,271'});
-    }
-    
-    
   },
  
 };

@@ -86,7 +86,7 @@
             </div>
           </div>
           <div
-            v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+            v-if="invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num"
             class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
           >
             <div class="uk-flex uk-flex-wrap img-scroll-8 summary-scroll">
@@ -200,11 +200,11 @@
                   type="checkbox"
                   v-model="exception"
                   name="onoffswitch"
-                  :class="{'checkbox-default':isChangeQuantityStore.exception}"
+                  :class="{'checkbox-default':isChangeQuantityStore?.exception}"
                   class="onoffswitch-checkbox"
                   id="myonoffswitch"
                   tabindex="0"
-                  :disabled="isChangeQuantityStore.exception === true"
+                  :disabled="isChangeQuantityStore?.exception === true"
                 />
                 <label class="onoffswitch-label" for="myonoffswitch"></label>
               </div>
@@ -234,7 +234,6 @@ import { IonLoading } from "@ionic/vue";
 import { Mixins } from "../../mixins/mixins";
 import { profile } from "../../types";
 import Camera from "simple-vue-camera";
-import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import InvoiceSummary from "../../components/InvoiceSummary.vue"
 
 
@@ -280,7 +279,7 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
-      orderInformation:null
+      orderInformation: null
     };
   },
   computed: {
@@ -456,7 +455,6 @@ export default {
        
            if (this.load.allowOrderChangesAtDelivery) {
             localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
-            this.confirmAndFinalizeCreationOfInvoices()
           }
          
           this.setOpen(false);
@@ -734,16 +732,6 @@ export default {
       await delay(1000);
       this.cameraOn = false;
       this.image = img;
-    },
-
-       async confirmAndFinalizeCreationOfInvoices () {
-      // este es la confirmacion debo ponerlo cuando firme todo
-        try {
-         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore.orderId}/post`,{ withCredentials: true });
-      } catch (error) {
-        console.log(error);
-      }
-
     },
   },
 };
