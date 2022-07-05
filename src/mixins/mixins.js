@@ -157,6 +157,7 @@ export const Mixins = {
         return "Viaje Entregado";
       } 
     },
+    
     async setGps() {
       if(this.load?.loadMapId){
         return await localStorage.getItem(`gps ${this.load?.loadMapId}`);
@@ -289,6 +290,14 @@ export const Mixins = {
       if(status == "Delivered") return "Entregada"
       if(status == "Delivered with exceptions") return "Entregada Con Excepciones"
       if(status == "Created") return "Creada"
+    },
+
+    separatorNumber(numb){
+      if(numb){
+          let str = numb.toFixed(2).toString().split(".");
+          str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return str.join(".");
+      }
     }
   },
 };

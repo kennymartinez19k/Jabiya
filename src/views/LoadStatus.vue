@@ -373,7 +373,6 @@ export default {
       this.load = loadsMounted
     }
     this.$store.commit("setloadStore", this.load);
-    console.log(this.loadStore)
 
     this.sendingInfo = localStorage.getItem(`sendInfo${this.load.loadMapId}`)
 
@@ -399,7 +398,6 @@ methods: {
     async changeRoute(val) {
       localStorage.setItem('DeliveryCharges', JSON.stringify(this.load));
       this.$store.commit('setloadStore', this.load )
-      console.log(this.load)
 
       try{
         if(val == "Approved" &&  this.profile?.container == this.load?.loadType){

@@ -339,7 +339,7 @@ export default {
 
         //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
         const result = await axios.get(
-          `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}`,
+          `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}/`,
           { withCredentials: true }
         );
         this.order_lines = result.data.result.data.order_lines;

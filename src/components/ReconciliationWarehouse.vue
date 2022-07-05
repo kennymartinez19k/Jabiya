@@ -30,7 +30,7 @@
         </table>
         <div v-for=" (data, i) in reconciliation" :key="data" v-show="i < 1">
           <h6 class="uk-margin-remove uk-flex uk-flex-around"><span>Total $ a Entregar en Almacén:</span> <span>RD$ {{
-              data.total.toFixed(2) }}</span></h6>
+              separatorNumber(data.total) }}</span></h6>
         </div>
         <!-- </div> -->
       </li>
@@ -73,6 +73,8 @@ import { mapGetters } from "vuex";
 import axios from "axios";
 import { Profile } from "../mixins/Profile";
 import { hostEnum } from '../types'
+import { Mixins } from '../mixins/mixins'
+
 
 export default {
   alias: "Reporte de Conciliación",
@@ -85,13 +87,12 @@ export default {
       textAccordion: 'Ver Detalles por Orden'
     }
   },
-  mixins: [Profile],
+  mixins: [Profile, Mixins],
 
   computed: {
     ...mapGetters(["detailsLoadsStore", 'loadStore']),
-
-
   },
+
   async beforeMount() {
     if (this.loadStore) {
       this.loads = this.detailsLoadsStore
@@ -121,8 +122,7 @@ export default {
   methods: {
     async getReconciliation(id) {
       try {
-        const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation`, { withCredentials: true });
-        console.log(result.data.result.data, 'wwwwwwwwwwwwwwwwwwwwwwww')
+        const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation/`, { withCredentials: true });
         this.reconciliation = result.data.result.data
       } catch (error) {
         console.log(error)

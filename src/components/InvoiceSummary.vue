@@ -71,11 +71,11 @@
                     </table>
                     <div class="uk-text-right uk-margin-top">
                         <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
-                        ConstructorNumber(invoiceDetails,'subtotal') }}</span></h6>
-                        <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
-                        invoiceDetails?.amount_tax.toFixed(2) }}</span></h6>
+                        separatorNumber(invoiceDetails.subtotal) }}</span></h6>
+                        <!-- <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
+                        invoiceDetails?.amount_tax.toFixed(2) }}</span></h6> -->
                         <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
-                                {{ ConstructorNumber(invoiceDetails,'amount_total') }}</span></h6>
+                                {{ separatorNumber(invoiceDetails?.amount_total) }}</span></h6>
                     </div>
                 </div>
             </li>
@@ -91,12 +91,17 @@ import { mapGetters } from 'vuex';
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
 import { hostEnum } from '../types'
+import { Mixins } from '../mixins/mixins'
+
+
+
 export default {
     alias: "Resumen de Facturas",
     name: 'Summary',
     components: {
         IonLoading,
     },
+    mixins: [Mixins],
 
     props: {
     timeout: { type: Number, default: 15000 },
@@ -118,7 +123,6 @@ export default {
     },
 
     async beforeMount() {
-        
         let idInvoices = null
         if (this.summaryInvoiceStore) {
             this.generalInformation = this.summaryInvoiceStore 
@@ -135,11 +139,19 @@ export default {
         } else {
             orders = this.orderScan
         }
+
+         try {
+            const result = await axios.get(`${hostEnum.odoo}/api/invoice/${idInvoices}/report`, { withCredentials: true });
+            this.invoiceDetails = result.data.result.data;
+        } catch (error) {
+            console.log(error)
+        }
         orders.forEach(order => {
             this.products = order.products.map(x => x)
         })
+       
+        // await this.odooOrderDetails(idInvoices)
         await this.getSummary()
-        await this.odooOrderDetails(idInvoices)
        
     },
     computed: {
@@ -164,34 +176,6 @@ export default {
            this.setOpen(false);
 
         },
-        async odooOrderDetails(id) {
-            try {
-                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/report`, { withCredentials: true });
-                this.invoiceDetails = result.data.result.data;
-            } catch (error) {
-                console.log(error)
-            }
-        },
-        ConstructorNumber(value, type) {
-            let number = null
-            console.log(value, 'wwqqqqqqqqqqqqqqqqqqqwww')
-            console.log(type, 'ssssssssssss')
-            if (type === 'amount_total' && value?.amount_total && value !== {}) {
-                // alert(1)
-                number = value?.amount_total
-                // return number ? separatorNumber(number) : null
-            } else if (type === 'subtotal' && value?.subtotal) {
-                number = value?.subtotal
-                // alert(2)
-                // return number ? separatorNumber(number) : null
-            }
-        },
-        separatorNumber(numb) {
-            let str = numb.toFixed(2).toString().split(".");
-            str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return str.join(".");
-        }
-      
     },
 }
 </script>
