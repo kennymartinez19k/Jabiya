@@ -86,7 +86,7 @@
             </div>
           </div>
           <div
-            v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
+            v-if="invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num"
             class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
           >
             <div class="uk-flex uk-flex-wrap img-scroll-8 summary-scroll">
@@ -193,18 +193,18 @@
         />
       </div>
           <div v-if="!cameraOn && !image && !showSignaturform" class="cont-exception uk-card uk-card-default uk-card-hover uk-card-body">
-            <strong class="exception uk-padding-small web-font-small">
+            <strong class="exception uk-padding-small web-font-small" :class="{ 'exception-position': singnaturePosition }">
               Hubo Alguna Excepción? No 
               <div class="onoffswitch">
                 <input
                   type="checkbox"
                   v-model="exception"
                   name="onoffswitch"
-                  :class="{'checkbox-default':isChangeQuantityStore.exception}"
+                  :class="{'checkbox-default':isChangeQuantityStore?.exception}"
                   class="onoffswitch-checkbox"
                   id="myonoffswitch"
                   tabindex="0"
-                  :disabled="isChangeQuantityStore.exception === true"
+                  :disabled="isChangeQuantityStore?.exception === true"
                 />
                 <label class="onoffswitch-label" for="myonoffswitch"></label>
               </div>
@@ -234,7 +234,6 @@ import { IonLoading } from "@ionic/vue";
 import { Mixins } from "../../mixins/mixins";
 import { profile } from "../../types";
 import Camera from "simple-vue-camera";
-import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import InvoiceSummary from "../../components/InvoiceSummary.vue"
 
 
@@ -280,7 +279,7 @@ export default {
       camera: null,
       image: "",
       cameraOn: false,
-      orderInformation:null
+      orderInformation: null
     };
   },
   computed: {
@@ -329,8 +328,13 @@ export default {
 
   async mounted() {
     if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
-        let idOrderToInvoices = this.orders[0]?.order_num
-        this.$store.commit("getOrdersToInvoicesId", idOrderToInvoices.split('').filter((x,i) => x > 0 ||  i > 2).join(''))
+      let idOrderToInvoices = this.orders[0]?.order_num
+
+     let odooIds = {
+        orderId: idOrderToInvoices.split('').filter((x, i) => x > 0 || i > 2).join(''),
+        loadsId: this.load.loadMapId
+      }
+      this.$store.commit("getOrdersToInvoicesId", odooIds)
     }
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
@@ -451,7 +455,6 @@ export default {
        
            if (this.load.allowOrderChangesAtDelivery) {
             localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
-            this.confirmAndFinalizeCreationOfInvoices()
           }
          
           this.setOpen(false);
@@ -730,21 +733,13 @@ export default {
       this.cameraOn = false;
       this.image = img;
     },
-
-       async confirmAndFinalizeCreationOfInvoices () {
-      // este es la confirmacion debo ponerlo cuando firme todo
-        try {
-         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
-      } catch (error) {
-        console.log(error);
-      }
-
-    },
   },
 };
 </script>
 
 <style scoped>
+
+
 .qr {
   width: 60%;
 }
@@ -1042,9 +1037,19 @@ li::before {
 .backgroundBlack{
   background: #000;
 }
+.exception-position {
+  position: absolute;
+  top: 235px;
+  left: 68.4px;
+}
 @media (min-width: 600px){
   .uk-container {
   margin: 0px -30px;
+}
+.exception-position {
+  position: absolute;
+  top: 233px;
+  right: 0px;
 }
 .exception {
   display: flex;

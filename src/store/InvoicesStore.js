@@ -1,7 +1,10 @@
 
 const InvoicesStore = {
     state: {
-      invoicesId: null,
+      invoicesId: {
+       orderId: null,
+       loadsId: null
+      },
       isChangeQuantity: {
         changeQuantity: null,
         exception: false,
@@ -16,7 +19,8 @@ const InvoicesStore = {
       orderId :  null,
       summarys: []
     },
-    invoiceDetails:{}
+    invoiceDetails: {},
+    createToInvoice: false
       
     },
     mutations: {
@@ -38,7 +42,9 @@ const InvoicesStore = {
       getInvoiceDetails (state, value) {
         state.invoiceDetails = value
       },
-      
+       isCreateToInvoice (state, value) {
+        state.createToInvoice = value
+      },
         
      
     },
@@ -53,6 +59,7 @@ const InvoicesStore = {
         invoiceDownloadStore : state => state.invoiceDownload,
         summaryInvoiceStore : state => state.summaryInvoice,
         invoiceDetailsStore : state => state.invoiceDetails,
+        createToInvoiceStore : state => state.createToInvoice,
     }
   }
   

@@ -23,7 +23,6 @@ import ListOrders from '../views/Orders/ListOrders.vue'
 import InvoiceSummary from "../components/InvoiceSummary.vue";
 import about from '../views/About.vue'
 
-
 const routes = [
   {
     path: '/',
@@ -109,7 +108,7 @@ const routes = [
   },
   {
     path: "/warehouse",
-    name: "reconciliation-warehouse",
+    name: "reconciliation",
     component: ReconciliationWarehouse,
   },
   {
@@ -142,8 +141,7 @@ const routes = [
     path: "/invoice-summary",
     name: "summary",
     component: InvoiceSummary,
-  },
- 
+  }, 
 ];
 
 const router = createRouter({

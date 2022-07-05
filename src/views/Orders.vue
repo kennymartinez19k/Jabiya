@@ -162,8 +162,7 @@
             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
               <!-- uk-open -->
               <li class="uk-margin-remove">
-                <a class="uk-accordion-title web-font-small" href="#"
-                  >Mostrar/Ocultar Productos</a
+                <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{ textAccordionProduct }}</a
                 >
                 <div
                   class="
@@ -236,6 +235,8 @@ export default {
       selectAllOrders: false,
       ordersToDisplay: [],
       filterOrders: false,
+      textAccordionProduct: 'Mostrar Productos'
+
     };
   },
   setup() {
@@ -448,6 +449,13 @@ export default {
         );
       }
     },
+    changeText() {
+      if (this.textAccordionProduct !== 'Mostrar Productos') {
+        this.textAccordionProduct = 'Mostrar Productos'
+      } else {
+        this.textAccordionProduct = 'Ocultar Productos'
+      }
+    }
   },
 };
 </script>

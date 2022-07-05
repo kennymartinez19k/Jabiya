@@ -111,7 +111,7 @@
             <div class="">
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
             <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes - totalBoxesScanned}} <span id="total-quantity"></span>)</p>
-            <input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" >
+           <form action="" autocomplete="off"><input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" ></form>
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button :disabled="quantityForScan <= 0" class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
@@ -340,8 +340,6 @@ export default {
               
                 this.isOpen = true
 
-                
-            
               this.infoForScan = {
                 orderId: order._id,
                 boxId: productInfo?._id,

@@ -1,50 +1,41 @@
 <template>
   <div class="uk-container uk-text-left">
-    <ion-loading
-      :is-open="isOpenRef"
-      cssClass="my-custom-class"
-      message="Por favor Espere..."
-      :duration="timeout"
-      @didDismiss="setOpen(false)"
-    >
+    <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
+      @didDismiss="setOpen(false)">
     </ion-loading>
     <div>
       <h4 class="uk-text-small web-title-small">
         Procesar Facturas y Devoluciones
       </h4>
-      <div
-        class="
+      <div class="
           uk-card uk-card-default uk-card-body
           item-info
           uk-width-1-2@m
           details-order
-        "
-      >
+        ">
         <p class="web-sub-title-small">
           <strong>Orden:</strong>&nbsp;<span>{{
             customerDetails?.order?.name
-          }}</span>
+            }}</span>
         </p>
         <p>
           <strong>Dirección:</strong>&nbsp;<span>{{
             customerDetails?.order?.delivery_address?.full_address
-          }}</span>
+            }}</span>
         </p>
         <p>
           <strong>Cliente:</strong>&nbsp;<span>{{
             customerDetails?.order?.client
-          }}</span>
+            }}</span>
         </p>
         <p>
-          <strong>Total:</strong>&nbsp;<span
-            >{{ customerDetails?.order?.currencySymbol
-            }}{{ customerDetails?.order?.total_invoice.toFixed(2) }}
-            <span
-              v-if="showUpdating.length > 0"
-              :class="{ recalculating: showUpdating.length > 0 }"
-              >Se recalcula al guardar tus cambios</span
-            ></span
-          >
+          <strong>Total:</strong>&nbsp;<span><span v-if="customerDetails?.invoices.length > 0"> {{
+              customerDetails?.order?.currencySymbol
+              }}{{ customerDetails?.order?.total_invoice.toFixed(2) }}</span><span v-else
+              :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol
+              }}{{ customerDetails?.order?.amount_total.toFixed(2) }}</span>&nbsp;
+            <span v-if="showUpdating.length > 0" :class="{ recalculating: showUpdating.length > 0 }">Se recalcula al
+              Crear la Factura</span></span>
         </p>
       </div>
     </div>
@@ -53,112 +44,87 @@
     </h4>
     <h6 class="subtitle">(de ser necesario)</h6>
 
-    <div class="table-thead uk-margin-left">
-      <h6
-        class="uk-text-left uk-text-small web-sub-title-small"
-        style="width: 45%; margin-right: 10px"
-        :class="{ 'th-text': customerDetails?.order?.can_refund }"
-      >
+    <div class="table-thead">
+      <h6 class="uk-text-left uk-text-small web-sub-title-small"
+        :class="{ 'th-text': customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
         Productos Ordenados
       </h6>
-      <h6
-        class="uk-text-center uk-text-small web-sub-title-small"
-        style="width: 45%"
-        :class="{ 'th-text': customerDetails?.order?.can_refund }"
-      >
-        Cantidad a Devolver
+      <h6 class="uk-text-left uk-text-small web-sub-title-small order"
+        :class="{ 'th-text': customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
+        Ordenados
       </h6>
-      <h6
-        class="uk-text-left uk-text-small"
-        style="width: 15%"
-        :class="{ 'th-text': customerDetails?.order?.can_refund }"
-      ></h6>
+      <h6 class="uk-text-left uk-text-small web-sub-title-small order"
+        :class="{ 'th-text': customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
+        Devolver
+      </h6>
+      <h6 class="uk-text-left uk-text-small" :class="{ 'th-text-space': !customerDetails?.order?.can_refund }">
+        &nbsp;&nbsp;&nbsp;</h6>
     </div>
     <div>
       <div class="uk-card uk-card-default uk-card-body table-scroll">
-        <table
-          class="
+        <table class="
             uk-table uk-table-small uk-table-hover uk-table-divider uk-text-left
-          "
-        >
+          ">
           <tbody>
             <tr v-for="(product, i) in order_lines" :key="product">
-              <td
-                v-if="!product.isRewardLine"
-                :class="{ 'td-text': customerDetails?.order?.can_refund }"
-                class="uk-table-small"
-              >
-                {{ product.productName }}<br /><span class="uk-text-bold"
-                  >Precio:&nbsp;</span
-                ><span>{{ product.currencySymbol }}{{ product.price }} </span>
-                <br /><span class="uk-text-bold">Ordenados:&nbsp;</span
-                ><del
-                  v-if="product.productQuantityToInvoice > 0"
-                  class="quantity-adjustment"
-                  ><span>{{ product.productQuantity }}</span></del
-                >
-                <span v-if="product.productQuantityToInvoice == 0"
-                  ><span>{{ product.productQuantity }}</span></span
-                >
+              <td v-if="!product.isRewardLine" :class="{ 'td-text': customerDetails?.order?.can_refund }"
+                class="uk-table-small uk-text-start">
+                {{ product.productName }}<br /><span>{{
+                  product.currencySymbol }}{{ product.price.toFixed(2) }} </span>
+                <br />
+                <!-- <span class="uk-text-bold">Ordenados:&nbsp;</span>
+                <del v-if="product.productQuantityToInvoice > 0" class="quantity-adjustment"><span>{{
+                    product.productQuantity }}</span></del>
+                <span v-if="product.productQuantityToInvoice == 0"><span>{{ product.productQuantity }}</span></span> -->
               </td>
-              <td
-                v-if="!product.isRewardLine"
-                class="uk-text-center"
-                :class="{
-                  'show-active':
-                    product.productQuantityToInvoice !== NewOrdersQuantyti[i],
-                  'td-text': customerDetails?.order?.can_refund,
-                }"
-              >
-                <span
-                  >{{ product.productQuantityToInvoice }}
-                  <span v-if="product.productQuantityToInvoice > 0"
-                    >/ {{ product.productQuantity }}</span
-                  ></span
-                >
+              <td :class="{ 'td-text': customerDetails?.order?.can_refund }" class="uk-text-center">
+                <!-- <del v-if="orderStoreQuantity[i] - product.qty_to_deliver > 0" class="quantity-adjustment"><span>{{
+                    orderStoreQuantity[i] }}</span></del> -->
+                <span><span>{{
+                    orderStoreQuantity[i] }}</span></span>
+              </td>
+              <td v-if=" !product.isRewardLine" class="uk-text-center" :class="{
+                'show-active':
+                  product.qty_to_deliver !== NewOrdersQuantyti[i],
+                'td-text': customerDetails?.order?.can_refund,
+                'show-active':orderStoreQuantity[i] - product.qty_to_deliver  !== 0 && customerDetails?.invoices.length > 0
+              }">
+                <span>{{ orderStoreQuantity[i] - product.qty_to_deliver }}
+                  <!-- <span v-if="product.productQuantityToInvoice > 0">/ {{ product.productQuantity }}llll</span> -->
+                </span>
               </td>
               <span v-if="!product.isRewardLine" class="f-span uk-margin-small">
-                <font-awesome-icon
-                  v-if="customerDetails?.order?.can_refund"
-                  icon="plus"
-                  :class="{
-                    'plus-disabled':
-                      product.productQuantityToInvoice >=
-                        orderStoreQuantity[i] ||
-                      !customerDetails?.order?.can_refund,
-                  }"
-                  class="Space font-awesome uk-margin-bottom"
-                  @click="
-                    (product.productQuantityToInvoice += 1),
-                      showproductQuantityToInvoice(
-                        'plus',
-                        product.productQuantityToInvoice,
-                        NewOrdersQuantyti[i],
-                        product,
-                        product.productQuantity
-                      )
-                  "
-                />
-                <font-awesome-icon
-                  v-if="customerDetails?.order?.can_refund"
-                  icon="minus"
-                  :class="{
-                    'plus-disabled':
-                      product.productQuantityToInvoice == 0 ||
-                      !customerDetails?.order?.can_refund,
-                  }"
-                  class="Space font-awesome uk-flex uk-flex-wrap-bottom"
-                  @click="
-                    (product.productQuantityToInvoice -= 1),
-                      showproductQuantityToInvoice(
-                        'min',
-                        product.productQuantityToInvoice,
-                        NewOrdersQuantyti[i],
-                        product,
-                        product.productQuantity
-                      )
-                  "
-                />
+                <font-awesome-icon v-if="customerDetails?.order?.can_refund" icon="plus" :class="{
+                  'plus-disabled':
+                    orderStoreQuantity[i] - product.qty_to_deliver >=
+                      orderStoreQuantity[i] ||
+                    !customerDetails?.order?.can_refund,
+                }" class="Space font-awesome uk-margin-bottom" @click="
+                  (product.qty_to_deliver -= 1),
+                    showproductQuantityToInvoice(
+                      'plus',
+                      product.qty_to_deliver,
+                      NewOrdersQuantyti[i],
+                      product,
+                      // product.productQuantity
+                      orderStoreQuantity[i]
+                    )
+                " />
+                <font-awesome-icon v-if="customerDetails?.order?.can_refund" icon="minus" :class="{
+                  'plus-disabled':
+                   orderStoreQuantity[i] - product.qty_to_deliver == 0 ||
+                    !customerDetails?.order?.can_refund,
+                }" class="Space font-awesome uk-flex uk-flex-wrap-bottom" @click="
+                  (product.qty_to_deliver += 1),
+                    showproductQuantityToInvoice(
+                      'min',
+                      product.qty_to_deliver,
+                      NewOrdersQuantyti[i],
+                      product,
+                      // product.productQuantity
+                      orderStoreQuantity[i]
+                    )
+                " />
               </span>
             </tr>
           </tbody>
@@ -169,65 +135,58 @@
     <div id="products" uk-modal>
       <div class="uk-modal-dialog uk-modal-body">
         <div class="uk-margin">
-          <p v-if="!isOriginalValue">
-            Esta seguro que desea guardar los cambios
+          <p>
+            Asegúrese que procesó todas las devoluciones.
           </p>
-          <p v-if="isOriginalValue">
-            Esta seguro que desea eliminar el rembolso
+          <p>
+            ¿Procedemos a generar la <b>Factura FINAL</b>?
+
+            <!-- Esta seguro que desea eliminar el rembolso -->
           </p>
         </div>
 
-        <div class="uk-flex uk-flex-right">
+        <div class="uk-flex uk-flex-around">
           <div>
-            <button
-              id="cancel"
-              class="uk-button uk-modal-close button-cancel"
-              type="button"
-            >
-              Cancelar
+            <button id="cancel" class="uk-button uk-modal-close button-cancel" type="button">
+              No
             </button>
           </div>
           <div>
-            <button
-              v-if="!isOriginalValue"
-              :disabled="btnChange"
-              class="uk-button uk-button-primary uk-modal-close btn-modal"
-              type="button"
-              @click="changeProductQuantityRefudInvoiced()"
-            >
-              ok
+            <button class="uk-button uk-button-primary uk-modal-close btn-modal" type="button"
+              @click="changeProductQuantityRefudInvoiced()">
+              Si
             </button>
-            <button
+            <!-- <button
               v-if="isOriginalValue"
               class="uk-button uk-button-primary uk-modal-close btn-modal"
               type="button"
               @click="removeInvoiceRefund()"
             >
               ok
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
     </div>
     <div class="button-position uk-flex uk-flex-between btn-position">
       <div class="btn-style">
-        <button
-          type="button"
-          uk-toggle="target: #products"
-          :disabled="btnSave"
-          class="uk-button uk-button-primary btn-style"
-        >
-          Crear Devolución
+        <button type="button" uk-toggle="target: #products" :disabled="btnSave"
+          class="uk-button uk-button-primary btn-style">
+          Crear Factura
         </button>
       </div>
+      <!-- <div v-else class="btn-style">
+        <button :disabled="btnInvoices" type="button" class="uk-button  btn-retorn "
+          @click="dr">
+           Reembolso Facturas --v-if="customerDetails?.invoices.length === 0"
+          Devoluciòn Post Factura
+        </button>
+      </div> -->
       <div class="btn-style">
-        <button
-          :disabled="btnInvoices"
-          type="button"
-          class="uk-button uk-button-primary btn-style"
-          @click="downloadPDFRefundInvoice()"
-        >
-          Descargar Facturas
+        <button :disabled="btnInvoices" type="button" class="uk-button uk-button-primary btn-style"
+          @click="printInvoicesBluetooth()">
+          <!-- Descargar Facturas -->
+          Imprimir
         </button>
       </div>
     </div>
@@ -240,8 +199,9 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-import { Browser } from "@capacitor/browser";
+// import { Browser } from "@capacitor/browser";
 import { PrintV } from "printv";
+import { hostEnum } from '../types'
 export default {
   alias: "Detalles",
   components: {
@@ -259,9 +219,8 @@ export default {
         exception: false,
         order_num: null,
       },
-      btnSave: true,
-      btnInvoices: false,
-      btnScan: true,
+      btnSave: false,
+      btnInvoices: true,
       productOrder: null,
       OrderQuantity: null,
       staticQuantity: null,
@@ -270,8 +229,11 @@ export default {
       NewOrdersQuantyti: [],
       showUpdating: [],
       orderStoreQuantity: [],
-      idInvoices: null,
-      btnChange: false,
+      idInvoices: {
+        orderId: null,
+        loadsId: null
+      },
+      // btnChange: false, es del boton de si del popop
       isOriginalValue: true,
       dataPrinter: null,
       invoiceStructure:
@@ -309,11 +271,10 @@ export default {
   },
   async beforeMount() {
     this.setOpen(true);
-    if (this.invoicesIdStore) {
+    if (this.invoicesIdStore.orderId) {
       this.idInvoices = this.invoicesIdStore
     } else {
       this.idInvoices = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
-      
     }
     try {
       const signIn = {
@@ -321,7 +282,7 @@ export default {
         params: { login: "jabillaodoo@gmail.com", password: "admin" },
       };
       await axios.post(
-        "https://jabiyaerp.flai.com.do/api/exo/auth/sign_in",
+        `${hostEnum?.odoo}/api/exo/auth/sign_in`,
         signIn,
         { withCredentials: true }
       );
@@ -343,33 +304,34 @@ export default {
       "isChangeQuantityStore",
       "orderScan",
       "loadStore",
+      "createToInvoiceStore",
     ]),
   },
 
-  watch: {
-    showUpdating: {
-      handler: function (newVal) {
-        if (newVal.length !== 0) {
-          this.btnSave = false;
+  // watch: {
+  //   showUpdating: {
+  //     handler: function (newVal) {
+  //       if (newVal.length !== 0) {
+  //         this.btnSave = false;
+  //         if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
+  //           this.btnInvoices = false;
+  //         } else {
+  //           this.btnInvoices = true;
+  //         }
+  //       } else if (newVal.length == 0) {
+  //         this.btnInvoices = false;
+  //         this.btnSave = true;
 
-          if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
-            this.btnInvoices = false;
-          } else {
-            this.btnInvoices = true;
-          }
-        } else if (newVal.length == 0) {
-          this.btnInvoices = false;
-
-          if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
-            this.btnInvoices = false;
-          } else {
-            this.btnInvoices = true;
-          }
-        }
-      },
-      deep: true,
-    },
-  },
+  //         if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
+  //           this.btnInvoices = false;
+  //         } else {
+  //           this.btnInvoices = true;
+  //         }
+  //       }
+  //     },
+  //     deep: true,
+  //   },
+  // },
   methods: {
     async productsOfOrders() {
       try {
@@ -377,7 +339,7 @@ export default {
 
         //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
         const result = await axios.get(
-          `https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}`,
+          `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}`,
           { withCredentials: true }
         );
         this.order_lines = result.data.result.data.order_lines;
@@ -387,13 +349,12 @@ export default {
             this.orderScan[i]?.products.forEach((z) => {
               this.orderStoreQuantity.push(z.quantity);
             });
-            this.OrderQuantity = x.productQuantityToInvoice;
+            this.OrderQuantity = x.qty_to_deliver;
             this.productOrder = x;
-            if (x.productQuantityToInvoice !== 0) {
+            if (this.orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
               this.isChangeQuantity.exception = true;
-              this.isChangeQuantity.changeQuantity = x.productQuantityToInvoice;
-              this.isChangeQuantity.order_num =
-                this.customerDetails?.order?.name;
+              this.isChangeQuantity.changeQuantity = x.qty_to_deliver;
+              this.isChangeQuantity.order_num = this.customerDetails?.order?.name;
               localStorage.setItem(
                 `isChangeQuantity${this.customerDetails?.order?.name}`,
                 JSON.stringify(this.isChangeQuantity)
@@ -403,7 +364,7 @@ export default {
                 this.isChangeQuantity
               );
             } else if (
-              this.order_lines.every((x) => x.productQuantityToInvoice === 0)
+              this.order_lines.every((x) => this.orderStoreQuantity.filter(qty => qty === x.orderStoreQuantity))
             ) {
               localStorage.removeItem(
                 `isChangeQuantity${this.orderScan[0].order_num}`
@@ -414,20 +375,29 @@ export default {
                 order_num: null,
               });
             }
-            else if (this.order_lines.every(x => x.productQuantityToInvoice === 0 )) {
-              localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
-              this.$store.commit("getChageQuantityToProduct",{exception: false, changeQuantity: null, order_num: null,});
-            }
-            return x.productQuantityToInvoice;
+            // else if (this.order_lines.every(x => x.productQuantityToInvoice === 0 )) {
+            //   localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
+            //   this.$store.commit("getChageQuantityToProduct",{exception: false, changeQuantity: null, order_num: null,});
+            // }
+            return x.qty_to_deliver;
           }
         );
-        if (
-          !this.customerDetails?.order?.can_refund ||
-          this.customerDetails?.invoices.length > 0
-        ) {
-          this.btnScan = false;
+        // console.log(this.orderStoreQuantity,'orderStoreQuantity')
+        // if (
+        //   !this.customerDetails?.order?.can_refund ||
+        //   this.customerDetails?.invoices.length > 0
+        // ) {
+        //   this.btnSave = false;
+        //   this.btnInvoices = true;
+        // }
+        if (!this.customerDetails?.order?.can_refund){ 
+        // if(this.createToInvoiceStore || JSON.parse(localStorage.getItem(`isCreateToInvoice${this.customerDetails?.order?.name}`))) {
+
           this.btnSave = true;
           this.btnInvoices = false;
+        } else {
+          this.btnSave = false;
+          this.btnInvoices = true;
         }
 
         this.setStructureInvoices(null, this.productOrder);
@@ -465,25 +435,32 @@ export default {
     },
 
     async changeProductQuantityRefudInvoiced() {
-      this.btnChange = true;
+      // this.btnChange = true;
       this.setOpen(true);
       let quantityLocal = [];
       const order_lines = this.order_lines.map((orderOdoo) => {
-        quantityLocal.push(orderOdoo.productQuantityToInvoice);
+        quantityLocal.push(orderOdoo.qty_to_deliver);
+       
         if (
-          this.orderScan.find((products) =>
-            products.products.find(
+          this.orderScan.find((prod) =>
+            prod.products.find(
               (product) =>
-                product.description === orderOdoo.productName &&
-                orderOdoo.productQuantityToInvoice != 0
+                product.name == orderOdoo.productId &&
+                this.orderStoreQuantity.every(qty => qty !== orderOdoo.qty_to_deliver) 
             )
           )
         ) {
           return {
-            product_id: orderOdoo.productId,
-            set_qty: orderOdoo.productQuantityToInvoice,
+            order_line_id: orderOdoo.line_id,
+            set_qty: orderOdoo.qty_to_deliver,
+          };
+        } else {
+          return {
+            order_line_id: orderOdoo.line_id,
+            set_qty: orderOdoo.qty_to_deliver,
           };
         }
+
       });
       this.isChangeQuantity.changeQuantity = quantityLocal;
       this.isChangeQuantity.exception = true;
@@ -493,72 +470,85 @@ export default {
         `isChangeQuantity${this.customerDetails?.order?.name}`,
         JSON.stringify(this.isChangeQuantity)
       );
+      this.$store.commit("isCreateToInvoice", true);
 
+      localStorage.setItem(
+        `isCreateToInvoice${this.customerDetails?.order?.name}`,
+        JSON.stringify(true)
+      );
       this.showUpdating = [];
+        this.setOpen(false);
+      // console.log(order_lines, 'order_lines order_lines')
+      // console.log(this.idInvoices.loadsId, 'this.idInvoices.loadsId')
+
       await this.createRefudInvoices(order_lines.filter((x) => x != undefined));
     },
 
     async createRefudInvoices(changeRefundQty) {
-      let refund_id = null;
-      try {
-        const result = await axios.post(
-          `https://jabiyaerp.flai.com.do/api/order/${this.idInvoices}/invoice/refund`,
-          { withCredentials: true }
-        );
-        refund_id = result.data.result.data.refund_id;
-      } catch (error) {
-        console.log(error);
-      }
+      // console.log(changeRefundQty, 'changeRefundQty ordchangeRefundQtyer_lines')
+      // let refund_id = null;
+      // try {
+      //   const result = await axios.post(
+      //     `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}/invoice/refund`,
+      //     { withCredentials: true }
+      //   );
+      //   refund_id = result.data.result.data.refund_id;
+      // } catch (error) {
+      //   console.log(error);
+      // }
       try {
         await axios.patch(
-          `https://jabiyaerp.flai.com.do/api/invoice/refund/${refund_id}/update`,
+          // `${hostEnum?.odoo}/api/invoice/refund/${refund_id}/update`,
+          `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}/`,
           {
             params: {
-              products: changeRefundQty,
+              load_map_id: this.idInvoices.loadsId,
+              order_lines: changeRefundQty,
             },
           },
           { withCredentials: true }
         );
+        // console.log(this.idInvoices.loadsId,'this.idInvoices.loadsId')
         this.btnSave = true;
-        this.btnChange = false;
+        // this.btnChange = false;
         this.btnInvoices = false;
         await this.productsOfOrders();
-        await this.downloadPDFRefundInvoice();
+        // await this.printInvoicesBluetooth();
       } catch (error) {
         console.log(error);
-        this.btnChange = false;
+        // this.btnChange = false;
         await this.productsOfOrders();
         this.setOpen(false);
       }
     },
 
-    async removeInvoiceRefund() {
-      this.setOpen(true);
-      let refundId = null;
-      this.customerDetails.invoices.forEach((x) => {
-        if (x.move_type == "out_refund") refundId = x.id;
-      });
-      try {
-        await axios.delete(
-          `https://jabiyaerp.flai.com.do/api/invoice/refund/${refundId}`,
-          { withCredentials: true }
-        );
-        this.showUpdating = [];
-        this.isChangeQuantity.exception = false;
-        this.isChangeQuantity.changeQuantity = null;
-        this.isChangeQuantity.order_num = null;
-        this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity);
-        localStorage.removeItem(
-          `isChangeQuantity${this.orderScan[0].order_num}`
-        );
-        await this.productsOfOrders();
-      } catch (error) {
-        console.log(error);
-      }
-      this.setOpen(false);
-    },
+    // async removeInvoiceRefund() {
+    //   this.setOpen(true);
+    //   let refundId = null;
+    //   this.customerDetails.invoices.forEach((x) => {
+    //     if (x.move_type == "out_refund") refundId = x.id;
+    //   });
+    //   try {
+    //     await axios.delete(
+    //       `${hostEnum?.odoo}/api/invoice/refund/${refundId}`,
+    //       { withCredentials: true }
+    //     );
+    //     this.showUpdating = [];
+    //     this.isChangeQuantity.exception = false;
+    //     this.isChangeQuantity.changeQuantity = null;
+    //     this.isChangeQuantity.order_num = null;
+    //     this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity);
+    //     localStorage.removeItem(
+    //       `isChangeQuantity${this.orderScan[0].order_num}`
+    //     );
+    //     await this.productsOfOrders();
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   this.setOpen(false);
+    // },
 
-    async downloadPDFRefundInvoice() {
+    async printInvoicesBluetooth() {
       this.setOpen(true);
       this.summary();
       let selectedInvoicesId = [];
@@ -567,21 +557,20 @@ export default {
       });
       let downloadInvoicesId = selectedInvoicesId.join();
       this.getInvoicesPrint(downloadInvoicesId);
-      try {
-        var urlFile = `https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}`;
-        var request = new XMLHttpRequest();
-        request.withCredentials = true;
-        request.open("GET", urlFile, true);
-        request.responseType = "blob";
-        Browser.open({
-          url: `https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=${downloadInvoicesId}`,
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      this.btnScan = false;
+      // try {
+      //   var urlFile = `${hostEnum?.odoo}/api/invoice/report?invoice_ids=${downloadInvoicesId}`;
+      //   var request = new XMLHttpRequest();
+      //   request.withCredentials = true;
+      //   request.open("GET", urlFile, true);
+      //   request.responseType = "blob";
+      //   Browser.open({
+      //     url: `${hostEnum?.odoo}/api/invoice/report?invoice_ids=${downloadInvoicesId}`,
+      //   });
+      // } catch (error) {
+      //   console.log(error);
+      // }
       this.btnInvoices = false;
-      if (!this.loadStore.scanningRequired) {
+      if (!this.loadStore?.scanningRequired) {
         this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});
       } else {
         this.$router.push({ name: "deliveryActions" }).catch(() => {});
@@ -591,7 +580,10 @@ export default {
         order: this.customerDetails?.order?.name,
       };
       this.$store.commit("getInvoiceDownload", dwlStatus);
-      this.setOpen(false);
+      localStorage.setItem(`getInvoiceDownload${this.customerDetails?.order?.name}`, JSON.stringify(dwlStatus))
+      await this.productsOfOrders();
+
+      // this.setOpen(false); 
     },
 
     showproductQuantityToInvoice(
@@ -604,40 +596,40 @@ export default {
       if (signo === "plus" && value == amountCompare) {
         if (
           this.order_lines.every(
-            (x, i) => x.productQuantityToInvoice === this.orderStoreQuantity[i]
+            (x, i) => x.qty_to_deliver === this.orderStoreQuantity[i]
           ) ||
           this.order_lines.every(
-            (x, i) => x.productQuantityToInvoice === this.NewOrdersQuantyti[i]
+            (x, i) => x.qty_to_deliver === this.NewOrdersQuantyti[i]
           )
         ) {
-          this.btnSave = true;
+          // this.btnSave = true;
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
-          this.btnSave = true;
+          // this.btnSave = true;
         }
       } else if (signo === "plus" && !this.isChangeQuantity.changeQuantity) {
-        this.btnSave = true;
+        // this.btnSave = true;
         this.showUpdating.push(value);
       } else if (signo === "plus" && value < amountCompare) {
-        this.btnSave = false;
+        // this.btnSave = false;
         this.showUpdating.splice(0, 1);
       } else if (signo === "min" && value == amountCompare) {
         if (
           this.order_lines.every(
-            (x, i) => x.productQuantityToInvoice === this.orderStoreQuantity[i]
+            (x, i) => x.qty_to_deliver === this.orderStoreQuantity[i]
           ) ||
           this.order_lines.every(
-            (x, i) => x.productQuantityToInvoice === this.NewOrdersQuantyti[i]
+            (x, i) => x.qty_to_deliver === this.NewOrdersQuantyti[i]
           )
         ) {
-          this.btnSave = true;
+          // this.btnSave = true;
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
         }
       } else {
-        this.btnSave = false;
+        // this.btnSave = false;
         this.showUpdating.push(value);
       }
 
@@ -682,29 +674,15 @@ export default {
       return val.toFixed(2);
     },
 
-    summary() {
-      let selectedInvoicesId = [];
-      this.customerDetails.invoices.forEach((x) => {
-        selectedInvoicesId.push(x.id.toString());
-      });
-      let summaryInvoice = {
-        orderId: this.customerDetails.order.name,
-        summarys: selectedInvoicesId,
-      };
-      this.$store.commit("getSummaryInvoice", summaryInvoice);
-      localStorage.setItem(`SummaryInvoice`, JSON.stringify(summaryInvoice));
-      this.$router.push({ name: "summary" }).catch(() => {});
-    },
-
     async getInvoicesPrint(valuePrint) {
       try {
         let products = "";
         let plusData = []
 
-        const result = await axios.get(`https://jabiyaerp.flai.com.do/api/invoice/${valuePrint}/report`, { withCredentials: true });
+        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/report`, { withCredentials: true });
         let invoice = result.data.result.data;
-        this.$store.commit("getInvoiceDetails", invoice);
-        localStorage.setItem('invoiceDetails', JSON.stringify(invoice));
+        this.$store.commit("getInvoiceDetails", valuePrint);
+        localStorage.setItem('invoiceDetails', JSON.stringify(valuePrint));
         invoice.products.forEach((product, i) => {
           let plus = ''
           let dataDescription = ''
@@ -817,6 +795,7 @@ export default {
 </script>
 
 <style scoped>
+
 p {
   margin: 5px 0;
 }
@@ -825,22 +804,25 @@ p {
   margin-right: 20px;
 }
 td {
-  width: 43%;
+  width: 27%;
 }
 .td-text {
-  padding: 10px 12px !important;
+  padding: 10px 5px !important;
 }
 .text-size {
   font-size: 17px !important;
 }
 .th-text {
   text-align: center;
-}
-th {
-  font-size: 10.5px;
-  color: #000;
-  font-weight: bold;
-}
+  width: 45%;
+  }
+  .h6-text {
+      width: 30% !important;
+  }
+  .th-text-space {
+    text-align: center;
+      width: 15%;
+  }
 .font-awesome {
   font-size: 15px;
   margin: 6px 9px;
@@ -861,16 +843,18 @@ th {
   margin: 20px 0px 5px;
 }
 .show-active {
-  background-color: rgb(208 241 217);
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .button-cancel {
-  background: #930404;
+  background: #de2828;
   color: #fff;
-  margin-right: 15px;
-  padding: 11px;
-  font-size: 11px;
-}
+  font-size: 15px;
+  font-weight: 600;
+  }
+
 
 .recalculating {
   background-color: yellow;
@@ -907,9 +891,16 @@ h4 {
   padding: 10px;
   font-size: 10px;
 }
-.btn-modal {
+.btn-retorn {
   padding: 10px;
   font-size: 10px;
+  color: #fff;
+  background-color: #de2828;
+}
+.btn-modal {
+  /* padding: 10px; */
+  font-size: 17px;
+  font-weight: 600;
 }
 .details-order {
   padding: 0px 8px 8px;
@@ -921,6 +912,16 @@ h4 {
 .quantity-adjustment {
   background-color: #efb5b5;
   padding: 5px;
+}
+.order {
+  display: flex;
+  align-items: center;
+}
+.uk-table-hover tbody tr:hover  {
+  background-color: #efefef;
+}
+.total {
+  text-decoration: line-through;
 }
 @media (min-width: 550px) {
   .details-order {
@@ -951,6 +952,19 @@ h4 {
   .btn-style {
     font-size: 13px;
     margin: 0px 35px;
+  }
+}
+@media (min-width: 767px) {
+  .order {
+    margin-left: 42px;
+  }
+  .f-span {
+    align-items: center;
+  }
+}
+@media (min-width: 1439px) {
+  .order {
+    padding-left: 52px;
   }
 }
 </style>

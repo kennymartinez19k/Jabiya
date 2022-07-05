@@ -32,7 +32,7 @@
     "core-js": "^3.6.5",
     "moment": "^2.29.1",
     "popper.js": "^1.16.1",
-    "printv": "0.0.12",
+    "printv": "^0.0.12",
     "simple-vue-camera": "^1.0.2",
     "uikit": "^3.9.2",
     "v-calendar": "^3.0.0-alpha.8",
