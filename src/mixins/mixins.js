@@ -224,22 +224,21 @@ export const Mixins = {
 
           let {order_num, _id} = order
         let { name, qrCode, quantity, scanOneByOne, loadScanningCounter } = currentProductExo
-        
           if (productsOdoo !== null) {
             if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId && quantityToInvoice !== null) {
-                let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
-                quantity = productsOdoo[productIndexOdoo]?.productQuantity - quantityToInvoice 
-
+                // let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
+                // quantity = productsOdoo[productIndexOdoo]?.productQuantity - quantityToInvoice 
+                quantity =  quantityToInvoice 
             } else {
-              
                 if (productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name && !curretProductOdoo.isRewardLine )>= 0) {
                   let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
-                  quantity = productsOdoo[productIndexOdoo]?.productQuantity - productsOdoo[productIndexOdoo]?.productQuantityToInvoice
+                  // quantity = productsOdoo[productIndexOdoo]?.productQuantity - productsOdoo[productIndexOdoo]?.productQuantityToInvoice
+                  quantity = productsOdoo[productIndexOdoo]?.qty_to_deliver
                 }
             
             }
 
-          }
+          } 
           firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
           listOfOrders.unshift(firstProductInfo)
   

@@ -222,7 +222,7 @@ export default {
       btnSave: false,
       btnInvoices: true,
       productOrder: null,
-      OrderQuantity: null,
+      orderQuantity: null,
       staticQuantity: null,
       order_lines: null,
       customerDetails: null,
@@ -349,7 +349,7 @@ export default {
             this.orderScan[i]?.products.forEach((z) => {
               this.orderStoreQuantity.push(z.quantity);
             });
-            this.OrderQuantity = x.qty_to_deliver;
+            this.orderQuantity = x.qty_to_deliver;
             this.productOrder = x;
             if (this.orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
               this.isChangeQuantity.exception = true;
@@ -633,7 +633,7 @@ export default {
         this.showUpdating.push(value);
       }
 
-      this.OrderQuantity = value;
+      this.orderQuantity = value;
       this.staticQuantity = staticQty;
       this.productOrder = product;
       let contProductsOdoo = 0;
@@ -649,7 +649,7 @@ export default {
       } else {
         this.isOriginalValue = false;
       }
-      this.setStructureInvoices(this.OrderQuantity, this.productOrder);
+      this.setStructureInvoices(this.orderQuantity, this.productOrder);
     },
 
     async setStructureInvoices(quantity, product) {
@@ -667,6 +667,7 @@ export default {
         firstStructure: this.listOfOrders,
         secondStructure: this.listOfOrderTotal,
       };
+      console.log(structure,'structure structure structure')
       this.$store.commit("setStructureToScan", structureInvoices);
     },
 
