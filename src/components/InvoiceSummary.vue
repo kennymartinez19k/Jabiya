@@ -121,17 +121,22 @@ export default {
 
       return { isOpenRef, setOpen };
     },
+    computed: {
+        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "orderScan"])
+    },
 
-    async beforeMount() {
+    async mounted() {
         let idInvoices = null
-        if (this.summaryInvoiceStore) {
-            this.generalInformation = this.summaryInvoiceStore 
+
+        if (this.summarysInvoiceStore?.orderId) {
+            this.generalInformation = this.summarysInvoiceStore 
             idInvoices = this.invoiceDetailsStore
-        } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`)).orderId) {
+        } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`))?.orderId) {
            this.generalInformation = JSON.parse( localStorage.getItem(`SummaryInvoice`))
             idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
+            this.$store.commit("getSummaryInvoice", this.generalInformation);
         }
-        
+
         let orders = null
         if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
             orders = JSON.parse(localStorage.getItem("scanOrder"));
@@ -154,9 +159,7 @@ export default {
         await this.getSummary()
        
     },
-    computed: {
-        ...mapGetters["summaryInvoiceStore", "invoiceDetailsStore", "orderScan"]
-    },
+  
     methods: {
        async getSummary () {
             this.setOpen(true);

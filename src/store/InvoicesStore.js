@@ -19,7 +19,7 @@ const InvoicesStore = {
       orderId :  null,
       summarys: []
     },
-    invoiceDetails: {},
+    invoiceDetails: '',
     createToInvoice: false
       
     },
@@ -36,8 +36,8 @@ const InvoicesStore = {
       getInvoiceDownload (state, value) {
         state.invoiceDownload = value
       },
-      getSummaryInvoice (state, value) {
-        state.summaryInvoice = value
+      getSummaryInvoice(state, value) {
+        state.summaryInvoice = { ...value }
       },
       getInvoiceDetails (state, value) {
         state.invoiceDetails = value
@@ -57,7 +57,7 @@ const InvoicesStore = {
         isChangeQuantityStore : state => state.isChangeQuantity,
         isSelectedInvoicesStore : state => state.isSelectedInvoices,
         invoiceDownloadStore : state => state.invoiceDownload,
-        summaryInvoiceStore : state => state.summaryInvoice,
+        summarysInvoiceStore : state => state.summaryInvoice,
         invoiceDetailsStore : state => state.invoiceDetails,
         createToInvoiceStore : state => state.createToInvoice,
     }
