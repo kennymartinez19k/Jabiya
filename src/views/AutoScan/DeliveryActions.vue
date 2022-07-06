@@ -333,9 +333,6 @@ export default {
 
   async mounted() {
 
-    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
-      await this.productsOfOrdersToOdoo()
-    }
     if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
       let idOrderToInvoices = this.orders[0]?.order_num
 
@@ -368,7 +365,9 @@ export default {
     this.$store.commit("scanOrder", this.orders );
 
     this.showSignaturform = false
-
+    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
+      await this.productsOfOrdersToOdoo()
+    }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
