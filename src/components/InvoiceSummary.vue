@@ -121,17 +121,22 @@ export default {
 
       return { isOpenRef, setOpen };
     },
+    computed: {
+        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "orderScan"])
+    },
 
-    async beforeMount() {
+    async mounted() {
         let idInvoices = null
-        if (this.summaryInvoiceStore) {
-            this.generalInformation = this.summaryInvoiceStore 
+
+        if (this.summarysInvoiceStore?.orderId) {
+            this.generalInformation = this.summarysInvoiceStore 
             idInvoices = this.invoiceDetailsStore
-        } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`)).orderId) {
+        } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`))?.orderId) {
            this.generalInformation = JSON.parse( localStorage.getItem(`SummaryInvoice`))
             idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
+            this.$store.commit("getSummaryInvoice", this.generalInformation);
         }
-        
+
         let orders = null
         if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
             orders = JSON.parse(localStorage.getItem("scanOrder"));
@@ -140,12 +145,7 @@ export default {
             orders = this.orderScan
         }
 
-         try {
-            const result = await axios.get(`${hostEnum.odoo}/api/invoice/${idInvoices}/report`, { withCredentials: true });
-            this.invoiceDetails = result.data.result.data;
-        } catch (error) {
-            console.log(error)
-        }
+        await this.getReportOdoo(idInvoices)
         orders.forEach(order => {
             this.products = order.products.map(x => x)
         })
@@ -154,14 +154,20 @@ export default {
         await this.getSummary()
        
     },
-    computed: {
-        ...mapGetters["summaryInvoiceStore", "invoiceDetailsStore", "orderScan"]
-    },
+  
     methods: {
-       async getSummary () {
+        async getReportOdoo(id) {
             this.setOpen(true);
-            let result = null 
             try {
+                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/report/`, { withCredentials: true });
+                this.invoiceDetails = result.data.result.data;
+            } catch (error) {
+                console.log(error)
+            }
+        },
+       async getSummary () {
+            let result = null 
+           try {
                  result =  await axios.post(`${hostEnum.odoo}/api/invoice/resume/report/`, {
                     params: {
                         invoice_ids: this.generalInformation.summarys

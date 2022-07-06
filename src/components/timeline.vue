@@ -52,16 +52,18 @@
 
         <span class="web-font-small">Facturas</span>
       </li>
-      <li v-if="loadStore.scanningRequired" :class="{ active: resultScan }" @click="getShow('scan')">
+      <li v-if="loadStore.scanningRequired" :class="{ active: resultScan, 'uk-disabled': !activeScan }"
+        @click="getShow('scan')">
         <div class="info active">
           <font-awesome-icon icon="check" />
         </div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
 
         <span class="web-font-small">Escanear</span>
+        <div :class="{ disabled: !activeScan }"></div>
       </li>
       <li :class="{
-        'uk-disabled': step == 0,
+  'uk-disabled': !activeCamare,
         active: imagiElement.length > 0,
       }" @click="getShow('camera')">
         <div class="info active">
@@ -69,10 +71,10 @@
         </div>
         <div><img src="../assets/img/cam.png" alt="" srcset="" /></div>
         <span class="web-font-small">Camara</span>
-        <div :class="{ disabled: step < 1 }"></div>
+        <div :class="{ disabled: !activeCamare }"></div>
       </li>
       <li v-if="exception" :class="{
-        'uk-disabled': step == 0,
+        'uk-disabled': !activeException,
         active:
           causeExceptions.note !== null &&
           causeExceptions.type !== null &&
@@ -84,7 +86,7 @@
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
         <span class="web-font-small">Excepción</span>
         <div :class="{
-          disabled: step == 0,
+          disabled: !activeException,
         }"></div>
       </li>
       <li :class="{
@@ -199,7 +201,102 @@ export default {
         return false
       }
 
-    }
+    },
+
+     activeScan() {
+      let downloadInvoices = false
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let loadsMounted = [];
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
+
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+        downloadInvoices = this.invoiceDownloadStore.status
+      }
+     
+      if (scanRequired && allowInvoices && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && !allowInvoices  && !downloadInvoices) {
+        return true
+
+      } else {
+        return false
+      }
+
+    },
+
+    activeCamare() {
+      let downloadInvoices = false
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let loadsMounted = [];
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
+
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+        downloadInvoices = this.invoiceDownloadStore.status
+      }
+
+      if (scanRequired && allowInvoices && this.resultScan && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && !allowInvoices && this.resultScan && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && !allowInvoices && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && allowInvoices && downloadInvoices) {
+        return true
+
+      } else {
+        return false
+      }
+
+    },
+
+    activeException() {
+      let downloadInvoices = false
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let loadsMounted = [];
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
+
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+        downloadInvoices = this.invoiceDownloadStore.status
+      }
+      
+      let img = !this.emptyImage
+
+      if (scanRequired && allowInvoices && this.resultScan && img && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && !allowInvoices && this.resultScan && img && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && !allowInvoices  && img && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && allowInvoices && img && downloadInvoices) {
+        return true
+
+      } else {
+        return false
+      }
+
+    },
   },
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
@@ -390,7 +487,7 @@ export default {
   width: 100%;
   height: 70%;
   top: 40px;
-  left: 10px;
+  left: 6px;
   background: #ffffffc4;
 }
 img {
