@@ -346,7 +346,8 @@ export default {
         );
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
-        // console.log(this.order_lines,'ffffffffffffff')
+        // console.log(this.order_lines, 'ffffffffffffff')
+        // console.log(this.customerDetails, 'customerDetails')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {

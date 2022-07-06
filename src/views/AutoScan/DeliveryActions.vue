@@ -332,6 +332,10 @@ export default {
   },
 
   async mounted() {
+
+    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
+      await this.productsOfOrdersToOdoo()
+    }
     if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
       let idOrderToInvoices = this.orders[0]?.order_num
 
@@ -342,9 +346,6 @@ export default {
       this.$store.commit("getOrdersToInvoicesId", odooIds)
     }
 
-    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
-      await this.productsOfOrdersToOdoo()
-    }
 
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
@@ -757,19 +758,39 @@ export default {
         let orderStoreQuantity = []
         const result = await axios.get(`${hostEnum?.odoo}/api/order/${idInvoices.orderId}/`, { withCredentials: true });
         this.order_linesOdoo = result.data.result.data.order_lines;
-        let customerDetails = result.data.result.data;
+        // console.log(this.order_linesOdoo, 'order_linesOdoo order_linesOdoo')
+        let customerDetails = await result.data.result.data;
+        if (customerDetails.invoices.length > 0) {
+          let selectedInvoicesId = [];
+          customerDetails.invoices.forEach((x) => {
+            selectedInvoicesId.push(x.id.toString());
+            console.log(selectedInvoicesId,'selectedInvoicesId')
+          });
+
+          let downloadInvoicesId = selectedInvoicesId.join();
+          console.log(downloadInvoicesId, 'downloadInvoicesId')
+
+
+          this.$store.commit("getInvoiceDetails", downloadInvoicesId);
+          localStorage.setItem('invoiceDetails', JSON.stringify(downloadInvoicesId));
+        }
         result.data.result.data.order_lines.forEach(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {
               orderStoreQuantity.push(z.quantity);
             });
             this.productOrder = x;
+            console.log(this.orderScan[i]?.products, 'this.orderScan[i]?.products')
+
+            orderStoreQuantity.forEach(qty => console.log( qty,'wwwwwwwwwwwwwwwwww'))
+            console.log(x.qty_to_deliver,'x.qty_to_deliver x.qty_to_deliver')
             if (orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
               let isChangeQuantity = {
                 exception: true,
                 changeQuantity: x.qty_to_deliver,
                 order_num: customerDetails?.order?.name
               }
+              alert(1)
               localStorage.setItem(
                 `isChangeQuantity${customerDetails?.order?.name}`,
                 JSON.stringify(isChangeQuantity)
@@ -781,6 +802,8 @@ export default {
             } else if (
               this.order_linesOdoo.every((x) => orderStoreQuantity.filter(qty => qty === x.orderStoreQuantity))
             ) {
+              alert(2)
+
               localStorage.removeItem(
                 `isChangeQuantity${this.orderScan[0].order_num}`
               );
@@ -790,8 +813,7 @@ export default {
                 order_num: null,
               });
             }
-
-            return x.qty_to_deliver;
+           
           }
         );
 

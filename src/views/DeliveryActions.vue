@@ -1042,6 +1042,16 @@ export default {
         const result = await axios.get(`${hostEnum?.odoo}/api/order/${idInvoices.orderId}/`, { withCredentials: true });
         this.order_linesOdoo = result.data.result.data.order_lines;
         let customerDetails = result.data.result.data;
+        if (customerDetails.invoices.length > 0) {
+          let selectedInvoicesId = [];
+          customerDetails.invoices.forEach((x) => {
+            selectedInvoicesId.push(x.id.toString());
+          });
+          let downloadInvoicesId = selectedInvoicesId.join();
+
+          this.$store.commit("getInvoiceDetails", downloadInvoicesId);
+          localStorage.setItem('invoiceDetails', JSON.stringify(downloadInvoicesId));
+        }
         result.data.result.data.order_lines.forEach(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {
@@ -1075,7 +1085,6 @@ export default {
               });
             }
 
-            return x.qty_to_deliver;
           }
         );
 
