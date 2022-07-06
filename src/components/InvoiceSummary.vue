@@ -145,12 +145,7 @@ export default {
             orders = this.orderScan
         }
 
-         try {
-            const result = await axios.get(`${hostEnum.odoo}/api/invoice/${idInvoices}/report`, { withCredentials: true });
-            this.invoiceDetails = result.data.result.data;
-        } catch (error) {
-            console.log(error)
-        }
+        await this.getReportOdoo(idInvoices)
         orders.forEach(order => {
             this.products = order.products.map(x => x)
         })
@@ -161,10 +156,18 @@ export default {
     },
   
     methods: {
-       async getSummary () {
+        async getReportOdoo(id) {
             this.setOpen(true);
-            let result = null 
             try {
+                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/report/`, { withCredentials: true });
+                this.invoiceDetails = result.data.result.data;
+            } catch (error) {
+                console.log(error)
+            }
+        },
+       async getSummary () {
+            let result = null 
+           try {
                  result =  await axios.post(`${hostEnum.odoo}/api/invoice/resume/report/`, {
                     params: {
                         invoice_ids: this.generalInformation.summarys

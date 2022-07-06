@@ -346,6 +346,7 @@ export default {
         );
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
+        // console.log(this.order_lines,'ffffffffffffff')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {
@@ -682,7 +683,7 @@ export default {
         let plusData = []
         this.$store.commit("getInvoiceDetails", valuePrint);
         localStorage.setItem('invoiceDetails', JSON.stringify(valuePrint));
-        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/report`, { withCredentials: true });
+        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/report/`, { withCredentials: true });
         let invoice = result.data.result.data;
        
         invoice.products.forEach((product, i) => {
