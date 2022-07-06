@@ -100,7 +100,6 @@ export default {
       this.loads = JSON.parse(localStorage.getItem("currentLoad"))
       this.$store.commit("setDetailsLoadsStore", JSON.stringify(this.loads))
     }
-    console.log(this.loads.loadMapId, 'dddddd')
     try {
       const signIn = {
         jsonrpc: "2.0",

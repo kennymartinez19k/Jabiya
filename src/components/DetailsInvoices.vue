@@ -482,8 +482,7 @@ export default {
       );
       this.showUpdating = [];
         this.setOpen(false);
-      // console.log(order_lines, 'order_lines order_lines')
-      // console.log(this.idInvoices.loadsId, 'this.idInvoices.loadsId')
+    
 
       await this.createRefudInvoices(order_lines.filter((x) => x != undefined));
     },

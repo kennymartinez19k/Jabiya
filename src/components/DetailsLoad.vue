@@ -311,7 +311,6 @@ export default {
       this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
 
     this.setOpen(false)
-    console.log(this.detailsLoads, 'this.detailsLoads')
 
   },
 

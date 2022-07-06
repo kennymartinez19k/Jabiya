@@ -152,7 +152,6 @@ export const Mixins = {
       if (val?.loadingStatus?.text == "Dispatched")  return "Listo para Entregar";
       if (val?.loadingStatus?.text == "Loading truck") return "Cargando Vehiculo";
       if (val?.loadingStatus?.text == "Delivered") {
-        console.log('mixin 1')
         localStorage.removeItem(`sendInfo${val.loadMapId}`)
         return "Viaje Entregado";
       } 
