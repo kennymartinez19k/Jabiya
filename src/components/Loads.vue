@@ -214,7 +214,7 @@ export default {
     dateSelected: function(newVal){
       this.currentDate({calendar: true, dateCalendar: newVal})
     },
-    loadStore: function(newVal){
+    allLoadsStore: function(newVal){
       this.loadsToDisplay = newVal
     },
     isQueueEmpty: function(newVal){
@@ -336,9 +336,6 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
 
-      this.sortLoads()
-      this.reloadEvent = false
-
       for (let i = 0; i < this.loadsToDisplay?.length; i++) {
         const load = this.loadsToDisplay[i];
         if(load?.loadingStatus?.text === "Delivered"){
@@ -348,6 +345,9 @@ export default {
           }
         }
       }
+      this.sortLoads()
+      this.reloadEvent = false
+
     },
     
     reset(){

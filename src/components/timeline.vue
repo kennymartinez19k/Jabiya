@@ -235,6 +235,8 @@ export default {
       let scanRequired = this.loadStore.scanningRequired
       let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
       let loadsMounted = [];
+      let exception = this.exception
+
       if (this.orderScan) {
         loadsMounted = this.orderScan
       } else {
@@ -245,10 +247,10 @@ export default {
         downloadInvoices = this.invoiceDownloadStore.status
       }
 
-      if (scanRequired && allowInvoices && this.resultScan && downloadInvoices) {
+      if (allowInvoices && downloadInvoices && scanRequired && this.resultScan) {
         return true
 
-      } else if (scanRequired && !allowInvoices && this.resultScan && !downloadInvoices) {
+      } else if (exception) {
         return true
 
       } else if (!scanRequired && !allowInvoices && !downloadInvoices) {

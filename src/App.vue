@@ -43,12 +43,12 @@ export default {
   },
  
   watch:{
-    $route: function(newVal){
-      this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
-      if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
-          this.stopScan()
-      }
-    }
+    // $route: function(newVal){
+    //   this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
+    //   if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
+    //       this.stopScan()
+    //   }
+    // }
   },
   components:{
     AppHeader,
