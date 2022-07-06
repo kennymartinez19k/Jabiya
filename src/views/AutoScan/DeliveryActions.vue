@@ -762,31 +762,33 @@ export default {
           (x, i) => {
             orderStoreQuantity = this.orderScan[i]?.products
             this.productOrder = x;
-            if (orderStoreQuantity.some(order => order.name == x.productId &&  order.quantity !== x.qty_to_deliver)) {
-              let isChangeQuantity = {
-                exception: true,
-                changeQuantity: x.qty_to_deliver,
-                order_num: customerDetails?.order?.name
+            if(orderStoreQuantity){
+              if (orderStoreQuantity?.some(order => order.name == x.productId &&  order.quantity !== x.qty_to_deliver)) {
+                let isChangeQuantity = {
+                  exception: true,
+                  changeQuantity: x.qty_to_deliver,
+                  order_num: customerDetails?.order?.name
+                }
+                localStorage.setItem(
+                  `isChangeQuantity${customerDetails?.order?.name}`,
+                  JSON.stringify(isChangeQuantity)
+                );
+                this.$store.commit(
+                  "getChageQuantityToProduct",
+                  isChangeQuantity
+                );
+              } else if (
+                this.order_linesOdoo.every((x) => orderStoreQuantity?.some(order =>  order.name == x.productId && order.quantity === x.qty_to_deliver))
+              ) {
+                localStorage.removeItem(
+                  `isChangeQuantity${this.orderScan[0].order_num}`
+                );
+                this.$store.commit("getChageQuantityToProduct", {
+                  exception: false,
+                  changeQuantity: null,
+                  order_num: null,
+                });
               }
-              localStorage.setItem(
-                `isChangeQuantity${customerDetails?.order?.name}`,
-                JSON.stringify(isChangeQuantity)
-              );
-              this.$store.commit(
-                "getChageQuantityToProduct",
-                isChangeQuantity
-              );
-            } else if (
-              this.order_linesOdoo.every((x) => orderStoreQuantity.some(order =>  order.name == x.productId && order.quantity === x.qty_to_deliver))
-            ) {
-              localStorage.removeItem(
-                `isChangeQuantity${this.orderScan[0].order_num}`
-              );
-              this.$store.commit("getChageQuantityToProduct", {
-                exception: false,
-                changeQuantity: null,
-                order_num: null,
-              });
             }
 
           }
