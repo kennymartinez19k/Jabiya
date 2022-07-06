@@ -332,6 +332,7 @@ export default {
   },
 
   async mounted() {
+
     if (this.load.allowOrderChangesAtDelivery && this.load.loadType == this.profile.container) {
       let idOrderToInvoices = this.orders[0]?.order_num
 
@@ -342,9 +343,6 @@ export default {
       this.$store.commit("getOrdersToInvoicesId", odooIds)
     }
 
-    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
-      await this.productsOfOrdersToOdoo()
-    }
 
     this.$store.commit("setExceptions", {note: null, type: null});
     if(this.$router.options.history.state.back != '/details-invoices'){
@@ -367,7 +365,9 @@ export default {
     this.$store.commit("scanOrder", this.orders );
 
     this.showSignaturform = false
-
+    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
+      await this.productsOfOrdersToOdoo()
+    }
     if (this.orderScan?.length > 1) {
       this.$emit("setNameHeader", `Entrega de Ordenes`);
     } else if (this.orderScan?.length == 1) {
@@ -757,7 +757,22 @@ export default {
         let orderStoreQuantity = []
         const result = await axios.get(`${hostEnum?.odoo}/api/order/${idInvoices.orderId}/`, { withCredentials: true });
         this.order_linesOdoo = result.data.result.data.order_lines;
-        let customerDetails = result.data.result.data;
+        // console.log(this.order_linesOdoo, 'order_linesOdoo order_linesOdoo')
+        let customerDetails = await result.data.result.data;
+        if (customerDetails.invoices.length > 0) {
+          let selectedInvoicesId = [];
+          customerDetails.invoices.forEach((x) => {
+            selectedInvoicesId.push(x.id.toString());
+            console.log(selectedInvoicesId,'selectedInvoicesId')
+          });
+
+          let downloadInvoicesId = selectedInvoicesId.join();
+          console.log(downloadInvoicesId, 'downloadInvoicesId')
+
+
+          this.$store.commit("getInvoiceDetails", downloadInvoicesId);
+          localStorage.setItem('invoiceDetails', JSON.stringify(downloadInvoicesId));
+        }
         this.order_linesOdoo.forEach(
           (x, i) => {
             orderStoreQuantity = this.orderScan[i]?.products
@@ -790,7 +805,6 @@ export default {
                 });
               }
             }
-
           }
         );
 

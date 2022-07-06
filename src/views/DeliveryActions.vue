@@ -1038,19 +1038,33 @@ export default {
         let orderStoreQuantity = []
         const result = await axios.get(`${hostEnum?.odoo}/api/order/${idInvoices.orderId}/`, { withCredentials: true });
         this.order_linesOdoo = result.data.result.data.order_lines;
-        let customerDetails = result.data.result.data;
-        result.data.result.data.order_lines.forEach(
+        // console.log(this.order_linesOdoo, 'order_linesOdoo order_linesOdoo')
+        let customerDetails = await result.data.result.data;
+        if (customerDetails.invoices.length > 0) {
+          let selectedInvoicesId = [];
+          customerDetails.invoices.forEach((x) => {
+            selectedInvoicesId.push(x.id.toString());
+            console.log(selectedInvoicesId, 'selectedInvoicesId')
+          });
+
+          let downloadInvoicesId = selectedInvoicesId.join();
+          console.log(downloadInvoicesId, 'downloadInvoicesId')
+
+
+          this.$store.commit("getInvoiceDetails", downloadInvoicesId);
+          localStorage.setItem('invoiceDetails', JSON.stringify(downloadInvoicesId));
+        }
+        this.order_linesOdoo.forEach(
           (x, i) => {
-            this.orderScan[i]?.products.forEach((z) => {
-              orderStoreQuantity.push(z.quantity);
-            });
+            orderStoreQuantity = this.orderScan[i]?.products
             this.productOrder = x;
-            if (orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
+            if (orderStoreQuantity.some(order => order.name == x.productId && order.quantity !== x.qty_to_deliver)) {
               let isChangeQuantity = {
                 exception: true,
                 changeQuantity: x.qty_to_deliver,
                 order_num: customerDetails?.order?.name
               }
+              alert(1)
               localStorage.setItem(
                 `isChangeQuantity${customerDetails?.order?.name}`,
                 JSON.stringify(isChangeQuantity)
@@ -1060,8 +1074,10 @@ export default {
                 isChangeQuantity
               );
             } else if (
-              this.order_linesOdoo.every((x) => orderStoreQuantity.filter(qty => qty === x.orderStoreQuantity))
+              this.order_linesOdoo.every((x) => orderStoreQuantity.some(order => order.name == x.productId && order.quantity === x.qty_to_deliver))
             ) {
+              alert(2)
+
               localStorage.removeItem(
                 `isChangeQuantity${this.orderScan[0].order_num}`
               );
@@ -1071,8 +1087,6 @@ export default {
                 order_num: null,
               });
             }
-
-            return x.qty_to_deliver;
           }
         );
 
