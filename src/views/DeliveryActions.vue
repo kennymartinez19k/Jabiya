@@ -202,6 +202,8 @@ import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
 import { StreamBarcodeReader } from "vue-barcode-reader";
+import axios from "axios";
+import { hostEnum } from '../types'
 
 
 App.addListener("appRestoredResult", (data) => {
@@ -228,6 +230,8 @@ export default {
   mixins: [Mixins],
   data() {
     return {
+      hostEnum,
+
       profile,
       isOpen: false,
       show: null,
@@ -266,7 +270,9 @@ export default {
       showScanInput: false,
       showScanner: false,
       loadedScanner: false,
-      singnaturePosition: false
+      singnaturePosition: false,
+      order_linesOdoo: []
+
     };
   },
   setup() {
@@ -337,7 +343,11 @@ export default {
     if(this.$router.options.history.state.back != '/details-invoices'){
       this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
     }
-    this.$store.commit('setImagiElement',[])
+    this.$store.commit('setImagiElement', [])
+
+    if (this.load.allowOrderChangesAtDelivery && this.$router.options.history.state.back != '/details-invoices') {
+      await this.productsOfOrdersToOdoo()
+    }
 
     this.camera = this.$refs.Camera;
     let structure = null
@@ -394,7 +404,7 @@ export default {
      } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
        this.$store.commit("getChageQuantityToProduct", JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)));
-     }
+    }
     await this.getLocation();
 
   },
@@ -1016,6 +1026,84 @@ export default {
       let delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(1000);
       this.loadedScanner = true
+    },
+
+    async productsOfOrdersToOdoo() {
+      try {
+        this.setOpen(true);
+        let idInvoices = {}
+
+        if (this.invoicesIdStore.orderId) {
+          idInvoices = this.invoicesIdStore
+        } else {
+          idInvoices = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
+        }
+        let orderStoreQuantity = []
+        const result = await axios.get(`${hostEnum?.odoo}/api/order/${idInvoices.orderId}/`, { withCredentials: true });
+        this.order_linesOdoo = result.data.result.data.order_lines;
+        let customerDetails = result.data.result.data;
+        result.data.result.data.order_lines.forEach(
+          (x, i) => {
+            this.orderScan[i]?.products.forEach((z) => {
+              orderStoreQuantity.push(z.quantity);
+            });
+            this.productOrder = x;
+            if (orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
+              let isChangeQuantity = {
+                exception: true,
+                changeQuantity: x.qty_to_deliver,
+                order_num: customerDetails?.order?.name
+              }
+              localStorage.setItem(
+                `isChangeQuantity${customerDetails?.order?.name}`,
+                JSON.stringify(isChangeQuantity)
+              );
+              this.$store.commit(
+                "getChageQuantityToProduct",
+                isChangeQuantity
+              );
+            } else if (
+              this.order_linesOdoo.every((x) => orderStoreQuantity.filter(qty => qty === x.orderStoreQuantity))
+            ) {
+              localStorage.removeItem(
+                `isChangeQuantity${this.orderScan[0].order_num}`
+              );
+              this.$store.commit("getChageQuantityToProduct", {
+                exception: false,
+                changeQuantity: null,
+                order_num: null,
+              });
+            }
+
+            return x.qty_to_deliver;
+          }
+        );
+
+        this.setStructureInvoices(null, this.productOrder);
+
+      } catch (error) {
+        console.log(error);
+      }
+      this.setOpen(false);
+
+    },
+
+    async setStructureInvoices(quantity, product) {
+      let structure = await this.setStructure(
+        this.orderScan[0],
+        [],
+        [],
+        quantity,
+        product,
+        this.order_linesOdoo
+      );
+      let listOfOrders = structure.firstStructure;
+      let listOfOrderTotal = structure.secondStructure;
+      let structureInvoices = {
+        firstStructure: listOfOrders,
+        secondStructure: listOfOrderTotal,
+      };
+      this.$store.commit("setStructureToScan", structureInvoices);
     },
   },
 };

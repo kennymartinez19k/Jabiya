@@ -28,12 +28,11 @@
             customerDetails?.order?.client
             }}</span>
         </p>
+
         <p>
-          <strong>Total:</strong>&nbsp;<span><span v-if="customerDetails?.invoices.length > 0"> {{
-              customerDetails?.order?.currencySymbol
-              }}{{ customerDetails?.order?.total_invoice.toFixed(2) }}</span><span v-else
-              :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol
-              }}{{ customerDetails?.order?.amount_total.toFixed(2) }}</span>&nbsp;
+          <strong>Total:</strong>&nbsp;<span>
+            <span v-if="customerDetails?.invoices.length > 0"> {{ customerDetails?.order?.currencySymbol }}{{ customerDetails?.order?.total_invoice.toFixed(2) }}</span>
+              <span v-else :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol }}{{ customerDetails?.order?.amount_total.toFixed(2) }}</span>&nbsp;
             <span v-if="showUpdating.length > 0" :class="{ recalculating: showUpdating.length > 0 }">Se recalcula al
               Crear la Factura</span></span>
         </p>
@@ -214,6 +213,9 @@ export default {
 
   data() {
     return {
+      hostEnum, 
+
+
       isChangeQuantity: {
         changeQuantity: null,
         exception: false,
@@ -222,7 +224,7 @@ export default {
       btnSave: false,
       btnInvoices: true,
       productOrder: null,
-      OrderQuantity: null,
+      orderQuantity: null,
       staticQuantity: null,
       order_lines: null,
       customerDetails: null,
@@ -344,12 +346,13 @@ export default {
         );
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
+        // console.log(this.order_lines,'ffffffffffffff')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {
               this.orderStoreQuantity.push(z.quantity);
             });
-            this.OrderQuantity = x.qty_to_deliver;
+            this.orderQuantity = x.qty_to_deliver;
             this.productOrder = x;
             if (this.orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
               this.isChangeQuantity.exception = true;
@@ -633,7 +636,7 @@ export default {
         this.showUpdating.push(value);
       }
 
-      this.OrderQuantity = value;
+      this.orderQuantity = value;
       this.staticQuantity = staticQty;
       this.productOrder = product;
       let contProductsOdoo = 0;
@@ -649,7 +652,7 @@ export default {
       } else {
         this.isOriginalValue = false;
       }
-      this.setStructureInvoices(this.OrderQuantity, this.productOrder);
+      this.setStructureInvoices(this.orderQuantity, this.productOrder);
     },
 
     async setStructureInvoices(quantity, product) {
@@ -678,11 +681,11 @@ export default {
       try {
         let products = "";
         let plusData = []
-
-        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/report`, { withCredentials: true });
-        let invoice = result.data.result.data;
         this.$store.commit("getInvoiceDetails", valuePrint);
         localStorage.setItem('invoiceDetails', JSON.stringify(valuePrint));
+        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/report/`, { withCredentials: true });
+        let invoice = result.data.result.data;
+       
         invoice.products.forEach((product, i) => {
           let plus = ''
           let dataDescription = ''
@@ -786,7 +789,7 @@ export default {
         orderId :  this.customerDetails.order.name,
         summarys: selectedInvoicesId
       }
-      this.$store.commit("getSummaryInvoice",summaryInvoice);
+      this.$store.commit("getSummaryInvoice", summaryInvoice);
       localStorage.setItem(`SummaryInvoice`,JSON.stringify(summaryInvoice));
       this.$router.push({ name: "summary" }).catch(() => {});
     }

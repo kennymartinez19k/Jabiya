@@ -313,11 +313,11 @@ export default {
       this.showButton = false 
       if (this.load.allowOrderChangesAtDelivery) {
        let odooIds = {
-          orderId: this.idOrderToInvoices.split('').filter((x, i) => x > 0 || i > 2).join(''),
+          orderId: this.idOrderToInvoices.split('').filter((x, i) => x > 0 || i > 2 || (x == 0 && i > 1)).join(''),
           loadsId: this.load.loadMapId
         }
+
         this.$store.commit("getOrdersToInvoicesId", odooIds)
-        console.log(this.load.loadMapId,' this.load ')
         localStorage.setItem("getOrdersToInvoicesId", JSON.stringify(odooIds))
       }
         this.scan()
@@ -393,14 +393,11 @@ export default {
   },
 
     filterByOrders(val) {
-      console.log(this.ordersToDisplay,'11111111111')
       if(val){
         this.ordersToDisplay = this.orders
       }else{
         this.ordersToDisplay = this.orders.filter(order => order.status != 'Delivered')
       }
-      console.log(this.ordersToDisplay,'22222222222222222')
-
     },
 
     changeText() {
