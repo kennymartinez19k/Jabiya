@@ -415,7 +415,6 @@ export default {
           this.firm = newVal;
           this.setOpen(true);
           await this.postImages();
-          console.log(this.orders)
           if (this.orders?.length) {
             let data = []
               if(localStorage.getItem('sendInfoOrders')){
@@ -424,7 +423,6 @@ export default {
 
             for (let i = 0; i < this.orders.length; i++) {
               const order = this.orders[i];
-              console.log('hey', order.order_num)
 
               let isInSending = data.some(x => x == order.order_num)
               if(!isInSending) data.push(order.order_num)
@@ -737,7 +735,6 @@ export default {
           else{
               this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
               this.secondStructureLoad[index_second].loadScanningCounter += quantityForScan
-              console.log(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode, 'desde actions')
               await this.$services.deliverServices.deliverProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
   
               }     

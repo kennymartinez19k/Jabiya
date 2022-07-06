@@ -247,7 +247,6 @@ export default {
       failSendInfo = JSON.parse(localStorage.getItem('failSendInfo'))
       : false
 
-      console.log(sendingInfoOrders, 'sendin')
 
       this.orders?.forEach(order => {
           order.sendingInfo = sendingInfoOrders?.some(x => x == order.order_num) 
