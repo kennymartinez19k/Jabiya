@@ -235,7 +235,6 @@ export default {
         orderId: null,
         loadsId: null
       },
-      // btnChange: false, es del boton de si del popop
       isOriginalValue: true,
       dataPrinter: null,
       invoiceStructure:
@@ -346,7 +345,7 @@ export default {
         );
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
-        // console.log(this.order_lines, 'ffffffffffffff')
+        console.log(this.order_lines, 'ffffffffffffff')
         // console.log(this.customerDetails, 'customerDetails')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
@@ -439,7 +438,6 @@ export default {
     },
 
     async changeProductQuantityRefudInvoiced() {
-      // this.btnChange = true;
       this.setOpen(true);
       let quantityLocal = [];
       const order_lines = this.order_lines.map((orderOdoo) => {
@@ -454,11 +452,16 @@ export default {
             )
           )
         ) {
+          console.log(orderOdoo.line_id,'orderOdoo.line_id 11111111')
+          console.log(orderOdoo.qty_to_deliver, 'orderOdoo.qty_to_deliver.line_id 1111111111111')
           return {
             order_line_id: orderOdoo.line_id,
             set_qty: orderOdoo.qty_to_deliver,
           };
         } else {
+          console.log(orderOdoo.line_id, 'orderOdoo.line_id 22222')
+          console.log(orderOdoo.qty_to_deliver, 'orderOdoo.qty_to_deliver.line_id 22222')
+
           return {
             order_line_id: orderOdoo.line_id,
             set_qty: orderOdoo.qty_to_deliver,
@@ -488,7 +491,7 @@ export default {
     },
 
     async createRefudInvoices(changeRefundQty) {
-      // console.log(changeRefundQty, 'changeRefundQty ordchangeRefundQtyer_lines')
+      console.log(changeRefundQty, 'changeRefundQty ordchangeRefundQtyer_lines')
       // let refund_id = null;
       // try {
       //   const result = await axios.post(
@@ -513,13 +516,11 @@ export default {
         );
         // console.log(this.idInvoices.loadsId,'this.idInvoices.loadsId')
         this.btnSave = true;
-        // this.btnChange = false;
         this.btnInvoices = false;
         await this.productsOfOrders();
         // await this.printInvoicesBluetooth();
       } catch (error) {
         console.log(error);
-        // this.btnChange = false;
         await this.productsOfOrders();
         this.setOpen(false);
       }
