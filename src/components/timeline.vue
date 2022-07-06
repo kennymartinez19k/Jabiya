@@ -250,7 +250,7 @@ export default {
       if (allowInvoices && downloadInvoices && scanRequired && this.resultScan) {
         return true
 
-      } else if (exception) {
+      } else if (exception && !allowInvoices) {
         return true
 
       } else if (!scanRequired && !allowInvoices && !downloadInvoices) {

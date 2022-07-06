@@ -179,7 +179,9 @@ export default {
 
         },
        async getSummary () {
-            let result = null 
+           let result = null 
+           if (this.generalInformation?.summarys) {
+                
            try {
                  result =  await axios.post(`${hostEnum.odoo}/api/invoice/resume/report/`, {
                     params: {
@@ -191,7 +193,9 @@ export default {
                 this.summary = result.data.result.data
             } catch (error) {
                 console.log(error)
-            }
+               }
+           }
+
            this.setOpen(false);
 
         },
