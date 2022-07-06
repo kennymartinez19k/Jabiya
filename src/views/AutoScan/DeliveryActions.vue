@@ -530,8 +530,8 @@ export default {
       }
     },
     async stopScan() {
-      await BarcodeScanner.showBackground();
-      await BarcodeScanner.stopScan();
+      // await BarcodeScanner.showBackground();
+      // await BarcodeScanner.stopScan();
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -758,13 +758,11 @@ export default {
         const result = await axios.get(`${hostEnum?.odoo}/api/order/${idInvoices.orderId}/`, { withCredentials: true });
         this.order_linesOdoo = result.data.result.data.order_lines;
         let customerDetails = result.data.result.data;
-        result.data.result.data.order_lines.forEach(
+        this.order_linesOdoo.forEach(
           (x, i) => {
-            this.orderScan[i]?.products.forEach((z) => {
-              orderStoreQuantity.push(z.quantity);
-            });
+            orderStoreQuantity = this.orderScan[i]?.products
             this.productOrder = x;
-            if (orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
+            if (orderStoreQuantity.some(order => order.name == x.productId &&  order.quantity !== x.qty_to_deliver)) {
               let isChangeQuantity = {
                 exception: true,
                 changeQuantity: x.qty_to_deliver,
@@ -779,7 +777,7 @@ export default {
                 isChangeQuantity
               );
             } else if (
-              this.order_linesOdoo.every((x) => orderStoreQuantity.filter(qty => qty === x.orderStoreQuantity))
+              this.order_linesOdoo.every((x) => orderStoreQuantity.some(order =>  order.name == x.productId && order.quantity === x.qty_to_deliver))
             ) {
               localStorage.removeItem(
                 `isChangeQuantity${this.orderScan[0].order_num}`
@@ -791,7 +789,6 @@ export default {
               });
             }
 
-            return x.qty_to_deliver;
           }
         );
 

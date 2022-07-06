@@ -850,8 +850,8 @@ export default {
         }
     },
     async stopScan() {
-      BarcodeScanner.showBackground();
-      BarcodeScanner.stopScan();
+      // BarcodeScanner.showBackground();
+      // BarcodeScanner.stopScan();
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });

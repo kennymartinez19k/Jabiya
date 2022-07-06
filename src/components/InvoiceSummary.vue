@@ -59,7 +59,7 @@
                         <tbody v-for="(detail, index) in invoiceDetails?.products" :key="detail">
                             <tr :id="index" :class="{ 'refund-invoice': detail?.moveType == 'out_refund' }">
                                 <td class="web-font-small">{{ detail?.description }}<br /> <span>{{ summary?.currency }}
-                                        {{ detail?.price_subtotal.toFixed(2) }} </span>
+                                        {{ detail?.price_subtotal?.toFixed(2) }} </span>
                                     <br><span v-if="detail?.moveType == 'out_refund'">Reembolso</span>
                                 </td>
                                 <td class="web-font-small">{{ products[index]?.quantity }}</td>
@@ -71,9 +71,9 @@
                     </table>
                     <div class="uk-text-right uk-margin-top">
                         <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
-                        separatorNumber(invoiceDetails.subtotal) }}</span></h6>
+                        separatorNumber(invoiceDetails?.subtotal) }}</span></h6>
                         <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
-                        separatorNumber(invoiceDetails.amount_tax) }}</span></h6>
+                        separatorNumber(invoiceDetails?.amount_tax) }}</span></h6>
                         <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
                                 {{ separatorNumber(invoiceDetails?.amount_total) }}</span></h6>
                     </div>
