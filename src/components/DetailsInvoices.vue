@@ -15,24 +15,26 @@
         ">
         <p class="web-sub-title-small">
           <strong>Orden:</strong>&nbsp;<span>{{
-            customerDetails?.order?.name
-            }}</span>
+          customerDetails?.order?.name
+          }}</span>
         </p>
         <p>
           <strong>Dirección:</strong>&nbsp;<span>{{
-            customerDetails?.order?.delivery_address?.full_address
-            }}</span>
+          customerDetails?.order?.delivery_address?.full_address
+          }}</span>
         </p>
         <p>
           <strong>Cliente:</strong>&nbsp;<span>{{
-            customerDetails?.order?.client
-            }}</span>
+          customerDetails?.order?.client
+          }}</span>
         </p>
 
         <p>
           <strong>Total:</strong>&nbsp;<span>
-            <span v-if="customerDetails?.invoices.length > 0"> {{ customerDetails?.order?.currencySymbol }}{{ customerDetails?.order?.total_invoice.toFixed(2) }}</span>
-              <span v-else :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol }}{{ customerDetails?.order?.amount_total.toFixed(2) }}</span>&nbsp;
+            <span v-if="customerDetails?.invoices.length > 0"> {{ customerDetails?.order?.currencySymbol }}{{
+            separatorNumber(customerDetails?.order?.total_invoice)}}</span>
+            <span v-else :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol }}{{
+            separatorNumber(customerDetails?.order?.amount_total) }}</span>&nbsp;
             <span v-if="showUpdating.length > 0" :class="{ recalculating: showUpdating.length > 0 }">Se recalcula al
               Crear la Factura</span></span>
         </p>
@@ -49,14 +51,14 @@
         Productos Ordenados
       </h6>
       <h6 class="uk-text-left uk-text-small web-sub-title-small order"
-        :class="{ 'th-text': customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
+        :class="{ 'th-text': customerDetails?.order?.can_refund, 'order-space': !customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
         Ordenados
       </h6>
       <h6 class="uk-text-left uk-text-small web-sub-title-small order"
-        :class="{ 'th-text': customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
+        :class="{ 'th-text': customerDetails?.order?.can_refund, 'order-space': !customerDetails?.order?.can_refund, 'h6-text': !customerDetails?.order?.can_refund }">
         Devolver
       </h6>
-      <h6 class="uk-text-left uk-text-small" :class="{ 'th-text-space': !customerDetails?.order?.can_refund }">
+      <h6 class="uk-text-left uk-text-small" :class="{ 'th-text-space': customerDetails?.order?.can_refund }">
         &nbsp;&nbsp;&nbsp;</h6>
     </div>
     <div>
@@ -69,7 +71,7 @@
               <td v-if="!product.isRewardLine" :class="{ 'td-text': customerDetails?.order?.can_refund }"
                 class="uk-table-small uk-text-start">
                 {{ product.productName }}<br /><span>{{
-                  product.currencySymbol }}{{ product.price.toFixed(2) }} </span>
+                product.currencySymbol }}{{ separatorNumber(product.price) }} </span>
                 <br />
                 <!-- <span class="uk-text-bold">Ordenados:&nbsp;</span>
                 <del v-if="product.productQuantityToInvoice > 0" class="quantity-adjustment"><span>{{
@@ -79,11 +81,10 @@
               <td :class="{ 'td-text': customerDetails?.order?.can_refund }" class="uk-text-center">
                 <!-- <del v-if="orderStoreQuantity[i] - product.qty_to_deliver > 0" class="quantity-adjustment"><span>{{
                     orderStoreQuantity[i] }}</span></del> -->
-                <span><span>{{
-                    orderStoreQuantity[i] }}</span></span>
+                <span><span>{{ orderStoreQuantity[i] }}</span></span>
               </td>
               <td v-if=" !product.isRewardLine" class="uk-text-center" :class="{
-                'show-active':
+                'show-active2':
                   product.qty_to_deliver !== NewOrdersQuantyti[i],
                 'td-text': customerDetails?.order?.can_refund,
                 'show-active':orderStoreQuantity[i] - product.qty_to_deliver  !== 0 && customerDetails?.invoices.length > 0
@@ -92,7 +93,7 @@
                   <!-- <span v-if="product.productQuantityToInvoice > 0">/ {{ product.productQuantity }}llll</span> -->
                 </span>
               </td>
-              <span v-if="!product.isRewardLine" class="f-span uk-margin-small">
+              <span v-if="customerDetails?.order?.can_refund" class="f-span uk-margin-small">
                 <font-awesome-icon v-if="customerDetails?.order?.can_refund" icon="plus" :class="{
                   'plus-disabled':
                     orderStoreQuantity[i] - product.qty_to_deliver >=
@@ -235,7 +236,6 @@ export default {
         orderId: null,
         loadsId: null
       },
-      // btnChange: false, es del boton de si del popop
       isOriginalValue: true,
       dataPrinter: null,
       invoiceStructure:
@@ -297,6 +297,8 @@ export default {
     }
     localStorage.removeItem("SummaryInvoice");
     await this.productsOfOrders();
+    // console.log(this.idInvoices.loadsId, 'this.idInvoices.loadsId')
+
     this.setOpen(false);
   },
   computed: {
@@ -346,7 +348,7 @@ export default {
         );
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
-        // console.log(this.order_lines, 'ffffffffffffff')
+        console.log(this.order_lines, 'ffffffffffffff')
         // console.log(this.customerDetails, 'customerDetails')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
@@ -439,7 +441,6 @@ export default {
     },
 
     async changeProductQuantityRefudInvoiced() {
-      // this.btnChange = true;
       this.setOpen(true);
       let quantityLocal = [];
       const order_lines = this.order_lines.map((orderOdoo) => {
@@ -454,11 +455,16 @@ export default {
             )
           )
         ) {
+          console.log(orderOdoo.line_id,'orderOdoo.line_id 11111111')
+          console.log(orderOdoo.qty_to_deliver, 'orderOdoo.qty_to_deliver.line_id 1111111111111')
           return {
             order_line_id: orderOdoo.line_id,
             set_qty: orderOdoo.qty_to_deliver,
           };
         } else {
+          console.log(orderOdoo.line_id, 'orderOdoo.line_id 22222')
+          console.log(orderOdoo.qty_to_deliver, 'orderOdoo.qty_to_deliver.line_id 22222')
+
           return {
             order_line_id: orderOdoo.line_id,
             set_qty: orderOdoo.qty_to_deliver,
@@ -488,7 +494,7 @@ export default {
     },
 
     async createRefudInvoices(changeRefundQty) {
-      // console.log(changeRefundQty, 'changeRefundQty ordchangeRefundQtyer_lines')
+      console.log(changeRefundQty, 'changeRefundQty ordchangeRefundQtyer_lines')
       // let refund_id = null;
       // try {
       //   const result = await axios.post(
@@ -513,13 +519,11 @@ export default {
         );
         // console.log(this.idInvoices.loadsId,'this.idInvoices.loadsId')
         this.btnSave = true;
-        // this.btnChange = false;
         this.btnInvoices = false;
         await this.productsOfOrders();
         // await this.printInvoicesBluetooth();
       } catch (error) {
         console.log(error);
-        // this.btnChange = false;
         await this.productsOfOrders();
         this.setOpen(false);
       }
@@ -586,7 +590,7 @@ export default {
       localStorage.setItem(`getInvoiceDownload${this.customerDetails?.order?.name}`, JSON.stringify(dwlStatus))
       await this.productsOfOrders();
 
-      // this.setOpen(false); 
+      this.setOpen(false); 
     },
 
     showproductQuantityToInvoice(
@@ -609,14 +613,12 @@ export default {
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
-          // this.btnSave = true;
         }
       } else if (signo === "plus" && !this.isChangeQuantity.changeQuantity) {
-        // this.btnSave = true;
         this.showUpdating.push(value);
       } else if (signo === "plus" && value < amountCompare) {
-        // this.btnSave = false;
-        this.showUpdating.splice(0, 1);
+        this.showUpdating.push(value);
+
       } else if (signo === "min" && value == amountCompare) {
         if (
           this.order_lines.every(
@@ -626,13 +628,11 @@ export default {
             (x, i) => x.qty_to_deliver === this.NewOrdersQuantyti[i]
           )
         ) {
-          // this.btnSave = true;
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
         }
       } else {
-        // this.btnSave = false;
         this.showUpdating.push(value);
       }
 
@@ -671,10 +671,6 @@ export default {
         secondStructure: this.listOfOrderTotal,
       };
       this.$store.commit("setStructureToScan", structureInvoices);
-    },
-
-    setRound(val) {
-      return val.toFixed(2);
     },
 
     async getInvoicesPrint(valuePrint) {
@@ -799,6 +795,8 @@ export default {
 
 <style scoped>
 
+
+
 p {
   margin: 5px 0;
 }
@@ -824,7 +822,7 @@ td {
   }
   .th-text-space {
     text-align: center;
-      width: 15%;
+      width: 15% !important;
   }
 .font-awesome {
   font-size: 15px;
@@ -846,6 +844,11 @@ td {
   margin: 20px 0px 5px;
 }
 .show-active {
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
+}
+.show-active2 {
   color: red;
   font-weight: bold;
   font-size: 16px;
@@ -919,6 +922,9 @@ h4 {
 .order {
   display: flex;
   align-items: center;
+}
+.order-space {
+  justify-content: space-around;
 }
 .uk-table-hover tbody tr:hover  {
   background-color: #efefef;
