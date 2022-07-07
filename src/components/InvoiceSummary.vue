@@ -62,9 +62,9 @@
                                         {{ detail?.price_subtotal?.toFixed(2) }} </span>
                                     <br><span v-if="detail?.moveType == 'out_refund'">Reembolso</span>
                                 </td>
-                                <td class="web-font-small">{{ products[index]?.quantity }}</td>
-                                <td class="web-font-small">{{ detail?.qty }}</td>
-                                <td class="web-font-small">{{ products[index]?.quantity - detail?.qty }}</td>
+                                <td class="web-font-small">{{ detail?.ordered_qty }}</td>
+                                <td class="web-font-small">{{ detail?.invoiced_qty }}</td>
+                                <td class="web-font-small">{{ detail?.ordered_qty - detail?.invoiced_qty }}</td>
                             </tr>
 
                         </tbody>
@@ -111,7 +111,8 @@ export default {
             summary: null,
             generalInformation: null,
             invoiceDetails: {},
-            products: null
+            // products: null,   orderScan
+            idOrderForOdoo: {}
         }
     },
 
@@ -122,7 +123,7 @@ export default {
       return { isOpenRef, setOpen };
     },
     computed: {
-        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "orderScan"])
+        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "invoicesIdStore"])
     },
 
     async mounted() {
@@ -137,51 +138,71 @@ export default {
             this.$store.commit("getSummaryInvoice", this.generalInformation);
         }
 
-        let orders = null
-        if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
-            orders = JSON.parse(localStorage.getItem("scanOrder"));
-            this.$store.commit("scanOrder", orders);
+        // let orders = null
+        // if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
+        //     orders = JSON.parse(localStorage.getItem("scanOrder"));
+        //     this.$store.commit("scanOrder", orders);
+        // } else {
+        //     orders = this.orderScan
+        // }
+
+        if (this.invoicesIdStore.orderId) {
+            this.idOrderForOdoo = this.invoicesIdStore
         } else {
-            orders = this.orderScan
+            this.idOrderForOdoo = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
         }
 
         // await this.getReportOdoo(idInvoices)
-        orders.forEach(order => {
-            this.products = order.products.map(x => x)
-        })
+        // orders.forEach(order => {
+        //     this.products = order.products.map(x => x)
+        // })
         if (this.$router.options.history.state.back == '/details-invoices') {
-
             await this.getReportOdoo(idInvoices)
             await this.getSummary()
 
         }
        
     },
+    // watch: {
+    //     invoiceDetailsStore: {
+    //         handler: async function (newval) {
+    //             if (newval !== null) {
+    //                 await this.getReportOdoo(newval)
+
+    //             }
+    //         },
+    //         deep: true
+    //     }
+
+    // },
     async created() {
+        console.log(this.$router.options.history.state.back != '/details-invoices','kkkkkkkk')
         if (this.$router.options.history.state.back != '/details-invoices') {
             await this.getSummary()
-
             let idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
             await this.getReportOdoo(idInvoices)
         }
     },
     methods: {
         async getReportOdoo(id) {
-            this.setOpen(true);
-            try {
-                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/report/`, { withCredentials: true });
-                this.invoiceDetails = result.data.result.data;
-                // console.log(this.invoiceDetails,'qqqqqqqqqqqqqqqqqqqqq')
-            } catch (error) {
-                console.log(error)
+            if (id) {
+                this.setOpen(true);
+                try {
+                    const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/order/${this.idOrderForOdoo.orderId}/report/`, { withCredentials: true });
+                    this.invoiceDetails = result.data.result.data;
+                    console.log(this.invoiceDetails,'qqqqqqqqqqqqqqqqqqqqq')
+                } catch (error) {
+                    console.log(error)
+                }
+                this.setOpen(false);
+                
             }
-            this.setOpen(false);
 
         },
        async getSummary () {
            let result = null 
            if (this.generalInformation?.summarys) {
-                
+            //    console.log(this.generalInformation,'jjjjjjjjjjjjjjjj')
            try {
                  result =  await axios.post(`${hostEnum.odoo}/api/invoice/resume/report/`, {
                     params: {

@@ -148,7 +148,7 @@
             <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)"
               class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
           </div>
-          <strong class="exception web-font-small" :class="{ 'exception-position': singnaturePosition }">
+          <strong class="exception web-font-small">
             Hubo Alguna Excepción? No
             <div class="onoffswitch">
               <input type="checkbox" v-model="exception" name="onoffswitch"
