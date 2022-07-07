@@ -138,13 +138,6 @@ export default {
             this.$store.commit("getSummaryInvoice", this.generalInformation);
         }
 
-        // let orders = null
-        // if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
-        //     orders = JSON.parse(localStorage.getItem("scanOrder"));
-        //     this.$store.commit("scanOrder", orders);
-        // } else {
-        //     orders = this.orderScan
-        // }
 
         if (this.invoicesIdStore.orderId) {
             this.idOrderForOdoo = this.invoicesIdStore
@@ -152,37 +145,12 @@ export default {
             this.idOrderForOdoo = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
         }
 
-        // await this.getReportOdoo(idInvoices)
-        // orders.forEach(order => {
-        //     this.products = order.products.map(x => x)
-        // })
-        if (this.$router.options.history.state.back == '/details-invoices') {
             await this.getReportOdoo(idInvoices)
             await this.getSummary()
 
-        }
        
     },
-    // watch: {
-    //     invoiceDetailsStore: {
-    //         handler: async function (newval) {
-    //             if (newval !== null) {
-    //                 await this.getReportOdoo(newval)
-
-    //             }
-    //         },
-    //         deep: true
-    //     }
-
-    // },
-    async created() {
-        console.log(this.$router.options.history.state.back != '/details-invoices','kkkkkkkk')
-        if (this.$router.options.history.state.back != '/details-invoices') {
-            await this.getSummary()
-            let idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
-            await this.getReportOdoo(idInvoices)
-        }
-    },
+  
     methods: {
         async getReportOdoo(id) {
             if (id) {
@@ -190,7 +158,6 @@ export default {
                 try {
                     const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/order/${this.idOrderForOdoo.orderId}/report/`, { withCredentials: true });
                     this.invoiceDetails = result.data.result.data;
-                    console.log(this.invoiceDetails,'qqqqqqqqqqqqqqqqqqqqq')
                 } catch (error) {
                     console.log(error)
                 }
@@ -202,7 +169,6 @@ export default {
        async getSummary () {
            let result = null 
            if (this.generalInformation?.summarys) {
-            //    console.log(this.generalInformation,'jjjjjjjjjjjjjjjj')
            try {
                  result =  await axios.post(`${hostEnum.odoo}/api/invoice/resume/report/`, {
                     params: {
