@@ -1051,6 +1051,9 @@ li::before {
   top: 235px;
   left: 68.4px;
 }
+.container-item {
+    overflow: auto;
+}
 @media (min-width: 600px){
   .uk-container {
   margin: 0px -30px;

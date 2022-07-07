@@ -2,10 +2,12 @@
   <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere Envio..." :duration="timeout"
     @didDismiss="setOpen(false)">
   </ion-loading>
-  <div class="container uk-flex uk-flex-column uk-flex-between" :class="{ backg: resultScan }">
+
+  <div class="uk-flex uk-flex-column uk-flex-between" :class="{ backg: resultScan }">
+    <div>
     <div class="stiky">
       <p class="web-font-small title-load-number" style="font-size: 13px; font-weight: 500">
-        {{ load?.loadNumber }}
+        {{ load?.loadNumber }} 
       </p>
       <div class="
           uk-flex
@@ -26,165 +28,168 @@
         </div>
       </div>
     </div>
-    <div class="result-info">
-      <div v-if="showScanner">
-        <StreamBarcodeReader @decode="onDecode" @loaded="onLoaded"></StreamBarcodeReader>
-      </div>
-      <div v-if="!showProduct" class="status-order" :class="{
-        statusError: statusOrders == 'reject',
-        statusCheck: statusOrders == 'approved',
-      }">
-        <div v-if="statusOrders == 'approved'" style="width: 100%; font-size: 30px">
-          <h6 style="font-size: 14px" class="uk-margin-remove web-font-small">
-            {{ completedOrder }}
-          </h6>
+      <div class="result-info">
+        <div v-if="showScanner">
+          <StreamBarcodeReader @decode="onDecode" @loaded="onLoaded"></StreamBarcodeReader>
         </div>
-        <div v-if="statusOrders == 'reject'" style="width: 100%; font-size: 30px">
-          <h6 class="uk-margin-remove web-font-small">
-            {{ messageReject }}
-            <font-awesome-icon icon="ban" style="color: #be1515" />
-          </h6>
+        <div v-if="!showProduct" class="status-order" :class="{
+          statusError: statusOrders == 'reject',
+          statusCheck: statusOrders == 'approved',
+        }">
+          <div v-if="statusOrders == 'approved'" style="width: 100%; font-size: 30px">
+            <h6 style="font-size: 14px" class="uk-margin-remove web-font-small">
+              {{ completedOrder }}
+            </h6>
+          </div>
+          <div v-if="statusOrders == 'reject'" style="width: 100%; font-size: 30px">
+            <h6 class="uk-margin-remove web-font-small">
+              {{ messageReject }}
+              <font-awesome-icon icon="ban" style="color: #be1515" />
+            </h6>
+          </div>
         </div>
-      </div>
-      <ul v-if="showProduct" class="uk-list uk-list-divider">
-        <div v-for="order in orders" :key="order" class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-          :class="{ ordenCompleted: order?.completed }">
-          <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-            <div class="btn uk-flex">
-              <div class="uk-flex uk-flex-column uk-text-left">
-                <p class="uk-width-1-1 web-font-small">
-                  <span class="font-weight-medium">Cliente: </span>
-                  <span>{{ order?.client_name }}</span>
-                </p>
+        <ul v-if="showProduct" class="uk-list uk-list-divider">
+          <div v-for="order in orders" :key="order" class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+            :class="{ ordenCompleted: order?.completed }">
+            <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+              <div class="btn uk-flex">
+                <div class="uk-flex uk-flex-column uk-text-left">
+                  <p class="uk-width-1-1 web-font-small">
+                    <span class="font-weight-medium">Cliente: </span>
+                    <span>{{ order?.client_name }}</span>
+                  </p>
+                </div>
+              </div>
+              <p style="margin-right: 10px !important" class="web-font-small">
+                <span class="font-weight-medium">Orden: </span><span>{{ order?.order_num }}</span>
+              </p>
+              <p class="web-font-small">
+                <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.no_of_boxes }}<span></span>
+              </p>
+              <p class="uk-width-1-1 web-font-small">
+                <span class="font-weight-medium">Destino: </span>
+                <span>
+                  <font-awesome-icon icon="map-marker-alt" />
+                  {{ order?.address }}
+                </span>
+              </p>
+            </div>
+            <div>
+              <div @click="setMap(order)" class="uk-flex-column web-font-small route-view">
+                <img src="../assets/map.png" class="img-scan" alt="" />
+                <span>Ver Ruta</span>
               </div>
             </div>
-            <p style="margin-right: 10px !important" class="web-font-small">
-              <span class="font-weight-medium">Orden: </span><span>{{ order?.order_num }}</span>
-            </p>
-            <p class="web-font-small">
-              <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.no_of_boxes }}<span></span>
-            </p>
-            <p class="uk-width-1-1 web-font-small">
-              <span class="font-weight-medium">Destino: </span>
-              <span>
-                <font-awesome-icon icon="map-marker-alt" />
-                {{ order?.address }}
+          </div>
+          <div v-if="invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num"
+            class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 0px 10px !important">
+            <div class="uk-flex uk-flex-wrap img-scroll">
+              <invoice-summary></invoice-summary>
+            </div>
+          </div>
+          <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
+            <div class="uk-flex uk-flex-wrap img-scroll">
+              <span v-for="(src, index) in imagiElement" :key="src" class="position-imagin">
+                <img class="img-result" :src="src" alt="Red dot" />
+                <img src="../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="" />
               </span>
-            </p>
-          </div>
-          <div>
-            <div @click="setMap(order)" class="uk-flex-column web-font-small route-view">
-              <img src="../assets/map.png" class="img-scan" alt="" />
-              <span>Ver Ruta</span>
             </div>
           </div>
-        </div>
-        <div v-if="invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num"
-          class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 0px 10px !important">
-          <div class="uk-flex uk-flex-wrap img-scroll">
-            <invoice-summary></invoice-summary>
-          </div>
-        </div>
-        <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
-          <div class="uk-flex uk-flex-wrap img-scroll">
-            <span v-for="(src, index) in imagiElement" :key="src" class="position-imagin">
-              <img class="img-result" :src="src" alt="Red dot" />
-              <img src="../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="" />
-            </span>
-          </div>
-        </div>
-      </ul>
-    </div>
-    <div v-if="image" class="showCamera">
-      <font-awesome-icon v-if="cameraOn || image" icon="times" class="close" @click="stopCamera()" />
-      <img class="result-scan" :src="image" alt="" />
-    </div>
-
-    <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
-      <font-awesome-icon v-if="cameraOn" icon="times" class="close" @click="stopCamera()" />
-      <camera class="camera" :resolution="{ width: 1620, height: 1450 }" ref="Camera"></camera>
-    </div>
-    <div v-if="cameraOn || image" class="
-        cont-camera
-        uk-flex-between
-        uk-flex-wrap
-        uk-card
-        uk-card-default
-        uk-card-hover
-        uk-card-body
-      " style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc">
-      <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px">Tomar las Fotos</label>
-      <label class="img-div" style="position: relative">
-        <font-awesome-icon icon="images" />
-        <input type="file" @change="pickImage($event)" id="file-img" style="position: absolute; opacity: 0"
-          accept="image/*" />
-      </label>
-
-      <div class="snapshot-div">
-        <div @click="snapshot()" class="take-photo"></div>
-      </div>
-      <div class="button-div">
-        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
-          Aceptar
-        </button>
-      </div>
-    </div>
-    <div v-if="cameraOn"></div>
-
-    <div v-if="!cameraOn && !image" class="cont uk-card uk-card-default uk-card-hover">
-      <div class="action">
-        <ul v-if="!showProduct" class="box-orden">
-          <li v-for="product in firstStructureLoad" :key="product" :class="{
-            completedOrden: product?.completedScanned,
-            inProgressOrden: product?.scanProgress,
-          }" style="">
-            &nbsp;
-          </li>
         </ul>
-        <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
-          <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
-            <p class="title-form-scan">Introduzca su qrCode para entregar</p>
-            <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
-            <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)"
-              class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
-          </div>
-          <strong class="exception web-font-small">
-            Hubo Alguna Excepción? No
-            <div class="onoffswitch">
-              <input type="checkbox" v-model="exception" name="onoffswitch"
-                :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
-                id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
-              <label class="onoffswitch-label" for="myonoffswitch"></label>
-            </div>
-            Si
-          </strong>
-          <timeline :step="step" :exception="exception" :resultScan="resultScan" :imagiElement="imagiElement"
-            @action="getShow($event)" @resetSign="resetSign()" />
+      </div>
+      <div v-if="image" class="showCamera">
+        <font-awesome-icon v-if="cameraOn || image" icon="times" class="close" @click="stopCamera()" />
+        <img class="result-scan" :src="image" alt="" />
+      </div>
+
+      <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
+        <font-awesome-icon v-if="cameraOn" icon="times" class="close" @click="stopCamera()" />
+        <camera class="camera" :resolution="{ width: 1620, height: 1450 }" ref="Camera"></camera>
+      </div>
+      <div v-if="cameraOn || image" class="
+          cont-camera
+          uk-flex-between
+          uk-flex-wrap
+          uk-card
+          uk-card-default
+          uk-card-hover
+          uk-card-body
+        " style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc">
+        <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px">Tomar las Fotos</label>
+        <label class="img-div" style="position: relative">
+          <font-awesome-icon icon="images" />
+          <input type="file" @change="pickImage($event)" id="file-img" style="position: absolute; opacity: 0"
+            accept="image/*" />
+        </label>
+
+        <div class="snapshot-div">
+          <div @click="snapshot()" class="take-photo"></div>
+        </div>
+        <div class="button-div">
+          <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
+            Aceptar
+          </button>
         </div>
       </div>
+      <div v-if="cameraOn"></div>
+
+     
+      <transition name="modal">
+        <div v-if="isOpen">
+          <div class="overlay" @click.self="isOpen = false;">
+            <div class="modal">
+              <div class="">
+                <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
+                <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes?.totalOfOrders -
+                  totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
+                <form action="" autocomplete="off"> <input type="number" id="quantity" v-model="quantityForScan" class="uk-input"></form>
+                  <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
+                    <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px"
+                      @click="scanOrder()" type="button">Cancelar</button>
+                    <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()"
+                      type="button">Guardar</button>
+                  </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+      <ion-alert-controller></ion-alert-controller>
     </div>
-    <transition name="modal">
-      <div v-if="isOpen">
-        <div class="overlay" @click.self="isOpen = false;">
-          <div class="modal">
-            <div class="">
-              <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
-              <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes?.totalOfOrders -
-                totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
-              <form action="" autocomplete="off"> <input type="number" id="quantity" v-model="quantityForScan" class="uk-input"></form>
-                <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
-                  <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px"
-                    @click="scanOrder()" type="button">Cancelar</button>
-                  <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()"
-                    type="button">Guardar</button>
-                </p>
+     <div v-if="!cameraOn && !image" class="cont uk-card uk-card-default uk-card-hover">
+        <div class="action">
+          <ul v-if="!showProduct" class="box-orden">
+            <li v-for="product in firstStructureLoad" :key="product" :class="{
+              completedOrden: product?.completedScanned,
+              inProgressOrden: product?.scanProgress,
+            }" style="">
+              &nbsp;
+            </li>
+          </ul>
+          <div class="cont-container uk-card uk-card-default uk-card-hover uk-card-body">
+            <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
+              <p class="title-form-scan">Introduzca su qrCode para entregar</p>
+              <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
+              <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)"
+                class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
             </div>
+            <strong class="exception web-font-small">
+              Hubo Alguna Excepción? No
+              <div class="onoffswitch">
+                <input type="checkbox" v-model="exception" name="onoffswitch"
+                  :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
+                  id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
+                <label class="onoffswitch-label" for="myonoffswitch"></label>
+              </div>
+              Si
+            </strong>
+            <timeline :step="step" :exception="exception" :resultScan="resultScan" :imagiElement="imagiElement"
+              @action="getShow($event)" @resetSign="resetSign()" />
           </div>
         </div>
       </div>
-    </transition>
-    <ion-alert-controller></ion-alert-controller>
   </div>
+
 </template>
 
 <script>
@@ -565,6 +570,7 @@ export default {
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
         this.singnaturePosition = false
         this.showScanInput = false
+        this.showProduct = false
         this.getCam();
       } else if (value === "Singnature") {
         this.singnaturePosition = true
@@ -991,6 +997,7 @@ export default {
     async stopCamera() {
       this.showScanner = false
       this.cameraOn = false;
+      this.showProduct = true
       this.image = null;
       // await this.camera?.stop();
     },
@@ -1112,7 +1119,7 @@ export default {
 }
 .result-info {
   overflow: auto;
-  height: 100vh;
+  height: 60vh;
   display: flex;
   flex-direction: column;
 }
@@ -1274,11 +1281,15 @@ p {
   position: sticky;
   bottom: 0px;
   border-top: 1px solid #ccc;
+}
+.cont-container{
+   position: sticky;
+  bottom: 0px;
+  border-top: 1px solid #ccc;
   padding: 15px 0px;
+
 }
 .action {
-  position: absolute;
-  bottom: 0px;
   width: 100%;
 }
 
@@ -1321,7 +1332,7 @@ p {
   display: flex;
   padding: 4px 0px !important;
   border: 1px solid #ccc;
-  position: sticky;
+  position: absolute;
   bottom: 0px;
   width: 100%;
 }
