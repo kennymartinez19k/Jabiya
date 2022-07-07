@@ -426,7 +426,8 @@ export default {
         console.log(error);
       }
       let contProductsOdoo = 0;
-      this.order_lines.forEach((x) => {
+      console.log(this.order_lines)
+      this.order_lines?.forEach((x) => {
         if (!x.isRewardLine && x.productQuantityToInvoice === 0) {
           contProductsOdoo++;
         } else if (x.isRewardLine) {
