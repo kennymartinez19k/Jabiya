@@ -94,6 +94,8 @@ import { hostEnum } from '../types'
 import { Mixins } from '../mixins/mixins'
 
 
+  
+
 
 export default {
     alias: "Resumen de Facturas",
@@ -111,7 +113,6 @@ export default {
             summary: null,
             generalInformation: null,
             invoiceDetails: {},
-            // products: null,   orderScan
             idOrderForOdoo: {}
         }
     },
