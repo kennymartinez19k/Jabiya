@@ -94,6 +94,8 @@ import { hostEnum } from '../types'
 import { Mixins } from '../mixins/mixins'
 
 
+  
+
 
 export default {
     alias: "Resumen de Facturas",
@@ -111,7 +113,8 @@ export default {
             summary: null,
             generalInformation: null,
             invoiceDetails: {},
-            products: null
+            products: null,
+            idOrderForOdoo: {}
         }
     },
 
@@ -122,7 +125,7 @@ export default {
       return { isOpenRef, setOpen };
     },
     computed: {
-        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "orderScan"])
+        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "orderScan", "invoicesIdStore"])
     },
 
     async mounted() {
@@ -149,13 +152,17 @@ export default {
         orders.forEach(order => {
             this.products = order.products.map(x => x)
         })
+        if (this.invoicesIdStore.orderId) {
+            this.idOrderForOdoo = this.invoicesIdStore
+        } else {
+            this.idOrderForOdoo = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
+        }
+
         if (this.$router.options.history.state.back == '/details-invoices') {
 
             await this.getReportOdoo(idInvoices)
             await this.getSummary()
-
         }
-       
     },
     async created() {
         if (this.$router.options.history.state.back != '/details-invoices') {
@@ -169,7 +176,7 @@ export default {
         async getReportOdoo(id) {
             this.setOpen(true);
             try {
-                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/report/`, { withCredentials: true });
+                const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/order/${this.idOrderForOdoo.orderId}/report/`, { withCredentials: true });
                 this.invoiceDetails = result.data.result.data;
                 // console.log(this.invoiceDetails,'qqqqqqqqqqqqqqqqqqqqq')
             } catch (error) {

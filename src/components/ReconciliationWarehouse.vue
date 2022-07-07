@@ -1,4 +1,7 @@
 <template>
+ <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
+      @didDismiss="setOpen(false)">
+    </ion-loading>
   <div class="container">
     <!-- <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
             @didDismiss="setOpen(false)">
@@ -74,17 +77,31 @@ import axios from "axios";
 import { Profile } from "../mixins/Profile";
 import { hostEnum } from '../types'
 import { Mixins } from '../mixins/mixins'
+import { ref } from "vue";
+import { IonLoading } from "@ionic/vue";
+
 
 
 export default {
   alias: "Reporte de Conciliación",
+   setup() {
+    const isOpenRef = ref(false);
+    const setOpen = (state) => (isOpenRef.value = state);
+
+    return { isOpenRef, setOpen };
+  },
+  components: {
+    IonLoading,
+  },
 
   data() {
     return {
       loads: null,
       status: null,
       totalGeneral: [],
-      textAccordion: 'Ver Detalles por Orden'
+      textAccordion: 'Ver Detalles por Orden',
+      timeOut: 10000
+
     }
   },
   mixins: [Profile, Mixins],
@@ -94,6 +111,7 @@ export default {
   },
 
   async beforeMount() {
+    this.setOpen(true);
     if (this.loadStore) {
       this.loads = this.detailsLoadsStore
     } else {
@@ -115,6 +133,7 @@ export default {
     }
     await this.getReconciliation(this.loads.loadMapId);
     this.controltotal()
+    this.setOpen(false);
 
   },
 
