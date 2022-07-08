@@ -126,7 +126,7 @@ export default {
         type: null,
       },
       showException: true,
-      showSingnatureAndException: true,
+      //showSingnatureAndException: true,
       showSingnature: null,
       singnature: null,
       detailsException: [],
@@ -330,11 +330,11 @@ export default {
     },
     imagiElement: {
       handler: function (newVal) {
-        if (newVal.length === 0) {
-          this.showSingnatureAndException = true;
-        } else if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
+        // if (newVal.length === 0) {
+          //this.showSingnatureAndException = true;
+        /* } else */if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
           this.$emit("action", 'exception');
-          this.showSingnatureAndException = false;
+          //this.showSingnatureAndException = false;
         }
       }, deep: true
     }, 
@@ -342,20 +342,20 @@ export default {
       handler: function (newVal) {
         if(newVal) this.closeSingnature()
         if (newVal === false && this.step >= 2) {
-          this.showSingnatureAndException = false;
+          //this.showSingnatureAndException = false;
           this.causeExceptions.note = null;
           this.causeExceptions.type = null;
           this.showException = true;
-        } else if (
-          newVal === true &&
-          this.causeExceptions.note !== null &&
-          this.causeExceptions.type !== null &&
-          this.step >= 2
-        ) {
-          this.showSingnatureAndException = false;
-        } else if(newVal == true) {
-          this.showSingnatureAndException = true;
-        }
+         } /*else if (
+        //   newVal === true &&
+        //   this.causeExceptions.note !== null &&
+        //   this.causeExceptions.type !== null &&
+        //   this.step >= 2
+        // ) {
+        //   //this.showSingnatureAndException = false;
+        // } else if(newVal == true) {
+        //   //this.showSingnatureAndException = true;
+        // }*/
         if(newVal == false){
            this.causeExceptions.note = null;
           this.causeExceptions.type = null;
@@ -385,21 +385,21 @@ export default {
         }
     },
 
-    step: {
-      handler: function (newVal) {
-        if (
-          newVal >= 2 &&
-          this.exception === true &&
-          this.causeExceptions.note !== null &&
-          this.causeExceptions.type !== null
-        ) {
-          this.showSingnatureAndException = false;
-        } else if (newVal >= 2 && this.exception === false) {
-          this.showSingnatureAndException = false;
-        }
-      },
-      deep: true,
-    },
+    // step: {
+    //   handler: function (newVal) {
+    //     if (
+    //       newVal >= 2 &&
+    //       this.exception === true &&
+    //       this.causeExceptions.note !== null &&
+    //       this.causeExceptions.type !== null
+    //     ) {
+    //       //this.showSingnatureAndException = false;
+    //     } else if (newVal >= 2 && this.exception === false) {
+    //       //this.showSingnatureAndException = false;
+    //     }
+    //   },
+    //   deep: true,
+    // },
   },
   methods: {
    async getShow(value) {
@@ -409,7 +409,6 @@ export default {
       }
       if (value === "exception") {
         this.dataExteions(await JSON.parse(localStorage.getItem('detailsException')))
-        // UIkit.modal("#exception").show();
         this.isOpen = true
 
         if (this.imagiElement.length > 0) {
@@ -428,7 +427,7 @@ export default {
 
       this.causeExceptions.note = null;
       this.causeExceptions.type = null;
-      this.showSingnatureAndException = true;
+      //this.showSingnatureAndException = true;
       this.$store.commit("setExceptions", this.causeExceptions);
       this.showException = false;
     },
@@ -440,30 +439,30 @@ export default {
         this.isOpen = false
         this.showException = true
         this.$store.commit("setExceptions", this.causeExceptions);
-        if (
-          this.exception === true &&
-          this.causeExceptions.note !== null &&
-          this.causeExceptions.type !== null &&
-          this.step >= 2 && 
-          this.imagiElement.length > 0
-        ) {
-          this.showSingnatureAndException = false;
-        }
+        // if (
+        //   this.exception === true &&
+        //   this.causeExceptions.note !== null &&
+        //   this.causeExceptions.type !== null &&
+        //   this.step >= 2 && 
+        //   this.imagiElement.length > 0
+        // ) {
+        //   //this.showSingnatureAndException = false;
+        // }
         this.showException = false
       }
     },
     closeSingnature() {
       this.showSingnature = null;
       this.singnature = null;
-      this.showSingnatureAndException = true;
+      //this.showSingnatureAndException = true;
         this.$emit("resetSign", false);
     },
     changeImage(){
-      if (this.imageTimeline?.length === 0) {
+     /* if (this.imageTimeline?.length === 0) {
           this.showSingnatureAndException = true;
-        } else if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
+        } else */ if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
           this.$emit("action", 'exception');
-          this.showSingnatureAndException = false;
+          //this.showSingnatureAndException = false;
         }
     },
     async dataExteions(value) {
