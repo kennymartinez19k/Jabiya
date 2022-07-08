@@ -188,7 +188,7 @@
                     <span class="font-weight-medium">Orden: </span><span>{{ order?.order_num }}</span>
                   </p>
                   <p class="web-font-small">
-                    <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.products?.length }}<span></span>
+                    <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.no_of_boxes }}<span></span>
                   </p>
                 </div>
 
