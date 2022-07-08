@@ -2,12 +2,9 @@
   <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere Envio..." :duration="timeout"
     @didDismiss="setOpen(false)">
   </ion-loading>
-
-  <div class="uk-flex uk-flex-column uk-flex-between" :class="{ backg: resultScan }">
-    <div>
     <div class="stiky">
       <p class="web-font-small title-load-number" style="font-size: 13px; font-weight: 500">
-        {{ load?.loadNumber }} 
+        {{ load?.loadNumber }}
       </p>
       <div class="
           uk-flex
@@ -28,6 +25,8 @@
         </div>
       </div>
     </div>
+  <div class="uk-flex uk-flex-column uk-flex-between" style="height:90vh" :class="{ backg: resultScan }">
+    <div>
       <div class="result-info">
         <div v-if="showScanner">
           <StreamBarcodeReader @decode="onDecode" @loaded="onLoaded"></StreamBarcodeReader>
@@ -166,7 +165,7 @@
               &nbsp;
             </li>
           </ul>
-          <div class="cont-container uk-card uk-card-default uk-card-hover uk-card-body">
+          <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
             <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
               <p class="title-form-scan">Introduzca su qrCode para entregar</p>
               <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
@@ -189,7 +188,6 @@
         </div>
       </div>
   </div>
-
 </template>
 
 <script>
@@ -1119,7 +1117,7 @@ export default {
 }
 .result-info {
   overflow: auto;
-  height: 60vh;
+  height:65vh;
   display: flex;
   flex-direction: column;
 }
@@ -1219,7 +1217,8 @@ p {
 .uk-list{
   list-style: none;
   overflow: auto;
-  height: 385px; /* verify Height */
+  height: auto;
+  margin-bottom: 75px /* verify Height */
 }
 .status-order {
   width: 100%;
@@ -1281,15 +1280,11 @@ p {
   position: sticky;
   bottom: 0px;
   border-top: 1px solid #ccc;
-}
-.cont-container{
-   position: sticky;
-  bottom: 0px;
-  border-top: 1px solid #ccc;
   padding: 15px 0px;
-
 }
 .action {
+  position: absolute;
+  bottom: 0px;
   width: 100%;
 }
 
