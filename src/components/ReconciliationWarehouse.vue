@@ -3,9 +3,6 @@
       @didDismiss="setOpen(false)">
     </ion-loading>
   <div class="container">
-    <!-- <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
-            @didDismiss="setOpen(false)">
-        </ion-loading> -->
     <ul>
       <li>
         <h2 class="uk-text-left uk-text-center">Totales Para Conciliación</h2>
