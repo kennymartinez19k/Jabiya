@@ -163,7 +163,7 @@
 
           <div v-if="detailsLoads.allowOrderChangesAtDelivery && detailsLoads.loadingStatus.text == 'Delivered'">
             <button type="button" class="uk-button uk-button-primary" @click="changeRoute('reconciliation')">Reporte de
-              Conciliación</button>
+              Cuadre</button>
           </div>
 
           <div v-if="detailsLoads?.loadType == profile?.b2b" class="item-order-deliver">
@@ -343,7 +343,7 @@ export default {
     }
     this.orders = this.detailsLoads?.Orders
     this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
-console.log(this.detailsLoads,'gggggggggggggggggggggggggggg')
+console.log(this.detailsLoads,'detail load')
     this.setOpen(false)
 
   },
