@@ -260,6 +260,7 @@ export default {
             this.setOpen(true)
             await this.uploadOrDownload(this.load)
             this.setOpen(false)
+            console.log('eilson')
             this.btnDisabled = false
 
         },
