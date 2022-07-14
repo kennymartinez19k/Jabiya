@@ -18,19 +18,19 @@
           <tbody>
             <tr v-for="(details) in totalGeneral" :key="details">
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small ">{{
-                details?.product_name}}</td>
+              details?.product_name}}</td>
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small">{{
-                details?.quantity }}</td>
+              details?.quantity }}</td>
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small">{{
-                details?.delivered }}</td>
+              details?.delivered }}</td>
               <td v-if="details?.quantity - details?.delivered > 0" class="web-font-small uk-text-bold">{{
-                details?.quantity - details?.delivered }}</td>
+              details?.quantity - details?.delivered }}</td>
             </tr>
           </tbody>
         </table>
         <div>
-          <h6 class="uk-margin-remove "><span>Total $ a Entregar en Almacén:</span> <span>RD$ {{
-              separatorNumber(total) }}</span></h6>
+          <h6 class="uk-margin-remove "><span>Total $ a Entregar en Almacén:</span> <span>{{
+          formatCurrency(getTotalReconciliation()) }}</span></h6>
         </div>
       </li>
     </ul>
@@ -96,7 +96,7 @@ export default {
       totalGeneral: [],
       textAccordion: 'Ver Detalles por Orden',
       timeOut: 10000,
-      total: null
+      reconciliation: []
 
     }
   },
@@ -139,7 +139,6 @@ export default {
         const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation/`, { withCredentials: true });
         this.reconciliation = result.data.result.data
         console.log(this.reconciliation, 'reconciliation summary ')
-        this.getTotalReconciliation()
       } catch (error) {
         console.log(error)
       }
@@ -169,10 +168,13 @@ export default {
         this.textAccordion = 'Ocultar Detalles por Orden'
       }
     },
+
     getTotalReconciliation() {
+      let total = 0
       this.reconciliation.forEach(x => {
-        this.total += x.total
-     })
+        total += x.total
+      })
+     return total
     }
   }
 }

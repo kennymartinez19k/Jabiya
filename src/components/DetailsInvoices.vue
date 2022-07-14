@@ -32,9 +32,9 @@
         <p>
           <strong>Total:</strong>&nbsp;<span>
             <span v-if="customerDetails?.invoices.length > 0"> {{ customerDetails?.order?.currencySymbol }}{{
-            separatorNumber(customerDetails?.order?.total_invoice)}}</span>
+            formatCurrency(customerDetails?.order?.total_invoice)}}</span>
             <span v-else :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol }}{{
-            separatorNumber(customerDetails?.order?.amount_total) }}</span>&nbsp;
+            formatCurrency(customerDetails?.order?.amount_total) }}</span>&nbsp;
             <span v-if="showUpdating.length > 0" :class="{ recalculating: showUpdating.length > 0 }">Se recalcula al
               Crear la Factura</span></span>
         </p>
@@ -71,7 +71,7 @@
               <td v-if="!product.isRewardLine" :class="{ 'td-text': customerDetails?.order?.can_refund }"
                 class="uk-table-small uk-text-start">
                 {{ product.productName }}<br /><span>{{
-                product.currencySymbol }}{{ separatorNumber(product.price) }} </span>
+                product.currencySymbol }}{{ formatCurrency(product.price) }} </span>
                 <br />
               </td>
               <td :class="{ 'td-text': customerDetails?.order?.can_refund }" class="uk-text-center">

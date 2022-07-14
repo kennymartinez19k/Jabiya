@@ -290,12 +290,15 @@ export const Mixins = {
       if(status == "Created") return "Creada"
     },
 
-    separatorNumber(numb){
-      if(numb){
-          let str = numb.toFixed(2).toString().split(".");
-          str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          return str.join(".");
-      }
-    }
+   
+    formatCurrency(number) {
+      if (!number || isNaN(number)) return number 
+      var formatter = new Intl.NumberFormat('es-DO', {
+        style: 'currency',
+        currency: 'DOP',
+      });
+
+      return formatter.format(number);
+     }
   },
 };
