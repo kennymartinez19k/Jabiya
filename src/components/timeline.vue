@@ -126,7 +126,6 @@ export default {
         type: null,
       },
       showException: true,
-      //showSingnatureAndException: true,
       showSingnature: null,
       singnature: null,
       detailsException: [],
@@ -259,6 +258,9 @@ export default {
       } else if (!scanRequired && allowInvoices && downloadInvoices) {
         return true
 
+      } else if (scanRequired && this.resultScan) {
+        return true
+
       } else {
         return false
       }
@@ -302,15 +304,14 @@ export default {
   },
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
-
-    if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
+    if (this.orderScan ) {
+      this.order = this.orderScan
+    } else {
       this.order = JSON.parse(localStorage.getItem("scanOrder"));
       this.$store.commit("scanOrder", this.order);
-    } else {
-      this.order = this.orderScan
     }
 
-    this.orderInformation = await this.loadStore.Orders.find(x => x.order_num)
+    this.orderInformation = await this.loadStore.Orders.find(x => x.order_num === this.order[0].order_num)
 
     if (!this.invoiceDownloadStore?.status && this.loadStore.allowOrderChangesAtDelivery) {
       let invoicesDwl = JSON.parse(localStorage.getItem(`getInvoiceDownload${this.orderInformation.order_num}`))
@@ -330,11 +331,8 @@ export default {
     },
     imagiElement: {
       handler: function (newVal) {
-        // if (newVal.length === 0) {
-          //this.showSingnatureAndException = true;
-        /* } else */if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
+        if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
           this.$emit("action", 'exception');
-          //this.showSingnatureAndException = false;
         }
       }, deep: true
     }, 
@@ -342,20 +340,10 @@ export default {
       handler: function (newVal) {
         if(newVal) this.closeSingnature()
         if (newVal === false && this.step >= 2) {
-          //this.showSingnatureAndException = false;
           this.causeExceptions.note = null;
           this.causeExceptions.type = null;
           this.showException = true;
-         } /*else if (
-        //   newVal === true &&
-        //   this.causeExceptions.note !== null &&
-        //   this.causeExceptions.type !== null &&
-        //   this.step >= 2
-        // ) {
-        //   //this.showSingnatureAndException = false;
-        // } else if(newVal == true) {
-        //   //this.showSingnatureAndException = true;
-        // }*/
+         } 
         if(newVal == false){
            this.causeExceptions.note = null;
           this.causeExceptions.type = null;
@@ -385,21 +373,7 @@ export default {
         }
     },
 
-    // step: {
-    //   handler: function (newVal) {
-    //     if (
-    //       newVal >= 2 &&
-    //       this.exception === true &&
-    //       this.causeExceptions.note !== null &&
-    //       this.causeExceptions.type !== null
-    //     ) {
-    //       //this.showSingnatureAndException = false;
-    //     } else if (newVal >= 2 && this.exception === false) {
-    //       //this.showSingnatureAndException = false;
-    //     }
-    //   },
-    //   deep: true,
-    // },
+  
   },
   methods: {
    async getShow(value) {
@@ -427,7 +401,6 @@ export default {
 
       this.causeExceptions.note = null;
       this.causeExceptions.type = null;
-      //this.showSingnatureAndException = true;
       this.$store.commit("setExceptions", this.causeExceptions);
       this.showException = false;
     },
@@ -439,31 +412,19 @@ export default {
         this.isOpen = false
         this.showException = true
         this.$store.commit("setExceptions", this.causeExceptions);
-        // if (
-        //   this.exception === true &&
-        //   this.causeExceptions.note !== null &&
-        //   this.causeExceptions.type !== null &&
-        //   this.step >= 2 && 
-        //   this.imagiElement.length > 0
-        // ) {
-        //   //this.showSingnatureAndException = false;
-        // }
+     
         this.showException = false
       }
     },
     closeSingnature() {
       this.showSingnature = null;
       this.singnature = null;
-      //this.showSingnatureAndException = true;
         this.$emit("resetSign", false);
     },
     changeImage(){
-     /* if (this.imageTimeline?.length === 0) {
-          this.showSingnatureAndException = true;
-        } else */ if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
-          this.$emit("action", 'exception');
-          //this.showSingnatureAndException = false;
-        }
+      if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
+        this.$emit("action", 'exception');
+      }
     },
     async dataExteions(value) {
     this.detailsException = value

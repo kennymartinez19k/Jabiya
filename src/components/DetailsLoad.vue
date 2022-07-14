@@ -227,8 +227,7 @@
                   <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                     <!-- uk-open -->
                     <li class="uk-margin-remove">
-                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{
-                      textAccordionProduct }}</a>
+                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{ order.textAccordionProduct }}</a>
                       <div class="uk-accordion-content uk-margin-remove uk-padding-remove">
                         <div class="details-product">
                           <p class="item web-font-small">
@@ -250,9 +249,8 @@
                     </li>
                   </ul>
                 </div>
-
-
               </div>
+
             </div>
           </div>
           <span v-if="orders?.length > quantityShow && load?.loadType == profile?.b2b && showOrders"
@@ -343,7 +341,9 @@ export default {
     }
     this.orders = this.detailsLoads?.Orders
     this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
-console.log(this.detailsLoads,'detail load')
+    this.orders?.forEach(order => {
+      order.textAccordionProduct = 'Mostrar Productos'
+    })
     this.setOpen(false)
 
   },
@@ -368,6 +368,7 @@ console.log(this.detailsLoads,'detail load')
     } else if (this.userInfo.userType === "Provider") {
       this.costText = 'Costo de Transporte'
     }
+ 
   },
 
   methods: {
@@ -447,13 +448,17 @@ console.log(this.detailsLoads,'detail load')
       this.showOrders = value;
       this.quantityShow = quantity
     },
-    changeText() {
-      if (this.textAccordionProduct !== 'Mostrar Productos') {
-        this.textAccordionProduct = 'Mostrar Productos'
-      } else {
-        this.textAccordionProduct = 'Ocultar Productos'
-      }
-    },
+    changeText(name) {
+      this.orders.forEach(order => {
+        if (order.order_num === name) {
+          if (order.textAccordionProduct !== 'Mostrar Productos') {
+            order.textAccordionProduct = 'Mostrar Productos'
+          } else {
+            order.textAccordionProduct = 'Ocultar Productos'
+          }
+        }
+      })
+    }
   },
 };
 </script>
@@ -556,11 +561,6 @@ a {
   margin: 15px 0px;
   padding-left: 15px;
 }
-
-/* .addres-info {
-  display: block;
-} */
-
 .uk-button {
   font-weight: 600;
   font-size: 13px;

@@ -1,11 +1,11 @@
 <template>
- <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
-      @didDismiss="setOpen(false)">
-    </ion-loading>
-  <div class="container">
+  <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
+    @didDismiss="setOpen(false)">
+  </ion-loading>
+  <div class="container scroll">
     <ul>
       <li>
-        <h2 class="uk-text-left uk-text-center">Totales Para Conciliación</h2>
+        <h2 class="uk-text-left uk-text-center">Totales Para Cuadre</h2>
         <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
           <thead>
             <tr>
@@ -28,9 +28,9 @@
             </tr>
           </tbody>
         </table>
-        <div v-for=" (data, i) in reconciliation" :key="data" v-show="i < 1">
-          <h6 class="uk-margin-remove uk-flex uk-flex-around"><span>Total $ a Entregar en Almacén:</span> <span>RD$ {{
-              separatorNumber(data.total) }}</span></h6>
+        <div>
+          <h6 class="uk-margin-remove "><span>Total $ a Entregar en Almacén:</span> <span>RD$ {{
+              separatorNumber(total) }}</span></h6>
         </div>
       </li>
     </ul>
@@ -47,14 +47,14 @@
                 <th class="web-font-small">Entregados</th>
               </tr>
             </thead>
-            <tbody v-for="(info, index) in reconciliation" :key="info">
+            <tbody v-for="(info) in reconciliation" :key="info">
               <tr v-for="prod in info?.products" :key="prod">
                 <td class="web-font-small">{{ info?.order_name }}</td>
                 <td class="web-font-small ">{{ prod?.product_name }}</td>
                 <td class="web-font-small">{{ prod?.quantity }}</td>
                 <td class="web-font-small">{{ prod?.delivered }}</td>
               </tr>
-              <tr v-if="index < reconciliation.length -1">
+              <tr>
                 <td></td>
               </tr>
             </tbody>
@@ -63,7 +63,7 @@
         </div>
       </li>
     </ul>
-      </div>
+  </div>
 </template>  
 
 <script>
@@ -78,7 +78,7 @@ import { IonLoading } from "@ionic/vue";
 
 
 export default {
-  alias: "Reporte de Conciliación",
+  alias: "Reporte de Cuadre",
    setup() {
     const isOpenRef = ref(false);
     const setOpen = (state) => (isOpenRef.value = state);
@@ -95,7 +95,8 @@ export default {
       status: null,
       totalGeneral: [],
       textAccordion: 'Ver Detalles por Orden',
-      timeOut: 10000
+      timeOut: 10000,
+      total: null
 
     }
   },
@@ -138,6 +139,7 @@ export default {
         const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation/`, { withCredentials: true });
         this.reconciliation = result.data.result.data
         console.log(this.reconciliation, 'reconciliation summary ')
+        this.getTotalReconciliation()
       } catch (error) {
         console.log(error)
       }
@@ -166,12 +168,19 @@ export default {
       } else {
         this.textAccordion = 'Ocultar Detalles por Orden'
       }
+    },
+    getTotalReconciliation() {
+      this.reconciliation.forEach(x => {
+        this.total += x.total
+     })
     }
   }
 }
 </script>
 
 <style scoped>
+
+
 .uk-table th {
   padding: 16px 3px;
   text-align: center;
@@ -191,6 +200,9 @@ th {
 
 h6 {
   margin-bottom: 0px;
+  display: flex;
+  font-size: 15px;
+  justify-content: space-around;
 }
 
 ul {
@@ -219,11 +231,11 @@ ul {
   transform: rotate(180deg);
   --main-bg-color: false
 }
-/* hr {
-  height: 2px;
-  background-color: black;
-  box-shadow: 2px 4px 4px black;
-  width: 96%;
-  margin: 6px;
-} */
+
+.scroll {
+  height: 100vh;
+  overflow-x: none;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
 </style>

@@ -205,9 +205,6 @@ import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
 import { StreamBarcodeReader } from "vue-barcode-reader";
-// import axios from "axios";
-// import { hostEnum } from '../types'
-
 
 App.addListener("appRestoredResult", (data) => {
   console.log("Restored state:", data);
@@ -233,8 +230,6 @@ export default {
   mixins: [Mixins],
   data() {
     return {
-      // hostEnum,
-
       profile,
       isOpen: false,
       show: null,
@@ -666,7 +661,6 @@ export default {
             this.totalLimitOfBoxes.scanned =
               detailsOrderToScan.loadScanningCounter;
             this.totalLimitOfBoxes.totalOfOrders = noScan1by1;
-            // UIkit.modal("#deliver-quantity").show();
             this.isOpen = true
             this.infoForScan = {
               orderId: order._id,
@@ -893,7 +887,6 @@ export default {
         order: null
       }
       this.$store.commit("getInvoiceDownload",dwlStatus);
-      // this.$store.commit("getInvoiceDownload",false);
     },
 
     allProductUpload() {
@@ -997,7 +990,6 @@ export default {
       this.cameraOn = false;
       this.showProduct = true
       this.image = null;
-      // await this.camera?.stop();
     },
     async pickImage(event) {
       let blob = event.target.files[0];

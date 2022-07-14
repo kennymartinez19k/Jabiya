@@ -159,23 +159,6 @@
           </div>
           <div class="disabled-container"></div>
         </li>
-        <!-- <li 
-          v-if="isReturnOrder"
-          :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
-          <div class="info web-font-small"><span>6</span></div>
-          <div   
-            @click="changeRoute('return-container')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.returnContainer?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('return-container')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.returnContainer" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.returnContainer" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
-        </li> -->
       </ul>
     </div>
     <ion-alert-controller></ion-alert-controller>

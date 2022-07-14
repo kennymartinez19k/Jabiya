@@ -162,7 +162,7 @@
             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
               <!-- uk-open -->
               <li class="uk-margin-remove">
-                <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{ textAccordionProduct }}</a
+                <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{ order.textAccordionProduct }}</a
                 >
                 <div
                   class="
@@ -327,7 +327,6 @@ export default {
     this.setOpen(false);
     this.orders.map((x) => {
       x.totalQuantity = 0;
-      // x.isSelected = false
       x.totalOrdersScanned = 0;
       x.products.forEach((z) => {
         x.totalQuantity += z.quantity;
@@ -352,6 +351,9 @@ export default {
         });
       });
     }
+    this.orders?.forEach(order => {
+        order.textAccordionProduct = 'Mostrar Productos'
+    })
     this.filterByOrders(false);
   },
   methods: {
@@ -449,12 +451,16 @@ export default {
         );
       }
     },
-    changeText() {
-      if (this.textAccordionProduct !== 'Mostrar Productos') {
-        this.textAccordionProduct = 'Mostrar Productos'
-      } else {
-        this.textAccordionProduct = 'Ocultar Productos'
-      }
+    changeText(name) {
+      this.ordersToDisplay.forEach(order => {
+        if (order.order_num === name) {
+          if (order.textAccordionProduct !== 'Mostrar Productos') {
+            order.textAccordionProduct = 'Mostrar Productos'
+          } else {
+            order.textAccordionProduct = 'Ocultar Productos'
+          }
+        }
+      })
     }
   },
 };
@@ -585,9 +591,7 @@ p {
   width: 100%;
   padding: 10px 11px;
 }
-/* .select-all input{
-  transform: scale(1.1);
-} */
+
 .select-all input :focus-visible {
   outline: 0px dotted #333;
 }
