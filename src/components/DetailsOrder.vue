@@ -89,9 +89,9 @@
                                         </p>
                                     </div>
                                     <div v-for="item in order.products" :key="item.id" class="details-product">
-                                        <p class="item web-font-small">{{item?.description}}</p>
-                                        <p class="item web-font-small">{{item.qrCode}}</p>
-                                        <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}
+                                        <p class="item web-font-small font-small">{{item?.description}}</p>
+                                        <p class="item web-font-small font-small">{{item.qrCode}}</p>
+                                        <p class="item web-font-small font-small">{{item.loadScanningCounter}}/{{item.quantity}}
                                         </p>
                                     </div>
                                 </div>
@@ -295,6 +295,7 @@ export default {
 
 <style scoped>
 
+
 :root {
     --su-size-text: 12px;
 }
@@ -491,6 +492,9 @@ header::after {
     overflow-x: none;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+.font-small {
+    font-size: 10px;
 }
 @media (min-width: 600px) {
       .container-deliver {

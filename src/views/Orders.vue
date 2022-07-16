@@ -1,40 +1,28 @@
 <template>
   <div class="uk-flex uk-flex-column cnt">
-    <ion-loading
-      :is-open="isOpenRef"
-      cssClass="my-custom-class"
-      message="Por favor Espere..."
-      :duration="timeout"
-      @didDismiss="setOpen(false)"
-    >
+    <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
+      @didDismiss="setOpen(false)">
     </ion-loading>
     <div class="stiky">
-      <p
-        style="font-size: 13px ; font-weight: 500"
-        class="web-font-small"
-      >
+      <p style="font-size: 13px ; font-weight: 500" class="web-font-small">
         {{ loadStore?.loadNumber }}
       </p>
-      <div
-        class="
+      <div class="
           uk-flex
           uk-flex
           uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
-        "
-        style="align-items: center"
-      >
+        " style="align-items: center">
         <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span
-            ><span>&nbsp; {{ shipperName(loadStore) }}</span>
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(loadStore) }}</span>
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ loadStore?.firstOrdenInfo ? loadStore?.firstOrdenInfo?.sector : loadStore?.Orders[0]?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ loadStore?.firstOrdenInfo ?
+              loadStore?.firstOrdenInfo?.sector : loadStore?.Orders[0]?.sector }}</span>
           </p>
         </div>
       </div>
@@ -47,61 +35,30 @@
               Ver Ordenes: &nbsp; Pendientes
             </span>
             <div class="onoffswitch">
-              <input
-                type="checkbox"
-                v-model="filterOrders"
-                name="onoffswitch"
-                class="onoffswitch-checkbox"
-                id="myonoffswitch"
-                tabindex="0"
-              />
+              <input type="checkbox" v-model="filterOrders" name="onoffswitch" class="onoffswitch-checkbox"
+                id="myonoffswitch" tabindex="0" />
               <label class="onoffswitch-label" for="myonoffswitch"></label>
             </div>
             <span class="filter-message web-font-small"> Todas </span>
           </div>
         </div>
       </header>
-      <div
-        class="uk-padding-small container-item"
-        style="margin-bottom: 96px !important"
-      >
+      <div class="uk-padding-small container-item" style="margin-bottom: 96px !important">
         <div class="uk-flex select-all web-font-small">
-          <input
-            type="checkbox"
-            class="uk-checkbox"
-            v-model="selectAllOrders"
-            id="all-orders"
-          />
+          <input type="checkbox" class="uk-checkbox" v-model="selectAllOrders" id="all-orders" />
           &nbsp;
-          <label for="all-orders"
-            >&nbsp;<strong class="web-font-small"
-              >Seleccionar Todas las Ordenes</strong
-            ></label
-          >
+          <label for="all-orders">&nbsp;<strong class="web-font-small">Seleccionar Todas las Ordenes</strong></label>
         </div>
-        <div
-          v-for="order in ordersToDisplay"
-          :key="order"
-          class="
+        <div v-for="order in ordersToDisplay" :key="order" class="
             uk-card
             item-upload
             uk-card-default uk-card-body uk-flex uk-flex-between
-          "
-          :class="{
+          " :class="{
             ordenCompleted: order?.completed,
             'order-status': order?.totalOrdersScanned === order?.totalQuantity,
-          }"
-        >
-          <div
-            v-if="order?.totalOrdersScanned !== order?.totalQuantity"
-            class="order-select"
-          >
-            <input
-              @click="orderForScan(order)"
-              v-model="order.isSelected"
-              type="checkbox"
-              class="uk-checkbox"
-            />
+          }">
+          <div v-if="order?.totalOrdersScanned !== order?.totalQuantity" class="order-select">
+            <input @click="orderForScan(order)" v-model="order.isSelected" type="checkbox" class="uk-checkbox" />
           </div>
           <div v-else class="order-completed">
             <font-awesome-icon icon="check" />
@@ -109,20 +66,14 @@
           <div class="uk-text-left info-user">
             <div class="btn uk-flex">
               <div class="uk-flex uk-flex-column uk-text-left">
-                <span
-                  v-if="order.completed"
-                  style="
+                <span v-if="order.completed" style="
                     display: flex;
                     position: relative;
                     top: -4px;
                     color: green;
-                  "
-                >
+                  ">
                   <strong class="web-font-small">Completado </strong>
-                  <font-awesome-icon
-                    icon="check"
-                    style="font-size: 14px; margin: 3px"
-                  />
+                  <font-awesome-icon icon="check" style="font-size: 14px; margin: 3px" />
                 </span>
                 <p class="uk-width-1-1 web-font-small">
                   <span class="font-weight-medium">Cliente: </span>
@@ -131,44 +82,36 @@
               </div>
             </div>
             <p style="margin-right: 10px !important" class="web-font-small">
-              <span class="font-weight-medium">Orden: </span
-              ><span>{{ order.order_num }}</span>
+              <span class="font-weight-medium">Orden: </span><span>{{ order.order_num }}</span>
             </p>
             <div class="uk-flex uk-flex-wrap web-font-small">
               <p>
-                <span class="font-weight-medium">Cajas / Pallets: </span
-                ><span>{{ order?.no_of_boxes }}</span>
+                <span class="font-weight-medium">Cajas / Pallets: </span><span>{{ order?.no_of_boxes }}</span>
               </p>
               <p>
-                <span class="font-weight-medium uk-margin-medium-left"
-                  >Escaneadas: </span
-                ><span
-                  :class="{ 'order-delivered': order?.status === 'Delivered' }"
-                  >{{ order?.totalOrdersScanned }}/{{
-                    order?.totalQuantity
-                  }}</span
-                >
+                <span class="font-weight-medium uk-margin-medium-left">Escaneadas: </span><span
+                  :class="{ 'order-delivered': order?.status === 'Delivered' }">{{ order?.totalOrdersScanned }}/{{
+                  order?.totalQuantity
+                  }}</span>
               </p>
             </div>
             <p class="uk-width-1-1 web-font-small">
               <span class="font-weight-medium">Destino: </span>
               <span>
                 <font-awesome-icon icon="map-marker-alt" />
-                {{ order.address }}</span
-              >
+                {{ order.address }}
+              </span>
             </p>
           </div>
           <div style="width: 100%">
             <ul uk-accordion class="uk-margin-remove uk-padding-remove">
               <!-- uk-open -->
               <li class="uk-margin-remove">
-                <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{ order.textAccordionProduct }}</a
-                >
-                <div
-                  class="
+                <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{
+                  order.textAccordionProduct }}</a>
+                <div class="
                     uk-accordion-content uk-margin-remove uk-padding-remove
-                  "
-                >
+                  ">
                   <div class="details-product">
                     <p class="item web-font-small">
                       <span class="font-weight-medium">Producto: </span>
@@ -180,12 +123,8 @@
                       <span class="font-weight-medium">Escaneadas: </span>
                     </p>
                   </div>
-                  <div
-                    v-for="item in order.products"
-                    :key="item.id"
-                    class="details-product web-font-small"
-                  >
-                    <p class="item">{{ item?.name }}</p>
+                  <div v-for="item in order.products" :key="item.id" class="details-product web-font-small">
+                    <p class="item">{{ item?.description }}</p>
                     <p class="item">{{ item?.qrCode }}</p>
                     <p class="item">
                       {{ item?.loadScanningCounter }}/{{ item?.quantity }}
@@ -199,11 +138,7 @@
       </div>
     </div>
     <div class="button-opt">
-      <button
-        @click="scan()"
-        :disabled="showButton === true"
-        class="uk-button uk-button-primary"
-      >
+      <button @click="scan()" :disabled="showButton === true" class="uk-button uk-button-primary">
         Escanear y Cargar Camion
       </button>
     </div>

@@ -34,14 +34,14 @@
                   class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.transportCost *
-                  detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+                    detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 <div
                   v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)"
                   class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
                   <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.profitability *
-                  detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+                    detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
 
               </div>
@@ -80,8 +80,8 @@
               <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
                 <span>{{
-                detailsLoads?.Orders[0]?.order_num
-                }}</span>
+                  detailsLoads?.Orders[0]?.order_num
+                  }}</span>
               </div>
               <div
                 v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && detailsLoads.loadType == profile.container &&  !isReturnLoad(detailsLoads)"
@@ -118,14 +118,14 @@
                 class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{
-                info?.driver
-                }}</span>
+                  info?.driver
+                  }}</span>
               </div>
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'"
                 class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">Vehiculo:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{ info?.brand }} {{ info?.model }} {{
-                info?.color }}, Placa:
+                  info?.color }}, Placa:
                   {{ info?.license_no }}
                 </span>
               </div>
@@ -163,7 +163,7 @@
 
           <div v-if="detailsLoads.allowOrderChangesAtDelivery && detailsLoads.loadingStatus.text == 'Delivered'">
             <button type="button" class="uk-button uk-button-primary" @click="changeRoute('reconciliation')">Reporte de
-              Cuadre</button>
+              Cuadre Total</button>
           </div>
 
           <div v-if="detailsLoads?.loadType == profile?.b2b" class="item-order-deliver">
@@ -227,7 +227,8 @@
                   <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                     <!-- uk-open -->
                     <li class="uk-margin-remove">
-                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{ order.textAccordionProduct }}</a>
+                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{
+                        order.textAccordionProduct }}</a>
                       <div class="uk-accordion-content uk-margin-remove uk-padding-remove">
                         <div class="details-product">
                           <p class="item web-font-small">
@@ -241,9 +242,9 @@
                           </p>
                         </div>
                         <div v-for="item in order.products" :key="item.id" class="details-product">
-                          <p class="item web-font-small">{{ item?.description }}</p>
-                          <p class="item web-font-small">{{item.qrCode}}</p>
-                          <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+                          <p class="item web-font-small font-small">{{ item?.description }}</p>
+                          <p class="item web-font-small font-small">{{item.qrCode}}</p>
+                          <p class="item web-font-small font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
                         </div>
                       </div>
                     </li>
@@ -345,7 +346,6 @@ export default {
       order.textAccordionProduct = 'Mostrar Productos'
     })
     this.setOpen(false)
-
   },
 
   computed: {
@@ -464,6 +464,7 @@ export default {
 </script>
 
 <style scoped>
+
 
 
 
@@ -596,6 +597,9 @@ a {
 .details-product .item {
   width: 33%;
   text-align: center;
+}
+.font-small {
+  font-size: 10px;
 }
 
 @media (min-width: 600px) {

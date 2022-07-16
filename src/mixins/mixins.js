@@ -267,6 +267,7 @@ export const Mixins = {
            })
            listOfOrderTotal = products
       }
+      console.log(listOfOrders,'listOfOrders')
       return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
     },
 
@@ -289,7 +290,14 @@ export const Mixins = {
       if(status == "Delivered with exceptions") return "Entregada Con Excepciones"
       if(status == "Created") return "Creada"
     },
-
+    
+    separatorNumber(numb) {
+      if (numb) {
+        let str = numb.toFixed(2).toString().split(".");
+        str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return str.join(".");
+      }
+    },
    
     formatCurrency(number) {
       if (!number || isNaN(number)) return number 
@@ -299,6 +307,11 @@ export const Mixins = {
       });
 
       return formatter.format(number);
-     }
+    },
+    
+     resetException() {
+      this.$store.commit("setExceptions", { note: null, type: null });
+      this.$store.commit("getChageQuantityToProduct", { exception: false, changeQuantity: null, order_num: null });
+    }
   },
 };

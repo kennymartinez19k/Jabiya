@@ -222,11 +222,11 @@ export default {
         "[L]<b> Descripcion </b>[L]<b> Cantidad </b>[R]<b> Unitario </b>[R]<b> Importe </b>\n\n" +
         "{{products}}" +
         "[C]<b>------------------------------------------------</b>\n" +
-        "[L][L][R]<b>Subtotal</b>   RD$ {{subtotal}}\n" +
+        "[L][L][R]<b>Subtotal</b> RD${{subtotal}}\n" +
         "[L][L][R]--------------------------\n" +
-        "[L][L][R]<b>ITBS</b>   RD$ {{amount_tax}}\n" +
+        "[L][L][R]<b>ITBS</b>     RD${{amount_tax}}\n" +
         "[L][L][R]--------------------------\n" +
-        "[L][L][R]<b>Total</b>   RD$ {{amount_total}}\n" +
+        "[L][L][R]<b>Total</b>    RD${{amount_total}}\n" +
         "[L][L][R]<b>--------------------------</b>\n" +
         "[L] \n" +
         "[L]Por favor utilice la siguiente referencia al realizar su pago\n\n" +
@@ -235,7 +235,7 @@ export default {
         "[L]\n" +
         "[L]\n" +
         "[C]<b>------------------------------------------------</b>\n" +
-        "[C]Firma \n",
+        "[R]Firma   \n",
     };
   },
   setup() {
@@ -549,16 +549,19 @@ export default {
         secondStructure: this.listOfOrderTotal,
       };
       this.$store.commit("setStructureToScan", structureInvoices);
+      localStorage.setItem("setStructureToScan", JSON.stringify(structureInvoices))
     },
 
     async getInvoicesPrint(valuePrint) {
-      try {
+      // try {
         let products = "";
         let plusData = []
         this.$store.commit("getInvoiceDetails", valuePrint);
         localStorage.setItem('invoiceDetails', JSON.stringify(valuePrint));
+        console.log(valuePrint,'qqqqqqqqqq')
         const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/order/${this.idInvoices.orderId}/report/`, { withCredentials: true });
         let invoice = result.data.result.data;
+        console.log(invoice,'wwwwwwwwwwwwwwwwww')
         invoice.products.forEach((product, i) => {
           let plus = ''
           let dataDescription = ''
@@ -599,16 +602,16 @@ export default {
           product.qty = dataQty
           product.price_unit = dataPrice_unit
           product.price_subtotal = dataPrice_subtotal
-          products += "[L]" + product.description + "[R] " + product.qty + "[R] RD$ " + product.price_unit + "[R] RD$ " + product.price_subtotal + "\n" + plusData[i] + "\n\n";
+          products += "[L]" + product.description + "[R] " + product.qty + "[R] RD$" +product.price_unit + "[R] RD$" +product.price_subtotal + "\n" + plusData[i] + "\n\n";
         });
         let template = this.invoiceStructure
           .replace("{{name}}", invoice.name)
           .replace("{{invoice_date}}", invoice.invoice_date)
           .replace("{{invoice_date_due}}", invoice.invoice_date_due)
           .replace("{{invoice_origin}}", invoice.invoice_origin)
-          .replace("{{subtotal}}", invoice.subtotal)
-          .replace("{{amount_tax}}", invoice.amount_tax)
-          .replace("{{amount_total}}", invoice.amount_total)
+          .replace("{{subtotal}}", this.separatorNumber(invoice.subtotal))
+          .replace("{{amount_tax}}", this.separatorNumber(invoice.amount_tax))
+          .replace("{{amount_total}}", this.separatorNumber(invoice.amount_total))
           .replace("{{payment_reference}}", invoice.payment_reference)
           .replace(
             "{{invoice_partner_display_name}}",
@@ -618,9 +621,9 @@ export default {
           .replace("{{products}}", products)
         this.dataPrinter = template;
         this.testingPrint();
-      } catch (error) {
-        console.log(error, "error print");
-      }
+      // } catch (error) {
+      //   console.log(error, "error print");
+      // }
     },
     characterControl(qty, maxQty, text, type) {
       let data = ''

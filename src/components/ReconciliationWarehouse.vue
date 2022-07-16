@@ -5,7 +5,7 @@
   <div class="container scroll">
     <ul>
       <li>
-        <h2 class="uk-text-left uk-text-center">Totales Para Cuadre</h2>
+        <h4 class="uk-text-left uk-text-center">Totales de Cuadre del Viaje</h4>
         <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
           <thead>
             <tr>

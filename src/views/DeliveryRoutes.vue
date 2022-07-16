@@ -112,9 +112,9 @@
                     </p>
                   </div>
                   <div v-for="item in order.products" :key="item.id" class="details-product">
-                    <p class="item web-font-small">{{item?.description}}</p>
-                    <p class="item web-font-small">{{item.qrCode}}</p>
-                    <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+                    <p class="item web-font-small font-small">{{item?.description}}</p>
+                    <p class="item web-font-small font-small">{{item.qrCode}}</p>
+                    <p class="item web-font-small font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
                   </div>
                 </div>
               </li>
@@ -494,6 +494,8 @@ export default {
         secondStructure: listOfOrderTotal,
       };
       this.$store.commit("setStructureToScan", structureInvoices);
+      localStorage.setItem("setStructureToScan", JSON.stringify(structureInvoices))
+
     },
 
   },
@@ -501,6 +503,7 @@ export default {
 </script>
 
 <style scoped>
+
 
 :root {
   --su-size-text: 12px;
@@ -796,6 +799,9 @@ header >.sub-header {
 }
 .container-item{
     margin-bottom:40px
+}
+.font-small {
+  font-size: 10px;
 }
 @media (min-width: 600px){
   .filter-checkbox{

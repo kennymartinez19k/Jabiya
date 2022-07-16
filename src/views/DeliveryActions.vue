@@ -176,7 +176,7 @@
               Hubo Alguna Excepción? No
               <div class="onoffswitch">
                 <input type="checkbox" v-model="exception" name="onoffswitch"
-                  :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
+                  class="onoffswitch-checkbox"
                   id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
                 <label class="onoffswitch-label" for="myonoffswitch"></label>
               </div>
@@ -613,7 +613,8 @@ export default {
          for (let x = 0; x < this.orders.length; x++) {
             let order = this.orders[x]
             this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
-         } 
+          } 
+          this.resetException ()
         }
     },
 

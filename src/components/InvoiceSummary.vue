@@ -5,7 +5,7 @@
         </ion-loading>
         <ul uk-accordion>
             <li v-if="show">
-                <a class="uk-accordion-title web-font-small " href="#">Detalles de la Entrega de la Orden&nbsp;<b> {{
+                <a class="uk-accordion-title web-font-small " href="#">Cuadre de Entrega de la Orden&nbsp;<b> {{
                         invoiceDetails?.invoice_origin }}</b></a>
                 <div class="uk-accordion-content">
                     <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.invoice_partner_display_name}} </p>
@@ -83,7 +83,8 @@ export default {
             generalInformation: null,
             invoiceDetails: {},
             idOrderForOdoo: {},
-            show: false
+            show: false,
+            idInvoices: null
         }
     },
 
@@ -94,18 +95,18 @@ export default {
       return { isOpenRef, setOpen };
     },
     computed: {
-        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "invoicesIdStore"])
+        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "invoicesIdStore" ])
     },
 
     async mounted() {
-        let idInvoices = null
+        // let idInvoices = null
 
         if (this.summarysInvoiceStore?.orderId) {
             this.generalInformation = this.summarysInvoiceStore 
-            idInvoices = this.invoiceDetailsStore
+            this.idInvoices = this.invoiceDetailsStore
         } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`))?.orderId) {
            this.generalInformation = JSON.parse( localStorage.getItem(`SummaryInvoice`))
-            idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
+            this.idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
             this.$store.commit("getSummaryInvoice", this.generalInformation);
         }
 
@@ -116,12 +117,13 @@ export default {
             this.idOrderForOdoo = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
         }
 
-            await this.getReportOdoo(idInvoices)
+            await this.getReportOdoo(this.idInvoices)
             await this.getSummary()
 
        
     },
-  
+    
+   
     methods: {
         async getReportOdoo(id) {
             if (id) {

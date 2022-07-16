@@ -126,7 +126,7 @@
           Hubo Alguna Excepción? No
           <div class="onoffswitch">
             <input type="checkbox" v-model="exception" name="onoffswitch"
-              :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
+               class="onoffswitch-checkbox"
               id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
             <label class="onoffswitch-label" for="myonoffswitch"></label>
           </div>
@@ -512,6 +512,8 @@ export default {
             this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
             
           }
+
+          this.resetException ()
         }
     },
 
@@ -519,7 +521,13 @@ export default {
       if (!this.loadStore.allowOrderChangesAtDelivery) {
         this.setLoadTruck(val);
       } else {
-        this.setLoadTruckInvoices(this.structureToScan.firstStructure);
+        let structure = []
+        if (this.structureToScan.firstStructure) {
+          structure = this.structureToScan
+        } else {
+          structure = JSON.parse(localStorage.getItem("setStructureToScan"))
+        }
+        this.setLoadTruckInvoices(structure.firstStructure);
       }
     },
     setLoadTruck(val) {
@@ -665,6 +673,7 @@ export default {
       this.cameraOn = false;
       this.image = img;
     },
+   
 
   },
 };
