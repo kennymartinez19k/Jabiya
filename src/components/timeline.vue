@@ -285,23 +285,18 @@ export default {
 
       if (allowInvoices && downloadInvoices && scanRequired && this.resultScan && this.imagiElement.length == 0) {
         this.showCamare = true
-        alert(1)
 
       } else if (exception && !allowInvoices && !scanRequired && this.imagiElement.length == 0) {
         this.showCamare = true
-        alert(2)
 
       } else if (!scanRequired && !allowInvoices && !downloadInvoices && this.imagiElement.length == 0) {
         this.showCamare = true
-        alert(3)
 
       } else if (!scanRequired && allowInvoices && downloadInvoices && this.imagiElement.length == 0) {
         this.showCamare = true
-        alert(4)
 
       } else if (scanRequired && this.resultScan && this.imagiElement.length == 0 && !allowInvoices) {
         this.showCamare = true
-        alert(5)
 
       } else {
         this.showCamare = false

@@ -24,7 +24,7 @@
   "host":{
     "odoo1":"https://jabiyaerp.flai.com.do/",
     "odoo":"https://jabiyatest.flai.com.do/",
-    "odooProduction":"https://jabiya.flai.com.do/"
+    "odoo3":"https://jabiya.flai.com.do/"
   },
   "loginOdoo": {
     "login": "jabillaodoo@gmail.com", 
