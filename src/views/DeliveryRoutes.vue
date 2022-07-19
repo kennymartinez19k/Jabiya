@@ -315,9 +315,13 @@ export default {
 
     },
     async scan() {
-      let structure = {firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal}
-      this.$store.commit("setStructureToScan", structure)
-      localStorage.setItem("setStructureToScan", JSON.stringify(structure))
+      let structure = { firstStructure: this.listOfOrders, secondStructure: this.listOfOrderTotal }
+      if (this.load.allowOrderChangesAtDelivery) {
+        await this.productsOfOrdersToOdoo()
+      } else {
+        this.$store.commit("setStructureToScan", structure)
+        localStorage.setItem("setStructureToScan", JSON.stringify(structure))
+      }
       localStorage.setItem(`allProducts${this.load.loadMapId}`, JSON.stringify(this.orders))
       localStorage.setItem("scanOrder", JSON.stringify(this.listOrderDetails))
       this.$store.commit("scanOrder", this.listOrderDetails );
@@ -338,9 +342,7 @@ export default {
         this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});
       }
 
-      if (this.load.allowOrderChangesAtDelivery) {
-        await this.productsOfOrdersToOdoo()
-      }
+      
     },
 
     shipperName(val){

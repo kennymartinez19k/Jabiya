@@ -37,11 +37,11 @@
                     </table>
                     <div class="uk-text-right uk-margin-top">
                         <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
-                                formatCurrency(invoiceDetails?.subtotal) }}</span></h6>
+                                separatorNumber(invoiceDetails?.subtotal) }}</span></h6>
                         <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
-                                formatCurrency(invoiceDetails?.amount_tax) }}</span></h6>
+                                separatorNumber(invoiceDetails?.amount_tax) }}</span></h6>
                         <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
-                                {{ formatCurrency(invoiceDetails?.amount_total) }}</span></h6>
+                                {{ separatorNumber(invoiceDetails?.amount_total) }}</span></h6>
                     </div>
                 </div>
             </li>

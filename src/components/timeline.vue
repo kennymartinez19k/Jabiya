@@ -498,23 +498,6 @@ export default {
 </script>
 
 <style scoped>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .container {
   width: 100%;
   max-width: 700px;
@@ -541,7 +524,8 @@ export default {
   border: 3px dashed;
   top: -3px;
   padding-top: 5px;
-border-radius: 10px
+border-radius: 10px;
+border-color:#3aab5d
 }
 img {
   width: 35%;

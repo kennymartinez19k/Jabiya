@@ -1,41 +1,39 @@
 <template>
   <div>
-    <ion-loading
-      :is-open="isOpenRef"
-      cssClass="my-custom-class"
-      message="Por favor Espere..."
-      :duration="timeout"
-      @didDismiss="setOpen(false)"
-    >
+    <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
+      @didDismiss="setOpen(false)">
     </ion-loading>
-    <div class="md-6" style="text-align: center">
-      <h5 class="uk-text-bold uk-text-left text-bold">Asignar Chofer y Vehículo:</h5>
+    <div class="md-6">
+      <h5 class="uk-text-bold uk-text-left text-bold">Asignar Chofer y Vehículo:qqq</h5>
     </div>
 
     <div>
-      <h6 class="uk-text-left web-font-small" style="color: #666 !important; font-size: 13px">Transportista: <span class="web-font-small">{{transporterName}}</span></h6>
+      <h6 class="uk-text-left web-font-small font">Transportista: <span
+          class="web-font-small">{{transporterName}}</span></h6>
     </div>
     <form action="" class="table-border uk-margin-medium-bottom">
       <div class="table">
-        <h5 class="uk-text-left web-font-small" style="padding: 0px 15px" >1. Elija un Conductor</h5>
+        <h5 class="uk-text-left web-font-small select-padding">1. Elija un Conductor</h5>
         <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
           <thead>
-            <tr class="">
+            <tr>
               <th scope="col" class="driverName web-font-small">Nombre del Conductor</th>
             </tr>
           </thead>
           <tbody v-for="driver in drivers" :key="driver">
             <tr>
-              <label class="list-name uk-flex uk-flex-center " :for="driver.driverId" :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"  @click="selectDriver(driver.driverId)">
+              <label class="list-name uk-flex uk-flex-center " :for="driver.driverId"
+                :class="{active: carrierSelection.driverId !== null && driver.isSelectedDriver === true}"
+                @click="selectDriver(driver.driverId)">
                 <td class="web-font-small">{{driver.driverName}}</td>
               </label>
             </tr>
-          
+
           </tbody>
         </table>
       </div>
       <div class="table">
-        <h5 class="uk-text-left web-font-small" style="padding: 0px 15px">2. Elija un Vehículo</h5>
+        <h5 class="uk-text-left web-font-small select-padding">2. Elija un Vehículo</h5>
 
         <table class="uk-table uk-table-striped uk-table-hover uk-table-divider">
           <thead>
@@ -48,29 +46,33 @@
               </label>
             </tr>
           </thead>
-          <tbody  v-for="details in vehicles" :key="details">
+          <tbody v-for="details in vehicles" :key="details">
             <tr>
-              <label class="web-font-small uk-flex uk-flex-around list"  :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"  @click="selectVehicle(details.vehicleId)">
+              <label class="web-font-small uk-flex uk-flex-around list"
+                :class="{active: carrierSelection.vehicleId !== null && details.isSelectedVehicles === true}"
+                @click="selectVehicle(details.vehicleId)">
                 <td class="web-font-small">{{details.brand}}</td>
                 <td class="web-font-small">{{details.vehicleNo}}</td>
-                <td class="web-font-small">RD${{setRound(details.cost * detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</td>
+                <td class="web-font-small">{{ formatCurrency(details.cost *
+                detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</td>
                 <td class="web-font-small">{{details?.driverName}}</td>
-                </label>
-            </tr>       
+              </label>
+            </tr>
           </tbody>
         </table>
       </div>
     </form>
   </div>
-      <div class=" button-opt">
-      <button type="button" :disabled="disabledButton" class="uk-button uk-button-primary web-font-small" @click="selectDriverAndVehicle()">Seleccionar Conductor y Vehículo </button>
-    </div>
+  <div class=" button-opt">
+    <button type="button" :disabled="disabledButton" class="uk-button uk-button-primary web-font-small"
+      @click="selectDriverAndVehicle()">Seleccionar Conductor y Vehículo </button>
+  </div>
 </template>
 
 <script>
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
-
+import { Mixins } from '../mixins/mixins'
 
 export default {
   name: "AddDriverAndTruck",
@@ -83,6 +85,7 @@ export default {
 
     return { isOpenRef, setOpen };
   },
+  mixins: [Mixins],
 
   props: {
     detailsLoads: Object
@@ -153,14 +156,16 @@ export default {
       }
     
     },
-      setRound (val) {
-        return JSON.parse(Number.parseFloat(val).toFixed(3));
-    }
+     
   },
 };
 </script>
 
 <style scoped>
+
+.uk-table-hover tbody tr:hover {
+  background-color: #efefef;
+}
 .table-border {
   border: 1px solid #000;
 }
@@ -236,5 +241,12 @@ padding: 10px 0px;
 .driverName {
   padding: 10px;
   text-align: center;
+}
+.font {
+  color: #666 !important;
+  font-size: 13px
+}
+.select-padding {
+  padding: 0px 15px
 }
 </style>

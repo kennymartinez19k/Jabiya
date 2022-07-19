@@ -19,7 +19,6 @@
   </div>
 </template>
 <script>
-// import UIkit from "uikit";
 
 export default {
   name: "SignatureAction",

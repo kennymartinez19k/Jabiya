@@ -584,7 +584,7 @@ export default {
             dataDescription +=  this.characterControl(product.description.length, 15, true)
           } 
          
-          if (product.qty < 100) {
+          if (product.invoiced_qty < 100) {
             dataQty += this.characterControl(dataQty,3,false,'qty')
           }
           if (product.price_unit) {

@@ -13,7 +13,7 @@
             <p class="uk-flex status-load ">
               <span class="uk-text-bold web-font-medium">{{ loadStatus(detailsLoads) }} </span>
             </p>
-            <div class="uk-margin-top uk-text-left" style="margin-top: 25px !important">
+            <div class="uk-text-left mt-loadnumber">
               <div>
                 <p class="uk-flex web-font-small">
                   <span>{{ detailsLoads?.loadNumber }}</span>
@@ -132,7 +132,7 @@
 
             </div>
             <div class="uk-flex uk-flex-between web-font-small">
-              <div style="width: 100%">
+              <div class="profile-container">
                 <div v-if="detailsLoads.loadType == profile.container"
                   class="uk-text-left info-user-client web-font-small">
                   <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
@@ -155,7 +155,7 @@
               </div>
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'"
                 class="start-load uk-flex-middle">
-                <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
+                <font-awesome-icon icon="arrow-right" class="arrow-font" />
               </div>
             </div>
 
@@ -468,6 +468,12 @@ export default {
 
 
 
+
+
+
+
+
+
 p {
   margin: 3px 0px !important;
 }
@@ -600,6 +606,16 @@ a {
 }
 .font-small {
   font-size: 10px;
+}
+.mt-loadnumber {
+  margin-top: 25px !important;
+}
+
+.profile-container {
+  width: 100%;
+}
+.arrow-font {
+  font-size: 20px;
 }
 
 @media (min-width: 600px) {
