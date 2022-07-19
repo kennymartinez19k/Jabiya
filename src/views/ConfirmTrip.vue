@@ -1,154 +1,142 @@
 <template>
-  <ion-loading
-      :is-open="isOpenRef"
-      cssClass="my-custom-class"
-      message="Por favor Espere..."
-      :duration="timeout"
-      @didDismiss="setOpen(false)"
-    >
-    </ion-loading>
+  <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere..." :duration="timeout"
+    @didDismiss="setOpen(false)">
+  </ion-loading>
   <div class="uk-flex uk-flex-column cnt">
     <div class="stiky">
       <p class="web-font-small" style="font-size: 13px; font-weight: 500">
         {{ load?.loadNumber }}
       </p>
-      <div
-        class="
+      <div class="
           uk-flex
           uk-flex
           uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
-        "
-        style="align-items: center"
-      >
+        " style="align-items: center">
         <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span
-            ><span>&nbsp; {{ shipperName(load) }}</span>
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>
           </p>
           <div></div>
           <p class="web-font-small">
-            <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
     </div>
     <div class="uk-card uk-card-default uk-width-1-2@m container-main">
-      
-        <div >
-          <div
-            class="uk-card uk-card-default uk-card-body container-info"
-            style=""
-          >
-            <h6 class="uk-text-center web-font-medium" style="width: 100%">Detalles del Viaje</h6>
-           
-            <div class="uk-margin-top uk-text-left info-user-client">
-                <div>
-                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle web-font-small">
-                  <p class="uk-text-bold">Ingreso:&nbsp;</p>
-                  <span> RD ${{setRound(load?.plannedProfitability?.profitability?.revenue * load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
-                </div>
-                <div  v-if="userData?.userType !== userType?.driver" class="uk-flex uk-flex-middle web-font-small">
-                  <p class="uk-text-bold">{{costText}}:&nbsp;</p>
-                  <span> RD ${{setRound(load?.plannedProfitability?.profitability?.transportCost * load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
-                </div>
-                <div  v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle web-font-small">
-                  <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
-                  <span> RD ${{setRound(load?.plannedProfitability?.profitability?.profitability * load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
-                </div>
-                
-              </div>
-        
-              <div class="uk-flex uk-flex-middle web-font-small">
-                <p class="uk-text-bold">Estado del Viaje:&nbsp;</p>
-                <span>{{loadStatus(load)}}</span>
-              </div>
 
-              <div v-if="load?.loadType == profile.container">
-                <div class="uk-flex uk-flex-middle web-font-small">
-                  <p class="uk-text-bold">Cliente:&nbsp;</p>
-                  <span>{{ load.Orders[0].client_name }}</span>
-                </div>
-                <div class="uk-flex uk-flex-middle web-font-small">
-                  <p class="uk-text-bold">Orden:&nbsp;</p>
-                  <span>{{ load?.Orders[0]?.order_num }}</span>
-                </div>
+      <div>
+        <div class="uk-card uk-card-default uk-card-body container-info" style="">
+          <h6 class="uk-text-center web-font-medium" style="width: 100%">Detalles del Viaje</h6>
 
-              </div>
-              <div class="uk-flex uk-flex-middle web-font-small">
-                <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
-                <span>{{load?.dateTime?.date}} {{setLocaleDate(detailsLoads?.loadingStatus?.slotStartTime)}}</span>
-              </div>
-
-              <div v-if="load?.loadType == profile?.container" class="uk-flex uk-flex-middle web-font-small">
-                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span>{{setDateFormat(load?.Orders[0]?.expected_date)}}  {{setLocaleHour(load?.Orders[0]?.expected_date)}}</span>
-              </div>
-              
-              <div class="uk-flex uk-flex-middle web-font-small">
-                <p class="uk-text-bold">Chofer:&nbsp;</p>
-                <span v-for="info of load?.Vehicles" :key="info">{{info?.driver}}</span>
-              </div> 
-              <div class="uk-flex uk-flex-middle info-driver web-font-small">
-                <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
-                <span v-for="info of load?.Vehicles" :key="info">{{info?.brand}} {{info?.model}} {{info?.color}}, Placa: {{info?.license_no}} </span>
-              </div>
-              
-            </div>
-            <div class="uk-flex uk-flex-between info-user-address">
-              <div class="uk-text-left uk-flex uk-flex-between info-user" v-if="load?.loadType == profile?.container">
-                <div class="web-font-small">
-                  <p class="uk-text-bold">Recoger en:</p>
-                  <p>
-                    <span v-for="info in load?.shipper" :key="info">
-                      {{ info?.name }}
-                    </span>
-                  </p>
-                  <p>{{load?.warehouse?.location?.address}}</p>
-
-                </div>
-                <div class="web-font-small">
-                  <p class="uk-text-bold">Entregar en:</p>
-                  <p>{{load?.firstOrdenInfo?.client_name}}</p>
-                  <p>{{load?.firstOrdenInfo?.address}}</p>
-                </div>
-              
-              </div>
-              
-            </div>
+          <div class="uk-margin-top uk-text-left info-user-client">
             <div>
-      </div>
-      <div v-if="load?.loadType == profile?.b2b" class="address-container">
-        <h6 class="font-weight-medium uk-margin-top web-font-small" style="font-size: 14px; margin: 15px 0px; width: 100%">Número de Ordenes: {{orders?.length}}</h6>
-        <div
-          v-for="(order, i) in orders"
-          :key="order"  v-show="i < quantityShow"
-          class="uk-card order-item uk-card-default uk-card-body uk-flex uk-flex-between"
-          :class="{ ordenCompleted: order?.completed }"
-        >
-          <div class="uk-text-left uk-flex uk-flex-wrap web-font-small">
-            <p class="uk-width-1-1" style="margin-right: 10px !important">
+              <div v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle web-font-small">
+                <p class="uk-text-bold">Ingreso:&nbsp;</p>
+                <span> RD ${{setRound(load?.plannedProfitability?.profitability?.revenue *
+                  load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+              </div>
+              <div v-if="userData?.userType !== userType?.driver" class="uk-flex uk-flex-middle web-font-small">
+                <p class="uk-text-bold">{{costText}}:&nbsp;</p>
+                <span> RD ${{setRound(load?.plannedProfitability?.profitability?.transportCost *
+                  load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+              </div>
+              <div v-if="userData?.userType == userType?.provider" class="uk-flex uk-flex-middle web-font-small">
+                <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
+                <span> RD ${{setRound(load?.plannedProfitability?.profitability?.profitability *
+                  load?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+              </div>
+
+            </div>
+
+            <div class="uk-flex uk-flex-middle web-font-small">
+              <p class="uk-text-bold">Estado del Viaje:&nbsp;</p>
+              <span>{{loadStatus(load)}}</span>
+            </div>
+
+            <div v-if="load?.loadType == profile.container">
+              <div class="uk-flex uk-flex-middle web-font-small">
+                <p class="uk-text-bold">Cliente:&nbsp;</p>
+                <span>{{ load.Orders[0].client_name }}</span>
+              </div>
+              <div class="uk-flex uk-flex-middle web-font-small">
+                <p class="uk-text-bold">Orden:&nbsp;</p>
+                <span>{{ load?.Orders[0]?.order_num }}</span>
+              </div>
+
+            </div>
+            <div class="uk-flex uk-flex-middle web-font-small">
+              <p class="uk-text-bold">Fecha de Recogida:&nbsp;</p>
+              <span>{{load?.dateTime?.date}} {{setLocaleDate(detailsLoads?.loadingStatus?.slotStartTime)}}</span>
+            </div>
+
+            <div v-if="load?.loadType == profile?.container" class="uk-flex uk-flex-middle web-font-small">
+              <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+              <span>{{setDateFormat(load?.Orders[0]?.expected_date)}}
+                {{setLocaleHour(load?.Orders[0]?.expected_date)}}</span>
+            </div>
+
+            <div class="uk-flex uk-flex-middle web-font-small">
+              <p class="uk-text-bold">Chofer:&nbsp;</p>
+              <span v-for="info of load?.Vehicles" :key="info">{{info?.driver}}</span>
+            </div>
+            <div class="uk-flex uk-flex-middle info-driver web-font-small">
+              <p class="uk-text-bold position-text">Vehiculo:&nbsp;</p>
+              <span v-for="info of load?.Vehicles" :key="info">{{info?.brand}} {{info?.model}} {{info?.color}}, Placa:
+                {{info?.license_no}} </span>
+            </div>
+
+          </div>
+          <div class="uk-flex uk-flex-between info-user-address">
+            <div class="uk-text-left uk-flex uk-flex-between info-user" v-if="load?.loadType == profile?.container">
+              <div class="web-font-small">
+                <p class="uk-text-bold">Recoger en:</p>
+                <p>
+                  <span v-for="info in load?.shipper" :key="info">
+                    {{ info?.name }}
+                  </span>
+                </p>
+                <p>{{load?.warehouse?.location?.address}}</p>
+
+              </div>
+              <div class="web-font-small">
+                <p class="uk-text-bold">Entregar en:</p>
+                <p>{{load?.firstOrdenInfo?.client_name}}</p>
+                <p>{{load?.firstOrdenInfo?.address}}</p>
+              </div>
+
+            </div>
+
+          </div>
+          <div>
+          </div>
+          <div v-if="load?.loadType == profile?.b2b" class="address-container">
+            <h6 class="font-weight-medium uk-margin-top web-font-small"
+              style="font-size: 14px; margin: 15px 0px; width: 100%">Número de Ordenes: {{orders?.length}}</h6>
+            <div v-for="(order, i) in orders" :key="order" v-show="i < quantityShow"
+              class="uk-card order-item uk-card-default uk-card-body uk-flex uk-flex-between"
+              :class="{ ordenCompleted: order?.completed }">
+              <div class="uk-text-left uk-flex uk-flex-wrap web-font-small">
+                <p class="uk-width-1-1" style="margin-right: 10px !important">
                   <span class="font-weight-medium">Cliente: </span>
                   <span>{{ order.client_name }}</span>
                 </p>
-            <div class="uk-flex uk-flex-middle uk-width-1-1 web-font-small">
-                <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
-                <span>{{setDateFormat(order.expected_date)}} &nbsp;</span>
-                <span> {{setLocaleHour(order.expected_date)}}</span>
-              </div>
-            <p style="margin-right: 10px !important" class="web-font-small">
-              <span class="font-weight-medium uk-wi">Orden: </span
-              ><span>{{ order.order_num }}</span>
-            </p>
-            <p class="web-font-small">
-              <span class="font-weight-medium">Cajas / Pallets: </span
-              >{{ order.products?.length }}<span></span>
-            </p>
-            
-            <div class="uk-text-left info-user">
+                <div class="uk-flex uk-flex-middle uk-width-1-1 web-font-small">
+                  <p class="uk-text-bold">Fecha de Entrega:&nbsp;</p>
+                  <span>{{setDateFormat(order.expected_date)}} &nbsp;</span>
+                  <span> {{setLocaleHour(order.expected_date)}}</span>
+                </div>
+                <p style="margin-right: 10px !important" class="web-font-small">
+                  <span class="font-weight-medium uk-wi">Orden: </span><span>{{ order.order_num }}</span>
+                </p>
+                <p class="web-font-small">
+                  <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.no_of_boxes }}<span></span>
+                </p>
+
+                <div class="uk-text-left info-user">
                   <div class="web-font-small">
                     <p class="uk-text-bold">Warehouse:</p>
                     <p>
@@ -164,58 +152,43 @@
                     <p>{{load?.firstOrdenInfo?.client_name}}</p>
                     <p>{{load?.firstOrdenInfo?.address}}</p>
                   </div>
-                
-                </div>
-          </div>
-        </div>
-      </div>
-          <span v-if="orders?.length > quantityShow && load?.loadType == profile?.b2b && showOrders" style="font-size:16px; font-weight: 900" @click="setShowOrders(false, orders.length)">.....Ver Más</span>
-          <span v-if="orders?.length >= quantityShow && load?.loadType == profile?.b2b && showOrders === false" style="font-size:16px; font-weight: 900" @click="setShowOrders(true, 3)">.....Ver Menos</span>
 
+                </div>
+              </div>
+            </div>
           </div>
+          <span v-if="orders?.length > quantityShow && load?.loadType == profile?.b2b && showOrders"
+            style="font-size:16px; font-weight: 900" @click="setShowOrders(false, orders.length)">.....Ver Más</span>
+          <span v-if="orders?.length >= quantityShow && load?.loadType == profile?.b2b && showOrders === false"
+            style="font-size:16px; font-weight: 900" @click="setShowOrders(true, 3)">.....Ver Menos</span>
+
         </div>
       </div>
+    </div>
     <div id="modal-center" class="uk-flex-top" uk-modal>
-      <div
-        class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical"
-        style="padding: 40px 10px 5px !important"
-      >
+      <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical" style="padding: 40px 10px 5px !important">
         <button class="uk-modal-close-default" type="button" uk-close></button>
 
         <h5 class="uk-text-center" style="padding: 20px 0px">
           Esta Seguro Que Deseea Rechazar Este Viaje?
         </h5>
-        <div
-          class="uk-modal-footer uk-flex uk-flex-around uk-padding-remove"
-          style="padding: 10px 0px !important"
-        >
-          <button
-            class="uk-button uk-button-transparent uk-modal-close web-font-small"
-            type="button"
-          >
+        <div class="uk-modal-footer uk-flex uk-flex-around uk-padding-remove" style="padding: 10px 0px !important">
+          <button class="uk-button uk-button-transparent uk-modal-close web-font-small" type="button">
             Cancelar
           </button>
-          <button
-            :class="{disabled: disabled}"
-            href="#modal-group-1"
+          <button :class="{disabled: disabled}" href="#modal-group-1"
             @click="acceptOrRejectLoad(load.loadMapId, load.__v, 'REJECTED', load.loadForeignkeys.vehicleId)"
-            class="uk-button button-reject uk-modal-close web-font-small"
-            uk-toggle
-          >
+            class="uk-button button-reject uk-modal-close web-font-small" uk-toggle>
             Rechazar
           </button>
         </div>
       </div>
     </div>
     <div class="button-opt">
-      <a href="#modal-center uk-button" uk-toggle class="uk-button uk-button-red web-font-small"
-        >Rechazar Viaje&nbsp;
+      <a href="#modal-center uk-button" uk-toggle class="uk-button uk-button-red web-font-small">Rechazar Viaje&nbsp;
       </a>
-      <button
-        @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', load.loadForeignkeys.vehicleId)"
-        class="uk-button uk-button-blue web-font-small"
-        :class="{disabled: disabled}"
-      >
+      <button @click="acceptOrRejectLoad(load?.loadMapId, load?.__v, 'ACCEPTED', load.loadForeignkeys.vehicleId)"
+        class="uk-button uk-button-blue web-font-small" :class="{disabled: disabled}">
         Aceptar Viaje &nbsp;
       </button>
     </div>

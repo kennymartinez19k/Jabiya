@@ -32,7 +32,7 @@
                 Cancelar
               </button>
               <button :disabled="showException" class="uk-button uk-button-primary uk-modal-close web-font-small"
-                type="button" @click="setException()">
+                type="button" @click="setException(true)">
                 Guardar
               </button>
             </p>
@@ -43,7 +43,7 @@
     </transition>
     <ul class="progressbar">
       <li v-if="loadStore.allowOrderChangesAtDelivery"
-        :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num }"
+        :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num, show: !activeScan && !activeException && !activeSignature && !activeCamare }"
         @click="getShow('invoices')">
         <div class="info active">
           <font-awesome-icon icon="check" />
@@ -52,7 +52,8 @@
 
         <span class="web-font-small">Facturas</span>
       </li>
-      <li v-if="loadStore.scanningRequired" :class="{ active: resultScan, 'uk-disabled': !activeScan }"
+      <li v-if="loadStore.scanningRequired"
+        :class="{ active: resultScan, 'uk-disabled': !activeScan, show: !activeException && !activeSignature && !activeCamare && ((loadStore.allowOrderChangesAtDelivery && invoiceDownloadStore?.status) || (loadStore.allowOrderChangesAtDelivery == false)) }"
         @click="getShow('scan')">
         <div class="info active">
           <font-awesome-icon icon="check" />
@@ -64,7 +65,7 @@
       </li>
       <li :class="{
   'uk-disabled': !activeCamare,
-        active: imagiElement.length > 0,
+  active: imagiElement.length > 0, show: showCamare
       }" @click="getShow('camera')">
         <div class="info active">
           <font-awesome-icon icon="check" />
@@ -78,7 +79,7 @@
         active:
           causeExceptions.note !== null &&
           causeExceptions.type !== null &&
-          showException === false,
+          showException === false && showBlink, show: activeException && !activeSignature
       }" @click="getShow('exception')">
         <div class="info active">
           <font-awesome-icon icon="check" />
@@ -91,7 +92,7 @@
       </li>
       <li :class="{
         'uk-disabled': !activeSignature,
-        active: singnature !== null
+  active: singnature !== null, show: showSignatureblink 
       }" @click="getShow('Singnature')">
         <div class="info">
           <font-awesome-icon icon="check" />
@@ -126,7 +127,6 @@ export default {
         type: null,
       },
       showException: true,
-      //showSingnatureAndException: true,
       showSingnature: null,
       singnature: null,
       detailsException: [],
@@ -134,6 +134,9 @@ export default {
       order: null,
       showInvoice: true,
       isOpen: false,
+      showBlink: false,
+      showCamare: false,
+      showSignatureblink: false,
 
     };
   },
@@ -149,7 +152,10 @@ export default {
 
       return this.imagesStore
     },
-    emptyImage(){
+    emptyImage() {
+      if (this.imagesStore?.length > 0 && this.exception == false) {
+        this.showBlink = true
+      }
       return this.imagesStore?.length <= 0
     },
 
@@ -168,8 +174,38 @@ export default {
        downloadInvoices = this.invoiceDownloadStore.status
       } 
       let exception = this.exception
-      let exceptionInfo = ( this.causeExceptions.type && this.causeExceptions.note != null)
-      let img = !this.emptyImage
+      let exceptionInfo = ( this.causeExceptions.type && this.causeExceptions.note != null && this.showBlink)
+      let img = this.imagiElement.length > 0
+
+      if (scanRequired && allowInvoices && exception && this.resultScan && exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && allowInvoices && !exception && this.resultScan && !exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && !allowInvoices && exception && this.resultScan && exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && !allowInvoices && exception && !this.resultScan && exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && !allowInvoices && !exception && this.resultScan && !exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && allowInvoices && exception && !this.resultScan && exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && allowInvoices && !exception && !this.resultScan && !exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && !allowInvoices && exception && !this.resultScan && exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && !allowInvoices && !exception && !this.resultScan && !exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+      } else {
+        this.showSignatureblink = false
+      }
      
       if(scanRequired && allowInvoices && exception && this.resultScan &&  exceptionInfo && img && downloadInvoices){
         return true
@@ -247,16 +283,38 @@ export default {
         downloadInvoices = this.invoiceDownloadStore.status
       }
 
+      if (allowInvoices && downloadInvoices && scanRequired && this.resultScan && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (exception && !allowInvoices && !scanRequired && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (!scanRequired && !allowInvoices && !downloadInvoices && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (!scanRequired && allowInvoices && downloadInvoices && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (scanRequired && this.resultScan && this.imagiElement.length == 0 && !allowInvoices) {
+        this.showCamare = true
+
+      } else {
+        this.showCamare = false
+      }
+
       if (allowInvoices && downloadInvoices && scanRequired && this.resultScan) {
         return true
 
-      } else if (exception && !allowInvoices) {
+      } else if (exception && !allowInvoices && !scanRequired) {
         return true
 
       } else if (!scanRequired && !allowInvoices && !downloadInvoices) {
         return true
 
       } else if (!scanRequired && allowInvoices && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && this.resultScan && !allowInvoices) {
         return true
 
       } else {
@@ -302,15 +360,14 @@ export default {
   },
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
-
-    if (!this.orderScan?.length && JSON.parse(localStorage.getItem("scanOrder")).length > 0) {
+    if (this.orderScan ) {
+      this.order = this.orderScan
+    } else {
       this.order = JSON.parse(localStorage.getItem("scanOrder"));
       this.$store.commit("scanOrder", this.order);
-    } else {
-      this.order = this.orderScan
     }
 
-    this.orderInformation = await this.loadStore.Orders.find(x => x.order_num)
+    this.orderInformation = await this.loadStore.Orders.find(x => x.order_num === this.order[0].order_num)
 
     if (!this.invoiceDownloadStore?.status && this.loadStore.allowOrderChangesAtDelivery) {
       let invoicesDwl = JSON.parse(localStorage.getItem(`getInvoiceDownload${this.orderInformation.order_num}`))
@@ -330,35 +387,27 @@ export default {
     },
     imagiElement: {
       handler: function (newVal) {
-        // if (newVal.length === 0) {
-          //this.showSingnatureAndException = true;
-        /* } else */if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
+        if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
           this.$emit("action", 'exception');
-          //this.showSingnatureAndException = false;
-        }
+        } 
       }, deep: true
     }, 
     exception: {
       handler: function (newVal) {
         if(newVal) this.closeSingnature()
         if (newVal === false && this.step >= 2) {
-          //this.showSingnatureAndException = false;
           this.causeExceptions.note = null;
           this.causeExceptions.type = null;
           this.showException = true;
-         } /*else if (
-        //   newVal === true &&
-        //   this.causeExceptions.note !== null &&
-        //   this.causeExceptions.type !== null &&
-        //   this.step >= 2
-        // ) {
-        //   //this.showSingnatureAndException = false;
-        // } else if(newVal == true) {
-        //   //this.showSingnatureAndException = true;
-        // }*/
+         } 
         if(newVal == false){
            this.causeExceptions.note = null;
           this.causeExceptions.type = null;
+          if (this.imagiElement.length > 0) {
+            this.showBlink = true
+          }
+        } else  {
+          this.showBlink = false
         }
       },
       deep: true,
@@ -385,21 +434,7 @@ export default {
         }
     },
 
-    // step: {
-    //   handler: function (newVal) {
-    //     if (
-    //       newVal >= 2 &&
-    //       this.exception === true &&
-    //       this.causeExceptions.note !== null &&
-    //       this.causeExceptions.type !== null
-    //     ) {
-    //       //this.showSingnatureAndException = false;
-    //     } else if (newVal >= 2 && this.exception === false) {
-    //       //this.showSingnatureAndException = false;
-    //     }
-    //   },
-    //   deep: true,
-    // },
+  
   },
   methods: {
    async getShow(value) {
@@ -410,7 +445,7 @@ export default {
       if (value === "exception") {
         this.dataExteions(await JSON.parse(localStorage.getItem('detailsException')))
         this.isOpen = true
-
+        this.showBlink = false
         if (this.imagiElement.length > 0) {
         this.$emit("action", value);
         }
@@ -427,11 +462,10 @@ export default {
 
       this.causeExceptions.note = null;
       this.causeExceptions.type = null;
-      //this.showSingnatureAndException = true;
       this.$store.commit("setExceptions", this.causeExceptions);
       this.showException = false;
     },
-    setException() {
+    setException(val) {
       if (
         this.causeExceptions.note !== null &&
         this.causeExceptions.type !== null
@@ -439,31 +473,19 @@ export default {
         this.isOpen = false
         this.showException = true
         this.$store.commit("setExceptions", this.causeExceptions);
-        // if (
-        //   this.exception === true &&
-        //   this.causeExceptions.note !== null &&
-        //   this.causeExceptions.type !== null &&
-        //   this.step >= 2 && 
-        //   this.imagiElement.length > 0
-        // ) {
-        //   //this.showSingnatureAndException = false;
-        // }
+        this.showBlink = val
         this.showException = false
       }
     },
     closeSingnature() {
       this.showSingnature = null;
       this.singnature = null;
-      //this.showSingnatureAndException = true;
         this.$emit("resetSign", false);
     },
     changeImage(){
-     /* if (this.imageTimeline?.length === 0) {
-          this.showSingnatureAndException = true;
-        } else */ if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
-          this.$emit("action", 'exception');
-          //this.showSingnatureAndException = false;
-        }
+      if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
+        this.$emit("action", 'exception');
+      }
     },
     async dataExteions(value) {
     this.detailsException = value
@@ -476,7 +498,6 @@ export default {
 </script>
 
 <style scoped>
-
 .container {
   width: 100%;
   max-width: 700px;
@@ -486,10 +507,25 @@ export default {
 .disabled {
   position: absolute;
   width: 100%;
-  height: 70%;
-  top: 40px;
+  height: 16vh;
+  top: 0px;
   left: 6px;
-  background: #ffffffc4;
+  background: #fefefecf;
+}
+
+@-webkit-keyframes blink {
+  50% {
+    border-color: #ff0000;
+  }
+}
+
+.show {
+  animation: blink .5s step-end infinite alternate;
+  border: 3px dashed;
+  top: -3px;
+  padding-top: 5px;
+border-radius: 10px;
+border-color:#3aab5d
 }
 img {
   width: 35%;
@@ -505,7 +541,7 @@ img {
 ul {
   list-style: none;
   padding: 0px;
-  margin: 0px auto;
+  margin: 1px auto;
   display: flex;
   justify-content: center;
 }
@@ -518,23 +554,24 @@ ul {
   content: "";
   width: 30px;
   height: 30px;
-  border: 2px solid #bebebe;
+  border: 2px solid #3aab5d;
   display: block;
   margin: 0 auto 10px auto;
   border-radius: 50%;
   line-height: 27px;
   background: white;
-  color: #bebebe;
+  color:  white;
   text-align: center;
   font-weight: bold;
 }
+
 
 .progressbar li:after {
   content: "";
   position: absolute;
   width: 100%;
   height: 3px;
-  background: #979797;
+  background: #3aab5d;
   top: 15px;
   left: -50%;
   z-index: -1;
@@ -549,7 +586,9 @@ ul {
   border-color: #3aac5d !important;
   background: #3aac5d !important;
   color: white !important;
+  
 }
+
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;

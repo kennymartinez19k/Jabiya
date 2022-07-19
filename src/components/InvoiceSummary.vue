@@ -4,9 +4,9 @@
             @didDismiss="setOpen(false)">
         </ion-loading>
         <ul uk-accordion>
-              <li>
-                <a class="uk-accordion-title web-font-small " href="#">Detalles de la Entrega de la Orden&nbsp;<b> {{
-                invoiceDetails?.invoice_origin }}</b></a>
+            <li v-if="show">
+                <a class="uk-accordion-title web-font-small " href="#">Cuadre de Entrega de la Orden&nbsp;<b> {{
+                        invoiceDetails?.invoice_origin }}</b></a>
                 <div class="uk-accordion-content">
                     <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.invoice_partner_display_name}} </p>
                     <p class="uk-text-left uk-margin-left">{{ invoiceDetails?.partner_address}} </p>
@@ -37,13 +37,16 @@
                     </table>
                     <div class="uk-text-right uk-margin-top">
                         <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
-                        separatorNumber(invoiceDetails?.subtotal) }}</span></h6>
+                                separatorNumber(invoiceDetails?.subtotal) }}</span></h6>
                         <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
-                        separatorNumber(invoiceDetails?.amount_tax) }}</span></h6>
+                                separatorNumber(invoiceDetails?.amount_tax) }}</span></h6>
                         <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
                                 {{ separatorNumber(invoiceDetails?.amount_total) }}</span></h6>
                     </div>
                 </div>
+            </li>
+            <li v-else>
+                <h6 class="web-font-small order-delete">No Hay Detalles de Esta Orden</h6>
             </li>
         </ul>
 
@@ -79,7 +82,9 @@ export default {
             summary: null,
             generalInformation: null,
             invoiceDetails: {},
-            idOrderForOdoo: {}
+            idOrderForOdoo: {},
+            show: false,
+            idInvoices: null
         }
     },
 
@@ -90,18 +95,18 @@ export default {
       return { isOpenRef, setOpen };
     },
     computed: {
-        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "invoicesIdStore"])
+        ...mapGetters(["summarysInvoiceStore", "invoiceDetailsStore", "invoicesIdStore" ])
     },
 
     async mounted() {
-        let idInvoices = null
+        // let idInvoices = null
 
         if (this.summarysInvoiceStore?.orderId) {
             this.generalInformation = this.summarysInvoiceStore 
-            idInvoices = this.invoiceDetailsStore
+            this.idInvoices = this.invoiceDetailsStore
         } else if (JSON.parse(localStorage.getItem(`SummaryInvoice`))?.orderId) {
            this.generalInformation = JSON.parse( localStorage.getItem(`SummaryInvoice`))
-            idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
+            this.idInvoices = JSON.parse(localStorage.getItem(`invoiceDetails`))
             this.$store.commit("getSummaryInvoice", this.generalInformation);
         }
 
@@ -112,22 +117,27 @@ export default {
             this.idOrderForOdoo = JSON.parse(localStorage.getItem("getOrdersToInvoicesId"))
         }
 
-            await this.getReportOdoo(idInvoices)
+            await this.getReportOdoo(this.idInvoices)
             await this.getSummary()
 
        
     },
-  
+    
+   
     methods: {
         async getReportOdoo(id) {
             if (id) {
                 this.setOpen(true);
+                this.show = true
+
                 try {
                     const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/order/${this.idOrderForOdoo.orderId}/report/`, { withCredentials: true });
                     this.invoiceDetails = result.data.result.data;
+
                     console.log(this.invoiceDetails,'invoiceDetail summary ')
                 } catch (error) {
                     console.log(error)
+                    this.show = false
                 }
                 this.setOpen(false);
                 
@@ -161,6 +171,8 @@ export default {
 </script>
 
 <style  scoped>
+
+
 .container {
     width: 100%;
 }
@@ -168,7 +180,6 @@ export default {
 th {
     font-size: 10.5px;
     padding: 16px 3px;
-    /* text-align: center; */
     font-weight: 600;
     color: black;
 }
@@ -200,6 +211,11 @@ a {
 }
 
 .uk-accordion-title {
+    display: flex;
+    font-size: 12px;
+    color: #3880ff;
+}
+.order-delete {
     display: flex;
     font-size: 12px;
     color: #3880ff;

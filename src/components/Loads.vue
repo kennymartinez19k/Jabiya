@@ -146,9 +146,6 @@ import {LocalStorage} from '../mixins/LocalStorage'
 import Datepicker from 'vue3-date-time-picker';
 import 'vue3-date-time-picker/dist/main.css'
 
-// import {App} from '@capacitor/app'
-
-
 export default {
   components: {
     IonLoading,
@@ -293,7 +290,6 @@ export default {
         }
         if(error.message == 'Request failed with status code 401'){
           console.log('unautorizo')
-          //  this.$router.push({name: 'sign-in'})
         }
         return ;
       }   

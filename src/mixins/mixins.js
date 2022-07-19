@@ -91,9 +91,6 @@ export const Mixins = {
       
       if (load?.loadType == this.profile?.b2b && !load?.scanningRequired) {
         router.push({ name: 'details-order' });
-        
-        // await this.uploadOrDownload(load)
-        
       }else if(load?.loadType == this.profile?.b2b && load?.scanningRequired){
         router.push({ name: 'orders' });
       }
@@ -176,7 +173,6 @@ export const Mixins = {
       let delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(2000);
       if (val?.loadType == this.profile?.b2b && !val?.scanningRequired) {
-        console.log('kkkkkkkkkk')
         router.push({ name: 'load-status' });
 
       }
@@ -230,15 +226,13 @@ export const Mixins = {
 
           let {order_num, _id} = order
         let { name, qrCode, quantity, scanOneByOne, loadScanningCounter } = currentProductExo
-          if (productsOdoo !== null) {
+
+        if (productsOdoo !== null) {
             if (currentProductExo.name == currentProdutFromInvoicesOdoo?.productId && quantityToInvoice !== null) {
-                // let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
-                // quantity = productsOdoo[productIndexOdoo]?.productQuantity - quantityToInvoice 
-                quantity =  quantityToInvoice 
+              quantity = quantityToInvoice 
             } else {
                 if (productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name && !curretProductOdoo.isRewardLine )>= 0) {
                   let productIndexOdoo = productsOdoo.findIndex(curretProductOdoo => curretProductOdoo.productId == currentProductExo.name)
-                  // quantity = productsOdoo[productIndexOdoo]?.productQuantity - productsOdoo[productIndexOdoo]?.productQuantityToInvoice
                   quantity = productsOdoo[productIndexOdoo]?.qty_to_deliver
                 }
             
@@ -247,7 +241,6 @@ export const Mixins = {
           } 
           firstProductInfo = {order_num, name, _id, qrCode, quantity, scanOneByOne, loadScanningCounter}       
           listOfOrders.unshift(firstProductInfo)
-  
           listOfOrders.forEach( x => {
             let {qrCode,  loadScanningCounter, order_num} = x
              var productQrCode = listOfOrders.filter( p => p.qrCode == x.qrCode )
@@ -274,6 +267,7 @@ export const Mixins = {
            })
            listOfOrderTotal = products
       }
+      console.log(listOfOrders,'listOfOrders')
       return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
     },
 
@@ -296,13 +290,28 @@ export const Mixins = {
       if(status == "Delivered with exceptions") return "Entregada Con Excepciones"
       if(status == "Created") return "Creada"
     },
-
-    separatorNumber(numb){
-      if(numb){
-          let str = numb.toFixed(2).toString().split(".");
-          str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          return str.join(".");
+    
+    separatorNumber(numb) {
+      if (numb) {
+        let str = numb.toFixed(2).toString().split(".");
+        str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return str.join(".");
       }
+    },
+   
+    formatCurrency(number) {
+      if (!number || isNaN(number)) return number 
+      var formatter = new Intl.NumberFormat('es-DO', {
+        style: 'currency',
+        currency: 'DOP',
+      });
+
+      return formatter.format(number);
+    },
+    
+     resetException() {
+      this.$store.commit("setExceptions", { note: null, type: null });
+      this.$store.commit("getChageQuantityToProduct", { exception: false, changeQuantity: null, order_num: null });
     }
   },
 };

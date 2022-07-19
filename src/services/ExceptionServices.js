@@ -10,7 +10,8 @@ class ExceptionServices {
       this.settingsLocalStore = val
     }
   
-    async putExceptions (idException, exceptions) {
+  async putExceptions(idException, exceptions) {
+      console.log(idException,exceptions,'sss')
         const exception = {
             "reason": exceptions.type ,
             "note": exceptions.note
@@ -21,9 +22,6 @@ class ExceptionServices {
       let json =  {'method': 'put', 'body': exception, 'url': url}
 
       add(json)
-
-      this.$store.commit("setExceptions", {note: null, type: null});
-      this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
     }
     async getExceptionsDetails () {
     const result = await this.http.get(`${this.settingsLocalStore.url}/exo/exceptions`)

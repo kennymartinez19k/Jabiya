@@ -13,7 +13,7 @@
             <p class="uk-flex status-load ">
               <span class="uk-text-bold web-font-medium">{{ loadStatus(detailsLoads) }} </span>
             </p>
-            <div class="uk-margin-top uk-text-left" style="margin-top: 25px !important">
+            <div class="uk-text-left mt-loadnumber">
               <div>
                 <p class="uk-flex web-font-small">
                   <span>{{ detailsLoads?.loadNumber }}</span>
@@ -34,14 +34,14 @@
                   class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.transportCost *
-                  detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+                    detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 <div
                   v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)"
                   class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
                   <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.profitability *
-                  detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+                    detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
 
               </div>
@@ -80,8 +80,8 @@
               <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
                 <span>{{
-                detailsLoads?.Orders[0]?.order_num
-                }}</span>
+                  detailsLoads?.Orders[0]?.order_num
+                  }}</span>
               </div>
               <div
                 v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && detailsLoads.loadType == profile.container &&  !isReturnLoad(detailsLoads)"
@@ -118,21 +118,21 @@
                 class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{
-                info?.driver
-                }}</span>
+                  info?.driver
+                  }}</span>
               </div>
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'"
                 class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">Vehiculo:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{ info?.brand }} {{ info?.model }} {{
-                info?.color }}, Placa:
+                  info?.color }}, Placa:
                   {{ info?.license_no }}
                 </span>
               </div>
 
             </div>
             <div class="uk-flex uk-flex-between web-font-small">
-              <div style="width: 100%">
+              <div class="profile-container">
                 <div v-if="detailsLoads.loadType == profile.container"
                   class="uk-text-left info-user-client web-font-small">
                   <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'">
@@ -155,7 +155,7 @@
               </div>
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'"
                 class="start-load uk-flex-middle">
-                <font-awesome-icon icon="arrow-right" style="font-size: 20px" />
+                <font-awesome-icon icon="arrow-right" class="arrow-font" />
               </div>
             </div>
 
@@ -163,7 +163,7 @@
 
           <div v-if="detailsLoads.allowOrderChangesAtDelivery && detailsLoads.loadingStatus.text == 'Delivered'">
             <button type="button" class="uk-button uk-button-primary" @click="changeRoute('reconciliation')">Reporte de
-              Cuadre</button>
+              Cuadre Total</button>
           </div>
 
           <div v-if="detailsLoads?.loadType == profile?.b2b" class="item-order-deliver">
@@ -227,8 +227,8 @@
                   <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                     <!-- uk-open -->
                     <li class="uk-margin-remove">
-                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{
-                      textAccordionProduct }}</a>
+                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText(order.order_num)">{{
+                        order.textAccordionProduct }}</a>
                       <div class="uk-accordion-content uk-margin-remove uk-padding-remove">
                         <div class="details-product">
                           <p class="item web-font-small">
@@ -242,17 +242,16 @@
                           </p>
                         </div>
                         <div v-for="item in order.products" :key="item.id" class="details-product">
-                          <p class="item web-font-small">{{ item?.description }}</p>
-                          <p class="item web-font-small">{{item.qrCode}}</p>
-                          <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+                          <p class="item web-font-small font-small">{{ item?.description }}</p>
+                          <p class="item web-font-small font-small">{{item.qrCode}}</p>
+                          <p class="item web-font-small font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
                         </div>
                       </div>
                     </li>
                   </ul>
                 </div>
-
-
               </div>
+
             </div>
           </div>
           <span v-if="orders?.length > quantityShow && load?.loadType == profile?.b2b && showOrders"
@@ -343,9 +342,10 @@ export default {
     }
     this.orders = this.detailsLoads?.Orders
     this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
-console.log(this.detailsLoads,'detail load')
+    this.orders?.forEach(order => {
+      order.textAccordionProduct = 'Mostrar Productos'
+    })
     this.setOpen(false)
-
   },
 
   computed: {
@@ -368,6 +368,7 @@ console.log(this.detailsLoads,'detail load')
     } else if (this.userInfo.userType === "Provider") {
       this.costText = 'Costo de Transporte'
     }
+ 
   },
 
   methods: {
@@ -447,18 +448,29 @@ console.log(this.detailsLoads,'detail load')
       this.showOrders = value;
       this.quantityShow = quantity
     },
-    changeText() {
-      if (this.textAccordionProduct !== 'Mostrar Productos') {
-        this.textAccordionProduct = 'Mostrar Productos'
-      } else {
-        this.textAccordionProduct = 'Ocultar Productos'
-      }
-    },
+    changeText(name) {
+      this.orders.forEach(order => {
+        if (order.order_num === name) {
+          if (order.textAccordionProduct !== 'Mostrar Productos') {
+            order.textAccordionProduct = 'Mostrar Productos'
+          } else {
+            order.textAccordionProduct = 'Ocultar Productos'
+          }
+        }
+      })
+    }
   },
 };
 </script>
 
 <style scoped>
+
+
+
+
+
+
+
 
 
 
@@ -556,11 +568,6 @@ a {
   margin: 15px 0px;
   padding-left: 15px;
 }
-
-/* .addres-info {
-  display: block;
-} */
-
 .uk-button {
   font-weight: 600;
   font-size: 13px;
@@ -596,6 +603,19 @@ a {
 .details-product .item {
   width: 33%;
   text-align: center;
+}
+.font-small {
+  font-size: 10px;
+}
+.mt-loadnumber {
+  margin-top: 25px !important;
+}
+
+.profile-container {
+  width: 100%;
+}
+.arrow-font {
+  font-size: 20px;
 }
 
 @media (min-width: 600px) {

@@ -18,23 +18,23 @@
                 <div class="uk-flex uk-flex-wrap web-font-small">
                     <p style="margin-right: 10px !important">
                         <span class="font-weight-medium ">Shipper: </span><span>&nbsp; {{ shipperName(loadStore)
-                        }}</span>
+                            }}</span>
                     </p>
                     <div></div>
                     <p>
                         <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ loadStore?.firstOrdenInfo?.sector
-                        }}</span>
+                            }}</span>
                     </p>
                 </div>
             </div>
         </div>
-        <div class="container-deliver uk-margin-top">
-       
+        <div class="container-deliver uk-margin-top scroll">
+
             <div class="uk-padding-small uk-width-1-1 container-item">
                 <div v-for="order in ordersToDisplay" :key="order"
                     class="uk-card item-deliver uk-card-default uk-card-body uk-flex"
                     :class="{ ordenCompleted: order.completed, 'order-status': order?.status === 'Delivered' }">
-             
+
                     <div class="uk-text-left info-user ">
                         <div class="btn uk-flex">
                             <div class="uk-flex uk-flex-column uk-text-left">
@@ -74,9 +74,8 @@
                         <ul uk-accordion class="uk-margin-remove uk-padding-remove">
                             <!-- uk-open -->
                             <li class="uk-margin-remove">
-                                <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{
-                                textAccordionProduct
-                                }}</a>
+                                <a class="uk-accordion-title web-font-small" href="#"
+                                    @click="changeText(order.order_num)">{{ order.textAccordionProduct }}</a>
                                 <div class="uk-accordion-content uk-margin-remove uk-padding-remove">
                                     <div class="details-product">
                                         <p class="item web-font-small">
@@ -90,9 +89,9 @@
                                         </p>
                                     </div>
                                     <div v-for="item in order.products" :key="item.id" class="details-product">
-                                        <p class="item web-font-small">{{item?.description}}</p>
-                                        <p class="item web-font-small">{{item.qrCode}}</p>
-                                        <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}
+                                        <p class="item web-font-small font-small">{{item?.description}}</p>
+                                        <p class="item web-font-small font-small">{{item.qrCode}}</p>
+                                        <p class="item web-font-small font-small">{{item.loadScanningCounter}}/{{item.quantity}}
                                         </p>
                                     </div>
                                 </div>
@@ -117,8 +116,6 @@ import { mapGetters } from "vuex";
 import { IonLoading } from "@ionic/vue";
 import { ref } from "vue";
 import { Mixins } from '../mixins/mixins'
-import axios from "axios";
-import { hostEnum } from '../types'
 export default {
     alias: 'Detalles de las Ordenes',
     mixins: [Mixins],
@@ -133,9 +130,6 @@ export default {
     },
     data() {
         return {
-            hostEnum,
-
-
             status: null,
             load: null,
             orders: null,
@@ -227,6 +221,9 @@ export default {
 
             })
         }
+        this.orders?.forEach(order => {
+            order.textAccordionProduct = 'Mostrar Productos'
+        })
 
         this.filterByOrders(false)
         this.setOpen(false)
@@ -260,7 +257,6 @@ export default {
             this.setOpen(true)
             await this.uploadOrDownload(this.load)
             this.setOpen(false)
-            console.log('eilson')
             this.btnDisabled = false
 
         },
@@ -279,13 +275,17 @@ export default {
             }
         },
 
-        changeText() {
-            if (this.textAccordionProduct !== 'Mostrar Productos') {
-                this.textAccordionProduct = 'Mostrar Productos'
-            } else {
-                this.textAccordionProduct = 'Ocultar Productos'
-            }
-        },
+        changeText(name) {
+            this.ordersToDisplay.forEach(order => {
+                if (order.order_num === name) {
+                    if (order.textAccordionProduct !== 'Mostrar Productos') {
+                        order.textAccordionProduct = 'Mostrar Productos'
+                    } else {
+                        order.textAccordionProduct = 'Ocultar Productos'
+                    }
+                }
+            })
+        }
 
      
 
@@ -294,6 +294,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 :root {
     --su-size-text: 12px;
 }
@@ -448,7 +450,6 @@ li {
 
 header {
     height: 60px;
-    /* 64 + 16px */
     position: sticky;
     -webkit-position: sticky;
     top: -16px;
@@ -486,7 +487,15 @@ header::after {
 .container-item {
     margin-bottom: 40px
 }
-
+.scroll {
+    height: 100vh;
+    overflow-x: none;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.font-small {
+    font-size: 10px;
+}
 @media (min-width: 600px) {
       .container-deliver {
         width: 90%;

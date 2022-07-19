@@ -32,9 +32,9 @@
         <p>
           <strong>Total:</strong>&nbsp;<span>
             <span v-if="customerDetails?.invoices.length > 0"> {{ customerDetails?.order?.currencySymbol }}{{
-            separatorNumber(customerDetails?.order?.total_invoice)}}</span>
+            formatCurrency(customerDetails?.order?.total_invoice)}}</span>
             <span v-else :class="{total:showUpdating.length > 0 }"> {{ customerDetails?.order?.currencySymbol }}{{
-            separatorNumber(customerDetails?.order?.amount_total) }}</span>&nbsp;
+            formatCurrency(customerDetails?.order?.amount_total) }}</span>&nbsp;
             <span v-if="showUpdating.length > 0" :class="{ recalculating: showUpdating.length > 0 }">Se recalcula al
               Crear la Factura</span></span>
         </p>
@@ -71,29 +71,21 @@
               <td v-if="!product.isRewardLine" :class="{ 'td-text': customerDetails?.order?.can_refund }"
                 class="uk-table-small uk-text-start">
                 {{ product.productName }}<br /><span>{{
-                product.currencySymbol }}{{ separatorNumber(product.price) }} </span>
+                product.currencySymbol }}{{ formatCurrency(product.price) }} </span>
                 <br />
-                <!-- <span class="uk-text-bold">Ordenados:&nbsp;</span>
-                <del v-if="product.productQuantityToInvoice > 0" class="quantity-adjustment"><span>{{
-                    product.productQuantity }}</span></del>
-                <span v-if="product.productQuantityToInvoice == 0"><span>{{ product.productQuantity }}</span></span> -->
               </td>
               <td :class="{ 'td-text': customerDetails?.order?.can_refund }" class="uk-text-center">
-                <!-- <del v-if="orderStoreQuantity[i] - product.qty_to_deliver > 0" class="quantity-adjustment"><span>{{
-                    orderStoreQuantity[i] }}</span></del> -->
                 <span><span>{{ orderStoreQuantity[i] }}</span></span>
               </td>
               <td v-if=" !product.isRewardLine" class="uk-text-center" :class="{
                 'show-active2':
                   product.qty_to_deliver !== NewOrdersQuantyti[i],
                 'td-text': customerDetails?.order?.can_refund,
-                'show-active':orderStoreQuantity[i] - product.qty_to_deliver  !== 0 && customerDetails?.invoices.length > 0
+              'show-active': orderStoreQuantity[i] - product.qty_to_deliver  !== 0 && customerDetails?.invoices.length > 0
               }">
-                <span>{{ orderStoreQuantity[i] - product.qty_to_deliver }}
-                  <!-- <span v-if="product.productQuantityToInvoice > 0">/ {{ product.productQuantity }}llll</span> -->
-                </span>
+                <span>{{ orderStoreQuantity[i] - product.qty_to_deliver }}</span>
               </td>
-              <span v-if="customerDetails?.order?.can_refund" class="f-span uk-margin-small">
+              <span v-if="customerDetails?.order?.can_refund && !product.isRewardLine" class="f-span uk-margin-small">
                 <font-awesome-icon v-if="customerDetails?.order?.can_refund" icon="plus" :class="{
                   'plus-disabled':
                     orderStoreQuantity[i] - product.qty_to_deliver >=
@@ -106,13 +98,12 @@
                       product.qty_to_deliver,
                       NewOrdersQuantyti[i],
                       product,
-                      // product.productQuantity
                       orderStoreQuantity[i]
                     )
                 " />
                 <font-awesome-icon v-if="customerDetails?.order?.can_refund" icon="minus" :class="{
                   'plus-disabled':
-                   orderStoreQuantity[i] - product.qty_to_deliver == 0 ||
+                  orderStoreQuantity[i] - product.qty_to_deliver == 0 ||
                     !customerDetails?.order?.can_refund,
                 }" class="Space font-awesome uk-flex uk-flex-wrap-bottom" @click="
                   (product.qty_to_deliver += 1),
@@ -121,7 +112,6 @@
                       product.qty_to_deliver,
                       NewOrdersQuantyti[i],
                       product,
-                      // product.productQuantity
                       orderStoreQuantity[i]
                     )
                 " />
@@ -140,8 +130,6 @@
           </p>
           <p>
             ¿Procedemos a generar la <b>Factura FINAL</b>?
-
-            <!-- Esta seguro que desea eliminar el rembolso -->
           </p>
         </div>
 
@@ -156,14 +144,6 @@
               @click="changeProductQuantityRefudInvoiced()">
               Si
             </button>
-            <!-- <button
-              v-if="isOriginalValue"
-              class="uk-button uk-button-primary uk-modal-close btn-modal"
-              type="button"
-              @click="removeInvoiceRefund()"
-            >
-              ok
-            </button> -->
           </div>
         </div>
       </div>
@@ -175,13 +155,6 @@
           Crear Factura
         </button>
       </div>
-      <!-- <div v-else class="btn-style">
-        <button :disabled="btnInvoices" type="button" class="uk-button  btn-retorn "
-          @click="dr">
-           Reembolso Facturas --v-if="customerDetails?.invoices.length === 0"
-          Devoluciòn Post Factura
-        </button>
-      </div> -->
       <div class="btn-style">
         <button :disabled="btnInvoices" type="button" class="uk-button uk-button-primary btn-style"
           @click="printInvoicesBluetooth()">
@@ -199,9 +172,8 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { mapGetters } from "vuex";
 import { Mixins } from "../mixins/mixins";
-// import { Browser } from "@capacitor/browser";
 import { PrintV } from "printv";
-import { hostEnum } from '../types'
+import { hostEnum, loginOdooEnum } from '../types'
 export default {
   alias: "Detalles",
   components: {
@@ -214,7 +186,8 @@ export default {
 
   data() {
     return {
-      hostEnum, 
+      hostEnum,
+      loginOdooEnum, 
 
 
       isChangeQuantity: {
@@ -246,14 +219,14 @@ export default {
         "[L]<b>Fecha de Vencimiento</b> {{invoice_date_due}}\n" +
         "[L]<b>Origen</b> {{invoice_origin}}\n" +
         "[C]<b>------------------------------------------------</b>\n" +
-        "[L]<b> Descripcion </b>[L]<b> Cantidad </b>[L]<b> Unitario </b>[L]<b> Importe </b>\n\n" +
+        "[L]<b> Descripcion </b>[L]<b> Cantidad </b>[R]<b> Unitario </b>[R]<b> Importe </b>\n\n" +
         "{{products}}" +
         "[C]<b>------------------------------------------------</b>\n" +
-        "[L][L][R]<b>Subtotal</b>   RD$ {{subtotal}}\n" +
+        "[L][L][R]<b>Subtotal</b> RD${{subtotal}}\n" +
         "[L][L][R]--------------------------\n" +
-        "[L][L][R]<b>ITBS</b>   RD$ {{amount_tax}}\n" +
+        "[L][L][R]<b>ITBS</b>     RD${{amount_tax}}\n" +
         "[L][L][R]--------------------------\n" +
-        "[L][L][R]<b>Total</b>   RD$ {{amount_total}}\n" +
+        "[L][L][R]<b>Total</b>    RD${{amount_total}}\n" +
         "[L][L][R]<b>--------------------------</b>\n" +
         "[L] \n" +
         "[L]Por favor utilice la siguiente referencia al realizar su pago\n\n" +
@@ -262,7 +235,7 @@ export default {
         "[L]\n" +
         "[L]\n" +
         "[C]<b>------------------------------------------------</b>\n" +
-        "[R]Firma \n",
+        "[R]Firma   \n",
     };
   },
   setup() {
@@ -281,7 +254,7 @@ export default {
     try {
       const signIn = {
         jsonrpc: "2.0",
-        params: { login: "jabillaodoo@gmail.com", password: "admin" },
+        params: { login: loginOdooEnum.login, password: loginOdooEnum.password },
       };
       await axios.post(
         `${hostEnum?.odoo}/api/exo/auth/sign_in`,
@@ -297,7 +270,6 @@ export default {
     }
     localStorage.removeItem("SummaryInvoice");
     await this.productsOfOrders();
-    // console.log(this.idInvoices.loadsId, 'this.idInvoices.loadsId')
 
     this.setOpen(false);
   },
@@ -312,44 +284,17 @@ export default {
     ]),
   },
 
-  // watch: {
-  //   showUpdating: {
-  //     handler: function (newVal) {
-  //       if (newVal.length !== 0) {
-  //         this.btnSave = false;
-  //         if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
-  //           this.btnInvoices = false;
-  //         } else {
-  //           this.btnInvoices = true;
-  //         }
-  //       } else if (newVal.length == 0) {
-  //         this.btnInvoices = false;
-  //         this.btnSave = true;
-
-  //         if (this.customerDetails.invoices.length > 0 && newVal.length == 0) {
-  //           this.btnInvoices = false;
-  //         } else {
-  //           this.btnInvoices = true;
-  //         }
-  //       }
-  //     },
-  //     deep: true,
-  //   },
-  // },
   methods: {
     async productsOfOrders() {
       try {
         this.setOpen(true);
 
-        //      const resultLogin = await this.$services.invoicesSevices.getLoginInvoices()
         const result = await axios.get(
           `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}/`,
           { withCredentials: true }
         );
         this.order_lines = result.data.result.data.order_lines;
         this.customerDetails = result.data.result.data;
-        console.log(this.order_lines, 'ffffffffffffff')
-        // console.log(this.customerDetails, 'customerDetails')
         this.NewOrdersQuantyti = result.data.result.data.order_lines.map(
           (x, i) => {
             this.orderScan[i]?.products.forEach((z) => {
@@ -357,7 +302,8 @@ export default {
             });
             this.orderQuantity = x.qty_to_deliver;
             this.productOrder = x;
-            if (this.orderStoreQuantity.some(qty => qty !== x.qty_to_deliver)) {
+ 
+              if (this.orderScan[i]?.products?.some(order => order.name == x.productId && order.quantity !== x.qty_to_deliver)) {
               this.isChangeQuantity.exception = true;
               this.isChangeQuantity.changeQuantity = x.qty_to_deliver;
               this.isChangeQuantity.order_num = this.customerDetails?.order?.name;
@@ -370,7 +316,7 @@ export default {
                 this.isChangeQuantity
               );
             } else if (
-              this.order_lines.every((x) => this.orderStoreQuantity.filter(qty => qty === x.orderStoreQuantity))
+                this.order_lines?.every((x) => this.orderScan[i]?.products?.some(order => order.name == x.productId && order.quantity === x.qty_to_deliver))
             ) {
               localStorage.removeItem(
                 `isChangeQuantity${this.orderScan[0].order_num}`
@@ -381,24 +327,12 @@ export default {
                 order_num: null,
               });
             }
-            // else if (this.order_lines.every(x => x.productQuantityToInvoice === 0 )) {
-            //   localStorage.removeItem(`isChangeQuantity${this.orderScan[0].order_num}`);
-            //   this.$store.commit("getChageQuantityToProduct",{exception: false, changeQuantity: null, order_num: null,});
-            // }
+            
             return x.qty_to_deliver;
           }
         );
-        // console.log(this.orderStoreQuantity,'orderStoreQuantity')
-        // if (
-        //   !this.customerDetails?.order?.can_refund ||
-        //   this.customerDetails?.invoices.length > 0
-        // ) {
-        //   this.btnSave = false;
-        //   this.btnInvoices = true;
-        // }
+       
         if (!this.customerDetails?.order?.can_refund){ 
-        // if(this.createToInvoiceStore || JSON.parse(localStorage.getItem(`isCreateToInvoice${this.customerDetails?.order?.name}`))) {
-
           this.btnSave = true;
           this.btnInvoices = false;
         } else {
@@ -426,7 +360,6 @@ export default {
         console.log(error);
       }
       let contProductsOdoo = 0;
-      console.log(this.order_lines)
       this.order_lines?.forEach((x) => {
         if (!x.isRewardLine && x.productQuantityToInvoice === 0) {
           contProductsOdoo++;
@@ -439,6 +372,8 @@ export default {
       } else {
         this.isOriginalValue = false;
       }
+      this.setOpen(false);
+
     },
 
     async changeProductQuantityRefudInvoiced() {
@@ -456,16 +391,11 @@ export default {
             )
           )
         ) {
-          console.log(orderOdoo.line_id,'orderOdoo.line_id 11111111')
-          console.log(orderOdoo.qty_to_deliver, 'orderOdoo.qty_to_deliver.line_id 1111111111111')
           return {
             order_line_id: orderOdoo.line_id,
             set_qty: orderOdoo.qty_to_deliver,
           };
         } else {
-          console.log(orderOdoo.line_id, 'orderOdoo.line_id 22222')
-          console.log(orderOdoo.qty_to_deliver, 'orderOdoo.qty_to_deliver.line_id 22222')
-
           return {
             order_line_id: orderOdoo.line_id,
             set_qty: orderOdoo.qty_to_deliver,
@@ -495,20 +425,8 @@ export default {
     },
 
     async createRefudInvoices(changeRefundQty) {
-      console.log(changeRefundQty, 'changeRefundQty ordchangeRefundQtyer_lines')
-      // let refund_id = null;
-      // try {
-      //   const result = await axios.post(
-      //     `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}/invoice/refund`,
-      //     { withCredentials: true }
-      //   );
-      //   refund_id = result.data.result.data.refund_id;
-      // } catch (error) {
-      //   console.log(error);
-      // }
       try {
         await axios.patch(
-          // `${hostEnum?.odoo}/api/invoice/refund/${refund_id}/update`,
           `${hostEnum?.odoo}/api/order/${this.idInvoices.orderId}/`,
           {
             params: {
@@ -518,43 +436,15 @@ export default {
           },
           { withCredentials: true }
         );
-        // console.log(this.idInvoices.loadsId,'this.idInvoices.loadsId')
         this.btnSave = true;
         this.btnInvoices = false;
         await this.productsOfOrders();
-        // await this.printInvoicesBluetooth();
       } catch (error) {
         console.log(error);
         await this.productsOfOrders();
         this.setOpen(false);
       }
     },
-
-    // async removeInvoiceRefund() {
-    //   this.setOpen(true);
-    //   let refundId = null;
-    //   this.customerDetails.invoices.forEach((x) => {
-    //     if (x.move_type == "out_refund") refundId = x.id;
-    //   });
-    //   try {
-    //     await axios.delete(
-    //       `${hostEnum?.odoo}/api/invoice/refund/${refundId}`,
-    //       { withCredentials: true }
-    //     );
-    //     this.showUpdating = [];
-    //     this.isChangeQuantity.exception = false;
-    //     this.isChangeQuantity.changeQuantity = null;
-    //     this.isChangeQuantity.order_num = null;
-    //     this.$store.commit("getChageQuantityToProduct", this.isChangeQuantity);
-    //     localStorage.removeItem(
-    //       `isChangeQuantity${this.orderScan[0].order_num}`
-    //     );
-    //     await this.productsOfOrders();
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    //   this.setOpen(false);
-    // },
 
     async printInvoicesBluetooth() {
       this.setOpen(true);
@@ -565,18 +455,6 @@ export default {
       });
       let downloadInvoicesId = selectedInvoicesId.join();
       this.getInvoicesPrint(downloadInvoicesId);
-      // try {
-      //   var urlFile = `${hostEnum?.odoo}/api/invoice/report?invoice_ids=${downloadInvoicesId}`;
-      //   var request = new XMLHttpRequest();
-      //   request.withCredentials = true;
-      //   request.open("GET", urlFile, true);
-      //   request.responseType = "blob";
-      //   Browser.open({
-      //     url: `${hostEnum?.odoo}/api/invoice/report?invoice_ids=${downloadInvoicesId}`,
-      //   });
-      // } catch (error) {
-      //   console.log(error);
-      // }
       this.btnInvoices = false;
       if (!this.loadStore?.scanningRequired) {
         this.$router.push({ name: "delivery-actions-auto" }).catch(() => {});
@@ -610,7 +488,6 @@ export default {
             (x, i) => x.qty_to_deliver === this.NewOrdersQuantyti[i]
           )
         ) {
-          // this.btnSave = true;
           this.showUpdating = [];
         } else {
           this.showUpdating.splice(0, 1);
@@ -672,17 +549,19 @@ export default {
         secondStructure: this.listOfOrderTotal,
       };
       this.$store.commit("setStructureToScan", structureInvoices);
+      localStorage.setItem("setStructureToScan", JSON.stringify(structureInvoices))
     },
 
     async getInvoicesPrint(valuePrint) {
-      try {
+      // try {
         let products = "";
         let plusData = []
         this.$store.commit("getInvoiceDetails", valuePrint);
         localStorage.setItem('invoiceDetails', JSON.stringify(valuePrint));
-        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/report/`, { withCredentials: true });
+        console.log(valuePrint,'qqqqqqqqqq')
+        const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/order/${this.idInvoices.orderId}/report/`, { withCredentials: true });
         let invoice = result.data.result.data;
-       
+        console.log(invoice,'wwwwwwwwwwwwwwwwww')
         invoice.products.forEach((product, i) => {
           let plus = ''
           let dataDescription = ''
@@ -696,7 +575,7 @@ export default {
             } else if (product.description[x] != undefined) {
               dataDescription += product.description[x]
             }
-            dataQty = product.qty
+            dataQty = product.invoiced_qty
             dataPrice_unit = product.price_unit
             dataPrice_subtotal = product.price_subtotal
           }
@@ -705,7 +584,7 @@ export default {
             dataDescription +=  this.characterControl(product.description.length, 15, true)
           } 
          
-          if (product.qty < 100) {
+          if (product.invoiced_qty < 100) {
             dataQty += this.characterControl(dataQty,3,false,'qty')
           }
           if (product.price_unit) {
@@ -723,16 +602,16 @@ export default {
           product.qty = dataQty
           product.price_unit = dataPrice_unit
           product.price_subtotal = dataPrice_subtotal
-          products += "[L]" + product.description + "[R] " + product.qty + "[R] RD$ " + product.price_unit + "[R] RD$ " + product.price_subtotal + "\n" + plusData[i] + "\n\n";
+          products += "[L]" + product.description + "[R] " + product.qty + "[R] RD$" +product.price_unit + "[R] RD$" +product.price_subtotal + "\n" + plusData[i] + "\n\n";
         });
         let template = this.invoiceStructure
           .replace("{{name}}", invoice.name)
           .replace("{{invoice_date}}", invoice.invoice_date)
           .replace("{{invoice_date_due}}", invoice.invoice_date_due)
           .replace("{{invoice_origin}}", invoice.invoice_origin)
-          .replace("{{subtotal}}", invoice.subtotal)
-          .replace("{{amount_tax}}", invoice.amount_tax)
-          .replace("{{amount_total}}", invoice.amount_total)
+          .replace("{{subtotal}}", this.separatorNumber(invoice.subtotal))
+          .replace("{{amount_tax}}", this.separatorNumber(invoice.amount_tax))
+          .replace("{{amount_total}}", this.separatorNumber(invoice.amount_total))
           .replace("{{payment_reference}}", invoice.payment_reference)
           .replace(
             "{{invoice_partner_display_name}}",
@@ -742,9 +621,9 @@ export default {
           .replace("{{products}}", products)
         this.dataPrinter = template;
         this.testingPrint();
-      } catch (error) {
-        console.log(error, "error print");
-      }
+      // } catch (error) {
+      //   console.log(error, "error print");
+      // }
     },
     characterControl(qty, maxQty, text, type) {
       let data = ''
@@ -905,7 +784,6 @@ h4 {
   background-color: #de2828;
 }
 .btn-modal {
-  /* padding: 10px; */
   font-size: 17px;
   font-weight: 600;
 }

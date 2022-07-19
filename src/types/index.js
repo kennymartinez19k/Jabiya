@@ -6,6 +6,7 @@ export const userPosition = Object.freeze(constants.positionSPN)
 export const profile = Object.freeze(constants.profile)
 export const urlEnum = Object.freeze(constants.url)
 export const hostEnum = Object.freeze(constants.host)
+export const loginOdooEnum = Object.freeze(constants.loginOdoo)
 
 
 

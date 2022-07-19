@@ -176,7 +176,7 @@
               Hubo Alguna Excepción? No
               <div class="onoffswitch">
                 <input type="checkbox" v-model="exception" name="onoffswitch"
-                  :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
+                  class="onoffswitch-checkbox"
                   id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
                 <label class="onoffswitch-label" for="myonoffswitch"></label>
               </div>
@@ -205,9 +205,6 @@ import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
 import { StreamBarcodeReader } from "vue-barcode-reader";
-// import axios from "axios";
-// import { hostEnum } from '../types'
-
 
 App.addListener("appRestoredResult", (data) => {
   console.log("Restored state:", data);
@@ -233,8 +230,6 @@ export default {
   mixins: [Mixins],
   data() {
     return {
-      // hostEnum,
-
       profile,
       isOpen: false,
       show: null,
@@ -618,7 +613,8 @@ export default {
          for (let x = 0; x < this.orders.length; x++) {
             let order = this.orders[x]
             this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
-         } 
+          } 
+          this.resetException ()
         }
     },
 
@@ -666,7 +662,6 @@ export default {
             this.totalLimitOfBoxes.scanned =
               detailsOrderToScan.loadScanningCounter;
             this.totalLimitOfBoxes.totalOfOrders = noScan1by1;
-            // UIkit.modal("#deliver-quantity").show();
             this.isOpen = true
             this.infoForScan = {
               orderId: order._id,
@@ -893,7 +888,6 @@ export default {
         order: null
       }
       this.$store.commit("getInvoiceDownload",dwlStatus);
-      // this.$store.commit("getInvoiceDownload",false);
     },
 
     allProductUpload() {
@@ -997,7 +991,6 @@ export default {
       this.cameraOn = false;
       this.showProduct = true
       this.image = null;
-      // await this.camera?.stop();
     },
     async pickImage(event) {
       let blob = event.target.files[0];

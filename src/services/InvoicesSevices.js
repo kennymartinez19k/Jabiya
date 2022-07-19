@@ -10,7 +10,7 @@ class InvoicesSevices {
     }
   
     async getLoginInvoices () {
-        const signIn = {jsonrpc: "2.0", params: {login: "809123121",password:"admin"}}
+      const signIn = {jsonrpc: "2.0", params: { login: loginOdooEnum.login, password: loginOdooEnum.password },}
       const result = await this.http.post(`${hostEnum.odoo}/api/auth/sign_in`, signIn, {withCredentials: true })
       return result.data.data
     }
