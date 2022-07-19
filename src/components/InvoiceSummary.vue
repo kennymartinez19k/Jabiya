@@ -4,41 +4,7 @@
             @didDismiss="setOpen(false)">
         </ion-loading>
         <ul uk-accordion>
-            <!-- <li>
-                <a class="uk-accordion-title web-font-small " href="#">Resumen De Factura</a>
-                <div class="uk-accordion-content">
-                    <table class="uk-table uk-table-striped uk-table-divider uk-table-hover">
-                        <thead>
-                            <tr>
-                                <th class="web-font-small">Fecha</th>
-                                <th class="web-font-small">sub-total</th>
-                                <th class="web-font-small">itbs</th>
-                                <th class="web-font-small">total</th>
-                            </tr>
-                        </thead>
-                        <tbody v-for="(info, index) in summary?.invoices" :key="info">
-                            <tr :id="index" :class="{ 'refund-invoice': info.moveType == 'out_refund' }">
-                                <td class="web-font-small">{{ info.invoiceDate }} <br><span
-                                        v-if="info.moveType == 'out_refund'">Reembolso</span></td>
-                                <td class="web-font-small">{{ info.taxExcluded }}</td>
-                                <td class="web-font-small">{{ info.total - info.taxExcluded }}</td>
-                                <td class="web-font-small">{{info.total}}</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                    <div class="uk-text-right uk-margin-top">
-                        <h6 class="web-font-small"><span>Total Sin Impuestos:</span> <span>{{ summary?.currency }} {{
-                                summary?.totalTax }}</span></h6>
-                        <h6 class="web-font-small"><span>Impuestos:</span> <span>{{ summary?.currency }} {{
-                                summary?.total - summary?.totalTax }}</span></h6>
-                        <h6 class="web-font-small"> <span> Total: </span> <span class="opertion">{{ summary?.currency }}
-                                {{ summary?.total }}</span></h6>
-                    </div>
-                </div>
-            </li> -->
-
-            <li>
+              <li>
                 <a class="uk-accordion-title web-font-small " href="#">Detalles de la Entrega de la Orden&nbsp;<b> {{
                 invoiceDetails?.invoice_origin }}</b></a>
                 <div class="uk-accordion-content">
@@ -159,6 +125,7 @@ export default {
                 try {
                     const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/order/${this.idOrderForOdoo.orderId}/report/`, { withCredentials: true });
                     this.invoiceDetails = result.data.result.data;
+                    console.log(this.invoiceDetails,'invoiceDetail summary ')
                 } catch (error) {
                     console.log(error)
                 }
@@ -178,7 +145,9 @@ export default {
                     },
                     { withCredentials: true }
                 );
-                this.summary = result.data.result.data
+               this.summary = result.data.result.data
+               console.log(this.summary, 'summary summary ')
+
             } catch (error) {
                 console.log(error)
                }

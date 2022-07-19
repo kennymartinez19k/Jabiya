@@ -22,7 +22,9 @@
     "preprod": "https://preprod.flai.com.do/orchestrator"
   },
   "host":{
-    "odoo":"https://jabiyaerp.flai.com.do"
+    "odoo":"https://jabiyaerp.flai.com.do",
+    "odooTest":"https://jabiyatest.flai.com.do/",
+    "odooProduction":"https://jabiya.flai.com.do/"
   }
 }
 

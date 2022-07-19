@@ -35,10 +35,8 @@
           <h6 class="uk-margin-remove uk-flex uk-flex-around"><span>Total $ a Entregar en Almacén:</span> <span>RD$ {{
               separatorNumber(data.total) }}</span></h6>
         </div>
-        <!-- </div> -->
       </li>
     </ul>
-    <!-- <hr> -->
     <ul uk-accordion class="uk-margin-large-top">
       <li>
         <a class="uk-accordion-title" href="#" @click="changeText()">{{ textAccordion }}</a>
@@ -142,6 +140,7 @@ export default {
       try {
         const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation/`, { withCredentials: true });
         this.reconciliation = result.data.result.data
+        console.log(this.reconciliation, 'reconciliation summary ')
       } catch (error) {
         console.log(error)
       }

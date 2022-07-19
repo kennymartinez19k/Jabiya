@@ -34,14 +34,14 @@
                   class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">{{costText}}:&nbsp;</p>
                   <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.transportCost *
-                    detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+                  detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
                 <div
                   v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress' && (userData?.userType == userType?.provider)"
                   class="uk-flex uk-flex-middle web-font-small">
                   <p class="uk-text-bold">Rentabilidad:&nbsp;</p>
                   <span> RD ${{setRound(detailsLoads?.plannedProfitability?.profitability?.profitability *
-                    detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
+                  detailsLoads?.currencyExchange?.atTheTimeOfAssigning)}}</span>
                 </div>
 
               </div>
@@ -80,8 +80,8 @@
               <div v-if="detailsLoads.loadType == profile?.container" class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">No de Orden:&nbsp;</p>
                 <span>{{
-                  detailsLoads?.Orders[0]?.order_num
-                  }}</span>
+                detailsLoads?.Orders[0]?.order_num
+                }}</span>
               </div>
               <div
                 v-if="detailsLoads?.loadingStatus?.text === 'Driver selection in progress' && detailsLoads.loadType == profile.container &&  !isReturnLoad(detailsLoads)"
@@ -118,14 +118,14 @@
                 class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">Chofer:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{
-                  info?.driver
-                  }}</span>
+                info?.driver
+                }}</span>
               </div>
               <div v-if="detailsLoads?.loadingStatus?.text !== 'Driver selection in progress'"
                 class="uk-flex uk-flex-middle web-font-small">
                 <p class="uk-text-bold">Vehiculo:&nbsp;</p>
                 <span v-for="info of detailsLoads.Vehicles" :key="info">{{ info?.brand }} {{ info?.model }} {{
-                  info?.color }}, Placa:
+                info?.color }}, Placa:
                   {{ info?.license_no }}
                 </span>
               </div>
@@ -162,7 +162,8 @@
           </div>
 
           <div v-if="detailsLoads.allowOrderChangesAtDelivery && detailsLoads.loadingStatus.text == 'Delivered'">
-            <button type="button" class="uk-button uk-button-primary" @click="changeRoute('reconciliation')">Reporte de Conciliación</button>
+            <button type="button" class="uk-button uk-button-primary" @click="changeRoute('reconciliation')">Reporte de
+              Cuadre</button>
           </div>
 
           <div v-if="detailsLoads?.loadType == profile?.b2b" class="item-order-deliver">
@@ -220,6 +221,37 @@
                     <p>{{ detailsLoads?.firstOrdenInfo?.address }}</p>
                   </div>
                 </div>
+
+
+                <div style="width: 100%">
+                  <ul uk-accordion class="uk-margin-remove uk-padding-remove">
+                    <!-- uk-open -->
+                    <li class="uk-margin-remove">
+                      <a class="uk-accordion-title web-font-small" href="#" @click="changeText()">{{
+                      textAccordionProduct }}</a>
+                      <div class="uk-accordion-content uk-margin-remove uk-padding-remove">
+                        <div class="details-product">
+                          <p class="item web-font-small">
+                            <span class="font-weight-medium">Producto: </span>
+                          </p>
+                          <p class="item web-font-small">
+                            <span class="font-weight-medium">Codigo QR: </span>
+                          </p>
+                          <p class="item web-font-small">
+                            <span class="font-weight-medium">Escaneadas: </span>
+                          </p>
+                        </div>
+                        <div v-for="item in order.products" :key="item.id" class="details-product">
+                          <p class="item web-font-small">{{ item?.description }}</p>
+                          <p class="item web-font-small">{{item.qrCode}}</p>
+                          <p class="item web-font-small">{{item.loadScanningCounter}}/{{item.quantity}}</p>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+
               </div>
             </div>
           </div>
@@ -268,7 +300,7 @@ export default {
     IonLoading,
     DriverTruck,
   },
-  
+
   mixins: [Mixins, Profile],
   data() {
     return {
@@ -283,7 +315,9 @@ export default {
       dateAvalaible: [],
       showOrders: true,
       quantityShow: 3,
-      timeOut: 10000
+      timeOut: 10000,
+      textAccordionProduct: 'Mostrar Productos'
+
     };
   },
 
@@ -298,18 +332,18 @@ export default {
     let loadId = null
     if (this.detailsLoadsStore.loadMapId) loadId = this.detailsLoadsStore.loadMapId
     else {
-      let detailsLoadsStore =  JSON.parse(localStorage.getItem("currentLoad"))
+      let detailsLoadsStore = JSON.parse(localStorage.getItem("currentLoad"))
       this.$store.commit("setDetailsLoadsStore", JSON.stringify(detailsLoadsStore))
       loadId = detailsLoadsStore.loadMapId
     }
-      try{
-        this.detailsLoads = await this.$services.loadsServices.getLoadDetails(loadId);
-      }catch(error){
-        this.detailsLoads = this.detailsLoadsStore;
-      }
-      this.orders = this.detailsLoads?.Orders
-      this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
-
+    try {
+      this.detailsLoads = await this.$services.loadsServices.getLoadDetails(loadId);
+    } catch (error) {
+      this.detailsLoads = this.detailsLoadsStore;
+    }
+    this.orders = this.detailsLoads?.Orders
+    this.detailsLoads.firstOrdenInfo = this.orders?.find(x => x)
+console.log(this.detailsLoads,'detail load')
     this.setOpen(false)
 
   },
@@ -317,21 +351,21 @@ export default {
   computed: {
     ...mapGetters(["detailsLoadsStore", "userData"]),
 
-    hasAddAdditionalInfo(){
-      if(this.orders?.some(order => order?.addAdditionalInfo))
+    hasAddAdditionalInfo() {
+      if (this.orders?.some(order => order?.addAdditionalInfo))
         return this.orders.every(order => order?.addAdditionalInfo <= 0)
       else
-      return true
+        return true
     }
   },
- async mounted () {
-   
+  async mounted() {
+
 
     this.userInfo = await JSON.parse(localStorage.getItem('userInfo'))
     this.$store.commit("setSettings", null);
-     if (this.userInfo.userType  === "Transporter") {
+    if (this.userInfo.userType === "Transporter") {
       this.costText = 'Ingreso por el Viaje'
-    } else if (this.userInfo.userType  === "Provider") {
+    } else if (this.userInfo.userType === "Provider") {
       this.costText = 'Costo de Transporte'
     }
   },
@@ -348,10 +382,10 @@ export default {
       this.$store.commit("setloadStore", val);
       localStorage.setItem("DeliveryCharges", JSON.stringify(val));
 
-      this.$router.push({ name: "load-status" }).catch(() => {});
+      this.$router.push({ name: "load-status" }).catch(() => { });
     },
     changeRoute(path) {
-      this.$router.push({ name: path }).catch(() => {});
+      this.$router.push({ name: path }).catch(() => { });
     },
 
     loadIsReject(val) {
@@ -391,28 +425,35 @@ export default {
     isReturnLoad(val) {
       return val?.Orders?.find((x) => x.isReturn);
     },
-  
-    baseName(file){
+
+    baseName(file) {
       return file.split('/').reverse()[0];
     },
-    getRevenue(load){
+    getRevenue(load) {
       let revenue = load?.plannedProfitability?.allVariable?.revenueMatrix?.find(info => info?.id == load?.loadForeignkeys?.transporterId)
       return (revenue?.totalRevenue * load?.currencyExchange?.atTheTimeOfAssigning).toFixed(2)
     },
-    setRound (val) {
-        return val.toFixed(2)
+    setRound(val) {
+      return val.toFixed(2)
     },
-    setLocaleHour(val){
+    setLocaleHour(val) {
       let date = moment(val).utc().format("YYYY-MM-DD HH:mm")
-     return moment(date).format('hh:mm A')
+      return moment(date).format('hh:mm A')
     },
-    setDateFormat(val){
-     return moment(val).format('MM/DD/YYYY')
+    setDateFormat(val) {
+      return moment(val).format('MM/DD/YYYY')
     },
-     setShowOrders (value, quantity) {
+    setShowOrders(value, quantity) {
       this.showOrders = value;
       this.quantityShow = quantity
-    }
+    },
+    changeText() {
+      if (this.textAccordionProduct !== 'Mostrar Productos') {
+        this.textAccordionProduct = 'Mostrar Productos'
+      } else {
+        this.textAccordionProduct = 'Ocultar Productos'
+      }
+    },
   },
 };
 </script>
@@ -420,12 +461,15 @@ export default {
 <style scoped>
 
 
+
 p {
   margin: 3px 0px !important;
 }
+
 .uk-card {
   padding: 20px 10px;
 }
+
 .uk-card-body {
   border-radius: 2px;
   margin-bottom: 15px;
@@ -433,6 +477,7 @@ p {
   align-items: center;
   padding: 16px 10px;
 }
+
 .container {
   padding: 5px 14px 5px;
   box-shadow: 0px 0px;
@@ -443,18 +488,22 @@ p {
   display: flex;
   justify-content: space-between;
 }
+
 .info-user div {
   width: 45%;
 }
+
 .info-driver {
   width: 100% !important;
   display: flex;
   align-items: center;
 
 }
+
 .info-user p {
   margin-right: 10px !important;
 }
+
 .info-user strong {
   font-size: 12px !important;
 }
@@ -470,74 +519,121 @@ a {
   top: 5px;
   right: 10px;
 }
+
 .status-load span {
   font-size: 16px;
 }
+
 .start-load {
   padding-right: 5px;
 }
-.load-delivered{
+
+.load-delivered {
   background: #fafffa
 }
-.load-default-status .status-load{
+
+.load-default-status .status-load {
   color: #286dd9;
 }
-.load-delivered .status-load{
+
+.load-delivered .status-load {
   color: green !important;
 }
+
 .disabled-event {
   pointer-events: none;
 }
-.load-assigned .status-load{
+
+.load-assigned .status-load {
   color: red;
 }
-.position-text{
+
+.position-text {
   white-space: nowrap;
 }
-.file{
-  margin: 15px 0px ;
+
+.file {
+  margin: 15px 0px;
   padding-left: 15px;
 }
-.addres-info{
+
+/* .addres-info {
   display: block;
-}
+} */
+
 .uk-button {
   font-weight: 600;
   font-size: 13px;
 }
+.uk-accordion-title {
+  display: flex;
+  margin: 5px 0px;
+  font-size: 12px;
+  color: #3880ff;
+  padding: 5px;
 
-@media (min-width: 600px){
-  
-  .info-user{
+}
+
+.uk-accordion-title::before {
+  content: "";
+  margin-left: 7px;
+  background-image: url('../assets/down.png');
+  height: 17px;
+  background-size: 14px;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  padding-right: 18px;
+}
+
+.uk-open>.uk-accordion-title::before {
+  transform: rotate(180deg);
+}
+.details-product {
+  display: flex;
+  justify-content: space-around;
+}
+
+.details-product .item {
+  width: 33%;
+  text-align: center;
+}
+
+@media (min-width: 600px) {
+
+  .info-user {
     display: flex;
     flex-direction: column;
   }
-  .info-user-client{
+
+  .info-user-client {
     display: flex;
     justify-content: space-between;
   }
-  .info-user-client div{
+
+  .info-user-client div {
     width: 48%;
   }
-  .info-user div{
+
+  .info-user div {
     width: 100%;
   }
 
-  .load-default-status{
+  .load-default-status {
     width: 90%;
-    margin: 0px auto ;
+    margin: 0px auto;
   }
- 
+
 }
 
-@media (min-width: 900px){
-   .item-order-deliver{
+@media (min-width: 900px) {
+  .item-order-deliver {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
   }
-  .item-order{
-  width: 49%;
-}
+
+  .item-order {
+    width: 49%;
+  }
 }
 </style>

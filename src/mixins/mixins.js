@@ -89,8 +89,10 @@ export const Mixins = {
         await services.gpsProviderServices.stopGps(load)
       }
       
-      if(load?.loadType == this.profile?.b2b && !load?.scanningRequired){
-        await this.uploadOrDownload(load)
+      if (load?.loadType == this.profile?.b2b && !load?.scanningRequired) {
+        router.push({ name: 'details-order' });
+        
+        // await this.uploadOrDownload(load)
         
       }else if(load?.loadType == this.profile?.b2b && load?.scanningRequired){
         router.push({ name: 'orders' });
@@ -173,6 +175,11 @@ export const Mixins = {
       localStorage.setItem(`uploadStorage${this.load.loadMapId}`,JSON.stringify(true))
       let delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(2000);
+      if (val?.loadType == this.profile?.b2b && !val?.scanningRequired) {
+        console.log('kkkkkkkkkk')
+        router.push({ name: 'load-status' });
+
+      }
 
     },
     async setLoadTruck(val){
