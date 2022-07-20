@@ -4,7 +4,7 @@ const Loads = {
       allLoadsStore: [],
       products:[],
       startRoute: true,
-      detailsLoads:[],
+    detailsLoads: [],
     },
     mutations: {
         setloadStore (state, load) {
@@ -22,6 +22,7 @@ const Loads = {
         setloadProductStore (state, products) {
           state.products = products
       },
+        
     },
     actions:{
       setData({commit}, val){

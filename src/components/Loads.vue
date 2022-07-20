@@ -272,16 +272,17 @@ export default {
         this.setOpen(this.waitingMessage);
         if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
         else this.dateMoment = date
-
-      }catch(error){
-        console.log(error, 'no actualizo')
+      } catch (error) {
+        if (error.message == 'Request failed with status code 401') {
+          router.push({ name: 'sign-in' })
+        }
+        console.log(error.message, 'no actualizo')
       this.setOpen(false)
         if(error.message == 'Network Error'){
           this.reloadEvent = false
           this.waitingMessage = false
           this.loadsToDisplay = JSON.parse(localStorage.getItem('allLoads'))
           this.assignedLoads = this.loadsToDisplay?.length
-          
           let contDate = localStorage.getItem('dateCheck')
           let date = new Date(contDate);
           date = moment(contDate).format("MM/DD/YYYY");
