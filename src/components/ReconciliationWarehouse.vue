@@ -138,7 +138,6 @@ export default {
       try {
         const result = await axios.get(`${hostEnum.odoo}/api/order/${id}/reconciliation/`, { withCredentials: true });
         this.reconciliation = result.data.result.data
-        console.log(this.reconciliation, 'reconciliation summary ')
       } catch (error) {
         console.log(error)
       }
@@ -159,7 +158,6 @@ export default {
           this.totalGeneral.push(x)
         }
       })
-      console.log(this.totalGeneral, 'totalGeneral')
     },
     changeText() {
       if (this.textAccordion !== 'Ver Detalles por Orden') {

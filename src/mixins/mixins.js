@@ -267,7 +267,6 @@ export const Mixins = {
            })
            listOfOrderTotal = products
       }
-      console.log(listOfOrders,'listOfOrders')
       return {firstStructure: listOfOrders, secondStructure: listOfOrderTotal}
     },
 
