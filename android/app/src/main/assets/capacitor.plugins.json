@@ -20,7 +20,7 @@
 		"classpath": "com.capacitorjs.plugins.geolocation.GeolocationPlugin"
 	},
 	{
-		"pkg": "print-emy-bluetooth",
+		"pkg": "printv",
 		"classpath": "com.emysoto.plugins.printv.PrintVPlugin"
 	}
 ]

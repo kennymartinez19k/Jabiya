@@ -146,9 +146,6 @@ import {LocalStorage} from '../mixins/LocalStorage'
 import Datepicker from 'vue3-date-time-picker';
 import 'vue3-date-time-picker/dist/main.css'
 
-// import {App} from '@capacitor/app'
-
-
 export default {
   components: {
     IonLoading,
@@ -214,13 +211,15 @@ export default {
     dateSelected: function(newVal){
       this.currentDate({calendar: true, dateCalendar: newVal})
     },
-    loadStore: function(newVal){
+    allLoadsStore: function(newVal){
       this.loadsToDisplay = newVal
     },
     isQueueEmpty: function(newVal){
       if(newVal){
         this.loadsToDisplay?.forEach(load => {
-           localStorage.removeItem(`sendInfo${load.loadMapId}`);
+          if (load?.loadingStatus?.text === "Delivered") {
+            localStorage.removeItem(`sendInfo${load.loadMapId}`);
+          }
         })
       }
     },
@@ -273,16 +272,17 @@ export default {
         this.setOpen(this.waitingMessage);
         if (date === moment(new Date()).format('MM/DD/YYYY')) this.dateMoment = 'Hoy'
         else this.dateMoment = date
-
-      }catch(error){
-        console.log(error, 'no actualizo')
+      } catch (error) {
+        if (error.message == 'Request failed with status code 401') {
+          router.push({ name: 'sign-in' })
+        }
+        console.log(error.message, 'no actualizo')
       this.setOpen(false)
         if(error.message == 'Network Error'){
           this.reloadEvent = false
           this.waitingMessage = false
           this.loadsToDisplay = JSON.parse(localStorage.getItem('allLoads'))
           this.assignedLoads = this.loadsToDisplay?.length
-          
           let contDate = localStorage.getItem('dateCheck')
           let date = new Date(contDate);
           date = moment(contDate).format("MM/DD/YYYY");
@@ -291,7 +291,6 @@ export default {
         }
         if(error.message == 'Request failed with status code 401'){
           console.log('unautorizo')
-          //  this.$router.push({name: 'sign-in'})
         }
         return ;
       }   
@@ -334,19 +333,18 @@ export default {
         localStorage.setItem('allLoads', JSON.stringify(this.loadsToDisplay));
       }
 
-      this.sortLoads()
-      this.reloadEvent = false
-
       for (let i = 0; i < this.loadsToDisplay?.length; i++) {
         const load = this.loadsToDisplay[i];
         if(load?.loadingStatus?.text === "Delivered"){
           await this.IsDelivered(load)
-        }
-        if(this.isQueueEmpty){
-           localStorage.removeItem(`sendInfo${load?.loadMapId}`);
+          if (this.isQueueEmpty) {
+            localStorage.removeItem(`sendInfo${load?.loadMapId}`);
+          }
         }
       }
-      console.log(this.loadsToDisplay)
+      this.sortLoads()
+      this.reloadEvent = false
+
     },
     
     reset(){

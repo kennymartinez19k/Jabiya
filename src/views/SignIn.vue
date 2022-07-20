@@ -127,7 +127,6 @@ export default {
     if(localStorage.getItem('setting')){
       this.settings.url = JSON.parse(localStorage.getItem('setting')).url
     }
-    await this.resetLocalStorage()
     this.$store.commit("setSettings", this.settings);
     this.setUrl()
     if (JSON.parse(localStorage.getItem("rememberData"))) {
@@ -215,15 +214,7 @@ export default {
     active(){
       this.activeOrNot = !!navigator.geolocation
     },
-    async resetLocalStorage () {
-      // this.$store.commit('resetData')
-    },
 
-    OpenPdf(){
-        Browser.open({ url: 'https://jabiyaerp.flai.com.do/api/invoice/report?invoice_ids=270,271'});
-    }
-    
-    
   },
  
 };
@@ -231,7 +222,6 @@ export default {
 
 <style scoped>
 .place {
-  /* background-image: url(/img/call.5b440c14.png); */
   background-position: 96%;
   background-size: 15px;
   background-repeat: no-repeat;

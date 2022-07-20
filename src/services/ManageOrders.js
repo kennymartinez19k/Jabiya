@@ -1,5 +1,3 @@
-// import axios from "axios";
-
 class ManageOrders {
     constructor (http) {
       this.http = http;
@@ -187,11 +185,6 @@ class ManageOrders {
         const formData = new FormData()
         formData.append('order', OrderEXO)
 
-        // let body = {
-        //     "method": "post",
-        //     "uri": "trk/order",
-        //     "data":{}
-        // }
         let headers ={
           'Content-Type': 'multipart/form-data',
           auth: cookie,

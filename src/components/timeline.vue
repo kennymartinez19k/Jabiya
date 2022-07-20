@@ -1,130 +1,102 @@
 <template>
   <div class="container container-medium">
-    <div v-if="showSingnature === 'Singnature'" class="uk-padding-small">
-      <img
-        src="../assets/rejected.png"
-        class="icon-close"
-        @click="closeSingnature()"
-      />
-      <signature-action
-        @digitalSignature="singnature = $event"
-      ></signature-action>
+    <div v-if="showSingnature === 'Singnature'" class="uk-padding-small" :class="{ 'singnature-position': exception }">
+      <img src="../assets/rejected.png" class="icon-close" @click="closeSingnature()" />
+      <signature-action @digitalSignature="singnature = $event"></signature-action>
     </div>
 
     <transition name="modal">
       <div v-if="isOpen">
         <div class="overlay" @click.self="isOpen = false;">
           <div class="modal">
-             <div class="uk-margin ">
-                <label class="uk-text-bolder text web-font-small" for="typeExp">Tipos de Excepción <span class="uk-text-danger">*</span></label>
-                <select id="typeExp" class="uk-select sub-text web-font-small" v-model="causeExceptions.type">
-                  <option disabled>Elija una Excepción</option>
-                  <option
-                    v-for="exception in detailsException"
-                    :key="exception"
-                    :value="exception"
-                  >
+            <div class="uk-margin ">
+              <label class="uk-text-bolder text web-font-small" for="typeExp">Tipos de Excepción <span
+                  class="uk-text-danger">*</span></label>
+              <select id="typeExp" class="uk-select sub-text web-font-small" v-model="causeExceptions.type">
+                <option disabled>Elija una Excepción</option>
+                <option v-for="exception in detailsException" :key="exception" :value="exception">
                   {{exception}}
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label class="uk-text-bolder text web-font-small" for="note"
-                  >Notas <span class="uk-text-danger">*</span></label
-                >
-                <textarea
-                  id="note"
-                  class="uk-textarea sub-text"
-                  rows="3"
-                  placeholder="Notas:"
-                  v-model="causeExceptions.note"
-                  required
-                >
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="uk-text-bolder text web-font-small" for="note">Notas <span
+                  class="uk-text-danger">*</span></label>
+              <textarea id="note" class="uk-textarea sub-text" rows="3" placeholder="Notas:"
+                v-model="causeExceptions.note" required>
                 </textarea>
-              </div>
-              <p class="uk-flex uk-flex-around">
-                <button
-                  class="uk-button uk-button-default uk-modal-close cancel web-font-small"
-                  type="button"
-                  @click="cancelResetException()"
-                >
-                  Cancelar
-                </button>
-                <button
-                  :disabled="showException"
-                  class="uk-button uk-button-primary uk-modal-close web-font-small"
-                  type="button"
-                  @click="setException()"
-                >
-                  Guardar
-                </button>
-              </p>
+            </div>
+            <p class="uk-flex uk-flex-around">
+              <button class="uk-button uk-button-default uk-modal-close cancel web-font-small" type="button"
+                @click="cancelResetException()">
+                Cancelar
+              </button>
+              <button :disabled="showException" class="uk-button uk-button-primary uk-modal-close web-font-small"
+                type="button" @click="setException(true)">
+                Guardar
+              </button>
+            </p>
 
           </div>
         </div>
       </div>
     </transition>
     <ul class="progressbar">
-       <li
-       v-if="loadStore.allowOrderChangesAtDelivery"
-        :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num }"
-        @click="getShow('invoices')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li v-if="loadStore.allowOrderChangesAtDelivery"
+        :class="{ active: invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num, show: !activeScan && !activeException && !activeSignature && !activeCamare }"
+        @click="getShow('invoices')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/invoice.png" alt="" srcset="" /></div>
 
         <span class="web-font-small">Facturas</span>
       </li>
-      <li
-       v-if="loadStore.scanningRequired"
-        :class="{ active: resultScan }"
-        @click="getShow('scan')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li v-if="loadStore.scanningRequired"
+        :class="{ active: resultScan, 'uk-disabled': !activeScan, show: !activeException && !activeSignature && !activeCamare && ((loadStore.allowOrderChangesAtDelivery && invoiceDownloadStore?.status) || (loadStore.allowOrderChangesAtDelivery == false)) }"
+        @click="getShow('scan')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/qr.png" alt="" srcset="" /></div>
 
         <span class="web-font-small">Escanear</span>
+        <div :class="{ disabled: !activeScan }"></div>
       </li>
-      <li
-        :class="{
-          'uk-disabled': step == 0,
-          active: imagiElement.length > 0,
-        }"
-        @click="getShow('camera')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li :class="{
+  'uk-disabled': !activeCamare,
+  active: imagiElement.length > 0, show: showCamare
+      }" @click="getShow('camera')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/cam.png" alt="" srcset="" /></div>
         <span class="web-font-small">Camara</span>
-        <div :class="{ disabled: step < 1 }"></div>
+        <div :class="{ disabled: !activeCamare }"></div>
       </li>
-      <li
-        v-if="exception"
-        :class="{
-          'uk-disabled': step == 0,
-          active:
-            causeExceptions.note !== null &&
-            causeExceptions.type !== null &&
-            showException === false,
-        }"
-        @click="getShow('exception')"
-      >
-        <div class="info active"><font-awesome-icon icon="check" /></div>
+      <li v-if="exception" :class="{
+        'uk-disabled': !activeException,
+        active:
+          causeExceptions.note !== null &&
+          causeExceptions.type !== null &&
+          showException === false && showBlink, show: activeException && !activeSignature
+      }" @click="getShow('exception')">
+        <div class="info active">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/warning.png" alt="" srcset="" /></div>
         <span class="web-font-small">Excepción</span>
-        <div
-          :class="{
-            disabled: step == 0,
-          }"
-        ></div>
+        <div :class="{
+          disabled: !activeException,
+        }"></div>
       </li>
-      <li
-        :class="{
-          'uk-disabled': !activeSignature,
-          active: singnature !== null
-        }"
-        @click="getShow('Singnature')"
-      >
-        <div class="info"><font-awesome-icon icon="check" /></div>
+      <li :class="{
+        'uk-disabled': !activeSignature,
+  active: singnature !== null, show: showSignatureblink 
+      }" @click="getShow('Singnature')">
+        <div class="info">
+          <font-awesome-icon icon="check" />
+        </div>
         <div><img src="../assets/img/firma.png" alt="" srcset="" /></div>
         <span class="web-font-small">Firma</span>
         <div :class="{ disabled:!activeSignature}"></div>
@@ -155,7 +127,6 @@ export default {
         type: null,
       },
       showException: true,
-      showSingnatureAndException: true,
       showSingnature: null,
       singnature: null,
       detailsException: [],
@@ -163,6 +134,9 @@ export default {
       order: null,
       showInvoice: true,
       isOpen: false,
+      showBlink: false,
+      showCamare: false,
+      showSignatureblink: false,
 
     };
   },
@@ -178,7 +152,10 @@ export default {
 
       return this.imagesStore
     },
-    emptyImage(){
+    emptyImage() {
+      if (this.imagesStore?.length > 0 && this.exception == false) {
+        this.showBlink = true
+      }
       return this.imagesStore?.length <= 0
     },
 
@@ -197,8 +174,38 @@ export default {
        downloadInvoices = this.invoiceDownloadStore.status
       } 
       let exception = this.exception
-      let exceptionInfo = ( this.causeExceptions.type && this.causeExceptions.note != null)
-      let img = !this.emptyImage
+      let exceptionInfo = ( this.causeExceptions.type && this.causeExceptions.note != null && this.showBlink)
+      let img = this.imagiElement.length > 0
+
+      if (scanRequired && allowInvoices && exception && this.resultScan && exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && allowInvoices && !exception && this.resultScan && !exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && !allowInvoices && exception && this.resultScan && exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && !allowInvoices && exception && !this.resultScan && exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (scanRequired && !allowInvoices && !exception && this.resultScan && !exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && allowInvoices && exception && !this.resultScan && exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && allowInvoices && !exception && !this.resultScan && !exceptionInfo && img && downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && !allowInvoices && exception && !this.resultScan && exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+
+      } else if (!scanRequired && !allowInvoices && !exception && !this.resultScan && !exceptionInfo && img && !downloadInvoices) {
+        this.showSignatureblink = true
+      } else {
+        this.showSignatureblink = false
+      }
      
       if(scanRequired && allowInvoices && exception && this.resultScan &&  exceptionInfo && img && downloadInvoices){
         return true
@@ -230,12 +237,142 @@ export default {
         return false
       }
 
-    }
+    },
+
+     activeScan() {
+      let downloadInvoices = false
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let loadsMounted = [];
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
+
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+        downloadInvoices = this.invoiceDownloadStore.status
+      }
+     
+      if (scanRequired && allowInvoices && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && !allowInvoices  && !downloadInvoices) {
+        return true
+
+      } else {
+        return false
+      }
+
+    },
+
+    activeCamare() {
+      let downloadInvoices = false
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let loadsMounted = [];
+      let exception = this.exception
+
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
+
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+        downloadInvoices = this.invoiceDownloadStore.status
+      }
+
+      if (allowInvoices && downloadInvoices && scanRequired && this.resultScan && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (exception && !allowInvoices && !scanRequired && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (!scanRequired && !allowInvoices && !downloadInvoices && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (!scanRequired && allowInvoices && downloadInvoices && this.imagiElement.length == 0) {
+        this.showCamare = true
+
+      } else if (scanRequired && this.resultScan && this.imagiElement.length == 0 && !allowInvoices) {
+        this.showCamare = true
+
+      } else {
+        this.showCamare = false
+      }
+
+      if (allowInvoices && downloadInvoices && scanRequired && this.resultScan) {
+        return true
+
+      } else if (exception && !allowInvoices && !scanRequired) {
+        return true
+
+      } else if (!scanRequired && !allowInvoices && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && allowInvoices && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && this.resultScan && !allowInvoices) {
+        return true
+
+      } else {
+        return false
+      }
+
+    },
+
+    activeException() {
+      let downloadInvoices = false
+      let scanRequired = this.loadStore.scanningRequired
+      let allowInvoices = this.loadStore.allowOrderChangesAtDelivery
+      let loadsMounted = [];
+      if (this.orderScan) {
+        loadsMounted = this.orderScan
+      } else {
+        loadsMounted = JSON.parse(localStorage.getItem('DeliveryCharges')).Orders
+      }
+
+      if (allowInvoices && loadsMounted.find(order => order.order_num == this.invoiceDownloadStore?.order)) {
+        downloadInvoices = this.invoiceDownloadStore.status
+      }
+      
+      let img = !this.emptyImage
+
+      if (scanRequired && allowInvoices && this.resultScan && img && downloadInvoices) {
+        return true
+
+      } else if (scanRequired && !allowInvoices && this.resultScan && img && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && !allowInvoices  && img && !downloadInvoices) {
+        return true
+
+      } else if (!scanRequired && allowInvoices && img && downloadInvoices) {
+        return true
+
+      } else {
+        return false
+      }
+
+    },
   },
   async mounted() {
     this.detailsException = await JSON.parse(localStorage.getItem('detailsException'));
-    this.order = this.orderScan
-    this.orderInformation = await this.loadStore.Orders.find(x => x.order_num)
+    if (this.orderScan ) {
+      this.order = this.orderScan
+    } else {
+      this.order = JSON.parse(localStorage.getItem("scanOrder"));
+      this.$store.commit("scanOrder", this.order);
+    }
+
+    this.orderInformation = await this.loadStore.Orders.find(x => x.order_num === this.order[0].order_num)
+
+    if (!this.invoiceDownloadStore?.status && this.loadStore.allowOrderChangesAtDelivery) {
+      let invoicesDwl = JSON.parse(localStorage.getItem(`getInvoiceDownload${this.orderInformation.order_num}`))
+      this.$store.commit("getInvoiceDownload", invoicesDwl);
+    }
   },
 
   watch: {
@@ -250,51 +387,31 @@ export default {
     },
     imagiElement: {
       handler: function (newVal) {
-        if (newVal.length === 0) {
-          this.showSingnatureAndException = true;
-        } else if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
+        if (newVal.length > 0 && this.causeExceptions.note !== null && this.causeExceptions.type !== null) {
           this.$emit("action", 'exception');
-          this.showSingnatureAndException = false;
-        }
+        } 
       }, deep: true
     }, 
     exception: {
       handler: function (newVal) {
         if(newVal) this.closeSingnature()
         if (newVal === false && this.step >= 2) {
-          this.showSingnatureAndException = false;
           this.causeExceptions.note = null;
           this.causeExceptions.type = null;
           this.showException = true;
-        } else if (
-          newVal === true &&
-          this.causeExceptions.note !== null &&
-          this.causeExceptions.type !== null &&
-          this.step >= 2
-        ) {
-          this.showSingnatureAndException = false;
-        } else if(newVal == true) {
-          this.showSingnatureAndException = true;
-        }
+         } 
         if(newVal == false){
            this.causeExceptions.note = null;
           this.causeExceptions.type = null;
+          if (this.imagiElement.length > 0) {
+            this.showBlink = true
+          }
+        } else  {
+          this.showBlink = false
         }
       },
       deep: true,
     },
-    // causeExceptions: {
-    //   handler: function (newVal) {
-    //     if (
-    //       newVal.note !== null &&
-    //       newVal.note.length > 10 &&
-    //       newVal.type !== null
-    //     ) {
-    //       this.showException = false;
-    //     }
-    //   },
-    //   deep: true,
-    // },
      'causeExceptions.type': function (newVal, oldVal) {
         if (
           newVal !== oldVal && this.causeExceptions?.note?.length > 10
@@ -317,21 +434,7 @@ export default {
         }
     },
 
-    step: {
-      handler: function (newVal) {
-        if (
-          newVal >= 2 &&
-          this.exception === true &&
-          this.causeExceptions.note !== null &&
-          this.causeExceptions.type !== null
-        ) {
-          this.showSingnatureAndException = false;
-        } else if (newVal >= 2 && this.exception === false) {
-          this.showSingnatureAndException = false;
-        }
-      },
-      deep: true,
-    },
+  
   },
   methods: {
    async getShow(value) {
@@ -341,9 +444,8 @@ export default {
       }
       if (value === "exception") {
         this.dataExteions(await JSON.parse(localStorage.getItem('detailsException')))
-        // UIkit.modal("#exception").show();
         this.isOpen = true
-
+        this.showBlink = false
         if (this.imagiElement.length > 0) {
         this.$emit("action", value);
         }
@@ -360,11 +462,10 @@ export default {
 
       this.causeExceptions.note = null;
       this.causeExceptions.type = null;
-      this.showSingnatureAndException = true;
       this.$store.commit("setExceptions", this.causeExceptions);
       this.showException = false;
     },
-    setException() {
+    setException(val) {
       if (
         this.causeExceptions.note !== null &&
         this.causeExceptions.type !== null
@@ -372,31 +473,19 @@ export default {
         this.isOpen = false
         this.showException = true
         this.$store.commit("setExceptions", this.causeExceptions);
-        if (
-          this.exception === true &&
-          this.causeExceptions.note !== null &&
-          this.causeExceptions.type !== null &&
-          this.step >= 2 && 
-          this.imagiElement.length > 0
-        ) {
-          this.showSingnatureAndException = false;
-        }
+        this.showBlink = val
         this.showException = false
       }
     },
     closeSingnature() {
       this.showSingnature = null;
       this.singnature = null;
-      this.showSingnatureAndException = true;
         this.$emit("resetSign", false);
     },
     changeImage(){
-      if (this.imageTimeline?.length === 0) {
-          this.showSingnatureAndException = true;
-        } else if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
-          this.$emit("action", 'exception');
-          this.showSingnatureAndException = false;
-        }
+      if (this.imageTimeline?.length > 0 && (this.exception == false || (this.causeExceptions.note !== null && this.causeExceptions.type !== null))) {
+        this.$emit("action", 'exception');
+      }
     },
     async dataExteions(value) {
     this.detailsException = value
@@ -418,10 +507,25 @@ export default {
 .disabled {
   position: absolute;
   width: 100%;
-  height: 70%;
-  top: 40px;
-  left: 10px;
-  background: #ffffffc4;
+  height: 16vh;
+  top: 0px;
+  left: 6px;
+  background: #fefefecf;
+}
+
+@-webkit-keyframes blink {
+  50% {
+    border-color: #ff0000;
+  }
+}
+
+.show {
+  animation: blink .5s step-end infinite alternate;
+  border: 3px dashed;
+  top: -3px;
+  padding-top: 5px;
+border-radius: 10px;
+border-color:#3aab5d
 }
 img {
   width: 35%;
@@ -437,7 +541,7 @@ img {
 ul {
   list-style: none;
   padding: 0px;
-  margin: 0px auto;
+  margin: 1px auto;
   display: flex;
   justify-content: center;
 }
@@ -450,23 +554,24 @@ ul {
   content: "";
   width: 30px;
   height: 30px;
-  border: 2px solid #bebebe;
+  border: 2px solid #3aab5d;
   display: block;
   margin: 0 auto 10px auto;
   border-radius: 50%;
   line-height: 27px;
   background: white;
-  color: #bebebe;
+  color:  white;
   text-align: center;
   font-weight: bold;
 }
+
 
 .progressbar li:after {
   content: "";
   position: absolute;
   width: 100%;
   height: 3px;
-  background: #979797;
+  background: #3aab5d;
   top: 15px;
   left: -50%;
   z-index: -1;
@@ -481,13 +586,15 @@ ul {
   border-color: #3aac5d !important;
   background: #3aac5d !important;
   color: white !important;
+  
 }
+
 .icon-close {
   background-color: #f04c3b40;
   position: absolute;
   top: -6px;
   width: 25px;
-  right: -2px;
+  right: 5px;
   border-radius: 10px;
   margin: 2px 0px 0px -23px;
 }
@@ -543,6 +650,10 @@ ul {
 .sub-text {
   font-size: 15px;
   font-weight: 300;
+}
+.singnature-position {
+  padding: 15px 15px 60px;
+  
 }
 @media (min-width: 900px){
   .constainer{

@@ -1,281 +1,192 @@
 <template>
-  <ion-loading
-    :is-open="isOpenRef"
-    cssClass="my-custom-class"
-    message="Por favor Espere Envio..."
-    :duration="timeout"
-    @didDismiss="setOpen(false)"
-  >
+  <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere Envio..." :duration="timeout"
+    @didDismiss="setOpen(false)">
   </ion-loading>
-  <div
-    class="container uk-flex uk-flex-column uk-flex-between"
-    :class="{ backg: resultScan }"
-  >
     <div class="stiky">
       <p class="web-font-small title-load-number" style="font-size: 13px; font-weight: 500">
         {{ load?.loadNumber }}
       </p>
-      <div
-        class="
+      <div class="
           uk-flex
           uk-flex
           uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
-        "
-        style="align-items: center"
-      >
+        " style="align-items: center">
         <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
-            <span class="font-weight-medium">Shipper: </span
-            ><span>&nbsp; {{ shipperName(load) }}</span>
+            <span class="font-weight-medium">Shipper: </span><span>&nbsp; {{ shipperName(load) }}</span>
           </p>
           <div></div>
           <p>
-            <span style="font-weight: 500">Destino:</span
-            ><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
+            <span style="font-weight: 500">Destino:</span><span>&nbsp; {{ load?.firstOrdenInfo?.sector }}</span>
           </p>
         </div>
       </div>
     </div>
-    <div class="result-info">
-      <div v-if="showScanner">
-      <StreamBarcodeReader
-        @decode="onDecode"
-        @loaded="onLoaded"
-      ></StreamBarcodeReader>
-    </div>
-      <div
-        v-if="!showProduct"
-        class="status-order"
-        :class="{
+  <div class="uk-flex uk-flex-column uk-flex-between" style="height:90vh" :class="{ backg: resultScan }">
+    <div>
+      <div class="result-info">
+        <div v-if="showScanner">
+          <StreamBarcodeReader @decode="onDecode" @loaded="onLoaded"></StreamBarcodeReader>
+        </div>
+        <div v-if="!showProduct" class="status-order" :class="{
           statusError: statusOrders == 'reject',
           statusCheck: statusOrders == 'approved',
-        }"
-      >
-        <div
-          v-if="statusOrders == 'approved'"
-          style="width: 100%; font-size: 30px"
-        >
-          <h6 style="font-size: 14px" class="uk-margin-remove web-font-small">
-            {{ completedOrder }}
-          </h6>
+        }">
+          <div v-if="statusOrders == 'approved'" style="width: 100%; font-size: 30px">
+            <h6 style="font-size: 14px" class="uk-margin-remove web-font-small">
+              {{ completedOrder }}
+            </h6>
+          </div>
+          <div v-if="statusOrders == 'reject'" style="width: 100%; font-size: 30px">
+            <h6 class="uk-margin-remove web-font-small">
+              {{ messageReject }}
+              <font-awesome-icon icon="ban" style="color: #be1515" />
+            </h6>
+          </div>
         </div>
-        <div
-          v-if="statusOrders == 'reject'"
-          style="width: 100%; font-size: 30px"
-        >
-          <h6 class="uk-margin-remove web-font-small">
-            {{ messageReject }}
-            <font-awesome-icon icon="ban" style="color: #be1515" />
-          </h6>
-        </div>
-      </div>
-      <ul
-        v-if="showProduct"
-        class="uk-list uk-list-divider"
-      >
-        <div
-          v-for="order in orders"
-          :key="order"
-          class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
-          :class="{ ordenCompleted: order.completed }"
-        >
-          <div class="uk-text-left info-user uk-flex uk-flex-wrap">
-            <div class="btn uk-flex">
-              <div class="uk-flex uk-flex-column uk-text-left">
-                <p class="uk-width-1-1 web-font-small">
-                  <span class="font-weight-medium">Cliente: </span>
-                  <span>{{ order.client_name }}</span>
-                </p>
+        <ul v-if="showProduct" class="uk-list uk-list-divider">
+          <div v-for="order in orders" :key="order" class="uk-card uk-card-default uk-card-body uk-flex uk-flex-between"
+            :class="{ ordenCompleted: order?.completed }">
+            <div class="uk-text-left info-user uk-flex uk-flex-wrap">
+              <div class="btn uk-flex">
+                <div class="uk-flex uk-flex-column uk-text-left">
+                  <p class="uk-width-1-1 web-font-small">
+                    <span class="font-weight-medium">Cliente: </span>
+                    <span>{{ order?.client_name }}</span>
+                  </p>
+                </div>
+              </div>
+              <p style="margin-right: 10px !important" class="web-font-small">
+                <span class="font-weight-medium">Orden: </span><span>{{ order?.order_num }}</span>
+              </p>
+              <p class="web-font-small">
+                <span class="font-weight-medium">Cajas / Pallets: </span>{{ order?.no_of_boxes }}<span></span>
+              </p>
+              <p class="uk-width-1-1 web-font-small">
+                <span class="font-weight-medium">Destino: </span>
+                <span>
+                  <font-awesome-icon icon="map-marker-alt" />
+                  {{ order?.address }}
+                </span>
+              </p>
+            </div>
+            <div>
+              <div @click="setMap(order)" class="uk-flex-column web-font-small route-view">
+                <img src="../assets/map.png" class="img-scan" alt="" />
+                <span>Ver Ruta</span>
               </div>
             </div>
-            <p style="margin-right: 10px !important" class="web-font-small">
-              <span class="font-weight-medium">Orden: </span
-              ><span>{{ order.order_num }}</span>
-            </p>
-            <p class="web-font-small">
-              <span class="font-weight-medium">Cajas / Pallets: </span
-              >{{ order?.no_of_boxes }}<span></span>
-            </p>
-            <p class="uk-width-1-1 web-font-small">
-              <span class="font-weight-medium">Destino: </span>
-              <span>
-                <font-awesome-icon icon="map-marker-alt" />
-                {{ order.address }}</span
-              >
-            </p>
           </div>
-          <div >
-            <div
-              @click="setMap(order)"
-              class="uk-flex-column web-font-small route-view"
-            >
-              <img src="../assets/map.png" class="img-scan" alt="" />
-              <span>Ver Ruta</span>
+          <div v-if="invoiceDownloadStore?.status && invoiceDownloadStore?.order == orderInformation?.order_num"
+            class="uk-card uk-card-default uk-card-body uk-width-1 img-card" style="padding: 5px 0px 10px !important">
+            <div class="uk-flex uk-flex-wrap img-scroll">
+              <invoice-summary></invoice-summary>
             </div>
           </div>
-        </div>
-         <div
-          v-if="invoiceDownloadStore.status && invoiceDownloadStore.order == orderInformation?.order_num"
-          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
-          style="padding: 5px 0px 10px !important"
-        >
-          <div class="uk-flex uk-flex-wrap img-scroll">
-             <invoice-summary></invoice-summary>
+          <div v-if="imagiElement.length > 0" class="uk-card uk-card-default uk-card-body uk-width-1 img-card">
+            <div class="uk-flex uk-flex-wrap img-scroll">
+              <span v-for="(src, index) in imagiElement" :key="src" class="position-imagin">
+                <img class="img-result" :src="src" alt="Red dot" />
+                <img src="../assets/rejected.png" class="icon-close" @click="deleteImage(index)" alt="" />
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          v-if="imagiElement.length > 0"
-          class="uk-card uk-card-default uk-card-body uk-width-1 img-card"
-        >
-          <div class="uk-flex uk-flex-wrap img-scroll">
-            <span
-              v-for="(src, index) in imagiElement"
-              :key="src"
-              class="position-imagin"
-            >
-              <img class="img-result" :src="src" alt="Red dot" />
-              <img
-                src="../assets/rejected.png"
-                class="icon-close"
-                @click="deleteImage(index)"
-                alt=""
-              />
-            </span>
-          </div>
-        </div>
-      </ul>
-    </div>
-    <div v-if="image" class="showCamera">
-      <font-awesome-icon
-        v-if="cameraOn || image"
-        icon="times"
-        class="close"
-        @click="stopCamera()"
-      />
-      <img class="result-scan" :src="image" alt="" />
-    </div>
-    
-    <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
-      <font-awesome-icon
-        v-if="cameraOn"
-        icon="times"
-        class="close"
-        @click="stopCamera()"
-      />
-      <camera
-        class="camera"
-        :resolution="{ width: 1620, height: 1450 }"
-        ref="Camera"
-      ></camera>
-    </div>
-    <div
-      v-if="cameraOn || image"
-      class="
-        cont-camera
-        uk-flex-between
-        uk-flex-wrap
-        uk-card
-        uk-card-default
-        uk-card-hover
-        uk-card-body
-      "
-      style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc"
-    >
-      <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px"
-        >Tomar las Fotos</label
-      >
-      <label class="img-div" style="position: relative">
-        <font-awesome-icon icon="images" />
-        <input
-          type="file"
-          @change="pickImage($event)"
-          id="file-img"
-          style="position: absolute; opacity: 0"
-          accept="image/*"
-        />
-      </label>
-
-      <div class="snapshot-div">
-        <div @click="snapshot()" class="take-photo"></div>
-      </div>
-      <div class="button-div">
-        <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
-          Aceptar
-        </button>
-      </div>
-    </div>
-    <div v-if="cameraOn"></div>
-  
-    <div v-if="!cameraOn && !image" class="cont uk-card uk-card-default uk-card-hover">
-      <div class="action">
-        <ul v-if="!showProduct" class="box-orden">
-          <li
-            v-for="product in firstStructureLoad"
-            :key="product"
-            :class="{
-              completedOrden: product.completedScanned,
-              inProgressOrden: product.scanProgress,
-            }"
-            style=""
-          >
-            &nbsp;
-          </li>
         </ul>
-        <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
-          <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
-            <p class="title-form-scan">Introduzca su qrCode para entregar</p>
-            <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
-            <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)" class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
-         </div>
-          <strong class="exception web-font-small">
-            Hubo Alguna Excepción? No
-            <div class="onoffswitch">
-              <input
-                type="checkbox"
-                v-model="exception"
-                name="onoffswitch"
-                :class="{'checkbox-default':isChangeQuantityStore.exception}"
-                class="onoffswitch-checkbox"
-                id="myonoffswitch"
-                tabindex="0"
-                :disabled="isChangeQuantityStore.exception === true"
-              />
-              <label class="onoffswitch-label" for="myonoffswitch"></label>
-            </div>
-            Si
-          </strong>
-          <timeline
-            :step="step"
-            :exception="exception"
-            :resultScan="resultScan"
-            :imagiElement="imagiElement"
-            @action="getShow($event)"
-            @resetSign="resetSign()"
-          />
+      </div>
+      <div v-if="image" class="showCamera">
+        <font-awesome-icon v-if="cameraOn || image" icon="times" class="close" @click="stopCamera()" />
+        <img class="result-scan" :src="image" alt="" />
+      </div>
+
+      <div :class="{ showCamera: cameraOn, hideCamera: !cameraOn }">
+        <font-awesome-icon v-if="cameraOn" icon="times" class="close" @click="stopCamera()" />
+        <camera class="camera" :resolution="{ width: 1620, height: 1450 }" ref="Camera"></camera>
+      </div>
+      <div v-if="cameraOn || image" class="
+          cont-camera
+          uk-flex-between
+          uk-flex-wrap
+          uk-card
+          uk-card-default
+          uk-card-hover
+          uk-card-body
+        " style="z-index: 0; padding: 4px 0px !important; border: 1px solid #ccc">
+        <label class="uk-width-1-1 web-font-small" style="margin: 0px 0px 10px; font-size: 14px">Tomar las Fotos</label>
+        <label class="img-div" style="position: relative">
+          <font-awesome-icon icon="images" />
+          <input type="file" @change="pickImage($event)" id="file-img" style="position: absolute; opacity: 0"
+            accept="image/*" />
+        </label>
+
+        <div class="snapshot-div">
+          <div @click="snapshot()" class="take-photo"></div>
+        </div>
+        <div class="button-div">
+          <button :class="{disabled: !image}" @click="setImage()" class="uk-button uk-button-blue web-font-small">
+            Aceptar
+          </button>
         </div>
       </div>
-    </div>
-    <transition name="modal">
-      <div v-if="isOpen">
-        <div class="overlay" @click.self="isOpen = false;">
-          <div class="modal">
-            <div class="">
-            <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
-            <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes.totalOfOrders - totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
-            <input type="text" id="quantity" v-model="quantityForScan"  class="uk-input" >
-            <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
-                <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
-                <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
-            </p>
+      <div v-if="cameraOn"></div>
+
+     
+      <transition name="modal">
+        <div v-if="isOpen">
+          <div class="overlay" @click.self="isOpen = false;">
+            <div class="modal">
+              <div class="">
+                <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
+                <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes?.totalOfOrders -
+                  totalLimitOfBoxes?.scanned}} <span id="total-quantity"></span>)</p>
+                <form action="" autocomplete="off"> <input type="number" id="quantity" v-model="quantityForScan" class="uk-input"></form>
+                  <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
+                    <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px"
+                      @click="scanOrder()" type="button">Cancelar</button>
+                    <button class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()"
+                      type="button">Guardar</button>
+                  </p>
+              </div>
+            </div>
+          </div>
         </div>
+      </transition>
+      <ion-alert-controller></ion-alert-controller>
+    </div>
+     <div v-if="!cameraOn && !image" class="cont uk-card uk-card-default uk-card-hover">
+        <div class="action">
+          <ul v-if="!showProduct" class="box-orden">
+            <li v-for="product in firstStructureLoad" :key="product" :class="{
+              completedOrden: product?.completedScanned,
+              inProgressOrden: product?.scanProgress,
+            }" style="">
+              &nbsp;
+            </li>
+          </ul>
+          <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
+            <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
+              <p class="title-form-scan">Introduzca su qrCode para entregar</p>
+              <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
+              <button :disabled="webQrCode.length == 0" @click="uploadProducts(webQrCode)"
+                class="uk-button uk-button-primary web-font-small" style="margin-left: 5px">Enviar</button>
+            </div>
+            <strong class="exception web-font-small">
+              Hubo Alguna Excepción? No
+              <div class="onoffswitch">
+                <input type="checkbox" v-model="exception" name="onoffswitch"
+                  class="onoffswitch-checkbox"
+                  id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
+                <label class="onoffswitch-label" for="myonoffswitch"></label>
+              </div>
+              Si
+            </strong>
+            <timeline :step="step" :exception="exception" :resultScan="resultScan" :imagiElement="imagiElement"
+              @action="getShow($event)" @resetSign="resetSign()" />
           </div>
         </div>
       </div>
-    </transition>
-    <ion-alert-controller></ion-alert-controller>
   </div>
 </template>
 
@@ -290,12 +201,10 @@ import { ref } from "vue";
 import { IonLoading } from "@ionic/vue";
 import { App } from "@capacitor/app";
 import Camera from "simple-vue-camera";
-import axios from "axios"; // confirmAndFinalizeCreationOfInvoices () .se debe crear un services para este metodo cuando miguel contecte odoo a exo.
 import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
 import { StreamBarcodeReader } from "vue-barcode-reader";
-
 
 App.addListener("appRestoredResult", (data) => {
   console.log("Restored state:", data);
@@ -358,7 +267,10 @@ export default {
       isMobile: false,
       showScanInput: false,
       showScanner: false,
-      loadedScanner: false
+      loadedScanner: false,
+      singnaturePosition: false,
+      order_linesOdoo: []
+
     };
   },
   setup() {
@@ -429,7 +341,7 @@ export default {
     if(this.$router.options.history.state.back != '/details-invoices'){
       this.$store.commit("getChageQuantityToProduct", {exception: false, changeQuantity: null, order_num: null});
     }
-    this.$store.commit('setImagiElement',[])
+    this.$store.commit('setImagiElement', [])
 
     this.camera = this.$refs.Camera;
     let structure = null
@@ -486,7 +398,7 @@ export default {
      } else if (localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)){
       this.exception = JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)).exception
        this.$store.commit("getChageQuantityToProduct", JSON.parse(localStorage.getItem(`isChangeQuantity${this.orderInformation.order_num}`)));
-     }
+    }
     await this.getLocation();
 
   },
@@ -497,6 +409,22 @@ export default {
           this.firm = newVal;
           this.setOpen(true);
           await this.postImages();
+          if (this.orders?.length) {
+            let data = []
+              if(localStorage.getItem('sendInfoOrders')){
+                data = JSON.parse(localStorage.getItem('sendInfoOrders'))
+              }
+
+            for (let i = 0; i < this.orders.length; i++) {
+              const order = this.orders[i];
+
+              let isInSending = data.some(x => x == order.order_num)
+              if(!isInSending) data.push(order.order_num)
+            }
+
+            localStorage.setItem('sendInfoOrders', JSON.stringify(data))
+          }
+
 
           let ordersMissing = JSON.parse(localStorage.getItem(`ordersMissing${this.load.loadMapId}`))
           let orderFinished = ordersMissing?.filter(orderNum => this.firstStructureLoad.some(structure => structure.order_num == orderNum))
@@ -527,21 +455,13 @@ export default {
               );
             });
 
-            let allOrderScanned = JSON.parse(
-              localStorage.getItem("allOrderScanned")
-            );
+            let allOrderScanned = JSON.parse(localStorage.getItem("allOrderScanned"));
 
             if (!allOrderScanned) {
-              localStorage.setItem(
-                "allOrderScanned",
-                JSON.stringify(this.orders)
-              );
+              localStorage.setItem("allOrderScanned",JSON.stringify(this.orders));
             } else {
               allOrderScanned = [...allOrderScanned, ...this.orders];
-              localStorage.setItem(
-                "allOrderScanned",
-                JSON.stringify(allOrderScanned)
-              );
+              localStorage.setItem("allOrderScanned",JSON.stringify(allOrderScanned));
             }
 
             if (ordersMissing.length == 0) {
@@ -559,7 +479,6 @@ export default {
           }
           if (this.load.allowOrderChangesAtDelivery) {
             localStorage.removeItem(`isChangeQuantity${this.orders[0].order_num}`);
-            this.confirmAndFinalizeCreationOfInvoices()
           }
 
           this.setOpen(false);
@@ -635,18 +554,23 @@ export default {
 
   methods: {
     getShow(value) {
+      this.showScanner = false
       this.show = value;
       if (value === "scan") {
         this.resultScan = false;
         !this.isMobile ? this.showScanInput = true : this.scanOrder()
         
       } else if (value === "camera" && this.imagiElement?.length <= 6) {
+        this.singnaturePosition = false
         this.showScanInput = false
+        this.showProduct = false
         this.getCam();
       } else if (value === "Singnature") {
+        this.singnaturePosition = true
         this.showScanInput = false
         this.step++;
       } else if (value === "exception") {
+        this.singnaturePosition = false
         this.showScanInput = false
         this.step = 2;
       }
@@ -689,7 +613,8 @@ export default {
          for (let x = 0; x < this.orders.length; x++) {
             let order = this.orders[x]
             this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
-         } 
+          } 
+          this.resetException ()
         }
     },
 
@@ -737,7 +662,6 @@ export default {
             this.totalLimitOfBoxes.scanned =
               detailsOrderToScan.loadScanningCounter;
             this.totalLimitOfBoxes.totalOfOrders = noScan1by1;
-            // UIkit.modal("#deliver-quantity").show();
             this.isOpen = true
             this.infoForScan = {
               orderId: order._id,
@@ -911,15 +835,15 @@ export default {
           }
         }else{
           // Server gps
-          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load.Vehicles[0].gpsId)
+          let result = await this.$services.gpsProviderServices.getVehicleGpsId(this.load)
           this.location.latitude = result?.lat
           this.location.longitude = result?.lng
 
         }
     },
     async stopScan() {
-      BarcodeScanner.showBackground();
-      BarcodeScanner.stopScan();
+      // BarcodeScanner.showBackground();
+      // BarcodeScanner.stopScan();
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -942,7 +866,7 @@ export default {
       setTimeout(async () => {
         this.statusOrders = "start";
         this.showProduct = true;
-
+        this.showScanner = false
         this.checkOrder = false;
         if (this.firstStructureLoad.every((x) => x.completedScanned)) {
           this.resultScan = true;
@@ -964,7 +888,6 @@ export default {
         order: null
       }
       this.$store.commit("getInvoiceDownload",dwlStatus);
-      // this.$store.commit("getInvoiceDownload",false);
     },
 
     allProductUpload() {
@@ -1036,6 +959,8 @@ export default {
     },
     resetSign() {
       this.step = 2;
+      this.singnaturePosition = false
+
     },
 
     async snapshot() {
@@ -1064,8 +989,8 @@ export default {
     async stopCamera() {
       this.showScanner = false
       this.cameraOn = false;
+      this.showProduct = true
       this.image = null;
-      // await this.camera?.stop();
     },
     async pickImage(event) {
       let blob = event.target.files[0];
@@ -1081,16 +1006,6 @@ export default {
       this.image = img;
     },
 
-    async confirmAndFinalizeCreationOfInvoices () {
-      // este es la confirmacion debo ponerlo cuando escane todo
-        try {
-         await axios.post(`https://jabiyaerp.flai.com.do/api/order/${this.invoicesIdStore}/post`,{ withCredentials: true });
-      } catch (error) {
-        console.log(error);
-      }
-
-    },
-
    onDecode(text) {
       if (this.loadedScanner){
         this.showScanner = false
@@ -1103,11 +1018,15 @@ export default {
       await delay(1000);
       this.loadedScanner = true
     },
+
   },
 };
 </script>
 
 <style scoped>
+
+
+
 .qr {
   width: 60%;
 }
@@ -1191,7 +1110,7 @@ export default {
 }
 .result-info {
   overflow: auto;
-  height: 100vh;
+  height:65vh;
   display: flex;
   flex-direction: column;
 }
@@ -1291,7 +1210,8 @@ p {
 .uk-list{
   list-style: none;
   overflow: auto;
-  height: 385px; /* verify Height */
+  height: auto;
+  margin-bottom: 75px /* verify Height */
 }
 .status-order {
   width: 100%;
@@ -1400,7 +1320,7 @@ p {
   display: flex;
   padding: 4px 0px !important;
   border: 1px solid #ccc;
-  position: sticky;
+  position: absolute;
   bottom: 0px;
   width: 100%;
 }
@@ -1519,10 +1439,20 @@ p {
   font-size: 16px;
   margin-bottom: 5px !important;
 }
+.exception-position {
+  position: absolute;
+  top: 235px;
+  left: 68.4px;
+}
 @media (min-width: 600px){
   .exception{
   justify-content: end;
   margin-right: 33px;
+}
+.exception-position {
+  position: absolute;
+  top: 233px;
+  right: 0px;
 }
 }
 @media (min-width: 1050px){

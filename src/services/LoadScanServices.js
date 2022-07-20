@@ -1,5 +1,3 @@
-// import {add} from '../queue'
-
 class LoadsScanServices {
     constructor (http) {
       this.http = http;
@@ -17,9 +15,6 @@ class LoadsScanServices {
           "statusType": "Arrival",   
         }
       }
-      // let url = `${this.settingsLocalStore.url}/exo/loads/${loadId}/actions` 
-      // let json = {'method': 'post', 'body': params, 'url': url}
-
       await this.http.post(`${this.settingsLocalStore.url}/exo/loads/${loadId}/actions`, params)
 
     }
@@ -29,7 +24,7 @@ class LoadsScanServices {
       return result.data
     }
 
-    async scanProduct (orderId, boxId, loadCounter, productId, qrCode){
+  async scanProduct(orderId, boxId, loadCounter, productId, qrCode) {
         const params = {
           "actionName": "loadBox",
           "params": {

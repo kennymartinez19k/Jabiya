@@ -42,14 +42,6 @@ export default {
     }
   },
  
-  watch:{
-    $route: function(newVal){
-      this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
-      if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
-          this.stopScan()
-      }
-    }
-  },
   components:{
     AppHeader,
     sideBar
@@ -146,6 +138,8 @@ export default {
             try{
               let res = await this.$services.requestServices.request(queueItem)
               if(res){
+
+
                 this.dequeue()
               }
               await this.localStorage.set('serverUp' , JSON.stringify(true))
@@ -155,6 +149,10 @@ export default {
               if(error.message != 'Network Error'){
                 this.$store.commit('changeRequestStatus', true)
                 this.dequeue()
+                if(queue.length == 0){
+                  localStorage.setItem('failSendInfo', JSON.stringify(true))
+                }
+
               }
               await this.localStorage.set('serverUp' , JSON.stringify(false))
               this.$store.commit('setServer', false)
@@ -187,8 +185,7 @@ export default {
         BarcodeScanner.showBackground();
         BarcodeScanner.stopScan();
       }catch(error){
-        //  console.clear()
-
+        console.log(error)
       }
     },
     getInfo(){
@@ -205,8 +202,6 @@ export default {
         console.log(error)
       }
     }else{
-      // let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
-      // return {latitude: result.lat, longitude: result.lng}
       return false
     }
     }

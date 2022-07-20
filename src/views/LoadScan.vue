@@ -111,7 +111,7 @@
             <div class="">
             <button class="uk-modal-close-default" @click="scanOrder()" type="button" uk-close></button>
             <p style="font-size: 15px;">Cantidad (hasta el máximo de {{totalLimitOfBoxes - totalBoxesScanned}} <span id="total-quantity"></span>)</p>
-            <input type="text" id="quantity" v-model="quantityForScan"  class="uk-input" >
+           <form action="" autocomplete="off"><input type="number" id="quantity" v-model="quantityForScan"  class="uk-input" ></form>
             <p class="uk-text-right uk-flex uk-flex-around" style="margin-top: 20px !important;">
                 <button class="uk-button uk-button-default uk-modal-close" style="margin: 0px 10px" @click="scanOrder()" type="button">Cancelar</button>
                 <button :disabled="quantityForScan <= 0" class="uk-button uk-button-primary uk-modal-close" @click="sendQuantityForScan()" type="button">Guardar</button>
@@ -144,9 +144,6 @@ import { mapGetters } from "vuex";
 import { Vibration } from "@ionic-native/vibration";
 import { Mixins } from '../mixins/mixins'
 import { StreamBarcodeReader } from "vue-barcode-reader";
-
-// import UIkit from "uikit";
-
 
 export default {
   components:{
@@ -285,15 +282,11 @@ export default {
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
 
-    // if (!this.loadStore.allowOrderChangesAtDelivery) {
-      
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.verifiedLoad()
     }else{
       this.scanOrder()
     }
-    // }
-
     
   },
   methods: {  
@@ -302,8 +295,6 @@ export default {
       this.totalLimitOfBoxes = 0
       this.quantityForScan = null
      
-      //   Compruebo si se encuentra el qrCode en la fila de la primera estructura
-
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
           x.loadScanningCounter < x.quantity &&
@@ -335,11 +326,8 @@ export default {
               
               this.totalBoxesScanned = scannedCounterNo1by1
               this.totalLimitOfBoxes = noScan1by1
-              // let totalQuantity = document.getElementById('total-quantity')
-              // totalQuantity.innerHTML = this.totalLimitOfBoxes - this.totalBoxesScanned
-              
-                this.isOpen = true
-            
+              this.isOpen = true
+
               this.infoForScan = {
                 orderId: order._id,
                 boxId: productInfo?._id,
@@ -350,6 +338,7 @@ export default {
                 scanOneByOne: false,
                 orderNum: order?.order_num,
               }
+              console.log(this.infoForScan)
             }
             else {
               await this.setMessageConfirmation(order?._id, productInfo?._id,  productInfo?.loadScanningCounter, productInfo?.product, productInfo?.qrCode, productInfo?.quantity, true, order?.order_num)
@@ -395,11 +384,12 @@ export default {
             this.secondStructureLoad[index_second].loadScanningCounter += productMissing
             this.firstStructureLoad[index_first].loadScanningCounter += productMissing
 
+
             await this.$services.loadsScanServices.scanProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
             await this.distributeProductScan(LoadDistribute, qrCode , orderNum)
           }
           else{
-              this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
+            this.firstStructureLoad[index_first].loadScanningCounter += quantityForScan
               this.secondStructureLoad[index_second].loadScanningCounter += quantityForScan
               await this.$services.loadsScanServices.scanProduct(orderId, boxId, this.firstStructureLoad[index_first].loadScanningCounter, productId, qrCode)
 
@@ -482,8 +472,6 @@ export default {
     
     async stopScan() {
       this.showScanner = false
-      // BarcodeScanner.showBackground();
-      // BarcodeScanner.stopScan();
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });

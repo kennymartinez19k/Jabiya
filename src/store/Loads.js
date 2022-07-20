@@ -4,11 +4,10 @@ const Loads = {
       allLoadsStore: [],
       products:[],
       startRoute: true,
-      detailsLoads:[],
+    detailsLoads: [],
     },
     mutations: {
         setloadStore (state, load) {
-          console.log(load, 'loadStore')
             state.load = load
         },       
         setStartRoute(state, startRoute){
@@ -23,6 +22,7 @@ const Loads = {
         setloadProductStore (state, products) {
           state.products = products
       },
+        
     },
     actions:{
       setData({commit}, val){

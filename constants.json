@@ -20,6 +20,15 @@
   "url":{
     "production": "https://production.flai.com.do/orchestrator",
     "preprod": "https://preprod.flai.com.do/orchestrator"
+  },
+  "host":{
+    "odoo1":"https://jabiyaerp.flai.com.do/",
+    "odoo":"https://jabiyatest.flai.com.do/",
+    "odoo3":"https://jabiya.flai.com.do/"
+  },
+  "loginOdoo": {
+    "login": "jabillaodoo@gmail.com", 
+    "password": "admin"
   }
 }
 
