@@ -133,8 +133,6 @@ export default {
                 try {
                     const result = await axios.get(`${hostEnum.odoo}/api/invoice/${id}/order/${this.idOrderForOdoo.orderId}/report/`, { withCredentials: true });
                     this.invoiceDetails = result.data.result.data;
-
-                    console.log(this.invoiceDetails,'invoiceDetail summary ')
                 } catch (error) {
                     console.log(error)
                     this.show = false
@@ -156,8 +154,6 @@ export default {
                     { withCredentials: true }
                 );
                this.summary = result.data.result.data
-               console.log(this.summary, 'summary summary ')
-
             } catch (error) {
                 console.log(error)
                }

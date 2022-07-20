@@ -553,15 +553,13 @@ export default {
     },
 
     async getInvoicesPrint(valuePrint) {
-      // try {
+      try {
         let products = "";
         let plusData = []
         this.$store.commit("getInvoiceDetails", valuePrint);
         localStorage.setItem('invoiceDetails', JSON.stringify(valuePrint));
-        console.log(valuePrint,'qqqqqqqqqq')
         const result = await axios.get(`${hostEnum?.odoo}/api/invoice/${valuePrint}/order/${this.idInvoices.orderId}/report/`, { withCredentials: true });
         let invoice = result.data.result.data;
-        console.log(invoice,'wwwwwwwwwwwwwwwwww')
         invoice.products.forEach((product, i) => {
           let plus = ''
           let dataDescription = ''
@@ -621,9 +619,9 @@ export default {
           .replace("{{products}}", products)
         this.dataPrinter = template;
         this.testingPrint();
-      // } catch (error) {
-      //   console.log(error, "error print");
-      // }
+      } catch (error) {
+        console.log(error, "error print");
+      }
     },
     characterControl(qty, maxQty, text, type) {
       let data = ''
