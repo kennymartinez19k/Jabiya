@@ -145,9 +145,6 @@ import { Vibration } from "@ionic-native/vibration";
 import { Mixins } from '../mixins/mixins'
 import { StreamBarcodeReader } from "vue-barcode-reader";
 
-// import UIkit from "uikit";
-
-
 export default {
   components:{
     StreamBarcodeReader
@@ -285,15 +282,11 @@ export default {
     this.firstStructureLoad = firstStructure
     this.secondStructureLoad = secondStructure
 
-    // if (!this.loadStore.allowOrderChangesAtDelivery) {
-      
     if(this.secondStructureLoad.every(x => x.completedScanned)){
       this.verifiedLoad()
     }else{
       this.scanOrder()
     }
-    // }
-
     
   },
   methods: {  
@@ -302,8 +295,6 @@ export default {
       this.totalLimitOfBoxes = 0
       this.quantityForScan = null
      
-      //   Compruebo si se encuentra el qrCode en la fila de la primera estructura
-
         let orderForScan = this.firstStructureLoad.find(
           x => x.qrCode == val &&
           x.loadScanningCounter < x.quantity &&
@@ -335,10 +326,7 @@ export default {
               
               this.totalBoxesScanned = scannedCounterNo1by1
               this.totalLimitOfBoxes = noScan1by1
-              // let totalQuantity = document.getElementById('total-quantity')
-              // totalQuantity.innerHTML = this.totalLimitOfBoxes - this.totalBoxesScanned
-              
-                this.isOpen = true
+              this.isOpen = true
 
               this.infoForScan = {
                 orderId: order._id,
@@ -484,8 +472,6 @@ export default {
     
     async stopScan() {
       this.showScanner = false
-      // BarcodeScanner.showBackground();
-      // BarcodeScanner.stopScan();
     },
     async checkPermission() {
       const status = await BarcodeScanner.checkPermission({ force: true });

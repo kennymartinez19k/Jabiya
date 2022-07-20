@@ -2,12 +2,9 @@
   <ion-loading :is-open="isOpenRef" cssClass="my-custom-class" message="Por favor Espere Envio..." :duration="timeout"
     @didDismiss="setOpen(false)">
   </ion-loading>
-
-  <div class="uk-flex uk-flex-column uk-flex-between" :class="{ backg: resultScan }">
-    <div>
     <div class="stiky">
       <p class="web-font-small title-load-number" style="font-size: 13px; font-weight: 500">
-        {{ load?.loadNumber }} 
+        {{ load?.loadNumber }}
       </p>
       <div class="
           uk-flex
@@ -28,6 +25,8 @@
         </div>
       </div>
     </div>
+  <div class="uk-flex uk-flex-column uk-flex-between" style="height:90vh" :class="{ backg: resultScan }">
+    <div>
       <div class="result-info">
         <div v-if="showScanner">
           <StreamBarcodeReader @decode="onDecode" @loaded="onLoaded"></StreamBarcodeReader>
@@ -166,7 +165,7 @@
               &nbsp;
             </li>
           </ul>
-          <div class="cont-container uk-card uk-card-default uk-card-hover uk-card-body">
+          <div class="cont uk-card uk-card-default uk-card-hover uk-card-body">
             <div v-if="!isMobile && showScanInput" class="uk-flex uk-flex-center uk-flex-wrap">
               <p class="title-form-scan">Introduzca su qrCode para entregar</p>
               <input type="text" v-model="webQrCode" class="uk-input uk-width-1-4 web-font-small">
@@ -177,7 +176,7 @@
               Hubo Alguna Excepción? No
               <div class="onoffswitch">
                 <input type="checkbox" v-model="exception" name="onoffswitch"
-                  :class="{'checkbox-default':isChangeQuantityStore?.exception}" class="onoffswitch-checkbox"
+                  class="onoffswitch-checkbox"
                   id="myonoffswitch" tabindex="0" :disabled="isChangeQuantityStore?.exception === true" />
                 <label class="onoffswitch-label" for="myonoffswitch"></label>
               </div>
@@ -189,7 +188,6 @@
         </div>
       </div>
   </div>
-
 </template>
 
 <script>
@@ -207,9 +205,6 @@ import { alertController } from '@ionic/vue';
 import { profile } from "../types";
 import InvoiceSummary from "../components/InvoiceSummary.vue"
 import { StreamBarcodeReader } from "vue-barcode-reader";
-// import axios from "axios";
-// import { hostEnum } from '../types'
-
 
 App.addListener("appRestoredResult", (data) => {
   console.log("Restored state:", data);
@@ -235,8 +230,6 @@ export default {
   mixins: [Mixins],
   data() {
     return {
-      // hostEnum,
-
       profile,
       isOpen: false,
       show: null,
@@ -620,7 +613,8 @@ export default {
          for (let x = 0; x < this.orders.length; x++) {
             let order = this.orders[x]
             this.$services.exceptionServices.putExceptions(order._id, this.causeExceptionsStore);
-         } 
+          } 
+          this.resetException ()
         }
     },
 
@@ -668,7 +662,6 @@ export default {
             this.totalLimitOfBoxes.scanned =
               detailsOrderToScan.loadScanningCounter;
             this.totalLimitOfBoxes.totalOfOrders = noScan1by1;
-            // UIkit.modal("#deliver-quantity").show();
             this.isOpen = true
             this.infoForScan = {
               orderId: order._id,
@@ -895,7 +888,6 @@ export default {
         order: null
       }
       this.$store.commit("getInvoiceDownload",dwlStatus);
-      // this.$store.commit("getInvoiceDownload",false);
     },
 
     allProductUpload() {
@@ -999,7 +991,6 @@ export default {
       this.cameraOn = false;
       this.showProduct = true
       this.image = null;
-      // await this.camera?.stop();
     },
     async pickImage(event) {
       let blob = event.target.files[0];
@@ -1119,7 +1110,7 @@ export default {
 }
 .result-info {
   overflow: auto;
-  height: 60vh;
+  height:65vh;
   display: flex;
   flex-direction: column;
 }
@@ -1219,7 +1210,8 @@ p {
 .uk-list{
   list-style: none;
   overflow: auto;
-  height: 385px; /* verify Height */
+  height: auto;
+  margin-bottom: 75px /* verify Height */
 }
 .status-order {
   width: 100%;
@@ -1281,15 +1273,11 @@ p {
   position: sticky;
   bottom: 0px;
   border-top: 1px solid #ccc;
-}
-.cont-container{
-   position: sticky;
-  bottom: 0px;
-  border-top: 1px solid #ccc;
   padding: 15px 0px;
-
 }
 .action {
+  position: absolute;
+  bottom: 0px;
   width: 100%;
 }
 

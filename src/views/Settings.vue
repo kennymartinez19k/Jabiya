@@ -69,8 +69,6 @@ export default {
       this.settings = this.settingsStore
     }
     this.showButton = true;
-    // this.$store.commit("setSettings", this.settings);
-
   },
   watch: {
     settings: {

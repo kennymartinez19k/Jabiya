@@ -42,15 +42,10 @@ class LoadsServices {
     async getLoadsbyDate (date = new Date()) {
       var loadDate = new Date(date).getTime() - (new Date(date).getTime() % 86400000)
       let result = {}
-      try{
+      
         result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/?date=${loadDate}`)
-      }catch(error){
-        console.log(error.message)
-        if(error.message == 'Request failed with status code 401'){
-          router.push({name: 'sign-in'})
-        }
-      }
-      return result.data
+      
+      return result?.data
     }
     
     async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){

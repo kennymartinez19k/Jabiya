@@ -4,17 +4,14 @@
       <p style="font-size: 13px; font-weight: 500" class="web-font-small">
         {{ loadStore?.loadNumber }}
       </p>
-      <div
-        class="
+      <div class="
           uk-flex
           uk-flex
           uk-flex-center
           uk-flex-left
           uk-margin-remove
           uk-padding-remove
-        "
-        style="align-items: center"
-      >
+        " style="align-items: center">
         <div class="uk-flex uk-flex-wrap web-font-small">
           <p style="margin-right: 10px !important">
             <span class="font-weight-medium">Shipper: </span>
@@ -31,151 +28,132 @@
     <div class="container">
       <h6 class="web-font-medium">Seleccione el Siguiente Paso</h6>
       <ul class="progressbar">
-        <li
-          v-if="userInfo?.userType == userType?.provider" 
-          :class="{active: loadStatus.step == step.expectingApprovalProvider, 'completed-status': loadStatus.step > step.expectingApprovalProvider}"
-        >
-         
+        <li v-if="userInfo?.userType == userType?.provider"
+          :class="{ active: loadStatus.step == step.expectingApprovalProvider, 'completed-status': loadStatus.step > step.expectingApprovalProvider}">
+          <span class="show-status" :class="{ 'show-blink': loadStatus.step == step.expectingApprovalProvider }">
+
             <div class="info web-font-small">
               <span>0</span>
             </div>
 
-            <div
-              @click="changeRoute('Expecting Approval')"
-              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item "
-            >
+            <div @click="changeRoute('Expecting Approval')"
+              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item ">
               <h6 class="web-font-small">{{messageStatus?.expectingApprovalProvider?.message}}</h6>
             </div>
             <div class="icon-item">
-              <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApprovalProvider" icon="arrow-right"/>
+              <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')"
+                v-if="loadStatus.step == step.expectingApprovalProvider" icon="arrow-right" />
               <img v-if="loadStatus.step < step.expectingApprovalProvider" src="../assets/checklist.png" />
               <img v-if="loadStatus.step > step.expectingApprovalProvider" src="../assets/check.png" />
             </div>
             <div class="disabled-container"></div>
-        </li>
-        <li 
-          :class="{active: loadStatus.step == step.expectingApproval, 'completed-status': loadStatus.step > step.expectingApproval}"
-        >
-          <div class="info web-font-small">
-            <span>1</span>
-          </div>
-
-          <div
-            @click="changeRoute('Expecting Approval')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.expectingApproval?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')" v-if="loadStatus.step == step.expectingApproval" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.expectingApproval" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
-        </li>
-        <li 
-          :class="{active: loadStatus.step == step.driverArrival, 'completed-status': loadStatus.step > step.driverArrival}"
-        >
-          <div class="info web-font-small">
-            <span>2</span>
-          </div>
-
-          <div
-            @click="changeRoute('Driver Arrival')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.driverArrival?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Driver Arrival')" v-if="loadStatus.step == step.driverArrival" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.driverArrival" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.driverArrival" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
+          </span>
         </li>
         <li
-          :class="{active: loadStatus.step == step.approved, 'completed-status': loadStatus.step > step.approved}"
-        >
-           <div class="info web-font-small">
-            <span>3</span>
-          </div>
-          <div
-            @click="changeRoute('Approved')"
-            :class="{'disabled-event': isMountProduct}"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.approved?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Approved')" v-if="loadStatus.step == step.approved" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.approved" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.approved" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
+          :class="{active: loadStatus.step == step.expectingApproval, 'completed-status': loadStatus.step > step.expectingApproval}">
+          <span class="show-status" :class="{ 'show-blink': loadStatus.step == step.expectingApproval, }">
+            <div class="info web-font-small">
+              <span>1</span>
+            </div>
+
+            <div @click="changeRoute('Expecting Approval')"
+              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item">
+              <h6 class="web-font-small">{{messageStatus?.expectingApproval?.message}}</h6>
+            </div>
+            <div class="icon-item">
+              <font-awesome-icon class="icon" @click="changeRoute('Expecting Approval')"
+                v-if="loadStatus.step == step.expectingApproval" icon="arrow-right" />
+              <img v-if="loadStatus.step < step.expectingApproval" src="../assets/checklist.png" />
+              <img v-if="loadStatus.step > step.expectingApproval" src="../assets/check.png" />
+            </div>
+            <div class="disabled-container"></div>
+          </span>
+        </li>
+        <li
+          :class="{active: loadStatus.step == step.driverArrival, 'completed-status': loadStatus.step > step.driverArrival}">
+          <span class="show-status" :class="{ 'show-blink': loadStatus.step == step.driverArrival }">
+            <div class="info web-font-small">
+              <span>2</span>
+            </div>
+
+            <div @click="changeRoute('Driver Arrival')"
+              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item">
+              <h6 class="web-font-small">{{messageStatus?.driverArrival?.message}}</h6>
+            </div>
+            <div class="icon-item">
+              <font-awesome-icon class="icon" @click="changeRoute('Driver Arrival')"
+                v-if="loadStatus.step == step.driverArrival" icon="arrow-right" />
+              <img v-if="loadStatus.step < step.driverArrival" src="../assets/checklist.png" />
+              <img v-if="loadStatus.step > step.driverArrival" src="../assets/check.png" />
+            </div>
+            <div class="disabled-container"></div>
+          </span>
+        </li>
+        <li :class="{active: loadStatus.step == step.approved, 'completed-status': loadStatus.step > step.approved}">
+          <span class="show-status" :class="{ 'show-blink': loadStatus.step == step.approved }">
+            <div class="info web-font-small">
+              <span>3</span>
+            </div>
+            <div @click="changeRoute('Approved')" :class="{'disabled-event': isMountProduct}"
+              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item">
+              <h6 class="web-font-small">{{messageStatus?.approved?.message}}</h6>
+            </div>
+            <div class="icon-item">
+              <font-awesome-icon class="icon" @click="changeRoute('Approved')" v-if="loadStatus.step == step.approved"
+                icon="arrow-right" />
+              <img v-if="loadStatus.step < step.approved" src="../assets/checklist.png" />
+              <img v-if="loadStatus.step > step.approved" src="../assets/check.png" />
+            </div>
+            <div class="disabled-container"></div>
+          </span>
 
         </li>
         <li
-        :class="{active: loadStatus.step == step.truckLoaded && !sendingInfo, 'completed-status': loadStatus.step > step.truckLoaded}">
-          <div class="info web-font-small">
-            <span>4</span>
-          </div>
-          <div
-            @click="changeRoute('Dispatched')"
-            class="uk-card action on-way  uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.startRoute?.message}}</h6>
-          </div>
+          :class="{ active: loadStatus.step == step.truckLoaded && !sendingInfo, 'completed-status': loadStatus.step > step.truckLoaded}">
+          <span class="show-status" :class="{ 'show-blink': loadStatus.step == step.truckLoaded && !sendingInfo }">
+            <div class="info web-font-small">
+              <span>4</span>
+            </div>
+            <div @click="changeRoute('Dispatched')"
+              class="uk-card action on-way  uk-card-default uk-card-body uk-width-1-2@m item">
+              <h6 class="web-font-small">{{messageStatus?.startRoute?.message}}</h6>
+            </div>
 
-          <div class="icon-item">
-            <span v-if="setting.maps" class="">
-              <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right"/>
-              <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
-            </span>
+            <div class="icon-item">
+              <span v-if="setting.maps" class="">
+                <font-awesome-icon class="icon" @click="changeRoute('Dispatched')"
+                  v-if="loadStatus.step >= step.truckLoaded" icon="arrow-right" />
+                <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
+              </span>
 
-            <span v-if="!setting.maps" class="">
-              <font-awesome-icon class="icon" @click="changeRoute('Dispatched')" v-if="loadStatus.step == step.truckLoaded" icon="arrow-right"/>
-              <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
-              <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />
-            </span>
-          </div>
+              <span v-if="!setting.maps" class="">
+                <font-awesome-icon class="icon" @click="changeRoute('Dispatched')"
+                  v-if="loadStatus.step == step.truckLoaded" icon="arrow-right" />
+                <img v-if="loadStatus.step < step.truckLoaded" src="../assets/checklist.png" />
+                <img v-if="!setting?.maps && loadStatus.step > step.truckLoaded" src="../assets/check.png" />
+              </span>
+            </div>
 
-          <div class="disabled-container"></div>
+            <div class="disabled-container"></div>
+          </span>
         </li>
-        <li
-          v-if="!allOrderIsReturn"
+        <li v-if="!allOrderIsReturn"
           :class="{active: loadStatus.step == step.delivered && !sendingInfo, 'completed-status': loadStatus.step > step.delivered}">
-          
-          <div class="info web-font-small"><span>5</span></div>
-          <div   
-            @click="changeRoute('Deliver-Load')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.delivered?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('Deliver-Load')" v-if="loadStatus.step == step.delivered" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.delivered" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.delivered" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
+          <span class="show-status" :class="{ 'show-blink': loadStatus.step == step.delivered && !sendingInfo, }">
+            <div class="info web-font-small"><span>5</span></div>
+            <div @click="changeRoute('Deliver-Load')"
+              class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item">
+              <h6 class="web-font-small">{{messageStatus?.delivered?.message}}</h6>
+            </div>
+            <div class="icon-item">
+              <font-awesome-icon class="icon" @click="changeRoute('Deliver-Load')"
+                v-if="loadStatus.step == step.delivered" icon="arrow-right" />
+              <img v-if="loadStatus.step < step.delivered" src="../assets/checklist.png" />
+              <img v-if="loadStatus.step > step.delivered" src="../assets/check.png" />
+            </div>
+            <div class="disabled-container"></div>
+          </span>
         </li>
-        <!-- <li 
-          v-if="isReturnOrder"
-          :class="{active: loadStatus.step == step.returnContainer, 'completed-status': loadStatus.step > step.returnContainer}">
-          <div class="info web-font-small"><span>6</span></div>
-          <div   
-            @click="changeRoute('return-container')"
-            class="uk-card action uk-card-default uk-card-body uk-width-1-2@m item"
-          >
-            <h6 class="web-font-small">{{messageStatus?.returnContainer?.message}}</h6>
-          </div>
-          <div class="icon-item">
-            <font-awesome-icon class="icon" @click="changeRoute('return-container')" v-if="loadStatus.step == step.returnContainer" icon="arrow-right"/>
-            <img v-if="loadStatus.step < step.returnContainer" src="../assets/checklist.png" />
-            <img v-if="loadStatus.step > step.returnContainer" src="../assets/check.png" />
-          </div>
-          <div class="disabled-container"></div>
-        </li> -->
       </ul>
     </div>
     <ion-alert-controller></ion-alert-controller>
@@ -477,6 +455,13 @@ methods: {
 </script>
 
 <style scoped>
+
+
+
+
+
+
+
 .container {
   width: 100%;
   padding: 0px 10px;
@@ -575,11 +560,12 @@ ul {
   content: "";
   position: absolute;
   width: 3px;
-  height: 55px;
+  height: 68px;
   background: #979797;
   top: -53px;
   left: 17px;
   z-index: -1;
+  /* linea vertical */
 }
 .progressbar li:first-child:after {
   content: none;
@@ -655,6 +641,28 @@ ul {
 .item-status{
   width: 100%;
   display: flex;
+}
+@-webkit-keyframes blink {
+  50% {
+    border-color: #ff0000;
+  }
+}
+
+.show-blink {
+  animation: blink .5s step-end infinite alternate;
+  border: 3px dashed;
+  /* top: -3px; */
+  padding-right: 5px;
+  border-radius: 10px;
+  border-color: #0f7ae5;;
+    /* padding-top: 5px; */
+    align-items: center;
+    }
+.show-status {
+  width: 100%;
+    display: flex;
+    height: 57px;
+    /* align-items: center; */
 }
 
 @media (min-width: 600px){

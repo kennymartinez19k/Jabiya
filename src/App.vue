@@ -42,14 +42,6 @@ export default {
     }
   },
  
-  watch:{
-    // $route: function(newVal){
-    //   this.hideSideBar = (newVal.name == 'sign-in' || newVal.name == 'redirect')
-    //   if(newVal.name !== 'scan-order' || newVal.name !== 'deliveryActions'){
-    //       this.stopScan()
-    //   }
-    // }
-  },
   components:{
     AppHeader,
     sideBar
@@ -193,8 +185,7 @@ export default {
         BarcodeScanner.showBackground();
         BarcodeScanner.stopScan();
       }catch(error){
-        //  console.clear()
-
+        console.log(error)
       }
     },
     getInfo(){
@@ -211,8 +202,6 @@ export default {
         console.log(error)
       }
     }else{
-      // let result = await this.$services.gpsProviderServices.getVehicleGpsId(load.Vehicles[0].gpsId)
-      // return {latitude: result.lat, longitude: result.lng}
       return false
     }
     }
