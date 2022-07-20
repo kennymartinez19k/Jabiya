@@ -45,7 +45,7 @@ class LoadsServices {
       
         result = await this.http.get(`${this.settingsLocalStore.url}/exo/loads/?date=${loadDate}`)
       
-      return result.data
+      return result?.data
     }
     
     async acceptOrRejectLoad (id, version, approverId, status, type, vehicleId){
